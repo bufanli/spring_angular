@@ -27,9 +27,8 @@
             <button type="button"
                     class="btn btn-secondary"
                     placement="bottom"
-                    ngbPopover="A popover in tab 1"
-                    popoverTitle="Bacon is good">
-              Click me
+                    (click)="greeting()">
+              Click me me
             </button>
           </p>
         </ng-template>
@@ -46,4 +45,6 @@
       </ngb-tab>
     </ngb-tabset>
 </div>
-
+<div class="container">
+  <table id="table"></table>
+</div>
