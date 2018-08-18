@@ -27,4 +27,6 @@
 
 # debug spring
 1. debug spring project in eclipse or intelliJ.
-
+    * In inelliJ, when importing spring project(maven project), it is possible that angular
+      project is also imported, in that case, go to `project structure` menu, in sources tab, delete angular
+      project.(our angular project will be developed in `visual stdio code`.)
