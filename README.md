@@ -34,3 +34,4 @@
 # todos
 1. in package.json, 'ng build base href ./' is defined, 
    but base href should be studied to find what it should be exactly.
+2. add steps how to add bootstrap, jquery, bootstrap-table into angular project.
