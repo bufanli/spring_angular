@@ -23,22 +23,10 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.css",
-              "node_modules/tether/dist/css/tether.min.css",
-              "node_modules/tether/dist/css/tether-theme-arrows.min.css",
-              "node_modules/tether/dist/css/tether-theme-arrows-dark.min.css",
-              "node_modules/tether/dist/css/tether-theme-basic.min.css",
-              "node_modules/font-awesome/css/font-awesome.css",
-              "node_modules/bootstrap/dist/css/bootstrap.min.css",
-              "node_modules/bootstrap-table/dist/bootstrap-table.min.css"
+              "src/styles.css"
             ],
             "scripts": [
-              "node_modules/jquery/dist/jquery.min.js",
-              "node_modules/tether/dist/js/tether.min.js",
-              "node_modules/bootstrap/dist/js/bootstrap.min.js",
-              "node_modules/bootstrap-table/dist/bootstrap-table.min.js",
-              "node_modules/bootstrap-table/dist/locale/bootstrap-table-zh-CN.js"
-            ]
+           ]
           },
           "configurations": {
             "production": {
