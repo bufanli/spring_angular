@@ -34,4 +34,18 @@
 # todos
 1. in package.json, 'ng build base href ./' is defined, 
    but base href should be studied to find what it should be exactly.
-2. add steps how to add bootstrap, jquery, bootstrap-table into angular project.
+   
+#  other procedures to install 3rd packages.
+## add bootstrap into angular project.
+ 1. install yarn.
+ 2. install bootstrap using yarn.
+    -- yarn add @ng-bootstrap/ng-bootstrap --save
+    -- yarn add bootstrap@4.0.0-alpha.6 --save
+    -- yarn add font-awesome --save
+3. add jquery and bootstrap table into project.
+   npm install jquery 
+   npm install -D @types/jquery
+   npm install bootstrap-table
+ 4. copy boostrap, jquery, bootstrap-table's js and css files into assets folder.
+ 5. add these js and css files into index.html.
+ 
