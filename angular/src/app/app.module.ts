@@ -6,17 +6,21 @@ import {FileUploadModule} from 'ng2-file-upload';
 
 import { AppComponent } from './app.component';
 import { FileUploadComponent} from './file-upload-component/file-upload-component';
+import { DataSearchComponent } from './data-search/data-search.component';
+import { AppRoutingModule } from './/app-routing.module';
 
 @NgModule({
   declarations: [
     AppComponent,
     FileUploadComponent,
+    DataSearchComponent,
   ],
   imports: [
     BrowserModule,
     NgbModule.forRoot(),
     CommonModule,
-    FileUploadModule
+    FileUploadModule,
+    AppRoutingModule
   ],
   providers: [],
   bootstrap: [AppComponent]
