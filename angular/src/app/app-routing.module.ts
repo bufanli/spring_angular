@@ -4,6 +4,7 @@ import { DataSearchComponent } from './data-search/data-search.component';
 import {FileUploadComponent} from './file-upload-component/file-upload-component';
 
 const routes: Routes = [
+  { path: '', component: DataSearchComponent},
   { path: 'data-search', component: DataSearchComponent},
   { path: 'file-upload', component: FileUploadComponent},
 ];
