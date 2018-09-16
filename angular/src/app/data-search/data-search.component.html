@@ -1,7 +1,73 @@
 <div class="container">
-    <div class="row">
-        <div class="col-md-9">
-          <button>bufanli</button>
+  <div class="panel panel-default">
+    <div class="panel-body">
+      <h2>产品一览</h2>
+      <form role="form">
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <div class="input-group">
+                <span class="input-group-addon" id="hs-code">HS编码</span>
+                <input type="text" class="form-control" placeholder="请输入HS编码" aria-describedby="hs-code">
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <div class="input-group input-daterange">
+                <span class="input-group-addon" id="date">日期</span>
+                <input type="text" class="form-control" value="2012-04-05" aria-describedby="date">
+                <div class="input-group-addon">到</div>
+                <input type="text" class="form-control" value="2012-04-19">
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <div class="input-group">
+                <span class="input-group-addon" id="enterprise">进出口企业</span>
+                <input type="text" class="form-control" placeholder="请输入进出口企业" aria-describedby="enterprise">
+              </div>
+            </div>
+          </div>
         </div>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <div class="input-group">
+                <span class="input-group-addon" id="country">国家</span>
+                <input type="text" class="form-control" placeholder="请输入国家" aria-describedby="country">
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <div class="input-group">
+                <span class="input-group-addon" id="description">产品描述</span>
+                <input type="text" class="form-control" placeholder="请输入产品描述" aria-describedby="description">
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <div class="input-group">
+                <span class="input-group-addon" id="brand_client">品牌客户</span>
+                <input type="text" class="form-control" placeholder="请输入品牌客户" aria-describedby="brand_client">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-2">
+                <button type="button" class="btn btn-primary btn-block">搜索</button>
+          </div>
+        </div>
+      </form>
     </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <table id='table'></table>
+    </div>
+  </div>
 </div>
