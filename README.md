@@ -46,6 +46,10 @@
    npm install jquery 
    npm install -D @types/jquery
    npm install bootstrap-table
+   npm instatll -D @types/bootstrap-table
+   ** need to install @types/jquery if you want to use jquery library,
+   ** if you just install jquery only, you can not use jquery in ts file.
  4. copy boostrap, jquery, bootstrap-table's js and css files into assets folder.
+   ** don't add js and css files into angular.json.
  5. add these js and css files into index.html.
  
