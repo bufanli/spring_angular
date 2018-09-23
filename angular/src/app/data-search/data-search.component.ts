@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import 'jquery';
-import 'bootstrap-table';
-import 'bootstrap-datepicker';
 import 'bootstrap';
+import 'bootstrap-datepicker';
+import 'bootstrap-table';
 
 @Component({
   selector: 'app-data-search',
@@ -11,13 +11,32 @@ import 'bootstrap';
 })
 export class DataSearchComponent implements OnInit {
 
-  constructor() { }
+  // start date
+  startDate: Date;
+  // end date
+  endDate: Date;
+  constructor() {
+    // this.startDate = new Date();
+    this.startDate = new Date();
+    this.endDate = new Date();
+  }
 
   ngOnInit() {
-    $('.input-daterange input').each(function() {
-      $(this).datepicker({});
+    // set date picker's formatter
+    $('.input-daterange input').each(function () {
+      $(this).datepicker({
+        format: 'yyyy-mm-dd',
+        autoclose: true,
+        todayBtn: 'linked',
+        language: 'zh-CN',
+      });
+    });
+    // set initial date to datepicker
+    $('.input-daterange input').each(function () {
+      $(this).datepicker('update', new Date());
     });
     $('#table').bootstrapTable({ // 对应table标签的id
+      language: 'zh-CN',
       url: '', // 获取表格数据的url
       cache: false, // 设置为 false 禁用 AJAX 数据缓存， 默认为true
       striped: true,  // 表格显示条纹，默认为false
@@ -29,8 +48,9 @@ export class DataSearchComponent implements OnInit {
       showHeader: true,
       showRefresh: true,
       showToggle: false,
-      showColumns: true,
+      showColumns: false,
       showFullscreen: false,
+      search: true,
       queryParams: function (params) { // 请求服务器数据时发送的参数，可以在这里添加额外的查询参数，返回false则终止请求
         return {
           pageSize: params.limit, // 每页要显示的数据条数
@@ -56,7 +76,7 @@ export class DataSearchComponent implements OnInit {
           class: 'text-primary',
           sortable: true,
         },
-       {
+        {
           field: 'hs_code',
           title: 'HS编码',
           align: 'center',
@@ -105,7 +125,6 @@ export class DataSearchComponent implements OnInit {
           field: 'amount_unit',
           title: '数量单位'
         },
-
       ],
       onLoadSuccess: function () {  // 加载成功时执行
         // tslint:disable-next-line:no-console
@@ -115,7 +134,6 @@ export class DataSearchComponent implements OnInit {
         // tslint:disable-next-line:no-console
         console.info('加载数据失败');
       }
-
     });
   }
 }
