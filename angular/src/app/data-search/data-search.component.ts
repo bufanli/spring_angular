@@ -16,7 +16,6 @@ export class DataSearchComponent implements OnInit {
   // end date
   endDate: Date;
   constructor() {
-    // this.startDate = new Date();
     this.startDate = new Date();
     this.endDate = new Date();
   }

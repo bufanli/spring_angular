@@ -52,4 +52,5 @@
  4. copy boostrap, jquery, bootstrap-table's js and css files into assets folder.
    ** don't add js and css files into angular.json.
  5. add these js and css files into index.html.
+ 6. if ngModel doesn't work in input, then add name to input in html file.
  
