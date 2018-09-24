@@ -17,7 +17,7 @@
               <div class="input-group input-daterange">
                 <span class="input-group-addon" id="date">日期</span>
                 <input type="text" class="form-control" aria-describedby="date">
-                <div class="input-group-addon">到{{products.length}}</div>
+                <div class="input-group-addon">到</div>
                 <input type="text" class="form-control" value="2012-04-19">
               </div>
             </div>
@@ -59,7 +59,7 @@
         </div>
         <div class="row">
           <div class="col-md-2">
-                <button type="button" class="btn btn-primary btn-block">搜索</button>
+            <button type="button" class="btn btn-primary btn-block">搜索</button>
           </div>
         </div>
       </form>
@@ -67,7 +67,24 @@
   </div>
   <div class="row">
     <div class="col-md-12">
-      <table id='table'></table>
+      <table id="table" data-toggle="table" data-height="300" data-url=""
+        data-id-field="id">
+        <thead>
+          <tr>
+            <th data-field="id">顺序号</th>
+            <th data-field="date">日期</th>
+            <th data-field="hs_code">HS编码</th>
+            <th data-field="enterprise">进口企业</th>
+            <th data-field="client">品牌及客户</th>
+            <th data-field="description">产品描述</th>
+            <th data-field="country">国家</th>
+            <th data-field="unit_price">申报单价</th>
+            <th data-field="total_price">申报总价</th>
+            <th data-field="amount">数量</th>
+            <th data-field="amount_unit">数量单位</th>
+          </tr>
+        </thead>
+      </table>
     </div>
   </div>
 </div>

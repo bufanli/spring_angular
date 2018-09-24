@@ -1,5 +1,5 @@
 export class Product {
-  seq: number;
+  id: number;
   date: string;
   hs_code: string;
   enterprise: string;
