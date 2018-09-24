@@ -24,6 +24,7 @@
     "@types/bootstrap": "^3.3.39",
     "@types/bootstrap-datepicker": "0.0.13",
     "@types/bootstrap-table": "^1.11.5",
+    "angular-in-memory-web-api": "^0.6.1",
     "bootstrap": "^3.3.7",
     "bootstrap-datepicker": "^1.8.0",
     "bootstrap-table": "^1.12.1",

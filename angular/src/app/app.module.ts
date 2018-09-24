@@ -9,6 +9,9 @@ import { FileUploadComponent} from './file-upload-component/file-upload-componen
 import { DataSearchComponent } from './data-search/data-search.component';
 import { AppRoutingModule } from './/app-routing.module';
 import { FormsModule} from '@angular/forms';
+import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
+import { InMemoryDataService } from './data-service/in-memory-data.service';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -23,6 +26,10 @@ import { FormsModule} from '@angular/forms';
     FileUploadModule,
     AppRoutingModule,
     FormsModule,
+    HttpClientModule,
+    HttpClientInMemoryWebApiModule.forRoot(
+      InMemoryDataService, { dataEncapsulation: false }
+    ),
   ],
   providers: [
     { provide: LOCALE_ID, useValue: 'zh-CN' },

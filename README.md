@@ -42,7 +42,7 @@
     -- yarn add @ng-bootstrap/ng-bootstrap --save
     -- yarn add bootstrap@4.0.0-alpha.6 --save
     -- yarn add font-awesome --save
-3. add jquery and bootstrap table into project.
+ 3. add jquery and bootstrap table into project.
    npm install jquery 
    npm install -D @types/jquery
    npm install bootstrap-table
@@ -53,4 +53,9 @@
    ** don't add js and css files into angular.json.
  5. add these js and css files into index.html.
  6. if ngModel doesn't work in input, then add name to input in html file.
- 
+## use in memory db in angular.
+ 1. add InMemoryDataService which implements InMemoryDbService.
+ 2. add imports of HttpClientModule.
+ 3. add import of HttpClientInMemoryWebApiModule.forRoot(InMemoryDataService).
+ 4. add injector as constructor(private http: HttpClient) in the constructor of component which use in memory data service.
+ 5. in the last part of createDB method, return {'products': products}, here the first string products need to be same with url like api/products.
