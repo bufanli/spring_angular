@@ -87,10 +87,71 @@ export class InMemoryDataService implements InMemoryDbService  {
         amount: 13000,
         amount_unit: '套',
       }
-
-
-
-
+{
+        id: 2,
+        date: '2018-09-21',
+        hs_code: '5673920',
+        enterprise: '大同******设备股份有限公司'
+        client: 'RANGDON'
+        description: 'LED灯泡',
+        country: '越南',
+        unit_price: 4.0927,
+        total_price: 53205.00,
+        amount: 13000,
+        amount_unit: '套',
+      }
+{
+        id: 2,
+        date: '2018-09-21',
+        hs_code: '5673920',
+        enterprise: '大同******设备股份有限公司'
+        client: 'RANGDON'
+        description: 'LED灯泡',
+        country: '越南',
+        unit_price: 4.0927,
+        total_price: 53205.00,
+        amount: 13000,
+        amount_unit: '套',
+      }
+{
+        id: 2,
+        date: '2018-09-21',
+        hs_code: '5673920',
+        enterprise: '大同******设备股份有限公司'
+        client: 'RANGDON'
+        description: 'LED灯泡',
+        country: '越南',
+        unit_price: 4.0927,
+        total_price: 53205.00,
+        amount: 13000,
+        amount_unit: '套',
+      }
+{
+        id: 2,
+        date: '2018-09-21',
+        hs_code: '5673920',
+        enterprise: '大同******设备股份有限公司'
+        client: 'RANGDON'
+        description: 'LED灯泡',
+        country: '越南',
+        unit_price: 4.0927,
+        total_price: 53205.00,
+        amount: 13000,
+        amount_unit: '套',
+      }
+{
+        id: 2,
+        date: '2018-09-21',
+        hs_code: '5673920',
+        enterprise: '大同******设备股份有限公司'
+        client: 'RANGDON'
+        description: 'LED灯泡',
+        country: '越南',
+        unit_price: 4.0927,
+        total_price: 53205.00,
+        amount: 13000,
+        amount_unit: '套',
+      }
     ];
     return {'products': products};
   }
