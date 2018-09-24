@@ -59,3 +59,5 @@
  3. add import of HttpClientInMemoryWebApiModule.forRoot(InMemoryDataService).
  4. add injector as constructor(private http: HttpClient) in the constructor of component which use in memory data service.
  5. in the last part of createDB method, return {'products': products}, here the first string products need to be same with url like api/products.
+## use boostrap-table in angular.
+ 1. don't use bootstrap method to add columns, if do this, the data will not be shown in data area, instead of doing it, add columns by html code.
