@@ -17,11 +17,15 @@ export class DataSearchComponent implements OnInit {
 
   private productsUrl = 'api/products';  // URL to web api
   public products: Product[] = [];
+  public hsCode: string;
   // start date
   startDate: Date;
   // end date
   endDate: Date;
 
+  onSearch(): void {
+    alert('hello,submit' + this.hsCode);
+  }
   /** GET heroes from the server */
   getProducts(): Observable<Product[]> {
     return this.http.get<Product[]>(this.productsUrl);
@@ -53,7 +57,7 @@ export class DataSearchComponent implements OnInit {
       $(this).datepicker('update', new Date());
     });
     $('#table').bootstrapTable({
-    cache: false,
+      cache: false,
       striped: true,
       queryParams: function (params) { // 请求服务器数据时发送的参数，可以在这里添加额外的查询参数，返回false则终止请求
         return {

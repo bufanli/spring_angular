@@ -2,13 +2,14 @@
   <div class="panel panel-default">
     <div class="panel-body">
       <h2>产品一览</h2>
-      <form role="form">
+      <form role="form" (ngSubmit)="onSearch()">
         <div class="row">
           <div class="col-md-4">
             <div class="form-group">
               <div class="input-group">
                 <span class="input-group-addon" id="hs-code">HS编码</span>
-                <input type="text" class="form-control" placeholder="请输入HS编码" aria-describedby="hs-code">
+                <input type="text" [(ngModel)]="hsCode" name="hs_code" class="form-control" placeholder="请输入HS编码"
+                  aria-describedby="hs-code">
               </div>
             </div>
           </div>
@@ -59,7 +60,7 @@
         </div>
         <div class="row">
           <div class="col-md-2">
-            <button type="button" class="btn btn-primary btn-block">搜索</button>
+            <button type="submit" class="btn btn-primary btn-block">搜索</button>
           </div>
         </div>
       </form>
@@ -67,9 +68,8 @@
   </div>
   <div class="row">
     <div class="col-md-12">
-      <table id="table" data-toggle="table" data-height="400" data-url=""
-        data-id-field="id" data-pagination="true" data-side-pagination="client"
-        data-page-list="[5, 10, 20, 50, 100, 200]">
+      <table id="table" data-toggle="table" data-height="400" data-url="" data-id-field="id" data-pagination="true"
+        data-side-pagination="client" data-page-list="[5, 10, 20, 50, 100, 200]">
         <thead>
           <tr>
             <th data-field="id">顺序号</th>
