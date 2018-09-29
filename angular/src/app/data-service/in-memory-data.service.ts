@@ -25,7 +25,7 @@ export class InMemoryDataService implements InMemoryDbService {
       },
       {
         id: 2,
-        date: '2018-09-21',
+        date: '2018-09-01',
         hs_code: '5673920',
         enterprise: '大同******设备股份有限公司',
         client: 'RANGDON',
@@ -38,7 +38,7 @@ export class InMemoryDataService implements InMemoryDbService {
       },
       {
         id: 2,
-        date: '2018-09-21',
+        date: '2018-09-02',
         hs_code: '5673920',
         enterprise: '大同******设备股份有限公司',
         client: 'RANGDON',
@@ -51,7 +51,7 @@ export class InMemoryDataService implements InMemoryDbService {
       },
       {
         id: 2,
-        date: '2018-09-21',
+        date: '2018-09-03',
         hs_code: '5673920',
         enterprise: '大同******设备股份有限公司',
         client: 'RANGDON',
@@ -64,7 +64,7 @@ export class InMemoryDataService implements InMemoryDbService {
       },
       {
         id: 2,
-        date: '2018-09-21',
+        date: '2018-09-04',
         hs_code: '5673920',
         enterprise: '大同******设备股份有限公司',
         client: 'RANGDON',
@@ -77,7 +77,7 @@ export class InMemoryDataService implements InMemoryDbService {
       },
       {
         id: 2,
-        date: '2018-09-21',
+        date: '2018-09-05',
         hs_code: '5673920',
         enterprise: '大同******设备股份有限公司',
         client: 'RANGDON',
@@ -154,7 +154,7 @@ export class InMemoryDataService implements InMemoryDbService {
         amount_unit: '套',
       }
     ];
-    return { 'products': products };
+    return { 'products': products, 'search': products.slice(0, 5) };
   }
   constructor() { }
 }

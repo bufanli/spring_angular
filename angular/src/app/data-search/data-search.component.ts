@@ -16,6 +16,7 @@ import 'bootstrap-table';
 export class DataSearchComponent implements OnInit {
 
   private productsUrl = 'api/products';  // URL to web api
+  private searchUrl = 'api/search';  // URL to web api
   public products: Product[] = [];
   public hsCode: string;
   // start date
@@ -24,12 +25,18 @@ export class DataSearchComponent implements OnInit {
   endDate: Date;
 
   onSearch(): void {
-    alert('hello,submit' + this.hsCode);
+      this.searchProducts().subscribe(products =>
+      this.getProductsNotification(products));
   }
   /** GET heroes from the server */
   getProducts(): Observable<Product[]> {
     return this.http.get<Product[]>(this.productsUrl);
   }
+  /** search heroes from the server */
+  searchProducts(): Observable<Product[]> {
+    return this.http.get<Product[]>(this.searchUrl);
+  }
+
 
   constructor(private http: HttpClient) {
     this.startDate = new Date();
@@ -68,7 +75,7 @@ export class DataSearchComponent implements OnInit {
         };
       },
       sortName: 'date', // 要排序的字段
-      sortOrder: 'desc', // 排序规则
+      sortOrder: 'asc', // 排序规则
       onLoadSuccess: function () {  // 加载成功时执行
         // tslint:disable-next-line:no-console
         console.info('加载成功');
