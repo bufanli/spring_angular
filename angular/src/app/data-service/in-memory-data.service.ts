@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { InMemoryDbService } from 'angular-in-memory-web-api';
-import {Product} from '../data-search/Product';
+import { Product } from '../data-search/Product';
+import { Header} from '../data-search/Header';
 
 @Injectable({
   providedIn: 'root'
@@ -154,7 +155,21 @@ export class InMemoryDataService implements InMemoryDbService {
         amount_unit: '套',
       }
     ];
-    return { 'products': products, 'search': products.slice(0, 5) };
+    let headers: Header[];
+    headers = [
+      { field: 'id', title: '顺序号' },
+      { field: 'date', title: '日期' },
+      { field: 'hs_code', title: 'HS编码' },
+      { field: 'enterprise', title: '进出口企业' },
+      { field: 'client', title: '品牌及客户' },
+      { field: 'description', title: '产品描述' },
+      { field: 'country', title: '国家' },
+      { field: 'unit_price', title: '申请单价' },
+      { field: 'total_price', title: '申请总价' },
+      { field: 'amount', title: '数量' },
+      { field: 'amount_unit', title: '数量单位' },
+    ];
+    return { 'products': products, 'search': products.slice(0, 5), 'headers': headers };
   }
   constructor() { }
 }

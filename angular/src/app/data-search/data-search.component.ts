@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit} from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { Product } from './Product';
+import { Header } from './Header';
 import 'jquery';
 import 'bootstrap';
 import 'bootstrap-datepicker';
@@ -17,6 +18,7 @@ export class DataSearchComponent implements OnInit {
 
   private productsUrl = 'api/products';  // URL to web api
   private searchUrl = 'api/search';  // URL to web api
+  private headersUrl = 'api/headers';  // URL to web api
   public products: Product[] = [];
   public hsCode: string;
   // start date
@@ -25,18 +27,21 @@ export class DataSearchComponent implements OnInit {
   endDate: Date;
 
   onSearch(): void {
-      this.searchProducts().subscribe(products =>
+    this.searchProducts().subscribe(products =>
       this.getProductsNotification(products));
   }
   /** GET heroes from the server */
   getProducts(): Observable<Product[]> {
     return this.http.get<Product[]>(this.productsUrl);
   }
+  /**get headers from in memory api */
+  getHeaders(): Observable<Header[]> {
+    return this.http.get<Header[]>(this.headersUrl);
+  }
   /** search heroes from the server */
   searchProducts(): Observable<Product[]> {
     return this.http.get<Product[]>(this.searchUrl);
   }
-
 
   constructor(private http: HttpClient) {
     this.startDate = new Date();
@@ -47,9 +52,21 @@ export class DataSearchComponent implements OnInit {
     this.products = products;
     $('#table').bootstrapTable('load', this.products);
   }
-  ngOnInit() {
+
+  getHeadersNotification(headers: Header[]) {
+    // if donot destroy table at first, table will not be shown
+    $('#table').bootstrapTable('destroy');
+    // show table's columns
+    $('#table').bootstrapTable({ columns: headers });
+    // show all products after headers are shown
     this.getProducts().subscribe(products =>
       this.getProductsNotification(products));
+  }
+
+  ngOnInit() {
+    // get headers from in memory api
+    this.getHeaders().subscribe(headers =>
+      this.getHeadersNotification(headers));
     // set date picker's formatter
     $('.input-daterange input').each(function () {
       $(this).datepicker({
@@ -62,28 +79,6 @@ export class DataSearchComponent implements OnInit {
     // set initial date to datepicker
     $('.input-daterange input').each(function () {
       $(this).datepicker('update', new Date());
-    });
-    $('#table').bootstrapTable({
-      cache: false,
-      striped: true,
-      queryParams: function (params) { // 请求服务器数据时发送的参数，可以在这里添加额外的查询参数，返回false则终止请求
-        return {
-          pageSize: params.limit, // 每页要显示的数据条数
-          offset: params.offset, // 每页显示数据的开始行号
-          sort: params.sort, // 要排序的字段
-          sortOrder: params.order, // 排序规则
-        };
-      },
-      sortName: 'date', // 要排序的字段
-      sortOrder: 'asc', // 排序规则
-      onLoadSuccess: function () {  // 加载成功时执行
-        // tslint:disable-next-line:no-console
-        console.info('加载成功');
-      },
-      onLoadError: function () {  // 加载失败时执行
-        // tslint:disable-next-line:no-console
-        console.info('加载数据失败');
-      }
     });
   }
 }
