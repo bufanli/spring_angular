@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+                        http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://www.springframework.org/schema/aop
+                        http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <!-- 两种Excel表格的列名 -->
+    <bean id="column_1" class="com.example.eurasia.entity.DataXMLReader"
+        init-method="init">
+        <property name="filePath" value="config/column_1.xml" />
+    </bean>
+    <bean id="column_2" class="com.example.eurasia.entity.DataXMLReader"
+        init-method="init">
+        <property name="filePath" value="config/column_2.xml" />
+    </bean>
+
+    <!--
+    依赖注入
+    即：一个类中的属性（其他对象）不再需要手动new或者通过工厂方法进行创建，而是Spring容器在属性被使用的时候给予注入。
+    -->
+    <!-- 构造注入：通过有参的构造函数注入。 -->
+    <bean class="com.example.eurasia.entity.Data1Impl" id="data1">
+        <constructor-arg name="id" value="1"></constructor-arg>
+        <constructor-arg name="keyValue">
+            <map>
+                <entry key="JinChuKou"                     value="进出口（出口）（进口）" />
+                <entry key="HaiGuanBianMa"                 value="海关编码（商品编码）（HS编码）" />
+                <entry key="ShangPinMingCheng"             value="商品名称（产品描述）" />
+                <entry key="YueDu"                         value="月度（通关日期）（日期）（月份）" />
+                <entry key="QiYeBianMa"                    value="企业编码" />
+                <entry key="QiYeMingCheng"                 value="企业名称（进出口商）" />
+                <entry key="ShouFaHuoDi"                   value="收发货地（原产地）" />
+                <entry key="ShuLiang"                      value="数量" />
+                <entry key="BiZhi"                         value="币制" />
+                <entry key="ZongE"                         value="总额（金额（USD)）（金额）" />
+                <entry key="DanJia"                        value="单价" />
+                <entry key="ChanXiaoGuo"                   value="出口最终国或进口原产国（产销国）" />
+                <entry key="BaoGuanKouAn"                  value="报关口岸（海关口岸）（出口关区）" />
+                <entry key="MaoYiFangShi"                  value="贸易方式" />
+                <entry key="YunShuFangShi"                 value="运输方式" />
+                <entry key="ZhongZhuanGuo"                 value="中转国" />
+                <entry key="ShuLiangDanWei"                value="数量单位（计量单位）(单位)" />
+                <entry key="DianHua"                       value="电话" />
+                <entry key="ChuanZhen"                     value="传真" />
+                <entry key="YouBian"                       value="邮编" />
+                <entry key="DianZiYouJian"                 value="电子邮件（email）（e-mail）" />
+                <entry key="LianXiRen"                     value="联系人" />
+                <entry key="QiYeXingZhi"                   value="企业性质" />
+                <entry key="QiYeDiZhi"                     value="企业详细地址（地址）（企业地址）" />
+                <entry key="ShengShi"                      value="省市" />
+                <entry key="NianFen"                       value="年份" />
+            </map>
+        </constructor-arg>
+    </bean>
+    <!-- 属性注入：通过无参构造函数+setter方法注入。 -->
+    <bean class="com.example.eurasia.entity.Data2Impl" id="data2">
+        <property name="id" value="2"></property>
+        <property name="keyValue" value="config/column_2.xml"></property>
+    </bean>
+
+    <!-- 配置数据源。跟context: 作用一样吗？
+    <bean id="config" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="location">
+            <list>
+                <value>classpath:application.properties</value>
+            </list>
+        </property>
+    </bean> -->
+
+    <!-- 配置数据源的properties -->
+    <context:property-placeholder location="classpath:application.properties"/>
+
+    <!-- IOC和DI的注解扫描 -->
+    <context:component-scan base-package="com.example.eurasia.dao" ></context:component-scan>
+
+    <!-- 打开AOP的注解 -->
+    <!-- 这里用的是中间的横线而不是下划线 -->
+    <aop:aspectj-autoproxy></aop:aspectj-autoproxy>
+
+    <!-- 配置DataSource数据源 -->
+    <bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource"
+        destroy-method="close">
+        <!-- 无需指定，除非系统无法自动识别 -->
+        <property name="driverClassName" value="${spring.datasource.driverClassName}" />
+        <property name="jdbcUrl" value="${spring.datasource.jdbc-url}" />
+        <property name="username" value="${spring.datasource.username}" />
+        <property name="password" value="${spring.datasource.password}" />
+        <!-- 连接只读数据库时配置为true， 保证安全 -->
+        <property name="readOnly" value="${spring.datasource.readOnly}" />
+        <!-- 等待连接池分配连接的最大时长（毫秒），超过这个时长还没可用的连接则发生SQLException， 缺省:30秒 -->
+        <property name="connectionTimeout" value="${spring.datasource.connectionTimeout}" />
+        <!-- 一个连接idle状态的最大时长（毫秒），超时则被释放（retired），缺省:10分钟 -->
+        <property name="idleTimeout" value="${spring.datasource.idleTimeout}" />
+        <!-- 一个连接的生命时长（毫秒），超时而且没被使用则被释放（retired），缺省:30分钟， 建议设置比数据库超时时长少30秒 -->
+        <property name="maxLifetime" value="${spring.datasource.maxLifetime}" />
+        <!-- 连接池中允许的最大连接数。缺省值：10；推荐的公式：((core_count * 2) + effective_spindle_count) -->
+        <property name="maximumPoolSize" value="${spring.datasource.maximumPoolSize}" />
+        <property name="minimumIdle" value="${spring.datasource.minimumIdle}" />
+    </bean>
+
+    <!-- 配置jdbcTemplate数据源 -->
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+
+    <!-- 配置数据访问层Dao(持久层) -->
+    <bean id="dataDao" class="com.example.eurasia.dao.DataDao">
+        <property name="jdbcTemplate" ref="jdbcTemplate"></property>
+    </bean>
+
+    <!-- 配置业务层Service -->
+    <bean id="dataService" class="com.example.eurasia.service.DataService">
+        <property name="dataDao" ref="dataDao"></property><!-- 属性注入 -->
+    </bean>
+
+</beans>
+
+<!--
+其实在学Spring之后，感觉应该形成一种习惯，在new对象的时候我要想到IOC，在使用Set方法的时候，我要想到DI，再去要方便面（哦，不，是切面），我们应该想到用AOP的。这里可以在Spring中配置如下的引用链：
+
+1. 我要有DataSource，DataSource的属性可以通过注入数据库的一些配置属性添加
+
+2. 我要有JdbcTemplate，而Template依赖与DataSource，我要以ref的方式为我的JdbcTemplate注入引用
+
+3. 有了JdbcTemplate之后，我要有Dao，此时我应该在Dao添加一个JdbcTemplate的成员，然后以ref的方式将JdbcTemplate引入到Dao中
+
+4. 我在Action或者是Servlet中都会调用的是Serivce，所以，我在Serivce中要添加一个Dao作为成员，然后由ref在注入Dao到Service中
+
+DataSource -> JdbcTemplate -> Dao -> Service -> Action/Servlet
+
+    "->"表示将左边的对象注入到右边的对象当中
+-->

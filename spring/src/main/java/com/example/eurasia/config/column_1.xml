@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mapping>
+    <column key="JinChuKou"                     value="进出口（出口）（进口）" />
+    <column key="HaiGuanBianMa"                 value="海关编码（商品编码）（HS编码）" />
+    <column key="ShangPinMingCheng"             value="商品名称（产品描述）" />
+    <column key="YueDu"                         value="月度（通关日期）（日期）（月份）" />
+    <column key="QiYeBianMa"                    value="企业编码" />
+    <column key="QiYeMingCheng"                 value="企业名称（进出口商）" />
+    <column key="ShouFaHuoDi"                   value="收发货地（原产地）" />
+    <column key="ShuLiang"                      value="数量" />
+    <column key="BiZhi"                         value="币制" />
+    <column key="ZongE"                         value="总额（金额（USD)）（金额）" />
+    <column key="DanJia"                        value="单价" />
+    <column key="ChanXiaoGuo"                   value="出口最终国或进口原产国（产销国）" />
+    <column key="BaoGuanKouAn"                  value="报关口岸（海关口岸）（出口关区）" />
+    <column key="MaoYiFangShi"                  value="贸易方式" />
+    <column key="YunShuFangShi"                 value="运输方式" />
+    <column key="ZhongZhuanGuo"                 value="中转国" />
+    <column key="ShuLiangDanWei"                value="数量单位（计量单位）(单位)" />
+    <column key="DianHua"                       value="电话" />
+    <column key="ChuanZhen"                     value="传真" />
+    <column key="YouBian"                       value="邮编" />
+    <column key="DianZiYouJian"                 value="电子邮件（email）（e-mail）" />
+    <column key="LianXiRen"                     value="联系人" />
+    <column key="QiYeXingZhi"                   value="企业性质" />
+    <column key="QiYeDiZhi"                     value="企业详细地址（地址）（企业地址）" />
+    <column key="ShengShi"                      value="省市" />
+    <column key="NianFen"                       value="年份" />
+</mapping>

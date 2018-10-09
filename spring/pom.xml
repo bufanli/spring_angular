@@ -40,10 +40,50 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jdbc</artifactId>
+        </dependency>
+        <!--
+        通过jdbc这个模块为我们做了以下几件事
+        tomcat-jdbc－{version}.jar为我们自动配置DataSource.
+        如果你没有定义任何DataSource，SpringBoot将会自动配置一个内存的数据库资源设置
+        如果没有设置任一个beans，SpringBoot会自动注册它
+        初始化数据库
+        如果我们在classpath里定义了schema.sql和data.sql文件，springBoot将会使用这些文件自动初始化数据库(但你必须选建库)
+        除了载入schema.sql和data.sql外，SpringBoot也会载入schema-${platform}.sql和data-${platform}.sql，如果在你的classpath下存在的话。
+        spring.datasource.schema=xxxx-db.sql 可以定义你的建库文件
+        spring.datasource.data=xxxx-data.sql  可以定义你的数据文件
+        spring.datasource.initialize＝true|false 可以决定是不是要初始化这些数据库文件
+        spring.datasource.continueOnError＝true|false 有了错误是否继续运行
+        -->
+
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
+			<version>5.1.46</version>
 		</dependency>
+
+        <!-- 读写Excel文件 -->
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
+			<version>3.17</version>
+		</dependency>
+
+        <!-- 解析或者生成Xml文件 -->
+		<dependency>
+			<groupId>dom4j</groupId>
+			<artifactId>dom4j</artifactId>
+			<version>1.6.1</version>
+		</dependency>
+
+        <!-- 连接池 -->
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>2.6.1</version>
+        </dependency>
 	</dependencies>
 
 	<build>
