@@ -26,6 +26,7 @@
 	</properties>
 
 	<dependencies>
+        <!-- 因为web项目启动模块-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
@@ -35,11 +36,15 @@
 			<artifactId>spring-boot-starter-tomcat</artifactId>
 			<scope>compile</scope>
 		</dependency>
+
+        <!-- 引入Spring Boot 测试模块-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+
+        <!-- 引入Spring封装的jdbc-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-jdbc</artifactId>
@@ -58,9 +63,11 @@
         spring.datasource.continueOnError＝true|false 有了错误是否继续运行
         -->
 
+        <!-- 引入mysql数据库连接驱动-->
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
+            <scope>runtime</scope>
 			<version>5.1.46</version>
 		</dependency>
 
@@ -140,7 +147,7 @@
 
 					<execution>
 						<id>exec-npm-run-build</id>
-						<phase>prepare-package</phase>
+						<phase>generate-sources</phase>
 						<goals>
 							<goal>exec</goal>
 						</goals>
@@ -150,8 +157,10 @@
 								<argument>run</argument>
 								<argument>build</argument>
 							</arguments> -->
-                            <executable>ng</executable>
-                            <arguments>build</arguments>
+							<executable>ng</executable>
+							<arguments>
+								<argument>build</argument>
+							</arguments>
 							<workingDirectory>${project.basedir}/../angular</workingDirectory>
 						</configuration>
 					</execution>
