@@ -1,7 +1,7 @@
 <div class="container">
   <div class="panel panel-default">
     <div class="panel-body">
-      <h2>产品一览</h2>
+      <h4>产品检索</h4>
       <form role="form" (ngSubmit)="onSearch()">
         <div class="row">
           <div class="col-md-4">
@@ -60,7 +60,14 @@
         </div>
         <div class="row">
           <div class="col-md-2">
-            <button type="submit" class="btn btn-primary btn-block">搜索</button>
+            <button type="submit" class="btn btn-primary btn-block">
+              <span class="glyphicon glyphicon-search"></span> 检索
+            </button>
+          </div>
+          <div class="col-md-2">
+            <button type="button" class="btn btn-default btn-block">
+              <span class="glyphicon glyphicon-export"></span> 导出
+            </button>
           </div>
         </div>
       </form>
