@@ -35,7 +35,12 @@ import java.util.Date;
         //跳转到 templates 目录下的 goUploadFile.html
         return "goUploadFile";
     }
-
+    @RequestMapping(value="/api/test", method = RequestMethod.POST)
+    public @ResponseBody
+    SearchResult test(@RequestBody SearchData[] searchData) {
+        //if you want to return string, it must be like {"code": "ok"}
+        return new SearchResult(SearchResult.OK);
+    }
     @RequestMapping(value="/uploadFile", method = RequestMethod.POST)
     public @ResponseBody
     String uploadFiles(@RequestParam("file") MultipartFile[] files, HttpServletRequest request) {

@@ -1,5 +1,6 @@
-import { Component, OnInit} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { URLSearchParams } from '@angular/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { Product } from './Product';
@@ -9,16 +10,21 @@ import 'bootstrap';
 import 'bootstrap-datepicker';
 import 'bootstrap-table';
 
+// json header for post
+const httpOptions = {
+  headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+};
+
 @Component({
   selector: 'app-data-search',
   templateUrl: './data-search.component.html',
   styleUrls: ['./data-search.component.css']
 })
 export class DataSearchComponent implements OnInit {
-
   private productsUrl = 'api/products';  // URL to web api
   private searchUrl = 'api/search';  // URL to web api
   private headersUrl = 'api/headers';  // URL to web api
+  private testUrl = 'api/test';  // URL to web api
   public products: Product[] = [];
   public hsCode: string;
   // start date
@@ -42,7 +48,14 @@ export class DataSearchComponent implements OnInit {
   searchProducts(): Observable<Product[]> {
     return this.http.get<Product[]>(this.searchUrl);
   }
-
+  /** search products from the server */
+  searchTest(): Observable<any> {
+    const searchParam = [
+      { key: 'country', value: '中国' },
+      { key: 'client', value: 'RAN' }
+    ];
+    return this.http.post<any>(this.testUrl, searchParam, httpOptions);
+  }
   constructor(private http: HttpClient) {
     this.startDate = new Date();
     this.endDate = new Date();
@@ -52,7 +65,9 @@ export class DataSearchComponent implements OnInit {
     this.products = products;
     $('#table').bootstrapTable('load', this.products);
   }
-
+  searchTestNotification(result: any) {
+    alert('result is ' + result.code);
+  }
   getHeadersNotification(headers: Header[]) {
     // if donot destroy table at first, table will not be shown
     $('#table').bootstrapTable('destroy');
@@ -67,6 +82,8 @@ export class DataSearchComponent implements OnInit {
     // get headers from in memory api
     this.getHeaders().subscribe(headers =>
       this.getHeadersNotification(headers));
+    this.searchTest().subscribe(result =>
+      this.searchTestNotification(result));
     // set date picker's formatter
     $('.input-daterange input').each(function () {
       $(this).datepicker({
