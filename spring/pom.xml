@@ -91,7 +91,17 @@
             <artifactId>HikariCP</artifactId>
             <version>2.6.1</version>
         </dependency>
-	</dependencies>
+
+		<!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+		<!--需要添加lombok plugin-->
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.16.18</version>
+			<scope>provided</scope>
+		</dependency>
+
+    </dependencies>
 
 	<build>
 		<finalName>demo</finalName>

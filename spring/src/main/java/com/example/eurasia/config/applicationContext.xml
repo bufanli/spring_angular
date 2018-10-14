@@ -113,7 +113,7 @@
     </bean>
 
     <!-- 配置业务层Service -->
-    <bean id="dataService" class="com.example.eurasia.service.DataService">
+    <bean id="dataService" class="com.example.eurasia.service.Data.DataService">
         <property name="dataDao" ref="dataDao"></property><!-- 属性注入 -->
     </bean>
 

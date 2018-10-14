@@ -1,4 +1,4 @@
-package com.example.eurasia.service;
+package com.example.eurasia.service.Data;
 
 import com.example.eurasia.dao.DataDao;
 import com.example.eurasia.entity.Data;

@@ -1,6 +1,9 @@
 package com.example.eurasia.controller;
 
-import com.example.eurasia.service.IUploadFileService;
+import com.example.eurasia.service.Data.IUploadFileService;
+import com.example.eurasia.service.Response.ResponseResult;
+import com.example.eurasia.service.Response.ResponseResultUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
@@ -14,14 +17,15 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+@Slf4j
 @Controller
-    public class UploadFileController {
+public class UploadFileController {
 
-        @GetMapping("/greeting")
-        public String greeting(@RequestParam(name = "name", required = false, defaultValue = "World") String name, Model model) {
-            model.addAttribute("name", name);
-            return "index1";
-        }
+    @GetMapping("/greeting")
+    public String greeting(@RequestParam(name = "name", required = false, defaultValue = "World") String name, Model model) {
+        model.addAttribute("name", name);
+        return "index1";
+    }
 
 
     //注入Service服务对象
@@ -43,8 +47,7 @@ import java.util.Date;
     }
     @RequestMapping(value="/uploadFile", method = RequestMethod.POST)
     public @ResponseBody
-    String uploadFiles(@RequestParam("file") MultipartFile[] files, HttpServletRequest request) {
-        System.out.println("调用文件上传方法");
+    ResponseResult uploadFiles(@RequestParam("file") MultipartFile[] files, HttpServletRequest request) {
 
         Date date = new Date(System.currentTimeMillis());
         DateFormat dateFormat = new SimpleDateFormat("yyyy_mm_dd");
@@ -59,19 +62,20 @@ import java.util.Date;
         }
 
         try {
+            log.info("IP:{},进行文件上传开始",request.getRemoteAddr());
             uploadFileService.batchUpload(filePath, files);
         } catch (Exception e) {
             e.printStackTrace();
-            return "上传失败";
+            return new ResponseResultUtil().error();
         }
 
         try {
-            uploadFileService.readExcelFile(uploadDir);
+            uploadFileService.readFile(uploadDir);
         } catch (Exception e) {
             e.printStackTrace();
-            return "解析失败";
+            return new ResponseResultUtil().error();
         }
-        return "解析成功";
+        return new ResponseResultUtil().success();
     }
 
 }

@@ -1,6 +1,7 @@
-package com.example.eurasia.service;
+package com.example.eurasia.service.Data;
 
 import com.example.eurasia.entity.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -23,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 /*@Transactional(readOnly = true)事物注解*/
 @Service("UploadFileServiceImpl")
 @Component
@@ -35,17 +37,17 @@ public class UploadFileServiceImpl implements IUploadFileService {
         try {
             //遍历文件数组
             for (int i=0; i<files.length; i++) {
-                if (ExcelImportUtils.isExcelFileValidata(files[i]) == true) {
-                    //上传文件名
-                    fileName = files[i].getOriginalFilename();
-                    //需要自定义文件名的情况
-                    //String suffix = files.getOriginalFilename().substring(files.getOriginalFilename().lastIndexOf("."));
-                    //String fileName = UUID.randomUUID() + suffix;
-                    //服务器端保存端文件对象
-                    File serverFile = new File(filePath  + fileName);
-                    //将上传的文件写入到服务器端的文件内
-                    files[i].transferTo(serverFile);
-                }
+                log.info("第{}个文件开始上传",i+1);
+
+                //上传文件名
+                fileName = files[i].getOriginalFilename();
+                //需要自定义文件名的情况
+                //String suffix = files.getOriginalFilename().substring(files.getOriginalFilename().lastIndexOf("."));
+                //String fileName = UUID.randomUUID() + suffix;
+                //服务器端保存端文件对象
+                File serverFile = new File(filePath  + fileName);
+                //将上传的文件写入到服务器端的文件内
+                files[i].transferTo(serverFile);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -56,44 +58,53 @@ public class UploadFileServiceImpl implements IUploadFileService {
     }
 
     @Override
-    public String readExcelFile(File fileDir) throws Exception {
-
-        List<String> filesArr = new ArrayList<>();
-        InputStream inputStream = null;//初始化输入流
-        Workbook workbook = null;//根据版本选择创建Workbook的方式
+    public String readFile(File fileDir) throws Exception {
+        String errorMsg = "";//错误信息接收器
+        String br = "<br/>";
 
         File[] files = fileDir.listFiles();
         for (int i = 0; i < files.length; i++) {
             if (files[i].isFile()) {
-                filesArr.add(files[i].toString());
 
-                try {
-                    inputStream = new FileInputStream(files[i]);
-                    if (ExcelImportUtils.isExcel2003(files[i].toString())) {
-                        workbook = new XSSFWorkbook(inputStream);
-                    } else if (ExcelImportUtils.isExcel2007(files[i].toString())) {
-                        workbook = new HSSFWorkbook(inputStream);
-                    }
-
-                    this.readExcelFileSheets(workbook);//读Excel中所有的sheet
-                }catch(Exception e){
-                    e.printStackTrace();
-                } finally{
-                    if(inputStream != null)
-                    {
-                        try{
-                            inputStream.close();
-                        }catch(IOException e){
-                            inputStream = null;
-                            e.printStackTrace();
-                        }
-                    }
+                if (ExcelImportUtils.isExcelFileValidata(files[i]) == true) {
+                    errorMsg += this.readExcelFile(files[i]);
+                } else {
+                    errorMsg += "第" + (i + 1) + "个文件格式有问题，请仔细检查；";
                 }
 
             }
-
             if (files[i].isDirectory()) {
                 //Nothing to do
+            }
+        }
+        return "";
+    }
+
+    private String readExcelFile(File file) throws Exception {
+
+        InputStream inputStream = null;//初始化输入流
+        Workbook workbook = null;//根据版本选择创建Workbook的方式
+
+        try {
+            inputStream = new FileInputStream(file);
+            if (ExcelImportUtils.isExcel2003(file.toString())) {
+                workbook = new XSSFWorkbook(inputStream);
+            } else if (ExcelImportUtils.isExcel2007(file.toString())) {
+                workbook = new HSSFWorkbook(inputStream);
+            }
+
+            return this.readExcelFileSheets(workbook);//读Excel中所有的sheet
+        }catch(Exception e){
+            e.printStackTrace();
+        } finally{
+            if(inputStream != null)
+            {
+                try{
+                    inputStream.close();
+                }catch(IOException e){
+                    inputStream = null;
+                    e.printStackTrace();
+                }
             }
         }
 
