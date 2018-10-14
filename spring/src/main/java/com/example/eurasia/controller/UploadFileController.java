@@ -15,13 +15,13 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @Controller
-public class UploadFileController {
+    public class UploadFileController {
 
-    @GetMapping("/greeting")
-    public String greeting(@RequestParam(name = "name", required = false, defaultValue = "World") String name, Model model) {
-        model.addAttribute("name", name);
-        return "index1";
-    }
+        @GetMapping("/greeting")
+        public String greeting(@RequestParam(name = "name", required = false, defaultValue = "World") String name, Model model) {
+            model.addAttribute("name", name);
+            return "index1";
+        }
 
 
     //注入Service服务对象
@@ -38,7 +38,7 @@ public class UploadFileController {
 
     @RequestMapping(value="/uploadFile", method = RequestMethod.POST)
     public @ResponseBody
-    String uploadFiles(@RequestParam("filename") MultipartFile[] files, HttpServletRequest request) {
+    String uploadFiles(@RequestParam("file") MultipartFile[] files, HttpServletRequest request) {
         System.out.println("调用文件上传方法");
 
         Date date = new Date(System.currentTimeMillis());
