@@ -35,8 +35,8 @@ public class DataDao {
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
-    public void addData(Data data) {
-        String sql = "insert into user (username, password) values (?, ?)";
+    public void addData(String tableName, Data data) {
+        String sql = "insert into " + tableName + " values (?)";
         getJdbcTemplate().update(sql, data.getKeyValue());
     }
 
@@ -48,7 +48,7 @@ public class DataDao {
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
-    public void deleteData( ) {
+    public void deleteData(String tableName, Data data) {
         String sql = "delete from user where username= ?";
         getJdbcTemplate().update(sql,"小王");
     }
@@ -61,7 +61,7 @@ public class DataDao {
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
-    public void updateData(Data data) {
+    public void updateData(String tableName, Data data) {
         String sql = "update user set username=? where username= ?";
         getJdbcTemplate().update(sql,data.getKeyValue() + "_new", data.getKeyValue());
     }
@@ -146,7 +146,7 @@ public class DataDao {
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
-    public int insertObject(String tableName,Object obj) {
+    public int insertObject(String tableName, Object obj) {
         int re = 0;
         try {
             // 判断数据库是否已经存在这个名称的表，如果有某表，则保存数据；否则动态创建表之后再保存数据
@@ -171,7 +171,7 @@ public class DataDao {
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
-    public int saveObject(String tableName,Object obj) {
+    public int saveObject(String tableName, Object obj) {
         int re = 0;
         try {
             String sql = " insert into " + tableName + " (";
@@ -202,7 +202,7 @@ public class DataDao {
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
-    public int createTable(String tableName,Object obj) {
+    public int createTable(String tableName, Object obj) {
         StringBuffer sb = new StringBuffer();
         sb.append("CREATE TABLE `" + tableName + "` (");
         sb.append(" `id` int(11) NOT NULL AUTO_INCREMENT,");

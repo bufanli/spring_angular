@@ -21,6 +21,8 @@ import java.util.Date;
 @Controller
 public class UploadFileController {
 
+    //private final static Logger logger = LoggerFactory.getLogger(UploadFileController.class);
+
     @GetMapping("/greeting")
     public String greeting(@RequestParam(name = "name", required = false, defaultValue = "World") String name, Model model) {
         model.addAttribute("name", name);
@@ -45,6 +47,12 @@ public class UploadFileController {
         //if you want to return string, it must be like {"code": "ok"}
         return new SearchResult(SearchResult.OK);
     }
+
+    /**
+     * @author
+     * @date
+     * @description 导入数据
+     */
     @RequestMapping(value="/uploadFile", method = RequestMethod.POST)
     public @ResponseBody
     ResponseResult uploadFiles(@RequestParam("file") MultipartFile[] files, HttpServletRequest request) {
@@ -70,11 +78,39 @@ public class UploadFileController {
         }
 
         try {
+            log.info("Dir:{},进行文件读取开始",uploadDir);
             uploadFileService.readFile(uploadDir);
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseResultUtil().error();
         }
+        return new ResponseResultUtil().success();
+    }
+
+    /**
+     * @author
+     * @date 2018-10-14
+     * @description 取得表头
+     */
+    public ResponseResult getHeaders() {
+        return new ResponseResultUtil().success();
+    }
+
+    /**
+     * @author
+     * @date 2018-10-14
+     * @description 查询数据
+     */
+    public ResponseResult searchData() {
+        return new ResponseResultUtil().success();
+    }
+
+    /**
+     * @author
+     * @date 2018-10-14
+     * @description 导出数据
+     */
+    public ResponseResult exportData() {
         return new ResponseResultUtil().success();
     }
 
