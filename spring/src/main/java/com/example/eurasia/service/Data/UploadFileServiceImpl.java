@@ -1,6 +1,8 @@
 package com.example.eurasia.service.Data;
 
 import com.example.eurasia.entity.Data;
+import com.example.eurasia.service.Response.ResponseResult;
+import com.example.eurasia.service.Response.ResponseResultUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
@@ -31,16 +33,16 @@ import java.util.Map;
 public class UploadFileServiceImpl implements IUploadFileService {
 
     @Override
-    public String batchUpload(String filePath, MultipartFile[] files) throws Exception {
-
-        String fileName  = "";
+    public ResponseResult batchUpload(String filePath, MultipartFile[] files) throws Exception {
+        log.info("文件上传目录:{}",filePath);
         try {
             //遍历文件数组
             for (int i=0; i<files.length; i++) {
-                log.info("第{}个文件开始上传",i+1);
-
                 //上传文件名
-                fileName = files[i].getOriginalFilename();
+                String fileName = files[i].getOriginalFilename();
+
+                log.info("第{}/{}个文件开始上传,文件名:{}",(i+1),files.length,fileName);
+
                 //需要自定义文件名的情况
                 //String suffix = files.getOriginalFilename().substring(files.getOriginalFilename().lastIndexOf("."));
                 //String fileName = UUID.randomUUID() + suffix;
@@ -51,36 +53,41 @@ public class UploadFileServiceImpl implements IUploadFileService {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return fileName + "上传失败";
+            throw new Exception();
         }
-        return fileName + "上传成功";
-
+        return new ResponseResultUtil().success();
     }
 
     @Override
-    public String readFile(File fileDir) throws Exception {
-        String errorMsg = "";//错误信息接收器
-        String br = "<br/>";
+    public ResponseResult readFile(File fileDir) throws Exception {
+        log.info("文件读取目录:{}",fileDir);
 
-        File[] files = fileDir.listFiles();
-        for (int i = 0; i < files.length; i++) {
-            if (files[i].isFile()) {
+        try {
+            File[] files = fileDir.listFiles();
+            for (int i = 0; i < files.length; i++) {
+                if (files[i].isFile()) {
 
-                if (ExcelImportUtils.isExcelFileValidata(files[i]) == true) {
-                    errorMsg += this.readExcelFile(files[i]);
-                } else {
-                    errorMsg += "第" + (i + 1) + "个文件格式有问题，请仔细检查；";
+                    log.info("第{}/{}个文件开始读取,文件名:{}",(i+1),files.length,files[i].getName());
+
+                    if (ExcelImportUtils.isExcelFileValidata(files[i]) == true) {
+                        this.readExcelFile(files[i]);
+                    } else {
+                        log.error("文件格式有问题，请仔细检查");
+                    }
+
                 }
-
+                if (files[i].isDirectory()) {
+                    //Nothing to do
+                }
             }
-            if (files[i].isDirectory()) {
-                //Nothing to do
-            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception();
         }
-        return "";
+        return new ResponseResultUtil().success();
     }
 
-    private String readExcelFile(File file) throws Exception {
+    private void readExcelFile(File file) throws Exception {
 
         InputStream inputStream = null;//初始化输入流
         Workbook workbook = null;//根据版本选择创建Workbook的方式
@@ -93,9 +100,10 @@ public class UploadFileServiceImpl implements IUploadFileService {
                 workbook = new HSSFWorkbook(inputStream);
             }
 
-            return this.readExcelFileSheets(workbook);//读Excel中所有的sheet
+            this.readExcelFileSheets(workbook);//读Excel中所有的sheet
         }catch(Exception e){
             e.printStackTrace();
+            throw new Exception();
         } finally{
             if(inputStream != null)
             {
@@ -108,24 +116,20 @@ public class UploadFileServiceImpl implements IUploadFileService {
             }
         }
 
-        return "";
     }
 
-    private String readExcelFileSheets(Workbook workbook) {
-        String errorMsg = "";//错误信息接收器
-        String br = "<br/>";
+    private void readExcelFileSheets(Workbook workbook) {
 
         int numSheets = workbook.getNumberOfSheets();
         for(int m = 0; m < numSheets; m++) {//循环sheet
             Sheet sheet = workbook.getSheetAt(m);//得到第一个sheet
             if(sheet == null){
-                errorMsg += "第" + (m + 1) + "个sheet有问题，请仔细检查；";
+                log.error("第{}/{}个sheet有问题，请仔细检查。sheet名：{}",(m+1),numSheets,sheet.getSheetName());
                 continue;
             }
-
-            errorMsg += br + this.readExcelFileSheet(sheet);//读一个sheet内容
+            log.info("第{}/{}个sheet开始读取,sheet名:{}",(m+1),numSheets,sheet.getSheetName());
+            this.readExcelFileSheet(sheet);//读一个sheet内容
         }
-        return errorMsg;
     }
 
     private String readExcelFileSheet(Sheet sheet) {
@@ -133,13 +137,14 @@ public class UploadFileServiceImpl implements IUploadFileService {
         List<Data> dataList = new ArrayList<>();
         Map<String, String> keyValue = new HashMap<>();
 
-        String errorMsg = "";//错误信息接收器
+        String errorMsg;//错误信息接收器
         String br = "<br/>";
 
+        String tableName = "Data";
         String dataStyle = this.checkSheetDataStyle(sheet);
-        if (dataStyle.equals("Data1")) {
+        if (dataStyle.equals("Data1")) {//T.B.D. dummy
 
-        } else if (dataStyle.equals("Data2")) {
+        } else if (dataStyle.equals("Data2")) {//T.B.D. dummy
 
         }
 
@@ -151,8 +156,9 @@ public class UploadFileServiceImpl implements IUploadFileService {
         //sheet里全部验证通过才导入到数据库
         if(StringUtils.isEmpty(titleErrMsg) && StringUtils.isEmpty(dataErrMsg)){
             for(Data data : dataList){
-                this.saveDataToSQL(data);
+                this.saveDataToSQL(tableName, data);
             }
+            log.info("导入成功，共{}条数据！",dataList.size());
             errorMsg = "导入成功，共" + dataList.size() + "条数据！";
         } else {
             errorMsg = titleErrMsg + br + dataErrMsg;
@@ -174,11 +180,13 @@ public class UploadFileServiceImpl implements IUploadFileService {
             if (null == cell) {
                 errorMsg += br + "第1行";
                 errorMsg += br + "第" + (n + 1) + "列标题有问题，请仔细检查；";
+                log.error("第{}/{}列标题有问题，请仔细检查。",(n+1),numTitleCells);
             }
 
             String cellValue = cell.getStringCellValue();
             if (StringUtils.isEmpty(cellValue)) {
                 rowMessage += "第" + (n + 1) + "列标题为空；";
+                log.error("第{}/{}列标题为空。",(n+1),numTitleCells);
             }
             valueList.add(cellValue);
         }
@@ -208,6 +216,7 @@ public class UploadFileServiceImpl implements IUploadFileService {
             Row row = sheet.getRow(p);
             if (row == null) {
                 errorMsg += br+ "第" + (p + 1) + "行数据有问题，请仔细检查！";
+                log.error("第{}/{}行数据有问题，请仔细检查。",(p+1),numRows);
                 continue;
             }
 
@@ -216,6 +225,7 @@ public class UploadFileServiceImpl implements IUploadFileService {
                 if (null == cell) {
                     errorMsg += br+ "第" + (p + 1) + "行";
                     errorMsg += br+ "第" + (q + 1) + "列数据有问题，请仔细检查；";
+                    log.error("第{}行,第{}/{}列数据有问题，请仔细检查。",(p+1),(q+1),numTitleCells);
                 }
 
                 String cellValue = cell.getStringCellValue();
@@ -237,17 +247,14 @@ public class UploadFileServiceImpl implements IUploadFileService {
     private String checkSheetDataStyle(Sheet sheet) {
         int numTitleCells = sheet.getRow(0).getLastCellNum();//标题行的列数
 
-        if (numTitleCells == 47) {
-            return "Data1";
-        } else if (numTitleCells == 35) {
-            return "Data2";
-        }
+        // 多表格的情况下，需要区分将数据导入哪个数据表里。
+        // T.B.D. dummy
         return "";
     }
 
-    private void saveDataToSQL(Data data) {
+    private void saveDataToSQL(String tableName, Data data) {
         ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
         DataService dataService = (DataService) context.getBean("dataService");
-        dataService.addData(data);
+        dataService.addData(tableName, data);
     }
 }

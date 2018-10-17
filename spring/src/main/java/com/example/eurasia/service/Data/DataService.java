@@ -18,16 +18,16 @@ public class DataService {
         this.dataDao = dataDao;
     }
 
-    public void addData(Data data) {
-        getDataDao().addData(data);
+    public void addData(String tableName, Data data) {
+        getDataDao().addData(tableName, data);
     }
 
-    public void deleteData() {
-        getDataDao().deleteData();
+    public void deleteData(String tableName, Data data) {
+        getDataDao().deleteData(tableName, data);
     }
 
-    public void updateData(Data data) {
-        getDataDao().updateData(data);
+    public void updateData(String tableName, Data data) {
+        getDataDao().updateData(tableName, data);
     }
 
 }
