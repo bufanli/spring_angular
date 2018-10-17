@@ -12,7 +12,7 @@ Angular和SpringBoot的接口如下：
   * *Request:*
     >no extra parameters
   * *Response:*
-    >返回JSON数组，每个元素包含`field`和`title`两个字段
+    >返回JSON数组，每个元素包含`field`和`title`两个字段,field和title相同，并且支持中文命名
   * *Example*
     * response
     ```javascript
@@ -21,11 +21,11 @@ Angular和SpringBoot的接口如下：
       code: 200,
       message: '查询表头成功'
       data:[
-        { field: 'id', title: '顺序号' },
-        { field: 'date', title: '日期' },
-        { field: 'hs_code', title: 'HS编码' },
-        { field: 'enterprise', title: '进出口企业' },
-        { field: 'client', title: '品牌及客户' }
+        { field: '顺序号', title: '顺序号' },
+        { field: '日期', title: '日期' },
+        { field: 'HS编码', title: 'HS编码' },
+        { field: '进出口企业', title: '进出口企业' },
+        { field: '品牌及客户', title: '品牌及客户' }
       ]
     }
     // 查询失败
@@ -33,7 +33,6 @@ Angular和SpringBoot的接口如下：
       code: 201,
       message: '查询表头失败',
     }
-
     ```
 ## 2. searchData
  * *URL:*
@@ -91,7 +90,7 @@ Angular和SpringBoot的接口如下：
     // 查询数据失败
     {
       code: 201,
-      message: '数据查询成功'
+      message: '数据查询失败原因'
     } 
      ```
 
@@ -109,10 +108,30 @@ Angular和SpringBoot的接口如下：
    {
      code: 200,
      message: 文件上传成功,
+     details:[
+       "文件名1","文件名2"
+     ]
    }
    // 上传失败
    {
      code: 201,
-     message: 文件上传失败,失败原因,
+     message: %number%个文件导入成功,%number%个文件导入失败。
+     details:[
+       {
+         successed:[
+           "文件名1",
+           "文件名2",
+         ],
+         failed:[
+           {
+             fileName:"文件名",
+             failedReason:"失败原因"
+           },
+           {
+             fileName:"文件名",
+             failedReason:"失败原因"
+           }
+         ]
+     ]
    }
    ```
