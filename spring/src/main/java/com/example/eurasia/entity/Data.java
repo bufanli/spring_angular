@@ -36,17 +36,45 @@ public class Data {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder(26);
-        sb.append("Data");
+        StringBuilder sb = new StringBuilder();
+        sb.append("Data:");
         sb.append(System.lineSeparator());//java 7,系统的换行符
 
         Set<Map.Entry<String, String>> set = this.keyValue.entrySet();
         Iterator<Map.Entry<String, String>> it = set.iterator();
         while (it.hasNext()) {
             Map.Entry<String,String> entry = it.next();
-            sb.append("Key:" + entry.getKey() + " Value:" + entry.getValue());
+            sb.append("{Key:" + entry.getKey() + " Value:" + entry.getValue() + "}");
             sb.append(System.getProperty("line.separator"));//java中依赖于系统的换行符
         }
+
+        return sb.toString();
+    }
+
+    public String getKeys() {
+        StringBuilder sb = new StringBuilder();
+
+        Set<Map.Entry<String, String>> set = this.keyValue.entrySet();
+        Iterator<Map.Entry<String, String>> it = set.iterator();
+        while (it.hasNext()) {
+            sb.append(it.next().getKey());
+            sb.append(",");
+        }
+        sb.deleteCharAt(sb.length() - 1);
+
+        return sb.toString();
+    }
+
+    public String getValues() {
+        StringBuilder sb = new StringBuilder();
+
+        Set<Map.Entry<String, String>> set = this.keyValue.entrySet();
+        Iterator<Map.Entry<String, String>> it = set.iterator();
+        while (it.hasNext()) {
+            sb.append(it.next().getValue());
+            sb.append(",");
+        }
+        sb.deleteCharAt(sb.length() - 1);
 
         return sb.toString();
     }
