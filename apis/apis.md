@@ -135,3 +135,20 @@ Angular和SpringBoot的接口如下：
      ]
    }
    ```
+
+## 4. exportData
+* *URL:*
+  >exportData[Post]
+* *Request[任意]:*
+   >导出条件`key`和`value`两个字段
+   * 如果不存在导出条件，那么全表导出
+* *Response:*
+  >downloadFile(excel)
+* *Examples*
+   * request
+   ```javascript
+   [
+      { key: 'country', value: '中国' },
+      { key: 'client', value: 'RAN' }
+   ];
+   ```
