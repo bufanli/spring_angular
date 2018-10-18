@@ -30,7 +30,7 @@ public class DataDao {
 
     /**
      * 添加数据
-     * @param data 数据
+     * @param
      * @return
      * @exception
      * @author FuJia
@@ -147,11 +147,18 @@ sbf = new StringBuffer("");//重新new
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
-    public void queryForObject(String tableName, String queryConditions) {
+    public void queryForObject(String tableName, Data queryConditions) {
         StringBuffer sql = new StringBuffer();
-        sql.append("select ");
-        sql.append(queryConditions);
-        sql.append(" from " + tableName + " where username = ?");//T.B.D.
+        sql.append("select * from " + tableName + " where");
+
+        Set<Map.Entry<String, String>> set = queryConditions.getKeyValue().entrySet();
+        Iterator<Map.Entry<String, String>> it = set.iterator();
+        while (it.hasNext()) {
+            Map.Entry<String, String> entry = it.next();
+            sql.append(entry.getKey() + "is" + entry.getValue());//T.B.D.
+        }
+
+        sql.append(" concat_ws(" + queryConditions.getKeys() + ")");//T.B.D.
         // 设定参数
         Object[] object = {"mary_new"};
         // 进行查询

@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -55,7 +56,7 @@ public class UploadFileController {
      */
     @RequestMapping(value="/uploadFile", method = RequestMethod.POST)
     public @ResponseBody
-    ResponseResult uploadFiles(@RequestParam("file") MultipartFile[] files, HttpServletRequest request) {
+    ResponseResult uploadFiles(@RequestParam("file") MultipartFile[] files, HttpServletRequest request) throws IOException {
 
         Date date = new Date(System.currentTimeMillis());
         DateFormat dateFormat = new SimpleDateFormat("yyyy_mm_dd");
@@ -84,33 +85,6 @@ public class UploadFileController {
             e.printStackTrace();
             return new ResponseResultUtil().error();
         }
-        return new ResponseResultUtil().success();
-    }
-
-    /**
-     * @author
-     * @date 2018-10-14
-     * @description 取得表头
-     */
-    public ResponseResult getHeaders() {
-        return new ResponseResultUtil().success();
-    }
-
-    /**
-     * @author
-     * @date 2018-10-14
-     * @description 查询数据
-     */
-    public ResponseResult searchData() {
-        return new ResponseResultUtil().success();
-    }
-
-    /**
-     * @author
-     * @date 2018-10-14
-     * @description 导出数据
-     */
-    public ResponseResult exportData() {
         return new ResponseResultUtil().success();
     }
 

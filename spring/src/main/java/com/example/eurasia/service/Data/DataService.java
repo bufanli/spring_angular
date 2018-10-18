@@ -18,16 +18,40 @@ public class DataService {
         this.dataDao = dataDao;
     }
 
+    /**
+     * 添加数据
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-09-20 00:00:00
+     */
     public void addData(String tableName, Data data) {
         getDataDao().addData(tableName, data);
     }
 
-    public void deleteData(String tableName, Data data) {
-        getDataDao().deleteData(tableName, data);
+    /**
+     * 查询数据
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-09-20 00:00:00
+     */
+    public void searchData(String tableName, Data data) {
+        getDataDao().queryForObject(tableName, data);
     }
 
-    public void updateData(String tableName, Data data) {
-        getDataDao().updateData(tableName, data);
+    /**
+     * 取得表头
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-09-20 00:00:00
+     */
+    public String getHeaders(String tableName) {
+        return getDataDao().queryListForColumnName(tableName);
     }
 
 }
