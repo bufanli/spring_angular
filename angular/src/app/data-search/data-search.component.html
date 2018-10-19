@@ -12,7 +12,7 @@
             <div class="form-group">
               <div class="input-group">
                 <span class="input-group-addon" id="hs-code">海关编码</span>
-                <input type="text" [(ngModel)]="hsCode" name="hs_code" class="form-control" placeholder="请输入海关编码"
+                <input type="text" [(ngModel)]="searchParam[0].value" name="hs_code" class="form-control" placeholder="请输入海关编码"
                   aria-describedby="hs-code">
               </div>
             </div>
@@ -39,26 +39,27 @@
         <div class="row">
           <div class="col-md-4">
             <div class="form-group">
-              <select id="organizationId" class="form-control selectpicker">
-                <option value='ab'>Mustard</option>
-                <option value='bc'>ketchup</option>
-                <option value='cd'>Relish</option>
+              <select id="organizationId" class="form-control selectpicker" multiple
+              title="请选择贸易方式">
+                <option value='ab'>区内物流货物</option>
+                <option value='bc'>一般贸易</option>
+                <option value='cd'>其他贸易</option>
               </select>
             </div>
           </div>
           <div class="col-md-4">
             <div class="form-group">
               <div class="input-group">
-                <span class="input-group-addon" id="description">产品描述</span>
-                <input type="text" class="form-control" placeholder="请输入产品描述" aria-describedby="description">
+                <span class="input-group-addon" id="description">企业名称</span>
+                <input type="text" class="form-control" placeholder="请输入企业名称" aria-describedby="description">
               </div>
             </div>
           </div>
           <div class="col-md-4">
             <div class="form-group">
               <div class="input-group">
-                <span class="input-group-addon" id="brand_client">品牌客户</span>
-                <input type="text" class="form-control" placeholder="请输入品牌客户" aria-describedby="brand_client">
+                <span class="input-group-addon" id="brand_client">收发货地</span>
+                <input type="text" class="form-control" placeholder="请输入收发货地" aria-describedby="brand_client">
               </div>
             </div>
           </div>

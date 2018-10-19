@@ -31,10 +31,21 @@ export class DataSearchComponent implements OnInit {
   startDate: Date;
   // end date
   endDate: Date;
+  // search parameters
+  searchParam = [
+      { key: '海关编码', value: 'test' },
+      { key: '起始日期', value: '' },
+      { key: '结束日期', value: '' },
+      { key: '商品名称', value: '' },
+      { key: '贸易方式', value: '' },
+      { key: '企业名称', value: '' },
+      { key: '收发货地', value: '' }
+    ];
 
   onSearch(): void {
-    this.searchProducts().subscribe(products =>
-      this.getProductsNotification(products));
+    // this.searchProducts().subscribe(products =>
+    //   this.getProductsNotification(products));
+    console.log('海关编码为' + this.searchParam[0].value);
   }
   /** GET heroes from the server */
   getProducts(): Observable<Product[]> {
@@ -50,11 +61,7 @@ export class DataSearchComponent implements OnInit {
   }
   /** search products from the server */
   searchTest(): Observable<any> {
-    const searchParam = [
-      { key: 'country', value: '中国' },
-      { key: 'client', value: 'RAN' }
-    ];
-    return this.http.post<any>(this.testUrl, searchParam, httpOptions);
+    return this.http.post<any>(this.testUrl, this.searchParam, httpOptions);
   }
   constructor(private http: HttpClient) {
     this.startDate = new Date();
