@@ -11,7 +11,7 @@ import java.util.Set;
  * @author FuJia
  * @Time 2018-09-20 00:00:00
  */
-public class Data {
+public class Data{
 
     private Map<String, String> keyValue;
 

@@ -127,7 +127,7 @@ sbf = new StringBuffer("");//重新new
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
-    public Long queryNumForObject(String tableName) {
+    public Long queryTableNumbers(String tableName) {
         // 获得jdbcTemplate对象
         //ApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
         //JdbcTemplate jdbcTemplate = (JdbcTemplate) ctx.getBean("jdbcTemplate");
@@ -147,7 +147,20 @@ sbf = new StringBuffer("");//重新new
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
-    public void queryForObject(String tableName, Data queryConditions) {
+    public Object queryForObject(String tableName, Data queryConditions) {
+        //Nothing to do
+        return null;
+    }
+
+    /**
+     * 查询并返回List集合
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-09-20 00:00:00
+     */
+    public List<Data> queryListForObject(String tableName, Data queryConditions) {
         StringBuffer sql = new StringBuffer();
         sql.append("select * from " + tableName + " where");
 
@@ -159,28 +172,8 @@ sbf = new StringBuffer("");//重新new
         }
 
         sql.append(" concat_ws(" + queryConditions.getKeys() + ")");//T.B.D.
-        // 设定参数
-        Object[] object = {"mary_new"};
-        // 进行查询
-        Data data = getJdbcTemplate().queryForObject(sql.toString(), object, new DataMapper());
-        System.out.println(data);
-    }
 
-    /**
-     * 查询并返回List集合
-     * @param
-     * @return
-     * @exception
-     * @author FuJia
-     * @Time 2018-09-20 00:00:00
-     */
-    public void queryListForObject(String tableName) {
-        StringBuffer sql = new StringBuffer();
-        sql.append("select * from " + tableName);//T.B.D.
-        List<Data> dataList = getJdbcTemplate().query(sql.toString(), new DataMapper());
-        for(Data data: dataList) {
-            System.out.println(data);
-        }
+        return getJdbcTemplate().query(sql.toString(), new DataMapper());
     }
 
 
