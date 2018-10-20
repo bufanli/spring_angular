@@ -1,7 +1,10 @@
 package com.example.eurasia.dao;
 
 import com.example.eurasia.entity.Data;
+import com.example.eurasia.entity.DataXMLReader;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -92,7 +95,7 @@ sbf = new StringBuffer("");//重新new
         }
         sql.append(" and " + tableName + ".id > tempSameDataTable.id");
 
-        getJdbcTemplate().update(sql.toString());
+        getJdbcTemplate().update(sql.toString());//执行成功返回数据库当中受影响的记录条数，失败则返回-1
     }
 
     /**
@@ -176,63 +179,32 @@ sbf = new StringBuffer("");//重新new
         return getJdbcTemplate().query(sql.toString(), new DataMapper());
     }
 
-
-    /**
-     * 下面，动态创建表。
-     * 通过一个代理对象和数据库进行对应，这个对象除了id和一个tableName属性外和数据库的字段名称都是一致的
-     * 通过一个公共方法类来获得代理类有那些属性，用来创建表和新增时进行动态SQL的拼装
-     * 核心处理是，先看有么有该表，没有创建插入，有的话直接插入
-     */
-    /**
-     * 创建表，添加记录
-     * @param tableName
-     * @param obj
-     * @return
-     * @exception
-     * @author FuJia
-     * @Time 2018-09-20 00:00:00
-     */
-    public int insertObject(String tableName, Object obj) {
-        int re = 0;
-        try {
-            // 判断数据库是否已经存在这个名称的表，如果有某表，则保存数据；否则动态创建表之后再保存数据
-            if (getAllTableName(tableName)) {
-                re = saveObject(tableName,obj);
-            } else {
-                re = createTable(tableName,obj);
-                re = saveObject(tableName,obj);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return re;
-    }
-
     /**
      * 拼接语句，往表里面插入数据
      * @param tableName
-     * @param obj
+     * @param data
      * @return
      * @exception
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
-    public int saveObject(String tableName, Object obj) {
+    public int saveData(String tableName, Data data) {
         int re = 0;
         try {
             StringBuffer sql = new StringBuffer();
             sql.append(" insert into " + tableName + " (");
-            Map<String,String> map = ObjectUtil.getProperty(obj);
+            Map<String,String> map = data.getKeyValue();
             Set<String> set = map.keySet();
             for (String key : set) {
                 sql.append(key + ",");
             }
-            sql.append(" " + tableName + ") ");
-            sql.append(" values ( ");
+            sql.deleteCharAt(sql.length() - 1);
+            sql.append(" ) values ( ");
             for (String key : set) {
                 sql.append("'" + map.get(key) + "',");
             }
-            sql.append("'" + tableName + "' ) ");
+            sql.deleteCharAt(sql.length() - 1);
+            sql.append(" ) ");
             re = getJdbcTemplate().update(sql.toString());
         } catch (Exception e) {
             e.printStackTrace();
@@ -243,27 +215,35 @@ sbf = new StringBuffer("");//重新new
     /**
      * 根据表名称创建一张表
      * @param tableName
-     * @param obj
      * @return
      * @exception
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
-    public int createTable(String tableName, Object obj) {
-        StringBuffer sb = new StringBuffer();
-        sb.append("CREATE TABLE `" + tableName + "` (");
-        sb.append(" `id` int(11) NOT NULL AUTO_INCREMENT,");
-        Map<String,String> map = ObjectUtil.getProperty(obj);
-        Set<String> set = map.keySet();
-        for (String key : set) {
-            sb.append("`" + key + "` varchar(255) DEFAULT '',");
-        }
-        sb.append(" `tableName` varchar(255) DEFAULT '',");
-        sb.append(" PRIMARY KEY (`id`)");
-        sb.append(") ENGINE=InnoDB DEFAULT CHARSET=utf8;");
+    public int createTable(String tableName) {
         try {
-            getJdbcTemplate().update(sb.toString());
-            return 1;
+            // 判断数据库是否已经存在这个名称的表，如果有某表，直接返回；否则动态创建表之后再返回
+            if (getAllTableName(tableName)) {
+                return 1;
+            } else {
+                ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
+                DataXMLReader dataXMLReader = (DataXMLReader) context.getBean("columnsName");
+
+                StringBuffer sb = new StringBuffer();
+                sb.append("CREATE TABLE `" + tableName + "` (");
+                sb.append(" `id` int(11) NOT NULL AUTO_INCREMENT,");
+                Map<String,String> map = dataXMLReader.getKeyValue();
+                Set<String> set = map.keySet();
+                for (String key : set) {
+                    sb.append("`" + key + "` varchar(255) DEFAULT '',");
+                }
+                sb.append(" `tableName` varchar(255) DEFAULT '',");
+                sb.append(" PRIMARY KEY (`id`)");
+                sb.append(") ENGINE=InnoDB DEFAULT CHARSET=gbk;");
+
+                getJdbcTemplate().update(sb.toString());
+                return 1;
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

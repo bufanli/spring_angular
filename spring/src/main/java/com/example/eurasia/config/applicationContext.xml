@@ -17,6 +17,10 @@
         init-method="init">
         <property name="filePath" value="config/column_2.xml" />
     </bean>
+    <bean id="columnsName" class="com.example.eurasia.entity.DataXMLReader"
+          init-method="init">
+        <property name="filePath" value="config/columnsName.xml" />
+    </bean>
 
     <!--
     依赖注入
