@@ -5,6 +5,7 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -23,9 +24,18 @@ public class DataXMLReader {
         SAXReader reader = new SAXReader();
         Document doc = null;
         try {
-            doc = reader.read(DataXMLReader.class.getResourceAsStream(this.getFilePath()));
+            /* Just for check path
+            URL url1 = DataXMLReader.class.getResource("");
+            URL url2 = DataXMLReader.class.getResource("/");
+            URL url3 = DataXMLReader.class.getResource("/com");
+            URL url4 = DataXMLReader.class.getResource("/com/example/eurasia");
+            */
+
+            ClassLoader loader = DataXMLReader.class.getClassLoader();
+            InputStream inputStream = loader.getResourceAsStream(this.getFilePath());
+            doc = reader.read(inputStream);
 /* e.g.
-1)InputStreaminStream=DaoFactory.class.getResourceAsStream("dao.properties");
+1)InputStream inStream=DaoFactory.class.getResourceAsStream("dao.properties");
 ​2)inStream=DaoFactory.class.getResourceAsStream("/com/jdbc/dao/dao.properties")
 3)inStream=DaoFactory.class.getClassLoader().getResourceAsStream("com/jdbc/dao/dao.properties")
 */
@@ -73,4 +83,5 @@ public class DataXMLReader {
             resultMap.put(key, paramsMap.get(key) != null ? paramsMap.get(key) : "");
         }
     }
+
 }
