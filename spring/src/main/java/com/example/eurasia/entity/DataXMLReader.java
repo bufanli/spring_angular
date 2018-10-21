@@ -23,8 +23,12 @@ public class DataXMLReader {
         SAXReader reader = new SAXReader();
         Document doc = null;
         try {
-            doc = reader.read(DataXMLReader.class.getClassLoader()
-                    .getResourceAsStream(this.getFilePath()));
+            doc = reader.read(DataXMLReader.class.getResourceAsStream(this.getFilePath()));
+/* e.g.
+1)InputStreaminStream=DaoFactory.class.getResourceAsStream("dao.properties");
+​2)inStream=DaoFactory.class.getResourceAsStream("/com/jdbc/dao/dao.properties")
+3)inStream=DaoFactory.class.getClassLoader().getResourceAsStream("com/jdbc/dao/dao.properties")
+*/
         } catch (DocumentException e) {
             System.out.println("加载xml初始化文件出错" + e);
             e.printStackTrace();

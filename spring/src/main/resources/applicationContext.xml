@@ -6,20 +6,22 @@
     xsi:schemaLocation="http://www.springframework.org/schema/beans
                         http://www.springframework.org/schema/beans/spring-beans.xsd
                         http://www.springframework.org/schema/aop
-                        http://www.springframework.org/schema/aop/spring-aop.xsd">
+                        http://www.springframework.org/schema/aop/spring-aop.xsd
+                        http://www.springframework.org/schema/context
+                        http://www.springframework.org/schema/context/spring-context.xsd">
 
     <!-- 两种Excel表格的列名 -->
     <bean id="column_1" class="com.example.eurasia.entity.DataXMLReader"
         init-method="init">
-        <property name="filePath" value="config/column_1.xml" />
+        <property name="filePath" value="com/example/eurasia/config/column_1.xml" />
     </bean>
     <bean id="column_2" class="com.example.eurasia.entity.DataXMLReader"
         init-method="init">
-        <property name="filePath" value="config/column_2.xml" />
+        <property name="filePath" value="com/example/eurasia/config/column_2.xml" />
     </bean>
     <bean id="columnsName" class="com.example.eurasia.entity.DataXMLReader"
           init-method="init">
-        <property name="filePath" value="config/columnsName.xml" />
+        <property name="filePath" value="com/example/eurasia/config/columnsName.xml" />
     </bean>
 
     <!--
@@ -137,4 +139,15 @@
 DataSource -> JdbcTemplate -> Dao -> Service -> Action/Servlet
 
     "->"表示将左边的对象注入到右边的对象当中
+-->
+
+<!--
+application.properties和application.yml文件可以放在以下四个位置：
+
+外置，在相对于应用程序运行目录的/congfig子目录里。
+外置，在应用程序运行的目录里
+内置，在config包内
+内置，在Classpath根目录
+同样，这个列表按照优先级排序，也就是说，src/main/resources/config下application.properties覆盖src/main/resources下application.properties中相同的属性
+此外，如果你在相同优先级位置同时有application.properties和application.yml，那么application.yml里面的属性就会覆盖application.properties里的属性。
 -->

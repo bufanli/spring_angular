@@ -31,7 +31,9 @@ public final class ResponseResultUtil {
      * @description 请求成功返回对象
      */
     public final ResponseResult success() {
-        return this.success(null);
+        int code = ResponseCodeEnum.SUCCESS.getCode();
+        String message = ResponseCodeEnum.SUCCESS.getMessage();
+        return this.success(code, message, null);
     }
 
     /**
@@ -68,14 +70,16 @@ public final class ResponseResultUtil {
     public final ResponseResult error(Object any) {
         int code = ResponseCodeEnum.OPERATE_FAIL.getCode();
         String message = ResponseCodeEnum.OPERATE_FAIL.getMessage();
-        return this.success(code, message, any);
+        return this.error(code, message, any);
     }
 
     /**
      * @description 请求失败返回对象
      */
     public final ResponseResult error() {
-        return this.success(null);
+        int code = ResponseCodeEnum.OPERATE_FAIL.getCode();
+        String message = ResponseCodeEnum.OPERATE_FAIL.getMessage();
+        return this.error(code, message, null);
     }
 
     /**
