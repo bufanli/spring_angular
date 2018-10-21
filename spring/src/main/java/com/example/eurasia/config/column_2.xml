@@ -3,7 +3,7 @@
     <column key="ShenBaoRiQi" value="申报日期（日期）" />
     <column key="JinChuKou" value="进口（出口）" />
     <column key="ShenBaoGuanQu" value="申报关区" />
-    <column key="JinChuKouGuanQu" value="进口关区（出口关区"） />
+    <column key="JinChuKouGuanQu" value="进口关区（出口关区）" />
     <column key="ZhuGuanGuanQu" value="主管关区" />
     <column key="ZhuangHuoGang" value="装货港（目的港）" />
     <column key="ZhongZhuanGuo" value="中转国" />
