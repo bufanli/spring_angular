@@ -1,7 +1,6 @@
 package com.example.eurasia.controller;
 
-import com.example.eurasia.entity.Data;
-import com.example.eurasia.service.Data.ISearchDataService;
+import com.example.eurasia.service.Data.IGetHeadersService;
 import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -12,29 +11,27 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.http.HttpServletRequest;
-
 @Slf4j
 @Controller
-public class SearchDataController {
+public class GetHeadersController {
 
     //注入Service服务对象
-    @Qualifier("SearchDataServiceImpl")
+    @Qualifier("GetHeadersServiceImpl")
     @Autowired
-    private ISearchDataService searchDataService;
+    private IGetHeadersService getHeadersService;
 
     /**
      * @author
      * @date 2018-10-14
-     * @description 查询数据
+     * @description 取得表头
      */
-    @RequestMapping(value="/searchData", method = RequestMethod.POST)
+    @RequestMapping(value="/getHeaders", method = RequestMethod.POST)
     public @ResponseBody
-    ResponseResult searchData(HttpServletRequest request, Data data) {
+    ResponseResult getHeaders() {
 
         try {
-            log.info("数据查询开始");
-            searchDataService.searchData(data);
+            log.info("取得表头开始");
+            getHeadersService.getHeaders();
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseResultUtil().error();
@@ -42,5 +39,4 @@ public class SearchDataController {
 
         return new ResponseResultUtil().success();
     }
-
 }
