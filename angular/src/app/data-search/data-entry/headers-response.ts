@@ -1,4 +1,4 @@
-import { Header } from './Header';
+import { Header } from './header';
 
 export class HeadersResponse {
   code: string;
