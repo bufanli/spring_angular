@@ -175,7 +175,8 @@ export class InMemoryDataService implements InMemoryDbService {
       message: '数据表头成功',
       headers: headers,
     };
-    return { 'products': products, 'search': products.slice(0, 5), 'getHeaders': headersResponse };
-  }
+    // return { 'products': products, 'search': products.slice(0, 5), 'getHeaders': headersResponse };
+    return null;
+    }
   constructor() { }
 }
