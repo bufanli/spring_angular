@@ -25,7 +25,7 @@ public class GetQueryConditionsController {
      * @date 2018-10-14
      * @description 取得查询条件
      */
-    @RequestMapping(value="/getQueryConditions", method = RequestMethod.POST)
+    @RequestMapping(value="/getQueryConditions", method = RequestMethod.GET)
     public @ResponseBody
     ResponseResult getHeaders() {
 

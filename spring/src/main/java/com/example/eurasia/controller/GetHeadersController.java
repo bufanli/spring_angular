@@ -25,7 +25,7 @@ public class GetHeadersController {
      * @date 2018-10-14
      * @description 取得表头
      */
-    @RequestMapping(value="/getHeaders", method = RequestMethod.POST)
+    @RequestMapping(value="/getHeaders", method = RequestMethod.GET)
     public @ResponseBody
     ResponseResult getHeaders() {
 
