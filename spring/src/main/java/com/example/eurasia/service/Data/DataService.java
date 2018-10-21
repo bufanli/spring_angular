@@ -54,4 +54,16 @@ public class DataService {
         return getDataDao().queryListForColumnName(tableName);
     }
 
+    /**
+     * 取得表头
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-09-20 00:00:00
+     */
+    public String getQueryConditions(String tableName) {
+        return null;//T.B.D
+    }
+
 }
