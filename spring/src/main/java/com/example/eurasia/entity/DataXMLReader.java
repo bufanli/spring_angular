@@ -40,7 +40,7 @@ public class DataXMLReader {
 3)inStream=DaoFactory.class.getClassLoader().getResourceAsStream("com/jdbc/dao/dao.properties")
 */
         } catch (DocumentException e) {
-            System.out.println("加载xml初始化文件出错" + e);
+            //System.out.println("加载xml初始化文件出错" + e);
             e.printStackTrace();
         }
         this.keyValue = new HashMap<>();
@@ -49,7 +49,7 @@ public class DataXMLReader {
         for (Element e : eleList) {// 循环读取每个节点
             String key = e.attributeValue("key");
             String value = e.attributeValue("value");
-            System.out.println(key + value);
+            //System.out.println(key + value);
             this.keyValue.put(key, value);
         }
     }
