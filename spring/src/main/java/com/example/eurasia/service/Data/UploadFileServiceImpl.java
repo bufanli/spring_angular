@@ -253,7 +253,7 @@ public class UploadFileServiceImpl implements IUploadFileService {
     }
 
     private void saveDataToSQL(String tableName, Data data) {
-        ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
+        ApplicationContext context = new ClassPathXmlApplicationContext("com/example/eurasia/config/applicationContext.xml");
         DataService dataService = (DataService) context.getBean("dataService");
         dataService.addData(tableName, data);
     }

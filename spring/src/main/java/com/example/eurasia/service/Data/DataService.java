@@ -2,6 +2,7 @@ package com.example.eurasia.service.Data;
 
 import com.example.eurasia.dao.DataDao;
 import com.example.eurasia.entity.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -9,6 +10,7 @@ public class DataService {
 
     // 属性注入
     // 加入DataDao作为成员变变量
+    @Autowired
     private DataDao dataDao;
     // 注意这里要增加get和set方法
     public DataDao getDataDao() {

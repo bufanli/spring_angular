@@ -10,15 +10,7 @@
                         http://www.springframework.org/schema/context
                         http://www.springframework.org/schema/context/spring-context.xsd">
 
-    <!-- 两种Excel表格的列名 -->
-    <bean id="column_1" class="com.example.eurasia.entity.DataXMLReader"
-        init-method="init">
-        <property name="filePath" value="com/example/eurasia/config/column_1.xml" />
-    </bean>
-    <bean id="column_2" class="com.example.eurasia.entity.DataXMLReader"
-        init-method="init">
-        <property name="filePath" value="com/example/eurasia/config/column_2.xml" />
-    </bean>
+    <!-- Excel表格的列名 -->
     <bean id="columnsName" class="com.example.eurasia.entity.DataXMLReader"
           init-method="init">
         <property name="filePath" value="com/example/eurasia/config/columnsName.xml" />
@@ -65,7 +57,53 @@
     <!-- 属性注入：通过无参构造函数+setter方法注入。 -->
     <bean class="com.example.eurasia.entity.Data2Impl" id="data2">
         <property name="id" value="2"></property>
-        <property name="keyValue" value="config/column_2.xml"></property>
+        <property name="keyValue">
+            <map>
+                <entry key="ShenBaoRiQi" value="申报日期（日期）" />
+                <entry key="JinChuKou" value="进口（出口）" />
+                <entry key="ShenBaoGuanQu" value="申报关区" />
+                <entry key="JinChuKouGuanQu" value="进口关区（出口关区）" />
+                <entry key="ZhuGuanGuanQu" value="主管关区" />
+                <entry key="ZhuangHuoGang" value="装货港（目的港）" />
+                <entry key="ZhongZhuanGuo" value="中转国" />
+                <entry key="YuanChanGuo" value="原产国（目的国）" />
+                <entry key="ShangPinBianMa8" value="商品编码_8" />
+                <entry key="ShangPinBianMa2" value="商品编码_2" />
+                <entry key="ChanPinMingCheng" value="产品名称" />
+                <entry key="GuiGeXingHao" value="规格型号" />
+                <entry key="ChengJiaoFangShi" value="成交方式" />
+                <entry key="ShenBaoDanJia" value="申报单价" />
+                <entry key="ShenBaoZongJia" value="申报总价" />
+                <entry key="ShenBaoBiZhi" value="申报币制" />
+                <entry key="MeiYuanDanJia" value="美元单价" />
+                <entry key="MeiYuanZongJia" value="美元总价" />
+                <entry key="MeiYuanBiZhi" value="美元币制" />
+                <entry key="ShenBaoShuLiang" value="申报数量" />
+                <entry key="ShenBaoShuLiangDanWei" value="申报数量单位" />
+                <entry key="FaDingShuLiang" value="法定数量" />
+                <entry key="FanDingDanWei" value="法定单位" />
+                <entry key="CIFMeiYuanZongJia" value="CIF美元总价（FOB美元总价）" />
+                <entry key="CIFMeiYuanDanJia" value="CIF美元单价（FOB美元单价）" />
+                <entry key="MaoZhong" value="毛重" />
+                <entry key="JingZhong" value="净重" />
+                <entry key="ZhiLiangDanWei" value="重量单位" />
+                <entry key="MaoYiFangShi" value="贸易方式" />
+                <entry key="YunShuFangShi" value="运输方式" />
+                <entry key="MuDiDi" value="目的地（原产地）" />
+                <entry key="BaoZhuangZhongLei" value="包装种类" />
+                <entry key="ShenBaoDanWei" value="申报单位" />
+                <entry key="HuoZhuDanWei" value="货主单位" />
+                <entry key="JingYingDanWei" value="经营单位" />
+                <entry key="QiYeDaiMa" value="企业代码" />
+                <entry key="QiYeXingZhi" value="企业性质" />
+                <entry key="QiYeDiZhi" value="地址（企业地址）" />
+                <entry key="DianHua" value="电话" />
+                <entry key="ChuanZhen" value="传真" />
+                <entry key="YouBian" value="邮编" />
+                <entry key="Email" value="Email" />
+                <entry key="LianXiRen" value="联系人" />
+            </map>
+        </property>
     </bean>
 
     <!-- 配置数据源。跟context: 作用一样吗？

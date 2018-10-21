@@ -21,7 +21,7 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
     }
 
     private void getQueryConditionsFromSQL(String tableName) {
-        ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
+        ApplicationContext context = new ClassPathXmlApplicationContext("com/example/eurasia/config/applicationContext.xml");
         DataService dataService = (DataService) context.getBean("dataService");
         dataService.getHeaders(tableName);
     }

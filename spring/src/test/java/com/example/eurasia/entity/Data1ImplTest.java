@@ -18,7 +18,7 @@ public class Data1ImplTest {
 
     @Test
     public void testConstructor() {
-        Resource resource = new ClassPathResource("applicationContext.xml");
+        Resource resource = new ClassPathResource("com/example/eurasia/config/applicationContext.xml");
         BeanFactory factory=new DefaultListableBeanFactory();
         BeanDefinitionReader bdr=new XmlBeanDefinitionReader((BeanDefinitionRegistry) factory);
         bdr.loadBeanDefinitions(resource);

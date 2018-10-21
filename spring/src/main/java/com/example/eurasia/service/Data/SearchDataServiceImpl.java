@@ -22,7 +22,7 @@ public class SearchDataServiceImpl implements ISearchDataService {
     }
 
     private void searchDataFromSQL(String tableName, Data data) {
-        ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
+        ApplicationContext context = new ClassPathXmlApplicationContext("com/example/eurasia/config/applicationContext.xml");
         DataService dataService = (DataService) context.getBean("dataService");
         dataService.searchData(tableName, data);
     }

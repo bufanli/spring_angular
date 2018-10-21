@@ -226,7 +226,7 @@ sbf = new StringBuffer("");//重新new
             if (getAllTableName(tableName)) {
                 return 1;
             } else {
-                ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
+                ApplicationContext context = new ClassPathXmlApplicationContext("com/example/eurasia/config/applicationContext.xml");
                 DataXMLReader dataXMLReader = (DataXMLReader) context.getBean("columnsName");
 
                 StringBuffer sb = new StringBuffer();
