@@ -3,12 +3,13 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { URLSearchParams } from '@angular/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
-import { Product } from './Product';
-import { Header } from './Header';
+import { Product } from './data-entry/product';
+import { Header } from './data-entry/header';
 import 'jquery';
 import 'bootstrap';
 import 'bootstrap-datepicker';
 import 'bootstrap-table';
+import { HeadersResponse } from './data-entry/headers-response';
 
 // json header for post
 const httpOptions = {
@@ -23,7 +24,7 @@ const httpOptions = {
 export class DataSearchComponent implements OnInit {
   private productsUrl = 'api/products';  // URL to web api
   private searchUrl = 'api/search';  // URL to web api
-  private headersUrl = 'api/headers';  // URL to web api
+  private headersUrl = 'api/getHeaders';  // URL to web api
   private testUrl = 'api/test';  // URL to web api
   public products: Product[] = [];
   public hsCode: string;
@@ -52,8 +53,8 @@ export class DataSearchComponent implements OnInit {
     return this.http.get<Product[]>(this.productsUrl);
   }
   /**get headers from in memory api */
-  getHeaders(): Observable<Header[]> {
-    return this.http.get<Header[]>(this.headersUrl);
+  getHeaders(): Observable<HeadersResponse> {
+    return this.http.get<HeadersResponse>(this.headersUrl);
   }
   /** search heroes from the server */
   searchProducts(): Observable<Product[]> {
@@ -75,11 +76,11 @@ export class DataSearchComponent implements OnInit {
   searchTestNotification(result: any) {
     alert('result is ' + result.code);
   }
-  getHeadersNotification(headers: Header[]) {
+  getHeadersNotification(headersResponse: HeadersResponse) {
     // if donot destroy table at first, table will not be shown
     $('#table').bootstrapTable('destroy');
     // show table's columns
-    $('#table').bootstrapTable({ columns: headers });
+    $('#table').bootstrapTable({ columns: headersResponse.headers});
     // show all products after headers are shown
     this.getProducts().subscribe(products =>
       this.getProductsNotification(products));
@@ -87,8 +88,8 @@ export class DataSearchComponent implements OnInit {
 
   ngOnInit() {
     // get headers from in memory api
-    this.getHeaders().subscribe(headers =>
-      this.getHeadersNotification(headers));
+    this.getHeaders().subscribe(headersResponse =>
+      this.getHeadersNotification(headersResponse));
     this.searchTest().subscribe(result =>
       this.searchTestNotification(result));
     // set date picker's formatter

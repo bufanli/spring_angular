@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { InMemoryDbService } from 'angular-in-memory-web-api';
-import { Product } from '../data-search/Product';
-import { Header} from '../data-search/Header';
+import { Product } from '../data-search/data-entry/product';
+import { Header} from '../data-search/data-entry/header';
+import { HeadersResponse } from '../data-search/data-entry/headers-response';
 
 @Injectable({
   providedIn: 'root'
@@ -169,7 +170,12 @@ export class InMemoryDataService implements InMemoryDbService {
       { field: 'amount', title: '数量' },
       { field: 'amount_unit', title: '数量单位' },
     ];
-    return { 'products': products, 'search': products.slice(0, 5), 'headers': headers };
+    const headersResponse = {
+      code: '200',
+      message: '数据表头成功',
+      headers: headers,
+    };
+    return { 'products': products, 'search': products.slice(0, 5), 'getHeaders': headersResponse };
   }
   constructor() { }
 }
