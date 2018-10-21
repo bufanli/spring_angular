@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { InMemoryDbService } from 'angular-in-memory-web-api';
 import { Product } from '../data-search/data-entry/product';
-import { Header} from '../data-search/data-entry/header';
+import { Header } from '../data-search/data-entry/header';
 import { HeadersResponse } from '../data-search/data-entry/headers-response';
 
 @Injectable({
@@ -175,8 +175,7 @@ export class InMemoryDataService implements InMemoryDbService {
       message: '数据表头成功',
       headers: headers,
     };
-    // return { 'products': products, 'search': products.slice(0, 5), 'getHeaders': headersResponse };
-    return null;
-    }
+    return { 'products': products, 'search': products.slice(0, 5), 'getHeaders': headersResponse };
+  }
   constructor() { }
 }
