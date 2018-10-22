@@ -34,19 +34,20 @@ export class DataSearchComponent implements OnInit {
   endDate: Date;
   // search parameters
   searchParam = [
-      { key: '海关编码', value: 'test' },
-      { key: '起始日期', value: '' },
-      { key: '结束日期', value: '' },
-      { key: '商品名称', value: '' },
-      { key: '贸易方式', value: '' },
-      { key: '企业名称', value: '' },
-      { key: '收发货地', value: '' }
-    ];
+    { key: '海关编码', value: 'test' },
+    { key: '起始日期', value: '' },
+    { key: '结束日期', value: '' },
+    { key: '商品名称', value: '' },
+    { key: '贸易方式', value: '' },
+    { key: '企业名称', value: '' },
+    { key: '收发货地', value: '' }
+  ];
 
   onSearch(): void {
     // this.searchProducts().subscribe(products =>
     //   this.getProductsNotification(products));
-    console.log('海关编码为' + this.searchParam[0].value);
+    this.getQueryTime();
+    console.log(this.searchParam[3].value);
   }
   /** GET heroes from the server */
   getProducts(): Observable<Product[]> {
@@ -80,7 +81,7 @@ export class DataSearchComponent implements OnInit {
     // if donot destroy table at first, table will not be shown
     $('#table').bootstrapTable('destroy');
     // show table's columns
-    $('#table').bootstrapTable({ columns: headersResponse.headers});
+    $('#table').bootstrapTable({ columns: headersResponse.headers });
     // show all products after headers are shown
     this.getProducts().subscribe(products =>
       this.getProductsNotification(products));
@@ -106,4 +107,12 @@ export class DataSearchComponent implements OnInit {
       $(this).datepicker('update', new Date());
     });
   }
+  // get start and end time for querying
+  getQueryTime() {
+    let time = $('#start-time').datepicker('getDate').toLocaleString();
+    this.searchParam[1].value = time.slice(0, 10);
+    time = $('#end-time').datepicker('getDate').toLocaleString();
+    this.searchParam[2].value = time.slice(0, 10);
+  }
+
 }

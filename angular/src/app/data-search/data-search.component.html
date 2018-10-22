@@ -21,9 +21,9 @@
             <div class="form-group">
               <div class="input-group input-daterange">
                 <span class="input-group-addon" id="date">日期</span>
-                <input type="text" class="form-control" aria-describedby="date">
+                <input type="text" class="form-control" aria-describedby="date" id="start-time">
                 <div class="input-group-addon">到</div>
-                <input type="text" class="form-control" value="2012-04-19">
+                <input type="text" class="form-control" id="end-time">
               </div>
             </div>
           </div>
@@ -31,7 +31,8 @@
             <div class="form-group">
               <div class="input-group">
                 <span class="input-group-addon" id="enterprise">商品名称</span>
-                <input type="text" class="form-control" placeholder="请输入商品名称" aria-describedby="enterprise">
+                <input type="text" [(ngModel)]="searchParam[3].value" name="product-name" class="form-control"
+                  placeholder="请输入商品名称" aria-describedby="enterprise">
               </div>
             </div>
           </div>
@@ -39,8 +40,8 @@
         <div class="row">
           <div class="col-md-4">
             <div class="form-group">
-              <select id="organizationId" class="form-control selectpicker" multiple
-              title="请选择贸易方式">
+              <select class="form-control selectpicker" multiple title="请选择贸易方式" [(ngModel)]="searchParam[4].value"
+                name="trade-mode">
                 <option value='ab'>区内物流货物</option>
                 <option value='bc'>一般贸易</option>
                 <option value='cd'>其他贸易</option>
@@ -51,7 +52,8 @@
             <div class="form-group">
               <div class="input-group">
                 <span class="input-group-addon" id="description">企业名称</span>
-                <input type="text" class="form-control" placeholder="请输入企业名称" aria-describedby="description">
+                <input type="text" [(ngModel)]="searchParam[5].value" name="enterprise-name" class="form-control"
+                  placeholder="请输入企业名称" aria-describedby="description">
               </div>
             </div>
           </div>
@@ -59,7 +61,8 @@
             <div class="form-group">
               <div class="input-group">
                 <span class="input-group-addon" id="brand_client">收发货地</span>
-                <input type="text" class="form-control" placeholder="请输入收发货地" aria-describedby="brand_client">
+                <input type="text" [(ngModel)]="searchParam[6].value" name="address" class="form-control" placeholder="请输入收发货地"
+                  aria-describedby="brand_client">
               </div>
             </div>
           </div>
