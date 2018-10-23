@@ -8,9 +8,8 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
+import javax.sql.DataSource;
+import java.sql.*;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -213,6 +212,49 @@ sbf = new StringBuffer("");//重新new
     }
 
     /**
+     * 创建数据库
+     * @param databaseName
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-09-20 00:00:00
+     */
+    public boolean createDatabase(String databaseName) throws Exception {
+        Connection conn = null;
+        Statement stmt = null;
+        PreparedStatement preStatement = null;
+        ResultSet databases = null;
+        try {
+            DataSource ds = getJdbcTemplate().getDataSource();
+            conn = getJdbcTemplate().getDataSource().getConnection();
+/*
+检测数据库是否存在：
+SELECT information_schema.SCHEMATA.SCHEMA_NAME FROM information_schema.SCHEMATA where SCHEMA_NAME="database_name"
+ */
+            StringBuffer sb = new StringBuffer();
+            sb.append("CREATE DATABASE IF NOT EXISTS " + databaseName);
+            stmt = conn.createStatement();
+            databases = stmt.executeQuery(sb.toString());
+
+            sb.append("CREATE DATABASE IF NOT EXISTS ?");
+            preStatement = conn.prepareStatement(sb.toString());
+            preStatement.setString(1, databaseName);
+
+            return preStatement.execute();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if(databases != null) databases.close();
+            if(stmt != null) stmt.close();
+            if(preStatement != null) preStatement.close();
+            if(conn != null) conn.close();
+        }
+
+        return false;
+    }
+
+    /**
      * 根据表名称创建一张表
      * @param tableName
      * @return
@@ -220,11 +262,11 @@ sbf = new StringBuffer("");//重新new
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
-    public int createTable(String tableName) {
+    public boolean createTable(String tableName) throws Exception {
         try {
             // 判断数据库是否已经存在这个名称的表，如果有某表，直接返回；否则动态创建表之后再返回
-            if (getAllTableName(tableName)) {
-                return 1;
+            if (isExistTableName(tableName)) {
+                return true;
             } else {
                 ApplicationContext context = new ClassPathXmlApplicationContext("com/example/eurasia/config/applicationContext.xml");
                 DataXMLReader dataXMLReader = (DataXMLReader) context.getBean("columnsName");
@@ -237,17 +279,16 @@ sbf = new StringBuffer("");//重新new
                 for (String key : set) {
                     sb.append("`" + key + "` varchar(255) DEFAULT '',");
                 }
-                sb.append(" `tableName` varchar(255) DEFAULT '',");
                 sb.append(" PRIMARY KEY (`id`)");
                 sb.append(") ENGINE=InnoDB DEFAULT CHARSET=gbk;");
 
                 getJdbcTemplate().update(sb.toString());
-                return 1;
+                return true;
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return 0;
+        return false;
     }
 
     /**
@@ -258,7 +299,7 @@ sbf = new StringBuffer("");//重新new
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
-    public boolean getAllTableName(String tableName) throws Exception {
+    public boolean isExistTableName(String tableName) throws Exception {
         Connection conn = getJdbcTemplate().getDataSource().getConnection();
         ResultSet tables = null;
         try {
@@ -299,7 +340,7 @@ sbf = new StringBuffer("");//重新new
 
         StringBuffer sql = new StringBuffer();
         sql.append("select COLUMN_NAME from information_schema.COLUMNS where table_name = " + tableName);
-        sql.append(" and table_schema = (select database())");
+        sql.append(" and table_schema = eurasia");//#mysql> create database eurasia;
         List<Map<String,Object>> colsNameList = getJdbcTemplate().queryForList(sql.toString());
 
         StringBuffer ret = new StringBuffer();
