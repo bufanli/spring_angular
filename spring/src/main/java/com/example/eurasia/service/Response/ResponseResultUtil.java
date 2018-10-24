@@ -22,8 +22,8 @@ public final class ResponseResultUtil {
      * @description 请求成功返回对象
      */
     public final ResponseResult success(Object any) {
-        int code = ResponseCodeEnum.SUCCESS.getCode();
-        String message = ResponseCodeEnum.SUCCESS.getMessage();
+        int code = ResponseCodeEnum.SYSTEM_OPERATE_SUCCESS.getCode();
+        String message = ResponseCodeEnum.SYSTEM_OPERATE_SUCCESS.getMessage();
         return this.success(code, message, any);
     }
 
@@ -31,8 +31,8 @@ public final class ResponseResultUtil {
      * @description 请求成功返回对象
      */
     public final ResponseResult success() {
-        int code = ResponseCodeEnum.SUCCESS.getCode();
-        String message = ResponseCodeEnum.SUCCESS.getMessage();
+        int code = ResponseCodeEnum.SYSTEM_OPERATE_SUCCESS.getCode();
+        String message = ResponseCodeEnum.SYSTEM_OPERATE_SUCCESS.getMessage();
         return this.success(code, message, null);
     }
 
@@ -42,6 +42,15 @@ public final class ResponseResultUtil {
      */
     public final ResponseResult success(ResponseCodeEnum responseCode) {
         return new ResponseResult(responseCode.getCode(), responseCode.getMessage(), null);
+    }
+
+    /**
+     * @param responseCode 返回的响应码所对应的枚举类
+     * @param any     返回的数据
+     * @description 请求成功返回对象
+     */
+    public final ResponseResult success(ResponseCodeEnum responseCode, Object any) {
+        return new ResponseResult(responseCode.getCode(), responseCode.getMessage(), any);
     }
 
     /**
@@ -68,8 +77,8 @@ public final class ResponseResultUtil {
      * @description 请求失败返回对象
      */
     public final ResponseResult error(Object any) {
-        int code = ResponseCodeEnum.OPERATE_FAIL.getCode();
-        String message = ResponseCodeEnum.OPERATE_FAIL.getMessage();
+        int code = ResponseCodeEnum.SYSTEM_OPERATE_FAILED.getCode();
+        String message = ResponseCodeEnum.SYSTEM_OPERATE_FAILED.getMessage();
         return this.error(code, message, any);
     }
 
@@ -77,8 +86,8 @@ public final class ResponseResultUtil {
      * @description 请求失败返回对象
      */
     public final ResponseResult error() {
-        int code = ResponseCodeEnum.OPERATE_FAIL.getCode();
-        String message = ResponseCodeEnum.OPERATE_FAIL.getMessage();
+        int code = ResponseCodeEnum.SYSTEM_OPERATE_FAILED.getCode();
+        String message = ResponseCodeEnum.SYSTEM_OPERATE_FAILED.getMessage();
         return this.error(code, message, null);
     }
 
@@ -88,6 +97,15 @@ public final class ResponseResultUtil {
      */
     public final ResponseResult error(ResponseCodeEnum responseCode) {
         return new ResponseResult(responseCode.getCode(), responseCode.getMessage(), null);
+    }
+
+    /**
+     * @param responseCode 返回的响应码所对应的枚举类
+     * @param any     返回的数据
+     * @description 请求失败返回对象
+     */
+    public final ResponseResult error(ResponseCodeEnum responseCode, Object any) {
+        return new ResponseResult(responseCode.getCode(), responseCode.getMessage(), any);
     }
 
     /**

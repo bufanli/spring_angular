@@ -57,7 +57,7 @@ public class DataService {
     }
 
     /**
-     * 取得表头
+     * 取得查询条件
      * @param
      * @return
      * @exception
@@ -86,7 +86,7 @@ public class DataService {
     }
 
     /**
-     * 根据数据库
+     * 创建数据库
      * @param
      * @return
      * @exception

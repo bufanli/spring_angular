@@ -88,11 +88,11 @@ sbf = new StringBuffer("");//重新new
         sql.append(" group by " + colsName);
         sql.append(" having count(*) > 1)tempSameDataTable");
         sql.append(" where ");
-        sql.append(tableName + "." + name[0] + " = tempSameDataTable." + name[0]);
+        sql.append(tableName + "." + name[0] + " = 'tempSameDataTable." + name[0]);
         for (int i=1; i < name.length; i++) {
-            sql.append(" and " + tableName + "." + name[i] + " = tempSameDataTable." + name[i]);
+            sql.append("' and " + tableName + "." + name[i] + " = 'tempSameDataTable." + name[i]);
         }
-        sql.append(" and " + tableName + ".id > tempSameDataTable.id");
+        sql.append("' and " + tableName + ".id > 'tempSameDataTable.id'");
 
         getJdbcTemplate().update(sql.toString());//执行成功返回数据库当中受影响的记录条数，失败则返回-1
     }
@@ -164,13 +164,13 @@ sbf = new StringBuffer("");//重新new
      */
     public List<Data> queryListForObject(String tableName, Data queryConditions) {
         StringBuffer sql = new StringBuffer();
-        sql.append("select * from " + tableName + " where");
+        sql.append("select * from " + tableName + " where ");
 
         Set<Map.Entry<String, String>> set = queryConditions.getKeyValue().entrySet();
         Iterator<Map.Entry<String, String>> it = set.iterator();
         while (it.hasNext()) {
             Map.Entry<String, String> entry = it.next();
-            sql.append(entry.getKey() + "is" + entry.getValue());//T.B.D.
+            sql.append(entry.getKey() + " is '" + entry.getValue() + "'");//T.B.D.
         }
 
         sql.append(" concat_ws(" + queryConditions.getKeys() + ")");//T.B.D.
@@ -339,8 +339,8 @@ SELECT information_schema.SCHEMATA.SCHEMA_NAME FROM information_schema.SCHEMATA 
         */
 
         StringBuffer sql = new StringBuffer();
-        sql.append("select COLUMN_NAME from information_schema.COLUMNS where table_name = " + tableName);
-        sql.append(" and table_schema = eurasia");//#mysql> create database eurasia;
+        sql.append("select COLUMN_NAME from information_schema.COLUMNS where table_name = '" + tableName);
+        sql.append("' and table_schema = 'eurasia'");//#mysql> create database eurasia;
         List<Map<String,Object>> colsNameList = getJdbcTemplate().queryForList(sql.toString());
 
         StringBuffer ret = new StringBuffer();

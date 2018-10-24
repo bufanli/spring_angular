@@ -26,7 +26,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({Exception.class})    //申明捕获那个异常类
     public ResponseResult globalExceptionHandler(Exception e) {
         log.error(e.getMessage(), e);
-        return new ResponseResultUtil().error(ResponseCodeEnum.OPERATE_FAIL);
+        return new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_OPERATE_FAILED);
     }
 
     /**

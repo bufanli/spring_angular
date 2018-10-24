@@ -31,12 +31,11 @@ public class GetHeadersController {
 
         try {
             log.info("取得表头开始");
-            getHeadersService.getHeaders();
+            return getHeadersService.getHeaders();
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseResultUtil().error();
         }
 
-        return new ResponseResultUtil().success();
     }
 }
