@@ -23,9 +23,8 @@ const httpOptions = {
 })
 export class DataSearchComponent implements OnInit {
   private productsUrl = 'api/products';  // URL to web api
-  private searchUrl = 'api/search';  // URL to web api
+  private searchUrl = 'searchData';  // URL to web api
   private headersUrl = 'getHeaders';  // URL to web api
-  private testUrl = 'api/test';  // URL to web api
   public products: Product[] = [];
   public hsCode: string;
   // start date
@@ -34,7 +33,7 @@ export class DataSearchComponent implements OnInit {
   endDate: Date;
   // search parameters
   searchParam = [
-    { key: '海关编码', value: 'test' },
+    { key: '海关编码', value: '' },
     { key: '起始日期', value: '' },
     { key: '结束日期', value: '' },
     { key: '商品名称', value: '' },
@@ -47,7 +46,8 @@ export class DataSearchComponent implements OnInit {
     // this.searchProducts().subscribe(products =>
     //   this.getProductsNotification(products));
     this.getQueryTime();
-    console.log(this.searchParam[3].value);
+    this.searchData().subscribe(result =>
+      this.searchDataNotification(result));
   }
   /** GET heroes from the server */
   getProducts(): Observable<Product[]> {
@@ -62,8 +62,8 @@ export class DataSearchComponent implements OnInit {
     return this.http.get<Product[]>(this.searchUrl);
   }
   /** search products from the server */
-  searchTest(): Observable<any> {
-    return this.http.post<any>(this.testUrl, this.searchParam, httpOptions);
+  searchData(): Observable<any> {
+    return this.http.post<any>(this.searchUrl, this.searchParam, httpOptions);
   }
   constructor(private http: HttpClient) {
     this.startDate = new Date();
@@ -74,7 +74,7 @@ export class DataSearchComponent implements OnInit {
     this.products = products;
     $('#table').bootstrapTable('load', this.products);
   }
-  searchTestNotification(result: any) {
+  searchDataNotification(result: any) {
     alert('result is ' + result.code);
   }
   getHeadersNotification(headersResponse: HeadersResponse) {
@@ -91,8 +91,8 @@ export class DataSearchComponent implements OnInit {
     // get headers from in memory api
     this.getHeaders().subscribe(headersResponse =>
       this.getHeadersNotification(headersResponse));
-    this.searchTest().subscribe(result =>
-      this.searchTestNotification(result));
+    this.searchData().subscribe(result =>
+      this.searchDataNotification(result));
     // set date picker's formatter
     $('.input-daterange input').each(function () {
       $(this).datepicker({

@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -30,17 +31,14 @@ public class SearchDataController {
      */
     @RequestMapping(value="/searchData", method = RequestMethod.POST)
     public @ResponseBody
-    ResponseResult searchData(HttpServletRequest request, Data data) {
-
+    ResponseResult searchData(@RequestBody SearchData[] searchData) {
         try {
             log.info("数据查询开始");
-            searchDataService.searchData(data);
+//            searchDataService.searchData(searchData);
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseResultUtil().error();
         }
-
         return new ResponseResultUtil().success();
     }
-
 }
