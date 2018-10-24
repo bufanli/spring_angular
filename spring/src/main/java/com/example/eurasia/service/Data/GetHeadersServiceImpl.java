@@ -15,8 +15,7 @@ import org.springframework.stereotype.Service;
 public class GetHeadersServiceImpl implements IGetHeadersService {
     @Override
     public ResponseResult getHeaders() throws Exception {
-        String tableName = "*";//T.B.D. dummy
-        this.getHeadersFromSQL(tableName);
+        this.getHeadersFromSQL("eurasiaTable");
         return new ResponseResultUtil().success();
     }
 

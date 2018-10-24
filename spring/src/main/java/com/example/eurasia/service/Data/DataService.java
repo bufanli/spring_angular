@@ -68,4 +68,37 @@ public class DataService {
         return null;//T.B.D
     }
 
+    /**
+     * 根据表名称创建一张表
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-09-20 00:00:00
+     */
+    public boolean createTable(String tableName) {
+        try {
+            return getDataDao().createTable(tableName);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
+     * 根据数据库
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-09-20 00:00:00
+     */
+    public boolean createDatabase(String databaseName) {
+        try {
+            return getDataDao().createDatabase(databaseName);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }

@@ -1,7 +1,10 @@
 package com.example.eurasia;
 
+import com.example.eurasia.service.Data.DataService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 @SpringBootApplication
 public class StartEurasiaApplication {
@@ -24,6 +27,12 @@ public class StartEurasiaApplication {
 	}
 */
 	public static void main(String[] args) {
+        ApplicationContext context = new ClassPathXmlApplicationContext("com/example/eurasia/config/applicationContext.xml");
+        //ApplicationContext context = new FileSystemXmlApplicationContext("main/java/com/example/eurasia/config/applicationContext.xml");
+        DataService dataService = (DataService) context.getBean("dataService");
+        //dataService.createDatabase("eurasia");//T.B.D.
+        dataService.createTable("table1");//T.B.D.
+
 		SpringApplication.run(StartEurasiaApplication.class, args);
 	}
 }

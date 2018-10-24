@@ -38,6 +38,8 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
             writeExcel(wb, sheet, data);
 
             wb.write(out);
+        } catch (Exception e) {
+            e.printStackTrace();
         } finally {
             wb.close();
         }
