@@ -5,6 +5,9 @@ import com.example.eurasia.entity.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Map;
+
 @Service
 public class DataService {
 
@@ -40,8 +43,8 @@ public class DataService {
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
-    public void searchData(String tableName, Data data) {
-        getDataDao().queryForObject(tableName, data);
+    public List<Data> searchData(String tableName, Data queryConditions) {
+        return getDataDao().queryListForObject(tableName, queryConditions);
     }
 
     /**
@@ -52,7 +55,7 @@ public class DataService {
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
-    public String getHeaders(String tableName) {
+    public List<Map<String,Object>> getHeaders(String tableName) {
         return getDataDao().queryListForColumnName(tableName);
     }
 

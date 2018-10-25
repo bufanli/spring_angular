@@ -13,7 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @Controller
@@ -31,14 +32,23 @@ public class SearchDataController {
      */
     @RequestMapping(value="/searchData", method = RequestMethod.POST)
     public @ResponseBody
-    ResponseResult searchData(@RequestBody SearchData[] searchData) {
+    ResponseResult searchData(@RequestBody QueryConditions[] queryConditionsArr) {
         try {
             log.info("数据查询开始");
-//            searchDataService.searchData(searchData);
+            Map<String, String> keyValue = new HashMap<>();
+            for (int i=0; i<queryConditionsArr.length; i++) {
+                keyValue.put(queryConditionsArr[i].key, queryConditionsArr[i].value.toString());
+            }
+            Data queryConditions = new Data(keyValue);
+            return searchDataService.searchData(queryConditions);
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseResultUtil().error();
         }
-        return new ResponseResultUtil().success();
+    }
+
+    public class QueryConditions {
+        private String key;
+        private Object value;
     }
 }

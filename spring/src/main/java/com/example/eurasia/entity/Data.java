@@ -51,6 +51,14 @@ public class Data{
         return sb.toString();
     }
 
+    /**
+     * 将所有的Key连接成以逗号间隔的字符串。
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-10-26 00:00:00
+     */
     public String getKeys() {
         StringBuilder sb = new StringBuilder();
 
@@ -65,6 +73,14 @@ public class Data{
         return sb.toString();
     }
 
+    /**
+     * 将所有的Value连接成以逗号间隔的字符串。
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-10-26 00:00:00
+     */
     public String getValues() {
         StringBuilder sb = new StringBuilder();
 

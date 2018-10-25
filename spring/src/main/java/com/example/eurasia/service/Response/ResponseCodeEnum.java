@@ -5,6 +5,7 @@ public enum ResponseCodeEnum {
     SYSTEM_OPERATE_SUCCESS(1001, "操作成功"),
     SYSTEM_OPERATE_FAILED(1002, "操作失败"),
     SYSTEM_UNLOGIN_ERROR(1003, "没有登录"),
+    SYSTEM_GET_SERVICE_ERROR(1004, "没有登录"),
 
     // 用户
     USER_SAVE_INFO_SUCCESS(1101, "保存用户信息成功"),
@@ -21,8 +22,12 @@ public enum ResponseCodeEnum {
     // 取得表头
     HEADER_GET_INFO_FROM_SQL_SUCCESS(1201, "从数据库取得表头信息成功"),
     HEADER_GET_INFO_FROM_SQL_FAILED(1202, "从数据库取得表头信息失败"),
+    HEADER_GET_INFO_FROM_SQL_NULL(1203, "从数据库取得表头信息为空"),
 
     // 查询数据
+    SEARCH_GET_INFO_FROM_SQL_SUCCESS(1301, "从数据库取得数据信息成功"),
+    SEARCH_GET_INFO_FROM_SQL_FAILED(1302, "从数据库取得数据信息失败"),
+    SEARCH_GET_INFO_FROM_SQL_NULL(1303, "从数据库取得数据信息为空"),
 
     // 添加数据
 

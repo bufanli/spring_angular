@@ -10,6 +10,11 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 @Slf4j
 /*@Transactional(readOnly = true)事物注解*/
 @Service("GetHeadersServiceImpl")
@@ -17,10 +22,35 @@ import org.springframework.stereotype.Service;
 public class GetHeadersServiceImpl implements IGetHeadersService {
     @Override
     public ResponseResult getHeaders() throws Exception {
-        String headers;
+
+        class Header {
+            String key;
+            Object value;
+        }
+        Header[] headers;
+        List<Map<String,Object>> colsNameList;
         try {
-            headers = this.getHeadersFromSQL("eurasiaTable");
+            colsNameList = this.getHeadersFromSQL("eurasiaTable");
+            if (colsNameList == null || colsNameList.size() <= 0) {
+                return new ResponseResultUtil().error(ResponseCodeEnum.HEADER_GET_INFO_FROM_SQL_NULL);
+            }
+
+            headers = new Header[colsNameList.size()];
+            int i = 0;
+            for(Map<String,Object> colsName: colsNameList) {
+                Set<Map.Entry<String, Object>> set = colsName.entrySet();
+                Iterator<Map.Entry<String, Object>> it = set.iterator();
+                while (it.hasNext()) {
+                    Map.Entry<String,Object> entry = it.next();
+                    //System.out.println("Key:" + entry.getKey() + " Value:" + entry.getValue());
+                    headers[i].key = entry.getValue().toString();
+                    headers[i].value = entry.getValue();
+                }
+                i++;
+            }
+
             log.info("取得表头结束");
+
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseResultUtil().error(ResponseCodeEnum.HEADER_GET_INFO_FROM_SQL_FAILED);
@@ -29,7 +59,7 @@ public class GetHeadersServiceImpl implements IGetHeadersService {
         return new ResponseResultUtil().success(ResponseCodeEnum.HEADER_GET_INFO_FROM_SQL_SUCCESS, headers);
     }
 
-    private String getHeadersFromSQL(String tableName) throws Exception {
+    private List<Map<String,Object>> getHeadersFromSQL(String tableName) throws Exception {
         DataService dataService = null;
         try {
             ApplicationContext context = new ClassPathXmlApplicationContext("com/example/eurasia/config/applicationContext.xml");
@@ -40,4 +70,5 @@ public class GetHeadersServiceImpl implements IGetHeadersService {
         }
         return dataService.getHeaders(tableName);
     }
+
 }

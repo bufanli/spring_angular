@@ -64,7 +64,8 @@ public class ResponseResult {
     }
 
     public void setExtend(Map<String, Object> extend) {
-        this.extend = extend;
+        this.extend.clear();
+        this.extend.putAll(extend);
     }
 
 }

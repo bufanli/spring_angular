@@ -77,15 +77,26 @@ sbf = new StringBuffer("");//重新new
      */
     public void deleteSameData(String tableName) {
 
-        String colsName = queryListForColumnName(tableName);
-        String[] name = colsName.split(",");
+        StringBuffer strCcolsName = new StringBuffer();
+        List<Map<String,Object>> colsNameList = queryListForColumnName(tableName);
+        for(Map<String,Object> colsName: colsNameList) {
+            Set<Map.Entry<String, Object>> set = colsName.entrySet();
+            Iterator<Map.Entry<String, Object>> it = set.iterator();
+            while (it.hasNext()) {
+                Map.Entry<String,Object> entry = it.next();
+                strCcolsName.append(entry.getValue());
+                strCcolsName.append(",");
+            }
+        }
+        strCcolsName.deleteCharAt(strCcolsName.length() - 1);
+        String[] name = strCcolsName.toString().split(",");
 
         StringBuffer sql =  new StringBuffer();
         sql.append("delete " + tableName);
         sql.append(" from " + tableName);
-        sql.append(" ( select min(id) id," + colsName);
+        sql.append(" ( select min(id) id," + strCcolsName);
         sql.append(" from " + tableName);
-        sql.append(" group by " + colsName);
+        sql.append(" group by " + strCcolsName);
         sql.append(" having count(*) > 1)tempSameDataTable");
         sql.append(" where ");
         sql.append(tableName + "." + name[0] + " = 'tempSameDataTable." + name[0]);
@@ -275,9 +286,14 @@ SELECT information_schema.SCHEMATA.SCHEMA_NAME FROM information_schema.SCHEMATA 
                 sb.append("CREATE TABLE `" + tableName + "` (");
                 sb.append(" `id` int(11) NOT NULL AUTO_INCREMENT,");
                 Map<String,String> map = dataXMLReader.getKeyValue();
-                Set<String> set = map.keySet();
-                for (String key : set) {
-                    sb.append("`" + key + "` varchar(255) DEFAULT '',");
+//                for (String key : map.keySet()) {//遍历map中的键
+//                    sb.append("`" + key + "` varchar(255) DEFAULT '',");
+//                }
+//                for (String key : map.keySet()) {//遍历map中的值
+//                    sb.append("`" + map.get(key) + "` varchar(255) DEFAULT '',");
+//                }
+                for (String value : map.values()) {//遍历map中的值
+                    sb.append("`" + value + "` varchar(255) DEFAULT '',");
                 }
                 sb.append(" PRIMARY KEY (`id`)");
                 sb.append(") ENGINE=InnoDB DEFAULT CHARSET=gbk;");
@@ -329,7 +345,7 @@ SELECT information_schema.SCHEMATA.SCHEMA_NAME FROM information_schema.SCHEMATA 
      * @author FuJia
      * @Time 2018-10-15 23:11:00
      */
-    public String queryListForColumnName(String tableName) {
+    public List<Map<String,Object>> queryListForColumnName(String tableName) {
         /*
         Select COLUMN_NAME 列名, DATA_TYPE 字段类型, COLUMN_COMMENT 字段注释
         from INFORMATION_SCHEMA.COLUMNS
@@ -342,22 +358,17 @@ SELECT information_schema.SCHEMATA.SCHEMA_NAME FROM information_schema.SCHEMATA 
         sql.append("select COLUMN_NAME from information_schema.COLUMNS where table_name = '" + tableName);
         sql.append("' and table_schema = 'eurasia'");//#mysql> create database eurasia;
         List<Map<String,Object>> colsNameList = getJdbcTemplate().queryForList(sql.toString());
-
-        StringBuffer ret = new StringBuffer();
+/*
         for(Map<String,Object> colsName: colsNameList) {
-
             Set<Map.Entry<String, Object>> set = colsName.entrySet();
             Iterator<Map.Entry<String, Object>> it = set.iterator();
             while (it.hasNext()) {
                 Map.Entry<String,Object> entry = it.next();
-                //System.out.println("Key:" + entry.getKey() + " Value:" + entry.getValue());
-                ret.append(entry.getValue());
-                ret.append(",");
+                //System.out.println("Key:" + entry.getKey() + " Value:" + entry.getValue());//Key:COLUMN_NAME Value:xxx
             }
-
         }
-        ret.deleteCharAt(ret.length() - 1);
-        return ret.toString();
+*/
+        return colsNameList;
     }
 
 }
