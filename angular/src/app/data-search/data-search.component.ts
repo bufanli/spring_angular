@@ -81,7 +81,7 @@ export class DataSearchComponent implements OnInit {
     // if donot destroy table at first, table will not be shown
     $('#table').bootstrapTable('destroy');
     // show table's columns
-    $('#table').bootstrapTable({ columns: headersResponse.headers });
+    $('#table').bootstrapTable({ columns: headersResponse.data});
     // show all products after headers are shown
     this.getProducts().subscribe(products =>
       this.getProductsNotification(products));

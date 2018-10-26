@@ -173,7 +173,7 @@ export class InMemoryDataService implements InMemoryDbService {
     const headersResponse = {
       code: '200',
       message: '数据表头成功',
-      headers: headers,
+      data: headers,
     };
     return { 'products': products, 'search': products.slice(0, 5), 'getHeaders': headersResponse };
   }
