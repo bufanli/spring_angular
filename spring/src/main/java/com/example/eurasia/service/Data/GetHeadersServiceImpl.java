@@ -23,10 +23,6 @@ public class GetHeadersServiceImpl implements IGetHeadersService {
     @Override
     public ResponseResult getHeaders() throws Exception {
 
-        class Header {
-            String key;
-            Object value;
-        }
         Header[] headers;
         List<Map<String,Object>> colsNameList;
         try {
@@ -43,6 +39,7 @@ public class GetHeadersServiceImpl implements IGetHeadersService {
                 while (it.hasNext()) {
                     Map.Entry<String,Object> entry = it.next();
                     //System.out.println("Key:" + entry.getKey() + " Value:" + entry.getValue());
+                    headers[i] = new Header();
                     headers[i].key = entry.getValue().toString();
                     headers[i].value = entry.getValue();
                 }
@@ -69,6 +66,16 @@ public class GetHeadersServiceImpl implements IGetHeadersService {
             e.printStackTrace();
         }
         return dataService.getHeaders(tableName);
+    }
+
+    class Header {
+        String key;
+        Object value;
+
+        Header () {
+            key = new String();
+            value = new Object();
+        }
     }
 
 }

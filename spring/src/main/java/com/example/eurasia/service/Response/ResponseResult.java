@@ -3,7 +3,7 @@ package com.example.eurasia.service.Response;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ResponseResult {
+public class ResponseResult implements Cloneable {
 
     /**
      * @description 响应码
@@ -19,7 +19,7 @@ public class ResponseResult {
      * @description 数据
      */
     private Object data;
-    private Map<String, Object> extend = new HashMap<>();
+    private Map<String, Object> extend;
 
 
     public ResponseResult(int code, String message, Object data) {
@@ -27,6 +27,12 @@ public class ResponseResult {
         this.code = code;
         this.message = message;
         this.data = data;
+        this.extend = new HashMap<>();
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 
     public final int getCode() {
