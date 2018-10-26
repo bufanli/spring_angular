@@ -70,21 +70,21 @@ public class GetHeadersServiceImpl implements IGetHeadersService {
         private String field;
         private String title;
 
-        Header (String key, String value) {
-            this.field = key;
-            this.title = value;
+        Header (String field, String title) {
+            this.field = field;
+            this.title = title;
         }
 
-        public void setKey(String key) {
-            this.field = key;
+        public void setFeild(String field) {
+            this.field = field;
         }
-        public String getKey() {
-            return field;
+        public String getFeild() {
+            return this.field;
         }
-        public void setValue(String value) {
-            this.title = value;
+        public void setTitle(String title) {
+            this.title = title;
         }
-        public String getValue() {
+        public String getTitle() {
             return this.title;
         }
 
