@@ -39,9 +39,7 @@ public class GetHeadersServiceImpl implements IGetHeadersService {
                 while (it.hasNext()) {
                     Map.Entry<String,Object> entry = it.next();
                     //System.out.println("Key:" + entry.getKey() + " Value:" + entry.getValue());
-                    headers[i] = new Header();
-                    headers[i].key = entry.getValue().toString();
-                    headers[i].value = entry.getValue();
+                    headers[i] = new Header(entry.getValue().toString(), entry.getValue().toString());
                 }
                 i++;
             }
@@ -68,13 +66,31 @@ public class GetHeadersServiceImpl implements IGetHeadersService {
         return dataService.getHeaders(tableName);
     }
 
-    class Header {
-        String key;
-        Object value;
+    class Header implements Cloneable {
+        private String field;
+        private String title;
 
-        Header () {
-            key = new String();
-            value = new Object();
+        Header (String key, String value) {
+            this.field = key;
+            this.title = value;
+        }
+
+        public void setKey(String key) {
+            this.field = key;
+        }
+        public String getKey() {
+            return field;
+        }
+        public void setValue(String value) {
+            this.title = value;
+        }
+        public String getValue() {
+            return this.title;
+        }
+
+        @Override
+        protected Object clone() throws CloneNotSupportedException {
+            return super.clone();
         }
     }
 

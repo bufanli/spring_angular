@@ -28,14 +28,14 @@ public class GetHeadersController {
     @RequestMapping(value="/getHeaders", method = RequestMethod.GET)
     public @ResponseBody
     ResponseResult getHeaders() {
-
+        ResponseResult responseResult;
         try {
             log.info("取得表头开始");
-            return getHeadersService.getHeaders();
+            responseResult = getHeadersService.getHeaders();
         } catch (Exception e) {
             e.printStackTrace();
-            return new ResponseResultUtil().error();
+            responseResult = new ResponseResultUtil().error();
         }
-
+        return responseResult;
     }
 }
