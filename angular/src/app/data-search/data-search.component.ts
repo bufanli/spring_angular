@@ -107,6 +107,8 @@ export class DataSearchComponent implements OnInit {
     $('.input-daterange input').each(function () {
       $(this).datepicker('update', new Date());
     });
+    // selectpicker must be called, otherwise select will not be shown
+    $('#trade-mode').selectpicker({});
   }
   // get start and end time for querying
   getQueryTime() {
