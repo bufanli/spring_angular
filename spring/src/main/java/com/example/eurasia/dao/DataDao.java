@@ -38,21 +38,40 @@ public class DataDao {
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
-    public void addData(String tableName, Data data) {
-        StringBuffer sql = new StringBuffer();
-        for (Map.Entry<String, String> entry : data.getKeyValue().entrySet()) {
-            //System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
+    public int addData(String tableName, Data data) {
 
-            sql.append("insert into " + tableName + "(" + entry.getKey() + ") values (?)");
-            getJdbcTemplate().update(sql.toString(), entry.getValue());
-            sql.setLength(0);
+        StringBuffer sql = new StringBuffer();
+        int size = data.getKeyValue().size();
+        String columnsNames = data.getKeys();
+        String columnsValues = data.getValues();
+        String[] columnsValuesArr = columnsValues.split(",");
+
+        sql.append("insert into " + tableName + "(" + columnsNames + ") values (");
+        for (int i=0; i<size; i++) {
+            sql.append("?,");
         }
+        sql.deleteCharAt(sql.length() - 1);
+        sql.append(")");
+        int num = getJdbcTemplate().update(sql.toString(),(Object[])columnsValuesArr);
+        return num;//大于0，插入成功。
 /*
 StringBuffer sbf = new  StringBuffer("Hello World!");
 sbf .setLength(0);//设置长度 (清楚内容效率最高)
 sbf.delete(0, sbf.length());//删除(清楚内容效率最差)
 sbf = new StringBuffer("");//重新new
 */
+    }
+
+    /**
+     * 批处理添加数据
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-09-20 00:00:00
+     */
+    public void batchAddData(String tableName, Data[] data) {
+        //Nothing to do
     }
 
     /**
@@ -75,7 +94,7 @@ sbf = new StringBuffer("");//重新new
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
-    public void deleteSameData(String tableName) {
+    public int deleteSameData(String tableName) {
 
         StringBuffer strCcolsName = new StringBuffer();
         List<Map<String,Object>> colsNameList = queryListForColumnName(tableName);
@@ -105,7 +124,8 @@ sbf = new StringBuffer("");//重新new
         }
         sql.append("' and " + tableName + ".id > 'tempSameDataTable.id'");
 
-        getJdbcTemplate().update(sql.toString());//执行成功返回数据库当中受影响的记录条数，失败则返回-1
+        int num = getJdbcTemplate().update(sql.toString());//执行成功返回数据库当中受影响的记录条数，失败则返回-1
+        return num;
     }
 
     /**
@@ -310,6 +330,7 @@ SELECT information_schema.SCHEMATA.SCHEMA_NAME FROM information_schema.SCHEMATA 
 //                    sb.append("`" + map.get(key) + "` varchar(255) DEFAULT '',");
 //                }
                 for (String value : map.values()) {//遍历map中的值
+                    //sb.append("`" + value + "` varchar(255),");
                     sb.append("`" + value + "` varchar(255) DEFAULT '',");
                 }
                 sb.append(" PRIMARY KEY (`id`)");
