@@ -77,7 +77,11 @@ export class DataSearchComponent implements OnInit {
   }
   searchDataNotification(result: any) {
     console.log(result.code);
-    $('#table').bootstrapTable('load', this.reshapeData(result.data));
+    if (result.data == null) {
+      $('#table').bootstrapTable('load', []);
+    } else {
+      $('#table').bootstrapTable('load', this.reshapeData(result.data));
+    }
   }
   getHeadersNotification(headersResponse: HeadersResponse) {
     // if donot destroy table at first, table will not be shown
@@ -143,7 +147,7 @@ export class DataSearchComponent implements OnInit {
     let index = 0;
     for (const row of data) {
       result[index] = row.keyValue;
-      index ++;
+      index++;
     }
     return result;
   }
