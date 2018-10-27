@@ -32,8 +32,11 @@ public class GetHeadersServiceImpl implements IGetHeadersService {
         List<Map<String,Object>> colsNameList;
         try {
             colsNameList = this.getHeadersFromSQL(DataService.TABLE_NAME);
-            if (colsNameList == null || colsNameList.size() <= 0) {
+            if (colsNameList == null) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.HEADER_GET_INFO_FROM_SQL_NULL);
+            }
+            if (colsNameList.size() == 0) {
+                return new ResponseResultUtil().success(ResponseCodeEnum.HEADER_GET_INFO_FROM_SQL_ZERO);
             }
 
             headers = new Header[colsNameList.size()];

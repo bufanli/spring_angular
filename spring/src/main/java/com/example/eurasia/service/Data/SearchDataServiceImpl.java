@@ -26,14 +26,17 @@ public class SearchDataServiceImpl implements ISearchDataService {
     @Override
     public ResponseResult searchData(Data queryConditions) throws Exception {
 
-        //List<Data> dataListTest = this.createTestData();
-        //dataService.addData(DataService.TABLE_NAME, dataListTest.get(0));
+        //List<Data> dumyDataList = dataService.geteTestData();
+        //dataService.addData(DataService.TABLE_NAME, dumyDataList.get(0));
 
         List<Data> dataList;
         try {
             dataList = this.searchDataFromSQL(DataService.TABLE_NAME, queryConditions);
-            if (dataList == null || dataList.size() <= 0) {
+            if (dataList == null) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.SEARCH_GET_INFO_FROM_SQL_NULL);
+            }
+            if (dataList.size() == 0) {
+                return new ResponseResultUtil().success(ResponseCodeEnum.SEARCH_GET_INFO_FROM_SQL_ZERO);
             }
 
             log.info("查询数据结束");
@@ -46,7 +49,7 @@ public class SearchDataServiceImpl implements ISearchDataService {
     }
 
     public ResponseResult searchData() throws Exception {
-        List<Data> dataList = this.createTestData();
+        List<Data> dataList = dataService.geteTestData();
         return new ResponseResultUtil().success(ResponseCodeEnum.SEARCH_GET_INFO_FROM_SQL_SUCCESS, dataList);
     }
 
@@ -56,25 +59,6 @@ public class SearchDataServiceImpl implements ISearchDataService {
         } else {
             return dataService.searchAllData(tableName);
         }
-    }
-
-    private List<Data> createTestData() {
-        List<Data> dataList = new ArrayList<>();
-        Map<String, String> keyValue = new HashMap<>();
-        keyValue.put("结束日期","2018/10/28");
-        keyValue.put("起始日期","2018/10/28");
-        keyValue.put("商品名称","1");
-        keyValue.put("海关编码","1");
-        keyValue.put("企业名称","1");
-        keyValue.put("收发货地","1");
-        keyValue.put("贸易方式","1");
-        keyValue.put("原产国（目的国）","1");
-        keyValue.put("商品编码_8","1");
-        keyValue.put("商品编码_2","1");
-        keyValue.put("产品名称","1");
-        keyValue.put("规格型号","1");
-        dataList.add(new Data(keyValue));
-        return dataList;
     }
 
 }

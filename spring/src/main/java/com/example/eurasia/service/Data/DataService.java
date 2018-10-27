@@ -5,6 +5,8 @@ import com.example.eurasia.entity.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -117,5 +119,33 @@ public class DataService {
             e.printStackTrace();
         }
         return false;
+    }
+
+    /**
+     * 测试dummy数据
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-10-27 00:00:00
+     */
+    public List<Data> geteTestData() {
+        List<Data> dataList = new ArrayList<>();
+        Map<String, String> keyValue = new HashMap<>();
+        keyValue.put("结束日期","2018/10/27");
+        keyValue.put("起始日期","2018/10/27");
+        keyValue.put("商品名称","1");
+        keyValue.put("海关编码","1");
+        keyValue.put("企业名称","1");
+        keyValue.put("收发货地","1");
+        keyValue.put("贸易方式","1");
+        keyValue.put("原产国（目的国）","1");
+        keyValue.put("商品编码_8","1");
+        keyValue.put("商品编码_2","1");
+        keyValue.put("产品名称","1");
+        keyValue.put("规格型号","1");
+        dataList.add(new Data(keyValue));
+
+        return dataList;
     }
 }
