@@ -4,9 +4,8 @@ import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +19,12 @@ import java.util.Set;
 @Service("GetHeadersServiceImpl")
 @Component
 public class GetHeadersServiceImpl implements IGetHeadersService {
+
+    //注入DataService服务对象
+    @Qualifier("dataService")
+    @Autowired
+    private DataService dataService;
+
     @Override
     public ResponseResult getHeaders() throws Exception {
 
@@ -55,14 +60,6 @@ public class GetHeadersServiceImpl implements IGetHeadersService {
     }
 
     private List<Map<String,Object>> getHeadersFromSQL(String tableName) throws Exception {
-        DataService dataService = null;
-        try {
-            ApplicationContext context = new ClassPathXmlApplicationContext("com/example/eurasia/config/applicationContext.xml");
-            //ApplicationContext context = new FileSystemXmlApplicationContext("main/java/com/example/eurasia/config/applicationContext.xml");
-            dataService = (DataService) context.getBean("dataService");
-        } catch (BeansException e) {
-            e.printStackTrace();
-        }
         return dataService.getHeaders(tableName);
     }
 
@@ -75,10 +72,10 @@ public class GetHeadersServiceImpl implements IGetHeadersService {
             this.title = title;
         }
 
-        public void setFeild(String field) {
+        public void setField(String field) {
             this.field = field;
         }
-        public String getFeild() {
+        public String getField() {
             return this.field;
         }
         public void setTitle(String title) {

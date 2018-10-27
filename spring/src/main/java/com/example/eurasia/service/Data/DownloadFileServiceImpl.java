@@ -10,6 +10,8 @@ import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.xssf.usermodel.extensions.XSSFCellBorder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +27,10 @@ import java.util.List;
 @Component
 public class DownloadFileServiceImpl implements IDownloadFileService {
 
+    //注入DataService服务对象
+    @Qualifier("dataService")
+    @Autowired
+    private DataService dataService;
 
     @Override
     public ResponseResult exportExcel(OutputStream out, Data data) throws Exception {
