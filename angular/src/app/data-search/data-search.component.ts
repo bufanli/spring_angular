@@ -9,6 +9,7 @@ import 'jquery';
 import 'bootstrap';
 import 'bootstrap-datepicker';
 import 'bootstrap-table';
+import 'bootstrap-select';
 import { HeadersResponse } from './data-entry/headers-response';
 
 // json header for post
@@ -108,7 +109,6 @@ export class DataSearchComponent implements OnInit {
       $(this).datepicker('update', new Date());
     });
     // selectpicker must be called, otherwise select will not be shown
-    $('#trade-mode').selectpicker({});
   }
   // get start and end time for querying
   getQueryTime() {
