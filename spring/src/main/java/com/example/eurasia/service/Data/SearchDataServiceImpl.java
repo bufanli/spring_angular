@@ -10,10 +10,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Slf4j
 /*@Transactional(readOnly = true)事物注解*/
@@ -29,28 +26,11 @@ public class SearchDataServiceImpl implements ISearchDataService {
     @Override
     public ResponseResult searchData(Data queryConditions) throws Exception {
 
-        Header[] headers;
-        List<Data> colsNameList;
+        List<Data> dataList;
         try {
-            colsNameList = this.searchDataFromSQL("eurasiaTable", queryConditions);
-
-
-            colsNameList = this.searchDataFromSQL("eurasiaTable", queryConditions);
-            if (colsNameList == null || colsNameList.size() <= 0) {
+            dataList = this.searchDataFromSQL(DataService.TABLE_NAME, queryConditions);
+            if (dataList == null || dataList.size() <= 0) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.HEADER_GET_INFO_FROM_SQL_NULL);
-            }
-
-            headers = new Header[colsNameList.size()];
-            int i = 0;
-            for(Data colsName: colsNameList) {
-                Set<Map.Entry<String, String>> set = colsName.getKeyValue().entrySet();
-                Iterator<Map.Entry<String, String>> it = set.iterator();
-                while (it.hasNext()) {
-                    Map.Entry<String,String> entry = it.next();
-                    //System.out.println("Key:" + entry.getKey() + " Value:" + entry.getValue());
-                    headers[i] = new SearchDataServiceImpl.Header(entry.getValue(), entry.getValue());
-                }
-                i++;
             }
 
             log.info("查询数据结束");
@@ -59,43 +39,36 @@ public class SearchDataServiceImpl implements ISearchDataService {
             return new ResponseResultUtil().error(ResponseCodeEnum.SEARCH_GET_INFO_FROM_SQL_FAILED);
         }
 
-        return new ResponseResultUtil().success(ResponseCodeEnum.HEADER_GET_INFO_FROM_SQL_SUCCESS, headers);
+        return new ResponseResultUtil().success(ResponseCodeEnum.SEARCH_GET_INFO_FROM_SQL_SUCCESS, dataList);
+    }
+
+    public ResponseResult searchData() throws Exception {
+        List<Data> dataList = new ArrayList<>();
+        Map<String, String> keyValue = new HashMap<>();
+        keyValue.put("id","1");
+        keyValue.put("申报日期（日期）","1");
+        keyValue.put("申报关区","1");
+        keyValue.put("原产国（目的国）","1");
+        keyValue.put("商品编码_8","1");
+        keyValue.put("进口（出口）","1");
+        keyValue.put("进口关区（出口关区）","1");
+        keyValue.put("中转国","1");
+        keyValue.put("装货港（目的港）","1");
+        keyValue.put("产品名称","1");
+        keyValue.put("规格型号","1");
+        keyValue.put("主管关区","1");
+        keyValue.put("商品编码_2","1");
+        Data data = new Data(keyValue);
+        dataList.add(data);
+        return new ResponseResultUtil().success(ResponseCodeEnum.SEARCH_GET_INFO_FROM_SQL_SUCCESS, dataList);
     }
 
     private List<Data> searchDataFromSQL(String tableName, Data queryConditions) {
-        if (queryConditions.toString().length() <= 0) {
-
+        if (!queryConditions.isValuesAllNULL()) {
+            return dataService.searchData(tableName, queryConditions);
         } else {
-
-        }
-        return dataService.searchData(tableName, queryConditions);
-    }
-
-    class Header implements Cloneable {
-        private String field;
-        private String title;
-
-        Header (String field, String title) {
-            this.field = field;
-            this.title = title;
-        }
-
-        public void setField(String field) {
-            this.field = field;
-        }
-        public String getField() {
-            return this.field;
-        }
-        public void setTitle(String title) {
-            this.title = title;
-        }
-        public String getTitle() {
-            return this.title;
-        }
-
-        @Override
-        protected Object clone() throws CloneNotSupportedException {
-            return super.clone();
+            return dataService.searchAllData(tableName);
         }
     }
+
 }

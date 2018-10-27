@@ -145,7 +145,6 @@ public class UploadFileServiceImpl implements IUploadFileService {
         String errorMsg;//错误信息接收器
         String br = "<br/>";
 
-        String tableName = "Data";//T.B.D. dummy
         String dataStyle = this.checkSheetDataStyle(sheet);
         if (dataStyle.equals("Data1")) {//T.B.D. dummy
 
@@ -161,7 +160,7 @@ public class UploadFileServiceImpl implements IUploadFileService {
         //sheet里全部验证通过才导入到数据库
         if(StringUtils.isEmpty(titleErrMsg) && StringUtils.isEmpty(dataErrMsg)){
             for(Data data : dataList){
-                this.saveDataToSQL(tableName, data);
+                this.saveDataToSQL(DataService.TABLE_NAME, data);
             }
             log.info("导入成功，共{}条数据！",dataList.size());
             errorMsg = "导入成功，共" + dataList.size() + "条数据！";

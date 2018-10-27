@@ -49,6 +49,19 @@ public class SearchDataController {
         return responseResult;
     }
 
+    @RequestMapping(value="/searchDataTest", method = RequestMethod.GET)
+    public @ResponseBody
+    ResponseResult searchData() {
+        ResponseResult responseResult;
+        try {
+            responseResult = searchDataService.searchData();
+        } catch (Exception e) {
+            e.printStackTrace();
+            responseResult = new ResponseResultUtil().error();
+        }
+        return responseResult;
+    }
+
     class QueryConditions implements Cloneable {
         private String key;
         private String value;

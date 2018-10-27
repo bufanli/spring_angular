@@ -190,6 +190,20 @@ sbf = new StringBuffer("");//重新new
     }
 
     /**
+     * 查询并返回List集合
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-09-20 00:00:00
+     */
+    public List<Data> queryListForAllObject(String tableName) {
+        StringBuffer sql = new StringBuffer();
+        sql.append("select * from " + tableName);
+        return getJdbcTemplate().query(sql.toString(), new DataMapper());
+    }
+
+    /**
      * 拼接语句，往表里面插入数据
      * @param tableName
      * @param data

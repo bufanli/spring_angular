@@ -23,6 +23,8 @@ public class DataService {
         this.dataDao = dataDao;
     }
 
+    public static final String TABLE_NAME = "eurasiaTable";
+
     /**
      * 添加数据
      * @param
@@ -36,7 +38,7 @@ public class DataService {
     }
 
     /**
-     * 查询数据
+     * 根据查询条件进行数据查询
      * @param
      * @return
      * @exception
@@ -45,6 +47,18 @@ public class DataService {
      */
     public List<Data> searchData(String tableName, Data queryConditions) {
         return getDataDao().queryListForObject(tableName, queryConditions);
+    }
+
+    /**
+     * 查询所有数据
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-10-27 00:00:00
+     */
+    public List<Data> searchAllData(String tableName) {
+        return getDataDao().queryListForAllObject(tableName);
     }
 
     /**

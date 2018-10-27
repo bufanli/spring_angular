@@ -1,5 +1,7 @@
 package com.example.eurasia.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -59,6 +61,7 @@ public class Data{
      * @author FuJia
      * @Time 2018-10-26 00:00:00
      */
+    @JsonIgnore
     public String getKeys() {
         StringBuilder sb = new StringBuilder();
 
@@ -81,6 +84,7 @@ public class Data{
      * @author FuJia
      * @Time 2018-10-26 00:00:00
      */
+    @JsonIgnore
     public String getValues() {
         StringBuilder sb = new StringBuilder();
 
@@ -96,6 +100,27 @@ public class Data{
     }
 
     /**
+     * 所有的Key是不是都是空值。
+     * @param
+     * @return true:都是空值。false:不都是空值。
+     * @exception
+     * @author FuJia
+     * @Time 2018-10-26 00:00:00
+     */
+    @JsonIgnore
+    public Boolean isKeysAllNULL() {
+
+        Set<Map.Entry<String, String>> set = this.keyValue.entrySet();
+        Iterator<Map.Entry<String, String>> it = set.iterator();
+        while (it.hasNext()) {
+            if (it.next().getKey().length() != 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * 所有的Value是不是都是空值。
      * @param
      * @return true:都是空值。false:不都是空值。
@@ -103,15 +128,16 @@ public class Data{
      * @author FuJia
      * @Time 2018-10-26 00:00:00
      */
+    @JsonIgnore
     public Boolean isValuesAllNULL() {
 
         Set<Map.Entry<String, String>> set = this.keyValue.entrySet();
         Iterator<Map.Entry<String, String>> it = set.iterator();
         while (it.hasNext()) {
-            it.next().getValue();
-
+            if (it.next().getValue().length() != 0) {
+                return false;
+            }
         }
-
-        return false;
+        return true;
     }
 }
