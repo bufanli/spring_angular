@@ -24,7 +24,7 @@ const httpOptions = {
 })
 export class DataSearchComponent implements OnInit {
   private productsUrl = 'api/products';  // URL to web api
-  private searchUrl = 'searchData';  // URL to web api
+  private searchUrl = 'searchDataTest';  // URL to web api
   private headersUrl = 'getHeaders';  // URL to web api
   public products: Product[] = [];
   public hsCode: string;
@@ -76,7 +76,8 @@ export class DataSearchComponent implements OnInit {
     $('#table').bootstrapTable('load', this.products);
   }
   searchDataNotification(result: any) {
-    console.log('ok');
+    console.log(result.code);
+    $('#table').bootstrapTable('load', this.reshapeData(result.data));
   }
   getHeadersNotification(headersResponse: HeadersResponse) {
     // if donot destroy table at first, table will not be shown
@@ -85,8 +86,8 @@ export class DataSearchComponent implements OnInit {
     this.filterColumns(headersResponse.data);
     $('#table').bootstrapTable({ columns: headersResponse.data });
     // show all products after headers are shown
-    this.getProducts().subscribe(products =>
-      this.getProductsNotification(products));
+    this.searchData().subscribe(products =>
+      this.searchDataNotification(products));
   }
 
   ngOnInit() {
@@ -119,12 +120,32 @@ export class DataSearchComponent implements OnInit {
     time = $('#end-time').datepicker('getDate').toLocaleString();
     this.searchParam[2].value = time.slice(0, 10);
   }
+  // set visible to false for some hidden columns
   filterColumns(headers: Header[]) {
     for (const header of headers) {
       if (header.field === 'id') {
         header.visible = false;
       }
     }
+  }
+  // reshape data result
+  // input
+  // [
+  // {keyvalue:{code:11,message:22}},
+  // {keyvalue:{code:33,message:44}},
+  // ]
+  // output
+  // [{code:11, message:22},
+  // {code:33, message:44}
+  // ]
+  reshapeData(data: any) {
+    const result: any[] = [];
+    let index = 0;
+    for (const row of data) {
+      result[index] = row.keyValue;
+      index ++;
+    }
+    return result;
   }
 
 }
