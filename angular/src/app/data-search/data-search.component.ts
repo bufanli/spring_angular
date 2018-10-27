@@ -24,7 +24,7 @@ const httpOptions = {
 })
 export class DataSearchComponent implements OnInit {
   private productsUrl = 'api/products';  // URL to web api
-  private searchUrl = 'searchDataTest';  // URL to web api
+  private searchUrl = 'searchData';  // URL to web api
   private headersUrl = 'getHeaders';  // URL to web api
   public products: Product[] = [];
   public hsCode: string;
