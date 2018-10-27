@@ -94,4 +94,24 @@ public class Data{
 
         return sb.toString();
     }
+
+    /**
+     * 所有的Value是不是都是空值。
+     * @param
+     * @return true:都是空值。false:不都是空值。
+     * @exception
+     * @author FuJia
+     * @Time 2018-10-26 00:00:00
+     */
+    public Boolean isValuesAllNULL() {
+
+        Set<Map.Entry<String, String>> set = this.keyValue.entrySet();
+        Iterator<Map.Entry<String, String>> it = set.iterator();
+        while (it.hasNext()) {
+            it.next().getValue();
+
+        }
+
+        return false;
+    }
 }

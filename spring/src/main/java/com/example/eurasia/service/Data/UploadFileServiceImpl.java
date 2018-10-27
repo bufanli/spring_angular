@@ -10,8 +10,8 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -31,6 +31,11 @@ import java.util.Map;
 @Service("UploadFileServiceImpl")
 @Component
 public class UploadFileServiceImpl implements IUploadFileService {
+
+    //注入DataService服务对象
+    @Qualifier("dataService")
+    @Autowired
+    private DataService dataService;
 
     @Override
     public ResponseResult batchUpload(String filePath, MultipartFile[] files) throws Exception {
@@ -253,8 +258,6 @@ public class UploadFileServiceImpl implements IUploadFileService {
     }
 
     private void saveDataToSQL(String tableName, Data data) {
-        ApplicationContext context = new ClassPathXmlApplicationContext("com/example/eurasia/config/applicationContext.xml");
-        DataService dataService = (DataService) context.getBean("dataService");
         dataService.addData(tableName, data);
     }
 }

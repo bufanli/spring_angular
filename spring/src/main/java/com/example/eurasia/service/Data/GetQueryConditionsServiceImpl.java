@@ -3,8 +3,8 @@ package com.example.eurasia.service.Data;
 import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +13,12 @@ import org.springframework.stereotype.Service;
 @Service("GetQueryConditionsServiceImpl")
 @Component
 public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService {
+
+    //注入DataService服务对象
+    @Qualifier("dataService")
+    @Autowired
+    private DataService dataService;
+
     @Override
     public ResponseResult getQueryConditions() throws Exception {
         String tableName = "*";//T.B.D. dummy
@@ -21,8 +27,6 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
     }
 
     private void getQueryConditionsFromSQL(String tableName) {
-        ApplicationContext context = new ClassPathXmlApplicationContext("com/example/eurasia/config/applicationContext.xml");
-        DataService dataService = (DataService) context.getBean("dataService");
         dataService.getHeaders(tableName);
     }
 }
