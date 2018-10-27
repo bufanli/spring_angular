@@ -75,13 +75,14 @@ export class DataSearchComponent implements OnInit {
     $('#table').bootstrapTable('load', this.products);
   }
   searchDataNotification(result: any) {
-    alert('result is ' + result.code);
+    console.log('ok');
   }
   getHeadersNotification(headersResponse: HeadersResponse) {
     // if donot destroy table at first, table will not be shown
     $('#table').bootstrapTable('destroy');
     // show table's columns
-    $('#table').bootstrapTable({ columns: headersResponse.data});
+    this.filterColumns(headersResponse.data);
+    $('#table').bootstrapTable({ columns: headersResponse.data });
     // show all products after headers are shown
     this.getProducts().subscribe(products =>
       this.getProductsNotification(products));
@@ -91,8 +92,8 @@ export class DataSearchComponent implements OnInit {
     // get headers from in memory api
     this.getHeaders().subscribe(headersResponse =>
       this.getHeadersNotification(headersResponse));
-    this.searchData().subscribe(result =>
-      this.searchDataNotification(result));
+    // this.searchData().subscribe(result =>
+    //   this.searchDataNotification(result));
     // set date picker's formatter
     $('.input-daterange input').each(function () {
       $(this).datepicker({
@@ -113,6 +114,13 @@ export class DataSearchComponent implements OnInit {
     this.searchParam[1].value = time.slice(0, 10);
     time = $('#end-time').datepicker('getDate').toLocaleString();
     this.searchParam[2].value = time.slice(0, 10);
+  }
+  filterColumns(headers: Header[]) {
+    for (const header of headers) {
+      if (header.field === 'id') {
+        header.visible = false;
+      }
+    }
   }
 
 }
