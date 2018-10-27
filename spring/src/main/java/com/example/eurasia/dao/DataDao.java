@@ -174,6 +174,7 @@ sbf = new StringBuffer("");//重新new
      * @Time 2018-09-20 00:00:00
      */
     public List<Data> queryListForObject(String tableName, Data queryConditions) {
+        String sqlAnd = " and ";
         StringBuffer sql = new StringBuffer();
         sql.append("select * from " + tableName + " where");
 
@@ -182,12 +183,13 @@ sbf = new StringBuffer("");//重新new
         while (it.hasNext()) {
             Map.Entry<String, String> entry = it.next();
             sql.append(" " + entry.getKey() + "='" + entry.getValue() + "'");
-            sql.append(" and ");
+            sql.append(sqlAnd);
         }
-        sql.delete((sql.length() - " and ".length()),sql.length());
-        sql.append(" concat_ws(" + queryConditions.getKeys() + ")");
+        sql.delete((sql.length() - sqlAnd.length()),sql.length());
+        //sql.append(" concat_ws(" + queryConditions.getKeys() + ")");
 
-        return getJdbcTemplate().query(sql.toString(), new DataMapper());
+        List<Data> dataList = getJdbcTemplate().query(sql.toString(), new DataMapper());
+        return dataList;
     }
 
     /**

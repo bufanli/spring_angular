@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mapping>
-    <column key="ShenBaoRiQi" value="申报日期（日期）" />
-    <column key="JinChuKou" value="进口（出口）" />
-    <column key="ShenBaoGuanQu" value="申报关区" />
-    <column key="JinChuKouGuanQu" value="进口关区（出口关区）" />
-    <column key="ZhuGuanGuanQu" value="主管关区" />
-    <column key="ZhuangHuoGang" value="装货港（目的港）" />
-    <column key="ZhongZhuanGuo" value="中转国" />
+    <column key="ShenBaoRiQi" value="结束日期" />
+    <column key="JinChuKou" value="起始日期" />
+    <column key="ShenBaoGuanQu" value="商品名称" />
+    <column key="JinChuKouGuanQu" value="海关编码" />
+    <column key="ZhuGuanGuanQu" value="企业名称" />
+    <column key="ZhuangHuoGang" value="收发货地" />
+    <column key="ZhongZhuanGuo" value="贸易方式" />
     <column key="YuanChanGuo" value="原产国（目的国）" />
     <column key="ShangPinBianMa8" value="商品编码_8" />
     <column key="ShangPinBianMa2" value="商品编码_2" />
