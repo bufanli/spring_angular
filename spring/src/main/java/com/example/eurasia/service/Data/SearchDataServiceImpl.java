@@ -30,7 +30,7 @@ public class SearchDataServiceImpl implements ISearchDataService {
         try {
             dataList = this.searchDataFromSQL(DataService.TABLE_NAME, queryConditions);
             if (dataList == null || dataList.size() <= 0) {
-                return new ResponseResultUtil().error(ResponseCodeEnum.HEADER_GET_INFO_FROM_SQL_NULL);
+                return new ResponseResultUtil().error(ResponseCodeEnum.SEARCH_GET_INFO_FROM_SQL_NULL);
             }
 
             log.info("查询数据结束");

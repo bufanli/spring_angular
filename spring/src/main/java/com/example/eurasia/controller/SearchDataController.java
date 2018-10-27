@@ -62,13 +62,11 @@ public class SearchDataController {
         return responseResult;
     }
 
-    class QueryConditions implements Cloneable {
+    static class QueryConditions implements Cloneable {
         private String key;
         private String value;
 
-        QueryConditions (String key, String value) {
-            this.key = key;
-            this.value = value;
+        QueryConditions () {
         }
 
         public void setKey(String key) {
