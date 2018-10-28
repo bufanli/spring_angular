@@ -23,7 +23,6 @@ const httpOptions = {
   styleUrls: ['./data-search.component.css']
 })
 export class DataSearchComponent implements OnInit {
-  private productsUrl = 'api/products';  // URL to web api
   private searchUrl = 'searchData';  // URL to web api
   private headersUrl = 'getHeaders';  // URL to web api
   public products: Product[] = [];
@@ -44,24 +43,16 @@ export class DataSearchComponent implements OnInit {
   ];
 
   onSearch(): void {
-    // this.searchProducts().subscribe(products =>
-    //   this.getProductsNotification(products));
     this.getQueryTime();
     this.searchData().subscribe(result =>
       this.searchDataNotification(result));
   }
-  /** GET heroes from the server */
-  getProducts(): Observable<Product[]> {
-    return this.http.get<Product[]>(this.productsUrl);
-  }
+
   /**get headers from in memory api */
   getHeaders(): Observable<HeadersResponse> {
     return this.http.get<HeadersResponse>(this.headersUrl);
   }
-  /** search heroes from the server */
-  searchProducts(): Observable<Product[]> {
-    return this.http.get<Product[]>(this.searchUrl);
-  }
+
   /** search products from the server */
   searchData(): Observable<any> {
     return this.http.post<any>(this.searchUrl, this.searchParam, httpOptions);
@@ -98,8 +89,7 @@ export class DataSearchComponent implements OnInit {
     // get headers from in memory api
     this.getHeaders().subscribe(headersResponse =>
       this.getHeadersNotification(headersResponse));
-    // this.searchData().subscribe(result =>
-    //   this.searchDataNotification(result));
+
     // set date picker's formatter
     $('.input-daterange input').each(function () {
       $(this).datepicker({
@@ -108,11 +98,17 @@ export class DataSearchComponent implements OnInit {
         todayBtn: 'linked',
         language: 'zh-CN',
       });
+      // hook the event handler for gray to black font color
+      $(this).datepicker().on('changeDate', function(this) {
+          $(this).css('color', 'black');
+      });
     });
+
     // set initial date to datepicker
     $('.input-daterange input').each(function () {
       $(this).datepicker('update', new Date());
     });
+
     // selectpicker must be called, otherwise select will not be shown
     $('#trade-mode').selectpicker('destroy');
     $('#trade-mode').selectpicker();
@@ -150,6 +146,10 @@ export class DataSearchComponent implements OnInit {
       index++;
     }
     return result;
+  }
+  // function for changing date time control font color
+  onDateChange(e: any) {
+
   }
 
 }
