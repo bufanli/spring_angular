@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Http, Headers, RequestOptions, Response, ResponseContentType } from '@angular/http';
 import { URLSearchParams } from '@angular/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
@@ -11,11 +12,19 @@ import 'bootstrap-datepicker';
 import 'bootstrap-table';
 import 'bootstrap-select';
 import { HeadersResponse } from './data-entry/headers-response';
+import { saveAs as importedSaveAs } from 'file-saver';
 
 // json header for post
 const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' })
 };
+// json header for download post
+const head = new Headers({ 'Content-Type': 'application/json' });
+const httpDownloadOptions = {
+  headers: head,
+  responseType: ResponseContentType.Blob
+};
+// json header for download post
 
 @Component({
   selector: 'app-data-search',
@@ -43,15 +52,19 @@ export class DataSearchComponent implements OnInit {
       this.searchDataNotification(result));
   }
 
+  // download file when exporting data
   onDownloadFile(): void {
-    this.downloadFile().subscribe(data => this.exportNotification(data));
+    this.downloadFile();
   }
 
   // download data to file
-  downloadFile(): Observable<any> {
+  async downloadFile(): Promise<void> {
     this.getQueryTime();
-    // this.http.post(this.exportUrl, this.searchParam, httpOptions);
-    return this.http.post<any>(this.exportUrl, this.searchParam, httpOptions);
+    const searchParamJson = JSON.stringify(this.searchParam);
+    return this.downloadHttp.post(this.exportUrl, searchParamJson, httpDownloadOptions).toPromise().then(
+      res => {
+        importedSaveAs(res.blob());
+      });
   }
 
   /**get headers from in memory api */
@@ -63,7 +76,7 @@ export class DataSearchComponent implements OnInit {
   searchData(): Observable<any> {
     return this.http.post<any>(this.searchUrl, this.searchParam, httpOptions);
   }
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private downloadHttp: Http) {
   }
 
   searchDataNotification(result: any) {
