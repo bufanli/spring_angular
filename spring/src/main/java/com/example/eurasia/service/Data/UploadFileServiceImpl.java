@@ -6,10 +6,7 @@ import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -22,7 +19,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 /*@Transactional(readOnly = true)事物注解*/
@@ -36,7 +36,7 @@ public class UploadFileServiceImpl implements IUploadFileService {
     private DataService dataService;
 
     @Override
-    public ResponseResult batchUpload(String filePath, MultipartFile[] files) throws Exception {
+    public ResponseResult batchUpload(File uploadDir, MultipartFile[] files) throws Exception {
         ResponseResult responseResult;
         String fileName = null;
         int fileNumber = files.length;
@@ -45,7 +45,7 @@ public class UploadFileServiceImpl implements IUploadFileService {
         StringBuffer responseNG = new StringBuffer();
         int fileOKNum = 0;
         int fileNGNum = 0;
-        log.info("文件上传目录:{}",filePath);
+        log.info("文件上传目录:{}",uploadDir.getPath());
 
         //遍历文件数组
         for (int i=0; i<files.length; i++) {
@@ -59,7 +59,10 @@ public class UploadFileServiceImpl implements IUploadFileService {
                 //String suffix = files.getOriginalFilename().substring(files.getOriginalFilename().lastIndexOf("."));
                 //String fileName = UUID.randomUUID() + suffix;
                 //服务器端保存端文件对象
-                File serverFile = new File(filePath  + fileName);
+                File serverFile = new File(uploadDir.getPath() + "/" + fileName);
+                if (!serverFile.exists()) {
+                    log.info("文件名:{}存在的话，则覆盖。",fileName);
+                }
                 //将上传的文件写入到服务器端的文件内
                 files[i].transferTo(serverFile);
             } catch (IOException e) {
@@ -135,7 +138,7 @@ public class UploadFileServiceImpl implements IUploadFileService {
 
                 try {
                     if (ExcelImportUtils.isExcelFileValidata(files[i]) == true) {
-                        responseRead = this.readExcelFile(files[i]);//T.B.D 返回值的利用
+                        responseRead = this.readExcelFile(files[i]);//返回值的利用
                     } else {
                         fileNGNum++;
                         responseNG.append(fileName +": 文件格式有问题" + DataService.BR);
@@ -151,7 +154,7 @@ public class UploadFileServiceImpl implements IUploadFileService {
                 } catch (Exception e) {
                     e.printStackTrace();
                     fileNGNum++;
-                    responseNG.append(fileName +": 读取异常" + DataService.BR);
+                    responseNG.append(fileName +": 读取或者保存到数据库异常" + DataService.BR);
                     log.error("第{}/{}个文件读取异常,文件名:{}",(i+1),fileNumber,fileName);
                     continue;
                 }
@@ -194,9 +197,9 @@ public class UploadFileServiceImpl implements IUploadFileService {
         try {
             inputStream = new FileInputStream(file);
             if (ExcelImportUtils.isExcel2003(file.toString())) {
-                workbook = new XSSFWorkbook(inputStream);
-            } else if (ExcelImportUtils.isExcel2007(file.toString())) {
                 workbook = new HSSFWorkbook(inputStream);
+            } else if (ExcelImportUtils.isExcel2007(file.toString())) {
+                workbook = new XSSFWorkbook(inputStream);
             }
 
             return this.readExcelFileSheets(workbook);//读Excel中所有的sheet
@@ -255,7 +258,6 @@ public class UploadFileServiceImpl implements IUploadFileService {
         StringBuffer titleErrMsg = this.readExcelFileSheetTitleRow(sheet, titleList);
         //标题行验证通过才导入到数据库
         if (titleList.size() != 0) {
-
             //读取内容(从第二行开始)
             StringBuffer dataErrMsg = this.readExcelFileSheetDataRow(sheet, titleList, dataList);
 
@@ -288,10 +290,16 @@ public class UploadFileServiceImpl implements IUploadFileService {
                 log.error("第{}/{}列标题有问题，请仔细检查。",(n+1),numTitleCells);
             }
 
+            cell.setCellType(CellType.STRING);
             String cellValue = cell.getStringCellValue();
             if (StringUtils.isEmpty(cellValue)) {
                 rowErrorMsg.append(DataService.BR + "第" + (n+1) + "列标题为空，请仔细检查。");
                 log.error("第{}/{}列标题为空。",(n+1),numTitleCells);
+            }
+            if (false) {
+                //对比SQL列 T.B.D.................................
+                rowErrorMsg.append(DataService.BR + "第" + (n+1) + "列标题在数据中不存在，请仔细检查。");
+                log.error("第{}/{}列标题在数据中不存在。",(n+1),numTitleCells);
             }
             valueList.add(cellValue);
         }
@@ -300,10 +308,10 @@ public class UploadFileServiceImpl implements IUploadFileService {
         if (rowErrorMsg.length() != 0) {
             msg.append(rowErrorMsg);
         } else {
-            titleList.addAll(valueList);
             msg.setLength(0);
         }
 
+        titleList.addAll(valueList);
         return msg;
     }
 
@@ -311,6 +319,7 @@ public class UploadFileServiceImpl implements IUploadFileService {
         StringBuffer msg = new StringBuffer();//信息接收器
         StringBuffer colErrorMsg = new StringBuffer();//列错误信息接收器
 
+        List<Data> valueList = new ArrayList<>();
         Map<String, String> keyValue = new HashMap<>();
 
         //int numRows = sheet.getPhysicalNumberOfRows();//得到Excel的行数,不包括那些空行（隔行）的情况。
@@ -326,13 +335,14 @@ public class UploadFileServiceImpl implements IUploadFileService {
             }
 
             for(int q = 0; q <numTitleCells; q++) {//循环列
-                Cell cell = row.getCell(q);
+                Cell cell = row.getCell(q);//T.B.D.................................
                 if (null == cell) {
                     colErrorMsg.append("第" + (p+1) + "行第" + (q+1) + "列数据有问题，请仔细检查。" + DataService.BR);
                     log.error("第{}行,第{}/{}列数据有问题，请仔细检查。",(p+1),(q+1),numTitleCells);
                     continue;
                 }
 
+                cell.setCellType(CellType.STRING);
                 String cellValue = cell.getStringCellValue();
                 keyValue.put(titleList.get(q), cellValue);
             }
@@ -343,12 +353,13 @@ public class UploadFileServiceImpl implements IUploadFileService {
                 colErrorMsg.setLength(0);
             }else{
                 Data data = new Data(keyValue);
-                dataList.add(data);
+                valueList.add(data);
             }
 
             keyValue.clear();
         }
 
+        dataList.addAll(valueList);
         return msg;
     }
 
