@@ -24,8 +24,9 @@ const httpOptions = {
 })
 export class DataSearchComponent implements OnInit {
   private searchUrl = 'searchData';  // URL to web api
+  private exportUrl = 'downloadFile';  // URL to web api
   private headersUrl = 'getHeaders';  // URL to web api
- // search parameters
+  // search parameters
   searchParam = [
     { key: '海关编码', value: '' },
     { key: '起始日期', value: '' },
@@ -40,6 +41,17 @@ export class DataSearchComponent implements OnInit {
     this.getQueryTime();
     this.searchData().subscribe(result =>
       this.searchDataNotification(result));
+  }
+
+  onDownloadFile(): void {
+    this.downloadFile().subscribe(data => this.exportNotification(data));
+  }
+
+  // download data to file
+  downloadFile(): Observable<any> {
+    this.getQueryTime();
+    // this.http.post(this.exportUrl, this.searchParam, httpOptions);
+    return this.http.post<any>(this.exportUrl, this.searchParam, httpOptions);
   }
 
   /**get headers from in memory api */
@@ -60,6 +72,9 @@ export class DataSearchComponent implements OnInit {
     } else {
       $('#table').bootstrapTable('load', this.reshapeData(result.data));
     }
+  }
+  exportNotification(result: any) {
+    alert('export ok');
   }
   getHeadersNotification(headersResponse: HeadersResponse) {
     // if donot destroy table at first, table will not be shown
