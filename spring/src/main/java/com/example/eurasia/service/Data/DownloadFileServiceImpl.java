@@ -50,16 +50,12 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
             log.info(ResponseCodeEnum.EXPORT_GET_DATA_INFO_FROM_SQL_ZERO.getMessage());
         }
 
-        log.info("文件导出,创建文件开始");
         XSSFWorkbook wb = new XSSFWorkbook();
         try {
-
             XSSFSheet sheet = wb.createSheet(DataService.EXPORT_EXCEL_SHEET_NAME);
             this.writeExcel(wb, sheet, colsNameList, dataList);
 
             wb.write(out);
-
-            log.info("文件导出结束");
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_DATA_INFO_FAILED);

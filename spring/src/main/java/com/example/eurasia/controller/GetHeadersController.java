@@ -36,6 +36,7 @@ public class GetHeadersController {
             e.printStackTrace();
             responseResult = new ResponseResultUtil().error();
         }
+        log.info("取得表头结束");
         return responseResult;
     }
 }

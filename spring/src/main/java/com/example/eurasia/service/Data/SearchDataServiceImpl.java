@@ -40,8 +40,6 @@ public class SearchDataServiceImpl implements ISearchDataService {
             if (dataList.size() == 0) {
                 return new ResponseResultUtil().success(ResponseCodeEnum.SEARCH_DATA_INFO_FROM_SQL_ZERO);
             }
-
-            log.info("查询数据结束");
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseResultUtil().error(ResponseCodeEnum.SEARCH_DATA_INFO_FROM_SQL_FAILED);

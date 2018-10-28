@@ -43,6 +43,7 @@ public class DownloadFileController {
             e.printStackTrace();
             responseResult = new ResponseResultUtil().error();
         }
+        log.info("进行excel文件导出结束");
         return responseResult;
     }
 

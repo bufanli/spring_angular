@@ -1,6 +1,7 @@
 package com.example.eurasia.service.Data;
 
 import com.example.eurasia.entity.Data;
+import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -21,10 +22,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 /*@Transactional(readOnly = true)事物注解*/
@@ -39,15 +37,24 @@ public class UploadFileServiceImpl implements IUploadFileService {
 
     @Override
     public ResponseResult batchUpload(String filePath, MultipartFile[] files) throws Exception {
+        ResponseResult responseResult;
+        String fileName = null;
+        int fileNumber = files.length;
+        StringBuffer responseMsg = new StringBuffer();
+        StringBuffer responseOK = new StringBuffer();
+        StringBuffer responseNG = new StringBuffer();
+        int fileOKNum = 0;
+        int fileNGNum = 0;
         log.info("文件上传目录:{}",filePath);
-        try {
-            //遍历文件数组
-            for (int i=0; i<files.length; i++) {
-                //上传文件名
-                String fileName = files[i].getOriginalFilename();
 
-                log.info("第{}/{}个文件开始上传,文件名:{}",(i+1),files.length,fileName);
+        //遍历文件数组
+        for (int i=0; i<files.length; i++) {
+            //上传文件名
+            fileName = files[i].getOriginalFilename();
 
+            log.info("第{}/{}个文件开始上传,文件名:{}",(i+1),fileNumber,fileName);
+
+            try {
                 //需要自定义文件名的情况
                 //String suffix = files.getOriginalFilename().substring(files.getOriginalFilename().lastIndexOf("."));
                 //String fileName = UUID.randomUUID() + suffix;
@@ -55,44 +62,131 @@ public class UploadFileServiceImpl implements IUploadFileService {
                 File serverFile = new File(filePath  + fileName);
                 //将上传的文件写入到服务器端的文件内
                 files[i].transferTo(serverFile);
+            } catch (IOException e) {
+                e.printStackTrace();
+                fileNGNum++;
+                responseNG.append(fileName +":上传IO异常" + DataService.BR);
+                log.error("第{}/{}个文件上传IO异常,文件名:{}",(i+1),fileNumber,fileName);
+                continue;
+            } catch (IllegalStateException e) {
+                e.printStackTrace();
+                fileNGNum++;
+                responseNG.append(fileName + ":上传IllegalState异常" + DataService.BR);
+                log.error("第{}/{}个文件上传IllegalState异常,文件名:{}",(i+1),fileNumber,fileName);
+                continue;
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new Exception();
+
+            fileOKNum++;
+            log.info("第{}/{}个文件上传OK结束,文件名:{}",(i+1),fileNumber,fileName);
+
+            responseOK.append(fileName + DataService.BR);
         }
-        return new ResponseResultUtil().success();
+
+        if (fileNGNum == 0) {
+            responseMsg.append(fileOKNum + "个文件导入成功。");
+            responseOK.delete((responseOK.length() - DataService.BR.length()),responseOK.length());
+            responseResult = new ResponseResultUtil().success(ResponseCodeEnum.UPLOAD_FILE_SUCCESS.getCode(), responseMsg.toString(), responseOK.toString());
+        } else if (fileOKNum == 0 && fileNGNum != 0) {
+            responseMsg.append(fileNGNum + "个文件导入失败。");
+            responseNG.delete((responseNG.length() - DataService.BR.length()),responseNG.length());
+            responseResult = new ResponseResultUtil().error(ResponseCodeEnum.UPLOAD_FILE_FAILED.getCode(), responseMsg.toString(), responseNG.toString());
+        } else {
+            responseMsg.append(fileOKNum + "个文件导入成功," + fileNGNum + "个文件导入失败。");
+            responseOK.delete((responseOK.length() - DataService.BR.length()),responseOK.length());
+            responseNG.delete((responseNG.length() - DataService.BR.length()),responseNG.length());
+
+            String[] responseNGArr = new String[2];
+            responseNGArr[0] = responseOK.toString();
+            responseNGArr[1] = responseNG.toString();
+
+            responseResult = new ResponseResultUtil().error(ResponseCodeEnum.UPLOAD_FILE_FAILED.getCode(), responseMsg.toString(), responseNGArr);
+        }
+        return responseResult;
     }
 
     @Override
     public ResponseResult readFile(File fileDir) throws Exception {
+        ResponseResult responseResult;
+        String fileName = null;
+        int fileNumber = 0;
+        StringBuffer responseMsg = new StringBuffer();
+        StringBuffer responseOK = new StringBuffer();
+        StringBuffer responseNG = new StringBuffer();
+        int fileOKNum = 0;
+        int fileNGNum = 0;
         log.info("文件读取目录:{}",fileDir);
 
-        try {
-            File[] files = fileDir.listFiles();
-            for (int i = 0; i < files.length; i++) {
-                if (files[i].isFile()) {
-
-                    log.info("第{}/{}个文件开始读取,文件名:{}",(i+1),files.length,files[i].getName());
-
-                    if (ExcelImportUtils.isExcelFileValidata(files[i]) == true) {
-                        this.readExcelFile(files[i]);
-                    } else {
-                        log.error("文件格式有问题，请仔细检查");
-                    }
-
-                }
-                if (files[i].isDirectory()) {
-                    //Nothing to do
-                }
+        //遍历文件数组
+        File[] files = fileDir.listFiles();
+        fileNumber = files.length;
+        for (int i=0; i<fileNumber; i++) {
+            if (files[i].isDirectory()) {
+                //Nothing to do
+                log.info("第{}/{}，是个目录,跳过。",(i+1),fileNumber);
+                continue;
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new Exception();
+
+            String responseRead = null;
+            if (files[i].isFile()) {
+                //读取文件名
+                fileName = files[i].getName();
+
+                log.info("第{}/{}个文件开始读取,文件名:{}",(i+1),fileNumber,fileName);
+
+                try {
+                    if (ExcelImportUtils.isExcelFileValidata(files[i]) == true) {
+                        responseRead = this.readExcelFile(files[i]);//T.B.D 返回值的利用
+                    } else {
+                        fileNGNum++;
+                        responseNG.append(fileName +": 文件格式有问题" + DataService.BR);
+                        log.error("第{}/{}个文件格式有问题,文件名:{}",(i+1),fileNumber,fileName);
+                        continue;
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    fileNGNum++;
+                    responseNG.append(fileName +": 读取IO异常" + DataService.BR);
+                    log.error("第{}/{}个文件读取IO异常,文件名:{}",(i+1),fileNumber,fileName);
+                    continue;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    fileNGNum++;
+                    responseNG.append(fileName +": 读取异常" + DataService.BR);
+                    log.error("第{}/{}个文件读取异常,文件名:{}",(i+1),fileNumber,fileName);
+                    continue;
+                }
+
+            }
+
+            fileOKNum++;
+            log.info("第{}/{}个文件读取OK结束,文件名:{}",(i+1),fileNumber,fileName);
+
+            responseOK.append(fileName + ":" + responseRead + DataService.BR);
         }
-        return new ResponseResultUtil().success();
+
+        if (fileNGNum == 0) {
+            responseMsg.append(fileOKNum + "个文件读取成功。");
+            responseOK.delete((responseOK.length() - DataService.BR.length()),responseOK.length());
+            responseResult = new ResponseResultUtil().success(ResponseCodeEnum.READ_UPLOADED_FILE_SUCCESS.getCode(), responseMsg.toString(), responseOK.toString());
+        } else if (fileOKNum == 0 && fileNGNum != 0) {
+            responseMsg.append(fileNGNum + "个文件读取失败。");
+            responseNG.delete((responseNG.length() - DataService.BR.length()),responseNG.length());
+            responseResult = new ResponseResultUtil().error(ResponseCodeEnum.READ_UPLOADED_FILE_FAILED.getCode(), responseMsg.toString(), responseNG.toString());
+        } else {
+            responseMsg.append(fileOKNum + "个文件读取成功," + fileNGNum + "个文件读取失败。");
+            responseOK.delete((responseOK.length() - DataService.BR.length()),responseOK.length());
+            responseNG.delete((responseNG.length() - DataService.BR.length()),responseNG.length());
+
+            String[] responseNGArr = new String[2];
+            responseNGArr[0] = responseOK.toString();
+            responseNGArr[1] = responseNG.toString();
+
+            responseResult = new ResponseResultUtil().error(ResponseCodeEnum.READ_UPLOADED_FILE_FAILED.getCode(), responseMsg.toString(), responseNGArr);
+        }
+        return responseResult;
     }
 
-    private void readExcelFile(File file) throws Exception {
+    private String readExcelFile(File file) throws Exception {
 
         InputStream inputStream = null;//初始化输入流
         Workbook workbook = null;//根据版本选择创建Workbook的方式
@@ -105,16 +199,18 @@ public class UploadFileServiceImpl implements IUploadFileService {
                 workbook = new HSSFWorkbook(inputStream);
             }
 
-            this.readExcelFileSheets(workbook);//读Excel中所有的sheet
-        }catch(Exception e){
+            return this.readExcelFileSheets(workbook);//读Excel中所有的sheet
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new IOException();
+        } catch (Exception e) {
             e.printStackTrace();
             throw new Exception();
-        } finally{
-            if(inputStream != null)
-            {
+        } finally {
+            if (inputStream != null) {
                 try{
                     inputStream.close();
-                }catch(IOException e){
+                } catch(IOException e) {
                     inputStream = null;
                     e.printStackTrace();
                 }
@@ -123,27 +219,30 @@ public class UploadFileServiceImpl implements IUploadFileService {
 
     }
 
-    private void readExcelFileSheets(Workbook workbook) {
+    private String readExcelFileSheets(Workbook workbook) throws Exception {
+
+        StringBuffer msg = new StringBuffer();//信息接收器
 
         int numSheets = workbook.getNumberOfSheets();
-        for(int m = 0; m < numSheets; m++) {//循环sheet
+        for (int m = 0; m < numSheets; m++) {//循环sheet
             Sheet sheet = workbook.getSheetAt(m);//得到第一个sheet
-            if(sheet == null){
+            if (sheet == null) {
                 log.error("第{}/{}个sheet有问题，请仔细检查。sheet名：{}",(m+1),numSheets,sheet.getSheetName());
                 continue;
             }
             log.info("第{}/{}个sheet开始读取,sheet名:{}",(m+1),numSheets,sheet.getSheetName());
-            this.readExcelFileSheet(sheet);//读一个sheet内容
+            msg = this.readExcelFileSheet(sheet);//读一个sheet内容
+            log.info("第{}/{}个sheet读取结束,sheet名:{}",(m+1),numSheets,sheet.getSheetName());
         }
+        return msg.toString();
     }
 
-    private String readExcelFileSheet(Sheet sheet) {
+    private StringBuffer readExcelFileSheet(Sheet sheet) throws Exception {
         List<String> titleList = new ArrayList<>();
         List<Data> dataList = new ArrayList<>();
         Map<String, String> keyValue = new HashMap<>();
 
-        String errorMsg;//错误信息接收器
-        String br = "<br/>";
+        StringBuffer sheetMsg = new StringBuffer();//信息接收器
 
         String dataStyle = this.checkSheetDataStyle(sheet);
         if (dataStyle.equals("Data1")) {//T.B.D. dummy
@@ -153,62 +252,64 @@ public class UploadFileServiceImpl implements IUploadFileService {
         }
 
         //读取标题行
-        String titleErrMsg = this.readExcelFileSheetTitleRow(sheet, titleList);
-        //读取内容(从第二行开始)
-        String dataErrMsg = this.readExcelFileSheetDataRow(sheet, titleList, dataList);
+        StringBuffer titleErrMsg = this.readExcelFileSheetTitleRow(sheet, titleList);
+        //标题行验证通过才导入到数据库
+        if (titleList.size() != 0) {
 
-        //sheet里全部验证通过才导入到数据库
-        if(StringUtils.isEmpty(titleErrMsg) && StringUtils.isEmpty(dataErrMsg)){
-            for(Data data : dataList){
-                this.saveDataToSQL(DataService.TABLE_NAME, data);
+            //读取内容(从第二行开始)
+            StringBuffer dataErrMsg = this.readExcelFileSheetDataRow(sheet, titleList, dataList);
+
+            int addDataNum = 0;
+            for (Data data : dataList) {
+                addDataNum = this.saveDataToSQL(DataService.TABLE_NAME, data);//导入一行数据。
             }
             log.info("导入成功，共{}条数据！",dataList.size());
-            errorMsg = "导入成功，共" + dataList.size() + "条数据！";
+            sheetMsg.append("导入成功，共" + dataList.size() + "条数据！");
         } else {
-            errorMsg = titleErrMsg + br + dataErrMsg;
+            sheetMsg.append(titleErrMsg);
         }
-        return errorMsg;
+        return sheetMsg;
     }
 
-    private String readExcelFileSheetTitleRow(Sheet sheet, List<String> titleList) {
-        String errorMsg = "";//错误信息接收器
-        String rowMessage = "";//行错误信息接收器
-        String br = "<br/>";
+    private StringBuffer readExcelFileSheetTitleRow(Sheet sheet, List<String> titleList) {
+        StringBuffer msg = new StringBuffer();//信息接收器
+        StringBuffer rowErrorMsg = new StringBuffer();//行错误信息接收器
 
         List<String> valueList = new ArrayList<>();
 
+        msg.append("第1行标题行:");
+
         Row titleRow = sheet.getRow(0);//标题行
         int numTitleCells = titleRow.getLastCellNum();//标题行的列数
-        for (int n = 0; n <numTitleCells; n++) {//循环列
+        for (int n=0; n<numTitleCells; n++) {//循环列
             Cell cell = titleRow.getCell(n);
             if (null == cell) {
-                errorMsg += br + "第1行";
-                errorMsg += br + "第" + (n + 1) + "列标题有问题，请仔细检查；";
+                rowErrorMsg.append(DataService.BR + "第" + (n+1) + "列标题有问题，请仔细检查。");
                 log.error("第{}/{}列标题有问题，请仔细检查。",(n+1),numTitleCells);
             }
 
             String cellValue = cell.getStringCellValue();
             if (StringUtils.isEmpty(cellValue)) {
-                rowMessage += "第" + (n + 1) + "列标题为空；";
+                rowErrorMsg.append(DataService.BR + "第" + (n+1) + "列标题为空，请仔细检查。");
                 log.error("第{}/{}列标题为空。",(n+1),numTitleCells);
             }
             valueList.add(cellValue);
         }
 
         //拼接每行的错误提示
-        if (!StringUtils.isEmpty(rowMessage)) {
-            errorMsg += br + "标题行，" + rowMessage;
+        if (rowErrorMsg.length() != 0) {
+            msg.append(rowErrorMsg);
         } else {
             titleList.addAll(valueList);
+            msg.setLength(0);
         }
 
-        return errorMsg;
+        return msg;
     }
 
-    private String readExcelFileSheetDataRow(Sheet sheet, List<String> titleList, List<Data> dataList) {
-        String errorMsg = "";//错误信息接收器
-        String rowMessage = "";//行错误信息接收器
-        String br = "<br/>";
+    private StringBuffer readExcelFileSheetDataRow(Sheet sheet, List<String> titleList, List<Data> dataList) {
+        StringBuffer msg = new StringBuffer();//信息接收器
+        StringBuffer colErrorMsg = new StringBuffer();//列错误信息接收器
 
         Map<String, String> keyValue = new HashMap<>();
 
@@ -219,7 +320,7 @@ public class UploadFileServiceImpl implements IUploadFileService {
         for (int p = 1; p <= numRows; p++) {//循环Excel行数,从第二行开始。标题不入库
             Row row = sheet.getRow(p);
             if (row == null) {
-                errorMsg += br+ "第" + (p + 1) + "行数据有问题，请仔细检查！";
+                msg.append("第" + (p+1) + "行数据有问题，请仔细检查。" + DataService.BR);
                 log.error("第{}/{}行数据有问题，请仔细检查。",(p+1),numRows);
                 continue;
             }
@@ -227,25 +328,28 @@ public class UploadFileServiceImpl implements IUploadFileService {
             for(int q = 0; q <numTitleCells; q++) {//循环列
                 Cell cell = row.getCell(q);
                 if (null == cell) {
-                    errorMsg += br+ "第" + (p + 1) + "行";
-                    errorMsg += br+ "第" + (q + 1) + "列数据有问题，请仔细检查；";
+                    colErrorMsg.append("第" + (p+1) + "行第" + (q+1) + "列数据有问题，请仔细检查。" + DataService.BR);
                     log.error("第{}行,第{}/{}列数据有问题，请仔细检查。",(p+1),(q+1),numTitleCells);
+                    continue;
                 }
 
                 String cellValue = cell.getStringCellValue();
                 keyValue.put(titleList.get(q), cellValue);
             }
-            Data data = new Data(keyValue);
 
             //拼接每行的错误提示
-            if(!StringUtils.isEmpty(rowMessage)){
-                errorMsg += br + "第" + (p+1) + "行，" + rowMessage;
+            if(colErrorMsg.length() != 0){
+                msg.append(colErrorMsg);
+                colErrorMsg.setLength(0);
             }else{
+                Data data = new Data(keyValue);
                 dataList.add(data);
             }
+
+            keyValue.clear();
         }
 
-        return errorMsg;
+        return msg;
     }
 
     private String checkSheetDataStyle(Sheet sheet) {
@@ -256,7 +360,7 @@ public class UploadFileServiceImpl implements IUploadFileService {
         return "";
     }
 
-    private void saveDataToSQL(String tableName, Data data) {
-        dataService.addData(tableName, data);
+    private int saveDataToSQL(String tableName, Data data) {
+        return dataService.addData(tableName, data);
     }
 }

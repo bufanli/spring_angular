@@ -50,7 +50,7 @@ public class DataDao {
         for (int i=0; i<size; i++) {
             sql.append("?,");
         }
-        sql.deleteCharAt(sql.length() - 1);
+        sql.deleteCharAt(sql.length() - ",".length());
         sql.append(")");
         int num = getJdbcTemplate().update(sql.toString(),(Object[])columnsValuesArr);
         return num;//大于0，插入成功。
@@ -107,7 +107,7 @@ sbf = new StringBuffer("");//重新new
                 strCcolsName.append(",");
             }
         }
-        strCcolsName.deleteCharAt(strCcolsName.length() - 1);
+        strCcolsName.deleteCharAt(strCcolsName.length() - ",".length());
         String[] name = strCcolsName.toString().split(",");
 
         StringBuffer sql =  new StringBuffer();
@@ -245,12 +245,12 @@ sbf = new StringBuffer("");//重新new
             for (String key : set) {
                 sql.append(key + ",");
             }
-            sql.deleteCharAt(sql.length() - 1);
+            sql.deleteCharAt(sql.length() - ",".length());
             sql.append(" ) values ( ");
             for (String key : set) {
                 sql.append("'" + map.get(key) + "',");
             }
-            sql.deleteCharAt(sql.length() - 1);
+            sql.deleteCharAt(sql.length() - ",".length());
             sql.append(" ) ");
             re = getJdbcTemplate().update(sql.toString());
         } catch (Exception e) {

@@ -28,15 +28,15 @@ public class GetQueryConditionsController {
     @RequestMapping(value="/getQueryConditions", method = RequestMethod.GET)
     public @ResponseBody
     ResponseResult getHeaders() {
-
+        ResponseResult responseResult;
         try {
             log.info("取得查询条件开始");
-            getQueryConditionsService.getQueryConditions();
+            responseResult = getQueryConditionsService.getQueryConditions();
         } catch (Exception e) {
             e.printStackTrace();
-            return new ResponseResultUtil().error();
+            responseResult = new ResponseResultUtil().error();
         }
-
-        return new ResponseResultUtil().success();
+        log.info("取得查询条件结束");
+        return responseResult;
     }
 }

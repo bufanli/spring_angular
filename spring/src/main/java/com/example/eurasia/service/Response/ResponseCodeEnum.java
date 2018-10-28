@@ -31,6 +31,14 @@ public enum ResponseCodeEnum {
     SEARCH_DATA_INFO_FROM_SQL_NULL(ResponseCode.RESPONSE_CODE_NULL, "从数据库取得数据信息为NULL"),
     SEARCH_DATA_INFO_FROM_SQL_ZERO(ResponseCode.RESPONSE_CODE_OK, "从数据库取得数据信息为0"),
 
+    /* 文件上传 */
+    UPLOAD_FILE_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "上传文件成功"),
+    UPLOAD_FILE_FAILED(ResponseCode.RESPONSE_CODE_NG, "上传文件失败"),
+
+    /* 读取上传文件 */
+    READ_UPLOADED_FILE_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "读取上传文件成功"),
+    READ_UPLOADED_FILE_FAILED(ResponseCode.RESPONSE_CODE_NG, "读取上传文件失败"),
+
     /* 添加数据 */
 
     /* 导出数据 */

@@ -1,6 +1,7 @@
 package com.example.eurasia.controller;
 
 import com.example.eurasia.service.Data.IUploadFileService;
+import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -53,6 +54,8 @@ public class UploadFileController {
     public @ResponseBody
     ResponseResult uploadFiles(@RequestParam("file") MultipartFile[] files, HttpServletRequest request) throws IOException {
 
+        ResponseResult responseResult;
+
         Date date = new Date(System.currentTimeMillis());
         DateFormat dateFormat = new SimpleDateFormat("yyyy_mm_dd");
         String strFormat = dateFormat.format(date);
@@ -67,20 +70,23 @@ public class UploadFileController {
 
         try {
             log.info("IP:{},进行文件上传开始",request.getRemoteAddr());
-            uploadFileService.batchUpload(filePath, files);
+            //responseResult = uploadFileService.batchUpload(filePath, files);
+            uploadFileService.batchUpload(filePath, files);//T.B.D 返回结构暂时不做处理
         } catch (Exception e) {
             e.printStackTrace();
-            return new ResponseResultUtil().error();
+            //responseResult = new ResponseResultUtil().error(ResponseCodeEnum.UPLOAD_FILE_FAILED);//T.B.D
         }
+        log.info("IP:{},进行文件上传结束",request.getRemoteAddr());
 
         try {
             log.info("Dir:{},进行文件读取开始",uploadDir);
-            uploadFileService.readFile(uploadDir);
+            responseResult = uploadFileService.readFile(uploadDir);
         } catch (Exception e) {
             e.printStackTrace();
-            return new ResponseResultUtil().error();
+            responseResult = new ResponseResultUtil().error(ResponseCodeEnum.READ_UPLOADED_FILE_FAILED);
         }
-        return new ResponseResultUtil().success();
+        log.info("Dir:{},进行文件读取结束",uploadDir);
+        return responseResult;
     }
 
 }

@@ -38,6 +38,7 @@ public class SearchDataController {
             e.printStackTrace();
             responseResult = new ResponseResultUtil().error();
         }
+        log.info("查询数据结束");
         return responseResult;
     }
 

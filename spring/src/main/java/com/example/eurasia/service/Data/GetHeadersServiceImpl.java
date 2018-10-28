@@ -51,9 +51,6 @@ public class GetHeadersServiceImpl implements IGetHeadersService {
                 }
                 i++;
             }
-
-            log.info("取得表头结束");
-
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseResultUtil().error(ResponseCodeEnum.HEADER_GET_INFO_FROM_SQL_FAILED);

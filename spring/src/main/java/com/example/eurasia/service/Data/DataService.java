@@ -28,6 +28,7 @@ public class DataService {
 
     public static final String TABLE_NAME = "eurasiaTable";
     public static final String EXPORT_EXCEL_SHEET_NAME = "统计表";
+    public static final String BR = "<br/>";
 
     /**
      * 添加数据
@@ -37,8 +38,8 @@ public class DataService {
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
-    public void addData(String tableName, Data data) {
-        getDataDao().addData(tableName, data);
+    public int addData(String tableName, Data data) {
+        return getDataDao().addData(tableName, data);
     }
 
     /**

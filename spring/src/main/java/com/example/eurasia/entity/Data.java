@@ -71,7 +71,7 @@ public class Data{
             sb.append(it.next().getKey());
             sb.append(",");
         }
-        sb.deleteCharAt(sb.length() - 1);
+        sb.deleteCharAt(sb.length() - ",".length());
 
         return sb.toString();
     }
@@ -94,7 +94,7 @@ public class Data{
             sb.append(it.next().getValue());
             sb.append(",");
         }
-        sb.deleteCharAt(sb.length() - 1);
+        sb.deleteCharAt(sb.length() - ",".length());
 
         return sb.toString();
     }
