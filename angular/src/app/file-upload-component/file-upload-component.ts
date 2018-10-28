@@ -3,7 +3,7 @@ import { FileUploader } from 'ng2-file-upload';
 import { FileItem } from 'ng2-file-upload';
 import { ParsedResponseHeaders } from 'ng2-file-upload';
 
-const URL = 'uploadFiles';
+const URL = 'uploadFile';
 
 @Component({
   selector: 'app-file-upload',
