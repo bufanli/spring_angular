@@ -52,6 +52,7 @@ public enum ResponseCodeEnum {
     EXPORT_GET_DATA_INFO_FROM_SQL_ZERO(ResponseCode.RESPONSE_CODE_OK, "导出数据时,从数据库取得数据信息为0"),
     EXPORT_DATA_INFO_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "导出数据成功"),
     EXPORT_DATA_INFO_FAILED(ResponseCode.RESPONSE_CODE_NG, "导出数据成功"),
+    EXPORT_DATA_FILE_NAME_NULL(ResponseCode.RESPONSE_CODE_NG, "导出文件名字为NULL"),
 
     /* 取得查询条件 */
 

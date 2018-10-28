@@ -2,12 +2,14 @@ package com.example.eurasia.controller;
 
 import com.example.eurasia.entity.QueryCondition;
 import com.example.eurasia.service.Data.IDownloadFileService;
+import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -15,7 +17,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.OutputStream;
 
 @Slf4j
 @Controller
@@ -33,12 +34,15 @@ public class DownloadFileController {
      */
     @RequestMapping(value="/downloadFile", method = RequestMethod.POST)
     public @ResponseBody
-    ResponseResult downloadFiles(HttpServletResponse response, @RequestBody QueryCondition[] queryConditionsArr) throws IOException {
+    ResponseResult downloadFiles(HttpServletResponse response, @RequestBody QueryCondition[] queryConditionsArr, String fileName) throws IOException {
         ResponseResult responseResult;
+        if (StringUtils.isEmpty(fileName)) {
+            return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_DATA_FILE_NAME_NULL);
+        }
         //导出excel
         try {
             log.info("进行excel文件导出开始");
-            responseResult = this.exportExcel(response,queryConditionsArr);
+            responseResult = this.exportExcel(response,queryConditionsArr,fileName);
         } catch (Exception e) {
             e.printStackTrace();
             responseResult = new ResponseResultUtil().error();
@@ -52,7 +56,7 @@ public class DownloadFileController {
      * @date 2018-10-14
      * @description 导出excel
      */
-    public ResponseResult exportExcel(HttpServletResponse response, QueryCondition[] queryConditionsArr) throws Exception {
+    public ResponseResult exportExcel(HttpServletResponse response, QueryCondition[] queryConditionsArr, String fileName) throws Exception {
         /**
          * 导出excel比较重要的api有以下几个。
          *  创建一个excel文件工作薄；（HSSFWorkbook workbook = new HSSFWorkbook()）
@@ -62,15 +66,7 @@ public class DownloadFileController {
          *  设置一个单元格样式；cell.setCellStyle(style)
          */
 
-        ResponseResult responseResult;
-
-        OutputStream out = response.getOutputStream();
-        responseResult = downloadFileService.exportExcel(out,queryConditionsArr);
-
-        out.flush();
-        out.close();
-
-        return responseResult;
+        return downloadFileService.exportExcel(response,queryConditionsArr,fileName);
     }
 
 }

@@ -6,7 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 
 public interface IUploadFileService {
-    ResponseResult batchUpload(String filePath, MultipartFile[] files) throws Exception;
+    ResponseResult batchUpload(File uploadDir, MultipartFile[] files) throws Exception;
 
     ResponseResult readFile(File uploadDir) throws Exception;
 }

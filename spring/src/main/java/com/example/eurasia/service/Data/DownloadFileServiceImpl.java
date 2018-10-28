@@ -6,7 +6,6 @@ import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFColor;
@@ -39,23 +38,28 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
     private DataService dataService;
 
     @Override
-    public ResponseResult exportExcel(OutputStream out, QueryCondition[] queryConditionsArr) throws Exception {
+    public ResponseResult exportExcel(HttpServletResponse response, QueryCondition[] queryConditionsArr, String fileName) throws Exception {
 
         List<Map<String,Object>> colsNameList = this.getTitles(DataService.TABLE_NAME);
         if (colsNameList.size() == 0) {
+            log.info(ResponseCodeEnum.EXPORT_GET_HEADER_INFO_FROM_SQL_ZERO.getMessage());
             return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_GET_HEADER_INFO_FROM_SQL_ZERO);
         }
         List<Data> dataList = this.getRows(DataService.TABLE_NAME,queryConditionsArr);
         if (dataList.size() == 0) {
             log.info(ResponseCodeEnum.EXPORT_GET_DATA_INFO_FROM_SQL_ZERO.getMessage());
+            return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_GET_DATA_INFO_FROM_SQL_ZERO);
         }
 
+        StringBuffer responseMsg = new StringBuffer();
+        int rowIndex =0;
         XSSFWorkbook wb = new XSSFWorkbook();
         try {
             XSSFSheet sheet = wb.createSheet(DataService.EXPORT_EXCEL_SHEET_NAME);
-            this.writeExcel(wb, sheet, colsNameList, dataList);
-
-            wb.write(out);
+            rowIndex = this.writeExcel(wb, sheet, colsNameList, dataList);
+            this.buildExcelDocument(fileName, wb, response);
+            responseMsg.append("导出到文件的条目数：" + (rowIndex+1));
+            log.info("导出到文件的条目数：{}",(rowIndex+1));
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_DATA_INFO_FAILED);
@@ -63,87 +67,19 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
             wb.close();
         }
 
-        return new ResponseResultUtil().success(ResponseCodeEnum.EXPORT_DATA_INFO_SUCCESS);
+        return new ResponseResultUtil().success(ResponseCodeEnum.EXPORT_DATA_INFO_SUCCESS,responseMsg);
     }
 
-    //创建表头
-    public void createTitle(HSSFWorkbook workbook, HSSFSheet sheet, Data title) {
-        HSSFRow row = sheet.createRow(0);
-        //设置列宽，setColumnWidth的第二个参数要乘以256，这个参数的单位是1/256个字符宽度
-        sheet.setColumnWidth(1,12*256);
-        sheet.setColumnWidth(3,17*256);
-
-        //设置为居中加粗
-        HSSFCellStyle style = workbook.createCellStyle();
-        HSSFFont font = workbook.createFont();
-        font.setBold(true);
-        style.setAlignment(HorizontalAlignment.CENTER);
-        style.setFont(font);
-
-        HSSFCell cell;
-        cell = row.createCell(0);
-        cell.setCellValue("ID");//T.B.D.
-        cell.setCellStyle(style);
-
-
-        cell = row.createCell(1);
-        cell.setCellValue("显示名");//T.B.D.
-        cell.setCellStyle(style);
-
-        cell = row.createCell(2);
-        cell.setCellValue("用户名");//T.B.D.
-        cell.setCellStyle(style);
-
-        cell = row.createCell(3);
-        cell.setCellValue("创建时间");//T.B.D.
-        cell.setCellStyle(style);
-    }
-
-    //创建行数据
-    public void createRows(HSSFWorkbook workbook, HSSFSheet sheet, Data rows) {
-//        List<Data> rows = userService.getAll();
-//
-//        //设置日期格式
-//        HSSFCellStyle style = workbook.createCellStyle();
-//        style.setDataFormat(HSSFDataFormat.getBuiltinFormat("m/d/yy h:mm"));
-//
-//        //新增数据行，并且设置单元格数据
-//        int rowNum=1;
-//        for(Data data:rows){
-//            HSSFRow row = sheet.createRow(rowNum);
-//            row.createCell(0).setCellValue(data.getId());
-//            row.createCell(1).setCellValue(data.getName());
-//            row.createCell(2).setCellValue(data.getUsername());
-//
-//            HSSFCell cell = row.createCell(3);
-//            cell.setCellValue(data.getCreate_time());
-//            cell.setCellStyle(style);
-//            rowNum++;
-//        }
-    }
-
-    private void writeExcel(XSSFWorkbook wb, Sheet sheet, List<Map<String,Object>> titleList, List<Data> rowList) {
+    private int writeExcel(XSSFWorkbook wb, Sheet sheet, List<Map<String,Object>> titleList, List<Data> rowList) {
 
         int rowIndex = 0;
-
-        int i = 0;
-        for(Map<String,Object> colsName: titleList) {
-            Set<Map.Entry<String, Object>> set = colsName.entrySet();
-            Iterator<Map.Entry<String, Object>> it = set.iterator();
-            while (it.hasNext()) {
-                Map.Entry<String,Object> entry = it.next();
-                //System.out.println("Key:" + entry.getKey() + " Value:" + entry.getValue());
-            }
-            i++;
-        }
-
-//        rowIndex = writeTitlesToExcel(wb, sheet, data.getTitles());//T.B.D.
-//        writeRowsToExcel(wb, sheet, data.getRows(), rowIndex);//T.B.D.
-//        autoSizeColumns(sheet, data.getTitles().size() + 1);//T.B.D.
-
+        rowIndex = writeTitlesToExcel(wb, sheet, titleList);
+        rowIndex = writeRowsToExcel(wb, sheet, rowList, rowIndex);
+        autoSizeColumns(sheet, (titleList.size() + 1));
+        return rowIndex;
     }
 
-    private int writeTitlesToExcel(XSSFWorkbook wb, Sheet sheet, List<String> titles) {
+    private int writeTitlesToExcel(XSSFWorkbook wb, Sheet sheet, List<Map<String,Object>> titleList) {
         int rowIndex = 0;
         int colIndex = 0;
 
@@ -166,44 +102,48 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
         // titleRow.setHeightInPoints(25);
         colIndex = 0;
 
-        for (String field : titles) {
-            Cell cell = titleRow.createCell(colIndex);
-            cell.setCellValue(field);
-            cell.setCellStyle(titleStyle);
-            colIndex++;
+        for(Map<String,Object> colsName: titleList) {
+            Set<Map.Entry<String, Object>> set = colsName.entrySet();
+            Iterator<Map.Entry<String, Object>> it = set.iterator();
+            while (it.hasNext()) {
+                Map.Entry<String,Object> entry = it.next();
+                //System.out.println("Key:" + entry.getKey() + " Value:" + entry.getValue());
+                Cell cell = titleRow.createCell(colIndex);
+                cell.setCellValue(entry.getValue().toString());
+                cell.setCellStyle(titleStyle);
+                colIndex++;
+            }
         }
 
         rowIndex++;
         return rowIndex;
     }
 
-    private int writeRowsToExcel(XSSFWorkbook wb, Sheet sheet, List<List<Object>> rows, int rowIndex) {
+    private int writeRowsToExcel(XSSFWorkbook wb, Sheet sheet, List<Data> rows, int rowIndex) {
         int colIndex = 0;
 
+        // 设置字体
         Font dataFont = wb.createFont();
         dataFont.setFontName("simsun");
         // dataFont.setFontHeightInPoints((short) 14);
         dataFont.setColor(IndexedColors.BLACK.index);
 
         XSSFCellStyle dataStyle = wb.createCellStyle();
-        dataStyle.setAlignment(HorizontalAlignment.CENTER);
-        dataStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+        dataStyle.setAlignment(HorizontalAlignment.CENTER);// 指定单元格居中对齐
+        dataStyle.setVerticalAlignment(VerticalAlignment.CENTER);// 指定单元格垂直居中对齐
         dataStyle.setFont(dataFont);
         setBorder(dataStyle, BorderStyle.THIN, new XSSFColor(new java.awt.Color(0, 0, 0)));
 
-        for (List<Object> rowData : rows) {
+        for (Data rowData : rows) {
             Row dataRow = sheet.createRow(rowIndex);
             // dataRow.setHeightInPoints(25);
             colIndex = 0;
 
-            for (Object cellData : rowData) {
+            Set<Map.Entry<String, String>> set = rowData.getKeyValue().entrySet();
+            Iterator<Map.Entry<String, String>> it = set.iterator();
+            while (it.hasNext()) {
                 Cell cell = dataRow.createCell(colIndex);
-                if (cellData != null) {
-                    cell.setCellValue(cellData.toString());
-                } else {
-                    cell.setCellValue("");
-                }
-
+                cell.setCellValue(it.next().getValue().toString());
                 cell.setCellStyle(dataStyle);
                 colIndex++;
             }
@@ -238,7 +178,7 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
     }
 
     //生成excel文件
-    protected void buildExcelFile(String filename, XSSFWorkbook workbook) throws Exception{
+    private void buildExcelFile(String filename, XSSFWorkbook workbook) throws Exception{
         FileOutputStream fos = new FileOutputStream(filename);
         workbook.write(fos);
         fos.flush();
@@ -249,9 +189,9 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
     }
 
     //浏览器下载excel
-    protected void buildExcelDocument(String filename, XSSFWorkbook workbook, HttpServletResponse response) throws Exception{
+    private void buildExcelDocument(String filename, XSSFWorkbook workbook, HttpServletResponse response) throws Exception{
         response.setContentType("application/vnd.ms-excel");
-        response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(filename, "utf-8"));
+        response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(filename, "gbk"));
         OutputStream outputStream = response.getOutputStream();
         workbook.write(outputStream);
         outputStream.flush();
@@ -261,6 +201,8 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
     private List<Map<String,Object>> getTitles(String tableName) throws Exception {
         List<Map<String,Object>> colsNameList;
         try {
+            log.info("文件导出，取得表头开始");
+
             colsNameList = dataService.getHeaders(DataService.TABLE_NAME);
             if (colsNameList == null) {
                 throw new Exception(ResponseCodeEnum.EXPORT_GET_HEADER_INFO_FROM_SQL_NULL.getMessage());
@@ -279,6 +221,8 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
         Data queryConditions = new Data(dataService.queryConditionsArrToMap(queryConditionsArr));
         List<Data> dataList;
         try {
+            log.info("文件导出，查询数据开始");
+
             dataList = dataService.searchData(DataService.TABLE_NAME, queryConditions);
             if (dataList == null) {
                 throw new Exception(ResponseCodeEnum.EXPORT_GET_DATA_INFO_FROM_SQL_NULL.getMessage());
