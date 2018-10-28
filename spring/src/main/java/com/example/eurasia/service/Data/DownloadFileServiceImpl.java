@@ -1,7 +1,10 @@
 package com.example.eurasia.service.Data;
 
 import com.example.eurasia.entity.Data;
+import com.example.eurasia.entity.QueryCondition;
+import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Response.ResponseResult;
+import com.example.eurasia.service.Response.ResponseResultUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.*;
@@ -19,7 +22,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.net.URLEncoder;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Slf4j
 /*@Transactional(readOnly = true)事物注解*/
@@ -33,23 +39,35 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
     private DataService dataService;
 
     @Override
-    public ResponseResult exportExcel(OutputStream out, Data data) throws Exception {
+    public ResponseResult exportExcel(OutputStream out, QueryCondition[] queryConditionsArr) throws Exception {
+
+        List<Map<String,Object>> colsNameList = this.getTitles(DataService.TABLE_NAME);
+        if (colsNameList.size() == 0) {
+            return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_GET_HEADER_INFO_FROM_SQL_ZERO);
+        }
+        List<Data> dataList = this.getRows(DataService.TABLE_NAME,queryConditionsArr);
+        if (dataList.size() == 0) {
+            log.info(ResponseCodeEnum.EXPORT_GET_DATA_INFO_FROM_SQL_ZERO.getMessage());
+        }
+
+        log.info("文件导出,创建文件开始");
         XSSFWorkbook wb = new XSSFWorkbook();
         try {
-            String sheetName = null;//data.getName();//T.B.D
-            if (null == sheetName) {
-                sheetName = "Sheet1";
-            }
-            XSSFSheet sheet = wb.createSheet(sheetName);
-            writeExcel(wb, sheet, data);
+
+            XSSFSheet sheet = wb.createSheet(DataService.EXPORT_EXCEL_SHEET_NAME);
+            this.writeExcel(wb, sheet, colsNameList, dataList);
 
             wb.write(out);
+
+            log.info("文件导出结束");
         } catch (Exception e) {
             e.printStackTrace();
+            return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_DATA_INFO_FAILED);
         } finally {
             wb.close();
         }
-        return null;
+
+        return new ResponseResultUtil().success(ResponseCodeEnum.EXPORT_DATA_INFO_SUCCESS);
     }
 
     //创建表头
@@ -108,9 +126,20 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
 //        }
     }
 
-    private static void writeExcel(XSSFWorkbook wb, Sheet sheet, Data data) {
+    private void writeExcel(XSSFWorkbook wb, Sheet sheet, List<Map<String,Object>> titleList, List<Data> rowList) {
 
         int rowIndex = 0;
+
+        int i = 0;
+        for(Map<String,Object> colsName: titleList) {
+            Set<Map.Entry<String, Object>> set = colsName.entrySet();
+            Iterator<Map.Entry<String, Object>> it = set.iterator();
+            while (it.hasNext()) {
+                Map.Entry<String,Object> entry = it.next();
+                //System.out.println("Key:" + entry.getKey() + " Value:" + entry.getValue());
+            }
+            i++;
+        }
 
 //        rowIndex = writeTitlesToExcel(wb, sheet, data.getTitles());//T.B.D.
 //        writeRowsToExcel(wb, sheet, data.getRows(), rowIndex);//T.B.D.
@@ -118,7 +147,7 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
 
     }
 
-    private static int writeTitlesToExcel(XSSFWorkbook wb, Sheet sheet, List<String> titles) {
+    private int writeTitlesToExcel(XSSFWorkbook wb, Sheet sheet, List<String> titles) {
         int rowIndex = 0;
         int colIndex = 0;
 
@@ -152,7 +181,7 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
         return rowIndex;
     }
 
-    private static int writeRowsToExcel(XSSFWorkbook wb, Sheet sheet, List<List<Object>> rows, int rowIndex) {
+    private int writeRowsToExcel(XSSFWorkbook wb, Sheet sheet, List<List<Object>> rows, int rowIndex) {
         int colIndex = 0;
 
         Font dataFont = wb.createFont();
@@ -187,7 +216,7 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
         return rowIndex;
     }
 
-    private static void autoSizeColumns(Sheet sheet, int columnNumber) {
+    private void autoSizeColumns(Sheet sheet, int columnNumber) {
 
         for (int i = 0; i < columnNumber; i++) {
             int orgWidth = sheet.getColumnWidth(i);
@@ -201,7 +230,7 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
         }
     }
 
-    private static void setBorder(XSSFCellStyle style, BorderStyle border, XSSFColor color) {
+    private void setBorder(XSSFCellStyle style, BorderStyle border, XSSFColor color) {
         style.setBorderTop(border);
         style.setBorderLeft(border);
         style.setBorderRight(border);
@@ -232,4 +261,39 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
         outputStream.flush();
         outputStream.close();
     }
+
+    private List<Map<String,Object>> getTitles(String tableName) throws Exception {
+        List<Map<String,Object>> colsNameList;
+        try {
+            colsNameList = dataService.getHeaders(DataService.TABLE_NAME);
+            if (colsNameList == null) {
+                throw new Exception(ResponseCodeEnum.EXPORT_GET_HEADER_INFO_FROM_SQL_NULL.getMessage());
+            }
+
+            log.info("文件导出，取得表头结束");
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception(ResponseCodeEnum.EXPORT_GET_HEADER_INFO_FROM_SQL_FAILED.getMessage());
+        }
+
+        return colsNameList;
+    }
+
+    private List<Data> getRows(String tableName, QueryCondition[] queryConditionsArr) throws Exception {
+        Data queryConditions = new Data(dataService.queryConditionsArrToMap(queryConditionsArr));
+        List<Data> dataList;
+        try {
+            dataList = dataService.searchData(DataService.TABLE_NAME, queryConditions);
+            if (dataList == null) {
+                throw new Exception(ResponseCodeEnum.EXPORT_GET_DATA_INFO_FROM_SQL_NULL.getMessage());
+            }
+
+            log.info("文件导出，查询数据结束");
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception(ResponseCodeEnum.EXPORT_GET_DATA_INFO_FROM_SQL_FAILED.getMessage());
+        }
+        return dataList;
+    }
+
 }

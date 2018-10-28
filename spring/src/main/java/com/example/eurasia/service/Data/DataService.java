@@ -2,6 +2,7 @@ package com.example.eurasia.service.Data;
 
 import com.example.eurasia.dao.DataDao;
 import com.example.eurasia.entity.Data;
+import com.example.eurasia.entity.QueryCondition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +27,7 @@ public class DataService {
     }
 
     public static final String TABLE_NAME = "eurasiaTable";
+    public static final String EXPORT_EXCEL_SHEET_NAME = "统计表";
 
     /**
      * 添加数据
@@ -48,7 +50,11 @@ public class DataService {
      * @Time 2018-09-20 00:00:00
      */
     public List<Data> searchData(String tableName, Data queryConditions) {
-        return getDataDao().queryListForObject(tableName, queryConditions);
+        if (!queryConditions.isValuesAllNULL()) {
+            return getDataDao().queryListForObject(tableName, queryConditions);
+        } else {
+            return this.searchAllData(tableName);
+        }
     }
 
     /**
@@ -119,6 +125,22 @@ public class DataService {
             e.printStackTrace();
         }
         return false;
+    }
+
+    /**
+     * 创建数据库
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-09-20 00:00:00
+     */
+    public Map<String, String> queryConditionsArrToMap(QueryCondition[] queryConditionsArr) {
+        Map<String, String> keyValue = new HashMap<>();
+        for (int i=0; i<queryConditionsArr.length; i++) {
+            keyValue.put(queryConditionsArr[i].getKey(), queryConditionsArr[i].getValue());
+        }
+        return keyValue;
     }
 
     /**

@@ -26,21 +26,31 @@ public enum ResponseCodeEnum {
     HEADER_GET_INFO_FROM_SQL_ZERO(ResponseCode.RESPONSE_CODE_OK, "从数据库取得表头信息为0"),
 
     /* 查询数据 */
-    SEARCH_GET_INFO_FROM_SQL_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "从数据库取得数据信息成功"),
-    SEARCH_GET_INFO_FROM_SQL_FAILED(ResponseCode.RESPONSE_CODE_NG, "从数据库取得数据信息失败"),
-    SEARCH_GET_INFO_FROM_SQL_NULL(ResponseCode.RESPONSE_CODE_NULL, "从数据库取得数据信息为NULL"),
-    SEARCH_GET_INFO_FROM_SQL_ZERO(ResponseCode.RESPONSE_CODE_OK, "从数据库取得数据信息为0"),
+    SEARCH_DATA_INFO_FROM_SQL_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "从数据库取得数据信息成功"),
+    SEARCH_DATA_INFO_FROM_SQL_FAILED(ResponseCode.RESPONSE_CODE_NG, "从数据库取得数据信息失败"),
+    SEARCH_DATA_INFO_FROM_SQL_NULL(ResponseCode.RESPONSE_CODE_NULL, "从数据库取得数据信息为NULL"),
+    SEARCH_DATA_INFO_FROM_SQL_ZERO(ResponseCode.RESPONSE_CODE_OK, "从数据库取得数据信息为0"),
 
     /* 添加数据 */
 
     /* 导出数据 */
+    EXPORT_GET_HEADER_INFO_FROM_SQL_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "导出数据时,从数据库取得数据信息成功"),
+    EXPORT_GET_HEADER_INFO_FROM_SQL_FAILED(ResponseCode.RESPONSE_CODE_NG, "导出数据时,从数据库取得数据信息失败"),
+    EXPORT_GET_HEADER_INFO_FROM_SQL_NULL(ResponseCode.RESPONSE_CODE_NULL, "导出数据时,从数据库取得数据信息为NULL"),
+    EXPORT_GET_HEADER_INFO_FROM_SQL_ZERO(ResponseCode.RESPONSE_CODE_OK, "导出数据时,从数据库取得数据信息为0"),
+    EXPORT_GET_DATA_INFO_FROM_SQL_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "导出数据时,从数据库取得数据信息成功"),
+    EXPORT_GET_DATA_INFO_FROM_SQL_FAILED(ResponseCode.RESPONSE_CODE_NG, "导出数据时,从数据库取得数据信息失败"),
+    EXPORT_GET_DATA_INFO_FROM_SQL_NULL(ResponseCode.RESPONSE_CODE_NULL, "导出数据时,从数据库取得数据信息为NULL"),
+    EXPORT_GET_DATA_INFO_FROM_SQL_ZERO(ResponseCode.RESPONSE_CODE_OK, "导出数据时,从数据库取得数据信息为0"),
+    EXPORT_DATA_INFO_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "导出数据成功"),
+    EXPORT_DATA_INFO_FAILED(ResponseCode.RESPONSE_CODE_NG, "导出数据成功"),
 
     /* 取得查询条件 */
 
     /* 创建表 */
 
     /* 其他 */
-    RESPONSE_CODE_ENUM_END(0000, "Response Code End");
+    RESPONSE_CODE_ENUM_END(ResponseCode.RESPONSE_CODE_END, "Response Code End");
 
     private Integer code;
     private String message;
@@ -59,6 +69,7 @@ public enum ResponseCodeEnum {
     }
 
     private static class ResponseCode {
+        private static final Integer RESPONSE_CODE_END = 000;
         private static final Integer RESPONSE_CODE_OK = 200;
         private static final Integer RESPONSE_CODE_NG = 201;
         private static final Integer RESPONSE_CODE_NULL = 202;
