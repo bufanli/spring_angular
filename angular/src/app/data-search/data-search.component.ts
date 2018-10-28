@@ -25,13 +25,7 @@ const httpOptions = {
 export class DataSearchComponent implements OnInit {
   private searchUrl = 'searchData';  // URL to web api
   private headersUrl = 'getHeaders';  // URL to web api
-  public products: Product[] = [];
-  public hsCode: string;
-  // start date
-  startDate: Date;
-  // end date
-  endDate: Date;
-  // search parameters
+ // search parameters
   searchParam = [
     { key: '海关编码', value: '' },
     { key: '起始日期', value: '' },
@@ -58,16 +52,9 @@ export class DataSearchComponent implements OnInit {
     return this.http.post<any>(this.searchUrl, this.searchParam, httpOptions);
   }
   constructor(private http: HttpClient) {
-    this.startDate = new Date();
-    this.endDate = new Date();
   }
 
-  getProductsNotification(products: Product[]) {
-    this.products = products;
-    $('#table').bootstrapTable('load', this.products);
-  }
   searchDataNotification(result: any) {
-    console.log(result.code);
     if (result.data == null) {
       $('#table').bootstrapTable('load', []);
     } else {
@@ -99,8 +86,8 @@ export class DataSearchComponent implements OnInit {
         language: 'zh-CN',
       });
       // hook the event handler for gray to black font color
-      $(this).datepicker().on('changeDate', function(this) {
-          $(this).css('color', 'black');
+      $(this).datepicker().on('changeDate', function (this) {
+        $(this).css('color', 'black');
       });
     });
 
@@ -115,10 +102,28 @@ export class DataSearchComponent implements OnInit {
   }
   // get start and end time for querying
   getQueryTime() {
-    let time = $('#start-time').datepicker('getDate').toLocaleString();
-    this.searchParam[1].value = time.slice(0, 10);
-    time = $('#end-time').datepicker('getDate').toLocaleString();
-    this.searchParam[2].value = time.slice(0, 10);
+    // start time
+    if (this.isFontGray('#start-time') === false) {
+      const time = $('#start-time').datepicker('getDate').toLocaleString();
+      this.searchParam[1].value = time.slice(0, 10);
+    } else {
+      this.searchParam[1].value = '';
+    }
+    // end time
+    if (this.isFontGray('#end-time') === false) {
+      const time = $('#end-time').datepicker('getDate').toLocaleString();
+      this.searchParam[2].value = time.slice(0, 10);
+    } else {
+      this.searchParam[2].value = '';
+    }
+  }
+  // tell whether the font color is gray or not
+  isFontGray(id: string): boolean {
+    if ($(id).css('color') === 'rgb(128, 128, 128)') {
+      return true;
+    } else {
+      return false;
+    }
   }
   // set visible to false for some hidden columns
   filterColumns(headers: Header[]) {
@@ -147,9 +152,4 @@ export class DataSearchComponent implements OnInit {
     }
     return result;
   }
-  // function for changing date time control font color
-  onDateChange(e: any) {
-
-  }
-
 }
