@@ -19,10 +19,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 /*@Transactional(readOnly = true)事物注解*/
@@ -241,7 +238,7 @@ public class UploadFileServiceImpl implements IUploadFileService {
     }
 
     private StringBuffer readExcelFileSheet(Sheet sheet) throws Exception {
-        List<String> titleList = new ArrayList<>();
+        List<Map<Integer,String>> titleList = new ArrayList<>();
         List<Data> dataList = new ArrayList<>();
         Map<String, String> keyValue = new HashMap<>();
 
@@ -273,11 +270,12 @@ public class UploadFileServiceImpl implements IUploadFileService {
         return sheetMsg;
     }
 
-    private StringBuffer readExcelFileSheetTitleRow(Sheet sheet, List<String> titleList) {
+    private StringBuffer readExcelFileSheetTitleRow(Sheet sheet, List<Map<Integer,String>> titleList) {
         StringBuffer msg = new StringBuffer();//信息接收器
         StringBuffer rowErrorMsg = new StringBuffer();//行错误信息接收器
 
-        List<String> valueList = new ArrayList<>();
+        List<Map<Integer,String>> valueList = new ArrayList<>();
+        Map<Integer,String> titleMap = new HashMap<>();
 
         msg.append("第1行标题行:");
 
@@ -288,6 +286,7 @@ public class UploadFileServiceImpl implements IUploadFileService {
             if (null == cell) {
                 rowErrorMsg.append(DataService.BR + "第" + (n+1) + "列标题有问题，请仔细检查。");
                 log.error("第{}/{}列标题有问题，请仔细检查。",(n+1),numTitleCells);
+                continue;
             }
 
             cell.setCellType(CellType.STRING);
@@ -295,13 +294,17 @@ public class UploadFileServiceImpl implements IUploadFileService {
             if (StringUtils.isEmpty(cellValue)) {
                 rowErrorMsg.append(DataService.BR + "第" + (n+1) + "列标题为空，请仔细检查。");
                 log.error("第{}/{}列标题为空。",(n+1),numTitleCells);
+                continue;
             }
             if (false) {
                 //对比SQL列 T.B.D.................................
                 rowErrorMsg.append(DataService.BR + "第" + (n+1) + "列标题在数据中不存在，请仔细检查。");
                 log.error("第{}/{}列标题在数据中不存在。",(n+1),numTitleCells);
+                continue;
             }
-            valueList.add(cellValue);
+            titleMap.put(n,cellValue);//列号，列值
+            valueList.add(titleMap);
+            titleMap.clear();
         }
 
         //拼接每行的错误提示
@@ -315,7 +318,7 @@ public class UploadFileServiceImpl implements IUploadFileService {
         return msg;
     }
 
-    private StringBuffer readExcelFileSheetDataRow(Sheet sheet, List<String> titleList, List<Data> dataList) {
+    private StringBuffer readExcelFileSheetDataRow(Sheet sheet, List<Map<Integer,String>> titleList, List<Data> dataList) {
         StringBuffer msg = new StringBuffer();//信息接收器
         StringBuffer colErrorMsg = new StringBuffer();//列错误信息接收器
 
@@ -324,7 +327,6 @@ public class UploadFileServiceImpl implements IUploadFileService {
 
         //int numRows = sheet.getPhysicalNumberOfRows();//得到Excel的行数,不包括那些空行（隔行）的情况。
         int numRows = sheet.getLastRowNum();//获取的是最后一行的编号（编号从0开始）。
-        int numTitleCells = sheet.getRow(0).getLastCellNum();//标题行的列数
 
         for (int p = 1; p <= numRows; p++) {//循环Excel行数,从第二行开始。标题不入库
             Row row = sheet.getRow(p);
@@ -334,17 +336,24 @@ public class UploadFileServiceImpl implements IUploadFileService {
                 continue;
             }
 
-            for(int q = 0; q <numTitleCells; q++) {//循环列
-                Cell cell = row.getCell(q);//T.B.D.................................
-                if (null == cell) {
-                    colErrorMsg.append("第" + (p+1) + "行第" + (q+1) + "列数据有问题，请仔细检查。" + DataService.BR);
-                    log.error("第{}行,第{}/{}列数据有问题，请仔细检查。",(p+1),(q+1),numTitleCells);
-                    continue;
-                }
+            for (Map<Integer, String> title : titleList) {//循环列
+                Set<Map.Entry<Integer, String>> set = title.entrySet();
+                Iterator<Map.Entry<Integer, String>> it = set.iterator();
+                while (it.hasNext()) {
+                    Map.Entry<Integer, String> entry = it.next();
 
-                cell.setCellType(CellType.STRING);
-                String cellValue = cell.getStringCellValue();
-                keyValue.put(titleList.get(q), cellValue);
+                    int q = entry.getKey().intValue();//列号
+                    Cell cell = row.getCell(q);//T.B.D.................................
+                    if (null == cell) {
+                        colErrorMsg.append("第" + (p+1) + "行第" + (q+1) + "列数据有问题，请仔细检查。" + DataService.BR);
+                        log.error("第{}行,第{}列数据有问题，请仔细检查。",(p+1),(q+1));
+                        continue;
+                    }
+
+                    cell.setCellType(CellType.STRING);
+                    String cellValue = cell.getStringCellValue();
+                    keyValue.put(entry.getValue(), cellValue);//首行(表头)值，单元格值
+                }
             }
 
             //拼接每行的错误提示
