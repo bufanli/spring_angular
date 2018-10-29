@@ -7,6 +7,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
 import java.sql.*;
@@ -202,8 +203,10 @@ sbf = new StringBuffer("");//重新new
         Iterator<Map.Entry<String, String>> it = set.iterator();
         while (it.hasNext()) {
             Map.Entry<String, String> entry = it.next();
-            sql.append(" " + entry.getKey() + "='" + entry.getValue() + "'");
-            sql.append(sqlAnd);
+            if (!StringUtils.isEmpty(entry.getValue().toString())) {
+                sql.append(" " + entry.getKey() + "='" + entry.getValue() + "'");
+                sql.append(sqlAnd);
+            }
         }
         sql.delete((sql.length() - sqlAnd.length()),sql.length());
         //sql.append(" concat_ws(" + queryConditions.getKeys() + ")");
