@@ -196,6 +196,8 @@ sbf = new StringBuffer("");//重新new
      */
     public List<Data> queryListForObject(String tableName, Data queryConditions) {
         String sqlAnd = " and ";
+        String dataStart = "";
+        String dataEnd = "";
         StringBuffer sql = new StringBuffer();
         sql.append("select * from " + tableName + " where");
 
@@ -203,12 +205,46 @@ sbf = new StringBuffer("");//重新new
         Iterator<Map.Entry<String, String>> it = set.iterator();
         while (it.hasNext()) {
             Map.Entry<String, String> entry = it.next();
+            if (entry.getKey().toString().equals("起始日期") == true) {
+                dataStart = entry.getValue().toString();
+                continue;
+            }
+            if (entry.getKey().toString().equals("结束日期") == true) {
+                dataEnd = entry.getValue().toString();
+                continue;
+            }
+/*
+public static boolean isEmpty(String str)
+判断某字符串是否为空，为空的标准是 str==null 或 str.length()==0
+下面是 StringUtils 判断是否为空的示例：
+
+StringUtils.isEmpty(null) = true
+StringUtils.isEmpty("") = true
+StringUtils.isEmpty(" ") = false //注意在 StringUtils 中空格作非空处理
+StringUtils.isEmpty("   ") = false
+StringUtils.isEmpty("bob") = false
+StringUtils.isEmpty(" bob ") = false
+*/
             if (!StringUtils.isEmpty(entry.getValue().toString())) {
-                sql.append(" " + entry.getKey() + "='" + entry.getValue() + "'");
+                sql.append(" " + entry.getKey().toString() + " like '%" + entry.getValue().toString() + "%'");
                 sql.append(sqlAnd);
             }
         }
-        sql.delete((sql.length() - sqlAnd.length()),sql.length());
+
+        if (dataStart.equals("") == true && dataEnd.equals("") == false) {
+            dataStart = "(select min(" + "起始日期" + ")";
+            sql.append(" 起始日期" + " between '" + dataStart + "' and '" + dataEnd + "'");
+        } else if (dataStart.equals("") == false && dataEnd.equals("") == true) {
+            dataEnd = "(select max(" + "起始日期" + ")";
+            sql.append(" 起始日期" + " between '" + dataStart + "' and '" + dataEnd + "'");
+        } else if (dataStart.equals("") == false && dataEnd.equals("") == false) {
+            sql.append(" 起始日期" + " between '" + dataStart + "' and '" + dataEnd + "'");
+        } else if (dataStart.equals("") == true && dataEnd.equals("") == true)  {
+            if (sql.indexOf(sqlAnd) >= 0) {
+                sql.delete((sql.length() - sqlAnd.length()),sql.length());
+            }
+        }
+
         //sql.append(" concat_ws(" + queryConditions.getKeys() + ")");
 
         List<Data> dataList = getJdbcTemplate().query(sql.toString(), new DataMapper());

@@ -95,11 +95,11 @@ public class UploadFileServiceImpl implements IUploadFileService {
             responseOK.delete((responseOK.length() - DataService.BR.length()),responseOK.length());
             responseNG.delete((responseNG.length() - DataService.BR.length()),responseNG.length());
 
-            String[] responseNGArr = new String[2];
-            responseNGArr[0] = responseOK.toString();
-            responseNGArr[1] = responseNG.toString();
+            String[] responseOKNGArr = new String[2];
+            responseOKNGArr[0] = responseOK.toString();
+            responseOKNGArr[1] = responseNG.toString();
 
-            responseResult = new ResponseResultUtil().error(ResponseCodeEnum.UPLOAD_FILE_FAILED.getCode(), responseMsg.toString(), responseNGArr);
+            responseResult = new ResponseResultUtil().error(ResponseCodeEnum.UPLOAD_FILE_FAILED.getCode(), responseMsg.toString(), responseOKNGArr);
         }
         return responseResult;
     }
@@ -343,7 +343,7 @@ public class UploadFileServiceImpl implements IUploadFileService {
                     Map.Entry<Integer, String> entry = it.next();
 
                     int q = entry.getKey().intValue();//列号
-                    Cell cell = row.getCell(q);//T.B.D.................................
+                    Cell cell = row.getCell(q);
                     if (null == cell) {
                         colErrorMsg.append("第" + (p+1) + "行第" + (q+1) + "列数据有问题，请仔细检查。" + DataService.BR);
                         log.error("第{}行,第{}列数据有问题，请仔细检查。",(p+1),(q+1));

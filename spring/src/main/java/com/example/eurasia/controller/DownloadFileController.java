@@ -11,7 +11,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -31,8 +30,7 @@ public class DownloadFileController {
      * @description 导出数据到文件
      */
     @RequestMapping(value="/downloadFile", method = RequestMethod.POST)
-    public @ResponseBody
-    ResponseResult downloadFiles(HttpServletResponse response, @RequestBody QueryCondition[] queryConditionsArr) throws IOException {
+    public void downloadFiles(HttpServletResponse response, @RequestBody QueryCondition[] queryConditionsArr) throws IOException {
         ResponseResult responseResult;
         //导出excel
         try {
@@ -43,7 +41,6 @@ public class DownloadFileController {
             responseResult = new ResponseResultUtil().error();
         }
         log.info("进行excel文件导出结束");
-        return responseResult;
     }
 
     /**
