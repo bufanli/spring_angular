@@ -21,10 +21,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.net.URLEncoder;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Slf4j
 /*@Transactional(readOnly = true)事物注解*/
@@ -38,7 +37,7 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
     private DataService dataService;
 
     @Override
-    public ResponseResult exportExcel(HttpServletResponse response, QueryCondition[] queryConditionsArr, String fileName) throws Exception {
+    public ResponseResult exportExcel(HttpServletResponse response, QueryCondition[] queryConditionsArr) throws Exception {
 
         List<Map<String,Object>> colsNameList = this.getTitles(DataService.TABLE_NAME);
         if (colsNameList.size() == 0) {
@@ -57,7 +56,12 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
         try {
             XSSFSheet sheet = wb.createSheet(DataService.EXPORT_EXCEL_SHEET_NAME);
             rowIndex = this.writeExcel(wb, sheet, colsNameList, dataList);
+
+            Date date = new Date(System.currentTimeMillis());
+            DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd");
+            String fileName = dateFormat.format(date);//导出文件名是当天日期
             this.buildExcelDocument(fileName, wb, response);
+
             responseMsg.append("导出到文件的条目数：" + (rowIndex+1));
             log.info("导出到文件的条目数：{}",(rowIndex+1));
         } catch (Exception e) {
