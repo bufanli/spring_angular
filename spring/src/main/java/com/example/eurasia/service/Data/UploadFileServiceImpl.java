@@ -270,7 +270,7 @@ public class UploadFileServiceImpl implements IUploadFileService {
         return sheetMsg;
     }
 
-    private StringBuffer readExcelFileSheetTitleRow(Sheet sheet, List<Map<Integer,String>> titleList) {
+    private StringBuffer readExcelFileSheetTitleRow(Sheet sheet, List<Map<Integer,String>> titleList) throws Exception {
         StringBuffer msg = new StringBuffer();//信息接收器
         StringBuffer rowErrorMsg = new StringBuffer();//行错误信息接收器
 
@@ -296,8 +296,7 @@ public class UploadFileServiceImpl implements IUploadFileService {
                 log.error("第{}/{}列标题为空。",(n+1),numTitleCells);
                 continue;
             }
-            if (false) {
-                //对比SQL列 T.B.D.................................
+            if (!this.checkTitles(cellValue)) {//对比SQL表头
                 rowErrorMsg.append(DataService.BR + "第" + (n+1) + "列标题在数据中不存在，请仔细检查。");
                 log.error("第{}/{}列标题在数据中不存在。",(n+1),numTitleCells);
                 continue;
@@ -380,7 +379,48 @@ public class UploadFileServiceImpl implements IUploadFileService {
         return "";
     }
 
+    private boolean checkTitles(String cellValue) throws Exception {
+        List<Map<String,Object>> colsNameList = this.getTitles(DataService.TABLE_NAME);
+        if (colsNameList.size() == 0) {
+            log.info(ResponseCodeEnum.UPLOAD_GET_HEADER_INFO_FROM_SQL_ZERO.getMessage());
+            return false;
+        }
+
+        for(Map<String,Object> colsName: colsNameList) {
+            Set<Map.Entry<String, Object>> set = colsName.entrySet();
+            Iterator<Map.Entry<String, Object>> it = set.iterator();
+            while (it.hasNext()) {
+                Map.Entry<String,Object> entry = it.next();
+                //System.out.println("Key:" + entry.getKey() + " Value:" + entry.getValue());
+                if (entry.getValue().toString().equals(cellValue) == true) {
+                    return true;//excel这个表头，在数据库表头中找到了
+                }
+            }
+        }
+
+        return false;//没找到
+    }
+
     private int saveDataToSQL(String tableName, Data data) {
         return dataService.addData(tableName, data);
+    }
+
+    private List<Map<String,Object>> getTitles(String tableName) throws Exception {
+        List<Map<String,Object>> colsNameList;
+        try {
+            log.info("文件上传，取得表头开始");
+
+            colsNameList = dataService.getHeaders(tableName);
+            if (colsNameList == null) {
+                throw new Exception(ResponseCodeEnum.UPLOAD_GET_HEADER_INFO_FROM_SQL_NULL.getMessage());
+            }
+
+            log.info("文件上传，取得表头结束");
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception(ResponseCodeEnum.UPLOAD_GET_HEADER_INFO_FROM_SQL_FAILED.getMessage());
+        }
+
+        return colsNameList;
     }
 }
