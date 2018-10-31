@@ -275,7 +275,6 @@ public class UploadFileServiceImpl implements IUploadFileService {
         StringBuffer rowErrorMsg = new StringBuffer();//行错误信息接收器
 
         List<Map<Integer,String>> valueList = new ArrayList<>();
-        Map<Integer,String> titleMap = new HashMap<>();
 
         msg.append("第1行标题行:");
 
@@ -301,9 +300,9 @@ public class UploadFileServiceImpl implements IUploadFileService {
                 log.error("第{}/{}列标题在数据中不存在。",(n+1),numTitleCells);
                 continue;
             }
+            Map<Integer,String> titleMap = new HashMap<>();
             titleMap.put(n,cellValue);//列号，列值
             valueList.add(titleMap);
-            titleMap.clear();
         }
 
         //拼接每行的错误提示
@@ -343,15 +342,16 @@ public class UploadFileServiceImpl implements IUploadFileService {
 
                     int q = entry.getKey().intValue();//列号
                     Cell cell = row.getCell(q);
+                    String cellValue = "";
                     if (null == cell) {
-                        colErrorMsg.append("第" + (p+1) + "行第" + (q+1) + "列数据有问题，请仔细检查。" + DataService.BR);
-                        log.error("第{}行,第{}列数据有问题，请仔细检查。",(p+1),(q+1));
-                        continue;
+//                        colErrorMsg.append("第" + (p+1) + "行第" + (q+1) + "列数据有问题，请仔细检查。" + DataService.BR);
+//                        log.error("第{}行,第{}列数据有问题，请仔细检查。",(p+1),(q+1));
+//                        continue;
+                    } else {
+                        cell.setCellType(CellType.STRING);
+                        cellValue = cell.getStringCellValue();
                     }
-
-                    cell.setCellType(CellType.STRING);
-                    String cellValue = cell.getStringCellValue();
-                    keyValue.put(entry.getValue(), cellValue);//首行(表头)值，单元格值
+                    keyValue.put(entry.getValue(), cellValue);//首行(表头)值，单元格值.T.B.D有重复列的的话，会覆盖之前的。
                 }
             }
 

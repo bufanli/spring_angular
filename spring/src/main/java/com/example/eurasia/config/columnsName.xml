@@ -1,52 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mapping>
-    <column key="NianDu" value="年度" />
-    <column key="JiDu" value="季度" />
-    <column key="YueFen" value="月份" />
-    <column key="RiQi" value="日期" />
-    <column key="JinKou" value="进口" />
-    <column key="JinKouGuanQu" value="进口关区" />
-    <column key="ZhuGuanGuanQu" value="主管关区" />
-    <column key="XieHuoGang" value="装货港" />
-    <column key="ZhongZhuanGuo" value="中转国" />
-    <column key="YuanChanGuo" value="原产国" />
-    <column key="ShangPinBianMa" value="商品编码" />
-    <column key="ChanPinMingCheng" value="产品名称" />
-    <column key="ChangHao" value="厂号" />
-    <column key="ShengChanGongChang" value="生产工厂" />
-    <column key="NiuZhong" value="牛种" />
-    <column key="JiBie" value="级别" />
-    <column key="SiLiao" value="饲料" />
-    <column key="GuiGeXingHao" value="规格型号" />
-    <column key="ChengJiaoFangShi" value="成交方式" />
-    <column key="ShenBaoDanJia" value="申报单价" />
-    <column key="ShenBaoZongJia" value="申报总价" />
-    <column key="ShenBaoBiZhi" value="申报币制" />
-    <column key="MeiYuanDanJia" value="美元单价" />
-    <column key="MeiYuanZongJia" value="美元总价" />
-    <column key="MeiYuanBiZhi" value="美元币制" />
-    <column key="ShenBaoShuLiang" value="申报数量" />
-    <column key="ShenBaoShuLiangDanWei" value="申报数量单位" />
-    <column key="FaDingZhongLiang" value="法定重量" />
-    <column key="FaDingDanWei" value="法定单位" />
-    <column key="MaoZhong" value="毛重（整个报关单）" />
-    <column key="JingZhong" value="净重（整个报关单）" />
-    <column key="ZhongLiangDanWei" value="重量单位" />
-    <column key="MaoYiFangShi" value="贸易方式" />
-    <column key="YunShuFangShi" value="运输方式" />
-    <column key="MuDiDi" value="目的地" />
-    <column key="BaoZhuangZhongLei" value="包装种类" />
-    <column key="ShenBaoDanWei" value="申报单位" />
-    <column key="HuoZhuDanWei" value="货主单位" />
-    <column key="JingYingDanWei" value="经营单位" />
-    <column key="QiYeDaiMa" value="企业代码" />
-    <column key="QiYeXingZhi" value="企业性质" />
-    <column key="DiZhi" value="地址" />
-    <column key="DianHua" value="电话" />
-    <column key="ChuanZhen" value="传真" />
-    <column key="ShouJi" value="手机" />
-    <column key="WangZhan" value="网站" />
-    <column key="YouBian" value="邮编" />
-    <column key="Email" value="Email" />
-    <column key="LianXiRen" value="联系人" />
+    <column key="YEAR" value="年度" />
+    <column key="VARCHAR(20)" value="季度" />
+    <column key="VARCHAR(20)" value="月份" />
+    <column key="DATE" value="日期" />
+    <column key="VARCHAR(20)" value="进口" />
+    <column key="VARCHAR(20)" value="进口关区" />
+    <column key="VARCHAR(20)" value="主管关区" />
+    <column key="VARCHAR(20)" value="装货港" />
+    <column key="VARCHAR(20)" value="中转国" />
+    <column key="VARCHAR(20)" value="原产国" />
+    <column key="VARCHAR(20)" value="商品编码" />
+    <column key="VARCHAR(50)" value="产品名称" />
+    <column key="VARCHAR(20)" value="厂号" />
+    <column key="VARCHAR(20)" value="生产工厂" />
+    <column key="VARCHAR(20)" value="牛种" />
+    <column key="VARCHAR(20)" value="级别" />
+    <column key="VARCHAR(20)" value="饲料" />
+    <column key="VARCHAR(50)" value="规格型号" />
+    <column key="VARCHAR(10)" value="成交方式" />
+    <column key="DECIMAL(9,2) UNSIGNED" value="申报单价" />
+    <column key="DECIMAL(9,2) UNSIGNED" value="申报总价" />
+    <column key="VARCHAR(10)" value="申报币制" />
+    <column key="DECIMAL(9,2) UNSIGNED" value="美元单价" />
+    <column key="DECIMAL(9,2) UNSIGNED" value="美元总价" />
+    <column key="VARCHAR(10)" value="美元币制" />
+    <column key="DECIMAL(9,2) UNSIGNED" value="申报数量" />
+    <column key="VARCHAR(10)" value="申报数量单位" />
+    <column key="DECIMAL(9,2) UNSIGNED" value="法定重量" />
+    <column key="VARCHAR(10)" value="法定单位" />
+    <column key="DECIMAL(9,2) UNSIGNED" value="毛重（整个报关单）" />
+    <column key="DECIMAL(9,2) UNSIGNED" value="净重（整个报关单）" />
+    <column key="VARCHAR(10)" value="重量单位" />
+    <column key="VARCHAR(20)" value="贸易方式" />
+    <column key="VARCHAR(20)" value="运输方式" />
+    <column key="VARCHAR(50)" value="目的地" />
+    <column key="VARCHAR(20)" value="包装种类" />
+    <column key="VARCHAR(50)" value="申报单位" />
+    <column key="VARCHAR(50)" value="货主单位" />
+    <column key="VARCHAR(50)" value="经营单位" />
+    <column key="VARCHAR(20)" value="企业代码" />
+    <column key="VARCHAR(20)" value="企业性质" />
+    <column key="VARCHAR(50)" value="地址" />
+    <column key="VARCHAR(20)" value="电话" />
+    <column key="VARCHAR(20)" value="传真" />
+    <column key="VARCHAR(20)" value="手机" />
+    <column key="VARCHAR(20)" value="网站" />
+    <column key="VARCHAR(10)" value="邮编" />
+    <column key="VARCHAR(20)" value="Email" />
+    <column key="VARCHAR(20)" value="联系人" />
 </mapping>

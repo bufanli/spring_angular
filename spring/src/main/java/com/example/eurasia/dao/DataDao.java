@@ -1,7 +1,7 @@
 package com.example.eurasia.dao;
 
 import com.example.eurasia.entity.Data;
-import com.example.eurasia.entity.DataXMLReader;
+import com.example.eurasia.entity.IdentityDataXMLReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -11,10 +11,7 @@ import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
 import java.sql.*;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Repository
 public class DataDao {
@@ -205,11 +202,11 @@ sbf = new StringBuffer("");//重新new
         Iterator<Map.Entry<String, String>> it = set.iterator();
         while (it.hasNext()) {
             Map.Entry<String, String> entry = it.next();
-            if (entry.getKey().toString().equals("起始日期") == true) {
+            if (entry.getKey().toString().equals("起始日期") == true) {//T.B.D
                 dataStart = entry.getValue().toString();
                 continue;
             }
-            if (entry.getKey().toString().equals("结束日期") == true) {
+            if (entry.getKey().toString().equals("结束日期") == true) {//T.B.D
                 dataEnd = entry.getValue().toString();
                 continue;
             }
@@ -231,6 +228,7 @@ StringUtils.isEmpty(" bob ") = false
             }
         }
 
+        //T.B.D
         if (dataStart.equals("") == true && dataEnd.equals("") == false) {
             dataStart = "(select min(" + "起始日期" + ")";
             sql.append(" 起始日期" + " between '" + dataStart + "' and '" + dataEnd + "'");
@@ -356,24 +354,19 @@ SELECT information_schema.SCHEMATA.SCHEMA_NAME FROM information_schema.SCHEMATA 
                 return true;
             } else {
                 ApplicationContext context = new ClassPathXmlApplicationContext("com/example/eurasia/config/applicationContext.xml");
-                DataXMLReader dataXMLReader = (DataXMLReader) context.getBean("columnsName");
+                IdentityDataXMLReader dataXMLReader = (IdentityDataXMLReader) context.getBean("columnsName");
 
                 StringBuffer sb = new StringBuffer();
                 sb.append("CREATE TABLE `" + tableName + "` (");
                 sb.append(" `id` int(11) NOT NULL AUTO_INCREMENT,");
-                Map<String,String> map = dataXMLReader.getKeyValue();
-//                for (String key : map.keySet()) {//遍历map中的键
-//                    sb.append("`" + key + "` varchar(255) DEFAULT '',");
-//                }
-//                for (String key : map.keySet()) {//遍历map中的值
-//                    sb.append("`" + map.get(key) + "` varchar(255) DEFAULT '',");
-//                }
-                for (String value : map.values()) {//遍历map中的值
-                    //sb.append("`" + value + "` varchar(255),");
-                    sb.append("`" + value + "` varchar(255) DEFAULT '',");
+                IdentityHashMap<String,String> map = dataXMLReader.getKeyValue();
+                for (Map.Entry<String, String> entry : map.entrySet()) {
+                    sb.append("`" + entry.getValue() + "` " + entry.getKey() + " NOT NULL,");
                 }
                 sb.append(" PRIMARY KEY (`id`)");
                 sb.append(") ENGINE=InnoDB DEFAULT CHARSET=gbk;");
+//MyISAM适合：(1)做很多count 的计算；(2)插入不频繁，查询非常频繁；(3)没有事务。
+//InnoDB适合：(1)可靠性要求比较高，或者要求事务；(2)表更新和查询都相当的频繁，并且行锁定的机会比较大的情况
 
                 getJdbcTemplate().update(sb.toString());
                 return true;
