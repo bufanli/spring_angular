@@ -2,8 +2,8 @@ package com.example.eurasia.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -23,7 +23,7 @@ public class Data{
      */
     public Data(Map<String, String> keyValue) {
         super();
-        this.keyValue = new HashMap<>();
+        this.keyValue = new LinkedHashMap<>();
         this.keyValue.putAll(keyValue);
     }
 

@@ -5,6 +5,7 @@ import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -19,6 +20,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Slf4j
@@ -240,7 +244,6 @@ public class UploadFileServiceImpl implements IUploadFileService {
     private StringBuffer readExcelFileSheet(Sheet sheet) throws Exception {
         List<Map<Integer,String>> titleList = new ArrayList<>();
         List<Data> dataList = new ArrayList<>();
-        Map<String, String> keyValue = new HashMap<>();
 
         StringBuffer sheetMsg = new StringBuffer();//信息接收器
 
@@ -288,8 +291,9 @@ public class UploadFileServiceImpl implements IUploadFileService {
                 continue;
             }
 
-            cell.setCellType(CellType.STRING);
-            String cellValue = cell.getStringCellValue();
+//            cell.setCellType(CellType.STRING);
+//            String cellValue = cell.getStringCellValue();
+            String cellValue = this.getValue(cell);
             if (StringUtils.isEmpty(cellValue)) {
                 rowErrorMsg.append(DataService.BR + "第" + (n+1) + "列标题为空，请仔细检查。");
                 log.error("第{}/{}列标题为空。",(n+1),numTitleCells);
@@ -300,7 +304,7 @@ public class UploadFileServiceImpl implements IUploadFileService {
                 log.error("第{}/{}列标题在数据中不存在。",(n+1),numTitleCells);
                 continue;
             }
-            Map<Integer,String> titleMap = new HashMap<>();
+            Map<Integer,String> titleMap = new LinkedHashMap<>();
             titleMap.put(n,cellValue);//列号，列值
             valueList.add(titleMap);
         }
@@ -321,7 +325,7 @@ public class UploadFileServiceImpl implements IUploadFileService {
         StringBuffer colErrorMsg = new StringBuffer();//列错误信息接收器
 
         List<Data> valueList = new ArrayList<>();
-        Map<String, String> keyValue = new HashMap<>();
+        Map<String, String> keyValue = new LinkedHashMap<>();
 
         //int numRows = sheet.getPhysicalNumberOfRows();//得到Excel的行数,不包括那些空行（隔行）的情况。
         int numRows = sheet.getLastRowNum();//获取的是最后一行的编号（编号从0开始）。
@@ -342,15 +346,12 @@ public class UploadFileServiceImpl implements IUploadFileService {
 
                     int q = entry.getKey().intValue();//列号
                     Cell cell = row.getCell(q);
-                    String cellValue = "";
-                    if (null == cell) {
+//                    if (null == cell) {
 //                        colErrorMsg.append("第" + (p+1) + "行第" + (q+1) + "列数据有问题，请仔细检查。" + DataService.BR);
 //                        log.error("第{}行,第{}列数据有问题，请仔细检查。",(p+1),(q+1));
 //                        continue;
-                    } else {
-                        cell.setCellType(CellType.STRING);
-                        cellValue = cell.getStringCellValue();
-                    }
+//                    }
+                    String cellValue = this.getValue(cell);
                     keyValue.put(entry.getValue(), cellValue);//首行(表头)值，单元格值.T.B.D有重复列的的话，会覆盖之前的。
                 }
             }
@@ -423,4 +424,93 @@ public class UploadFileServiceImpl implements IUploadFileService {
 
         return colsNameList;
     }
+
+    private String getValue(Cell cell) {
+        if (null != cell) {
+            switch (cell.getCellTypeEnum()) {
+                case NUMERIC: // 数字
+                    String val = "";
+                    if (HSSFDateUtil.isCellDateFormatted(cell)) {//判断当前的cell是否为Date
+                        //先注释日期类型的转换，在实际测试中发现HSSFDateUtil.isCellDateFormatted(cell)只识别2014/02/02这种格式。
+                        //对2014-02-02格式识别不出是日期格式
+
+/*
+0, "General"
+1, "0"
+2, "0.00"
+3, "#,##0"
+4, "#,##0.00"
+5, "$#,##0_);($#,##0)"
+6, "$#,##0_);[Red]($#,##0)"
+7, "$#,##0.00);($#,##0.00)"
+8, "$#,##0.00_);[Red]($#,##0.00)"
+9, "0%"
+0xa, "0.00%"
+0xb, "0.00E+00"
+0xc, "# ?/?"
+0xd, "# ??/??"
+0xe, "m/d/yy"
+0xf, "d-mmm-yy"
+0x10, "d-mmm"
+0x11, "mmm-yy"
+0x12, "h:mm AM/PM"
+0x13, "h:mm:ss AM/PM"
+0x14, "h:mm"
+0x15, "h:mm:ss"
+0x16, "m/d/yy h:mm"
+
+// 0x17 - 0x24 reserved for international and undocumented 0x25, "#,##0_);(#,##0)"
+0x26, "#,##0_);[Red](#,##0)"
+0x27, "#,##0.00_);(#,##0.00)"
+0x28, "#,##0.00_);[Red](#,##0.00)"
+0x29, "_(*#,##0_);_(*(#,##0);_(* \"-\"_);_(@_)"
+0x2a, "_($*#,##0_);_($*(#,##0);_($* \"-\"_);_(@_)"
+0x2b, "_(*#,##0.00_);_(*(#,##0.00);_(*\"-\"??_);_(@_)"
+0x2c, "_($*#,##0.00_);_($*(#,##0.00);_($*\"-\"??_);_(@_)"
+0x2d, "mm:ss"
+0x2e, "[h]:mm:ss"
+0x2f, "mm:ss.0"
+0x30, "##0.0E+0"
+0x31, "@" - This is text format.
+0x31 "text" - Alias for "@"
+ */
+                        //如果是中文类型的日期(转为xxxx-xx-xx格式)
+                        // m月d日  :dataFormat=58,dataFormatString=reserved-0x1c
+                        //yyyy年m月d日  :dataFormat=31,dataFormatString=reserved-0x1f
+                        Date date;
+                        short format = cell.getCellStyle().getDataFormat();
+                        if (format == 14 || format == 31 || format == 57 || format == 58) {
+                            double value = cell.getNumericCellValue();
+                            date = DateUtil.getJavaDate(value);
+                        } else {
+                            // 如果是Date类型则，取得该Cell的Date值
+                            date = cell.getDateCellValue();
+                        }
+                        DateFormat formater = new SimpleDateFormat("yyyy-MM-dd");
+                        val = formater.format(date);
+
+                    } else {
+                        // 如果是纯数字，取得当前Cell的数值
+                        DecimalFormat df = new DecimalFormat("0");//处理科学计数法
+                        val = df.format(cell.getNumericCellValue());
+                    }
+                    return val;
+                case STRING: // 字符串
+                    return cell.getStringCellValue() + "";
+                case BOOLEAN: // Boolean
+                    return cell.getBooleanCellValue() + "";
+                case FORMULA: // 公式
+                    return cell.getCellFormula() + "   ";
+                case BLANK: // 空值
+                    return "";
+                case ERROR: // 故障
+                    return "";
+                default:
+                    return "未知类型";
+            }
+        } else {
+            return "";
+        }
+    }
+
 }

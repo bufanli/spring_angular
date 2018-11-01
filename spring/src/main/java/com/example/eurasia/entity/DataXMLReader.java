@@ -6,10 +6,7 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class DataXMLReader {
 
@@ -43,7 +40,7 @@ public class DataXMLReader {
             //System.out.println("加载xml初始化文件出错" + e);
             e.printStackTrace();
         }
-        this.keyValue = new HashMap<>();
+        this.keyValue = new LinkedHashMap<>();
         Element root = doc.getRootElement();
         List<Element> eleList = root.selectNodes("/mapping/column");
         for (Element e : eleList) {// 循环读取每个节点
@@ -74,7 +71,7 @@ public class DataXMLReader {
      * @param resultMap 拷⻉贝后的对象
      */
     public static void mapCopy(Map paramsMap, Map resultMap) {
-        if (resultMap == null) resultMap = new HashMap();
+        if (resultMap == null) resultMap = new LinkedHashMap();
         if (paramsMap == null) return;
         Iterator it = paramsMap.entrySet().iterator();
         while (it.hasNext()) {

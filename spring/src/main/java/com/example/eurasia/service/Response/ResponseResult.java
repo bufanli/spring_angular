@@ -1,6 +1,6 @@
 package com.example.eurasia.service.Response;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class ResponseResult implements Cloneable {
@@ -27,7 +27,7 @@ public class ResponseResult implements Cloneable {
         this.code = code;
         this.message = message;
         this.data = data;
-        this.extend = new HashMap<>();
+        this.extend = new LinkedHashMap<>();
     }
 
     @Override
