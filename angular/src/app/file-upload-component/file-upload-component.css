@@ -21,5 +21,14 @@ button {
 }
 
 .file-input {
-  position:absolute;top:0;left:0;font-size:34px; opacity:0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-size: 34px;
+  opacity: 0;
+}
+
+.fix-height {
+  height: 300px;
+  overflow: auto;
 }
