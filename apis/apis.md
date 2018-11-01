@@ -104,34 +104,35 @@ Angular和SpringBoot的接口如下：
  * *Example:*
    ```javascript
    * response
-   // 上传成功
+   // 上传全部成功
    {
      code: 200,
-     message: 文件上传成功,
-     details:[
-       "文件名1","文件名2"
-     ]
+     message: %number%个文件导入成功,
+     details:(String)
+       "文件名1"
+	   "文件名2"
    }
-   // 上传失败
+   // 上传全部失败
+   {
+     code: 201,
+     message: %number%个文件导入失败,
+     details:(String)
+       "文件名1"
+	   "文件名2"
+   }
+   // 上传成功+失败
    {
      code: 201,
      message: %number%个文件导入成功,%number%个文件导入失败。
      details:[
        {
-         successed:[
            "文件名1",
            "文件名2",
-         ],
-         failed:[
-           {
-             fileName:"文件名",
-             failedReason:"失败原因"
-           },
-           {
-             fileName:"文件名",
-             failedReason:"失败原因"
-           }
-         ]
+	   },
+       {
+           "文件名1":"失败原因"
+           "文件名2":"失败原因"
+       }
      ]
    }
    ```

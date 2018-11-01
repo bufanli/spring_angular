@@ -207,7 +207,7 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
         try {
             log.info("文件导出，取得表头开始");
 
-            colsNameList = dataService.getHeaders(DataService.TABLE_NAME);
+            colsNameList = dataService.getHeaders(tableName);
             if (colsNameList == null) {
                 throw new Exception(ResponseCodeEnum.EXPORT_GET_HEADER_INFO_FROM_SQL_NULL.getMessage());
             }
@@ -227,7 +227,7 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
         try {
             log.info("文件导出，查询数据开始");
 
-            dataList = dataService.searchData(DataService.TABLE_NAME, queryConditions);
+            dataList = dataService.searchData(tableName, queryConditions);
             if (dataList == null) {
                 throw new Exception(ResponseCodeEnum.EXPORT_GET_DATA_INFO_FROM_SQL_NULL.getMessage());
             }

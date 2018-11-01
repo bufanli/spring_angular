@@ -95,11 +95,11 @@ public class UploadFileServiceImpl implements IUploadFileService {
             responseOK.delete((responseOK.length() - DataService.BR.length()),responseOK.length());
             responseNG.delete((responseNG.length() - DataService.BR.length()),responseNG.length());
 
-            String[] responseNGArr = new String[2];
-            responseNGArr[0] = responseOK.toString();
-            responseNGArr[1] = responseNG.toString();
+            String[] responseOKNGArr = new String[2];
+            responseOKNGArr[0] = responseOK.toString();
+            responseOKNGArr[1] = responseNG.toString();
 
-            responseResult = new ResponseResultUtil().error(ResponseCodeEnum.UPLOAD_FILE_FAILED.getCode(), responseMsg.toString(), responseNGArr);
+            responseResult = new ResponseResultUtil().error(ResponseCodeEnum.UPLOAD_FILE_FAILED.getCode(), responseMsg.toString(), responseOKNGArr);
         }
         return responseResult;
     }
@@ -270,12 +270,11 @@ public class UploadFileServiceImpl implements IUploadFileService {
         return sheetMsg;
     }
 
-    private StringBuffer readExcelFileSheetTitleRow(Sheet sheet, List<Map<Integer,String>> titleList) {
+    private StringBuffer readExcelFileSheetTitleRow(Sheet sheet, List<Map<Integer,String>> titleList) throws Exception {
         StringBuffer msg = new StringBuffer();//信息接收器
         StringBuffer rowErrorMsg = new StringBuffer();//行错误信息接收器
 
         List<Map<Integer,String>> valueList = new ArrayList<>();
-        Map<Integer,String> titleMap = new HashMap<>();
 
         msg.append("第1行标题行:");
 
@@ -296,15 +295,14 @@ public class UploadFileServiceImpl implements IUploadFileService {
                 log.error("第{}/{}列标题为空。",(n+1),numTitleCells);
                 continue;
             }
-            if (false) {
-                //对比SQL列 T.B.D.................................
+            if (!this.checkTitles(cellValue)) {//对比SQL表头
                 rowErrorMsg.append(DataService.BR + "第" + (n+1) + "列标题在数据中不存在，请仔细检查。");
                 log.error("第{}/{}列标题在数据中不存在。",(n+1),numTitleCells);
                 continue;
             }
+            Map<Integer,String> titleMap = new HashMap<>();
             titleMap.put(n,cellValue);//列号，列值
             valueList.add(titleMap);
-            titleMap.clear();
         }
 
         //拼接每行的错误提示
@@ -343,16 +341,17 @@ public class UploadFileServiceImpl implements IUploadFileService {
                     Map.Entry<Integer, String> entry = it.next();
 
                     int q = entry.getKey().intValue();//列号
-                    Cell cell = row.getCell(q);//T.B.D.................................
+                    Cell cell = row.getCell(q);
+                    String cellValue = "";
                     if (null == cell) {
-                        colErrorMsg.append("第" + (p+1) + "行第" + (q+1) + "列数据有问题，请仔细检查。" + DataService.BR);
-                        log.error("第{}行,第{}列数据有问题，请仔细检查。",(p+1),(q+1));
-                        continue;
+//                        colErrorMsg.append("第" + (p+1) + "行第" + (q+1) + "列数据有问题，请仔细检查。" + DataService.BR);
+//                        log.error("第{}行,第{}列数据有问题，请仔细检查。",(p+1),(q+1));
+//                        continue;
+                    } else {
+                        cell.setCellType(CellType.STRING);
+                        cellValue = cell.getStringCellValue();
                     }
-
-                    cell.setCellType(CellType.STRING);
-                    String cellValue = cell.getStringCellValue();
-                    keyValue.put(entry.getValue(), cellValue);//首行(表头)值，单元格值
+                    keyValue.put(entry.getValue(), cellValue);//首行(表头)值，单元格值.T.B.D有重复列的的话，会覆盖之前的。
                 }
             }
 
@@ -380,7 +379,48 @@ public class UploadFileServiceImpl implements IUploadFileService {
         return "";
     }
 
+    private boolean checkTitles(String cellValue) throws Exception {
+        List<Map<String,Object>> colsNameList = this.getTitles(DataService.TABLE_NAME);
+        if (colsNameList.size() == 0) {
+            log.info(ResponseCodeEnum.UPLOAD_GET_HEADER_INFO_FROM_SQL_ZERO.getMessage());
+            return false;
+        }
+
+        for(Map<String,Object> colsName: colsNameList) {
+            Set<Map.Entry<String, Object>> set = colsName.entrySet();
+            Iterator<Map.Entry<String, Object>> it = set.iterator();
+            while (it.hasNext()) {
+                Map.Entry<String,Object> entry = it.next();
+                //System.out.println("Key:" + entry.getKey() + " Value:" + entry.getValue());
+                if (entry.getValue().toString().equals(cellValue) == true) {
+                    return true;//excel这个表头，在数据库表头中找到了
+                }
+            }
+        }
+
+        return false;//没找到
+    }
+
     private int saveDataToSQL(String tableName, Data data) {
         return dataService.addData(tableName, data);
+    }
+
+    private List<Map<String,Object>> getTitles(String tableName) throws Exception {
+        List<Map<String,Object>> colsNameList;
+        try {
+            log.info("文件上传，取得表头开始");
+
+            colsNameList = dataService.getHeaders(tableName);
+            if (colsNameList == null) {
+                throw new Exception(ResponseCodeEnum.UPLOAD_GET_HEADER_INFO_FROM_SQL_NULL.getMessage());
+            }
+
+            log.info("文件上传，取得表头结束");
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception(ResponseCodeEnum.UPLOAD_GET_HEADER_INFO_FROM_SQL_FAILED.getMessage());
+        }
+
+        return colsNameList;
     }
 }

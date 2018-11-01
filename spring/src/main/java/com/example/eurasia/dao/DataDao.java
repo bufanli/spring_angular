@@ -1,7 +1,7 @@
 package com.example.eurasia.dao;
 
 import com.example.eurasia.entity.Data;
-import com.example.eurasia.entity.DataXMLReader;
+import com.example.eurasia.entity.IdentityDataXMLReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -11,10 +11,7 @@ import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
 import java.sql.*;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Repository
 public class DataDao {
@@ -196,6 +193,8 @@ sbf = new StringBuffer("");//重新new
      */
     public List<Data> queryListForObject(String tableName, Data queryConditions) {
         String sqlAnd = " and ";
+        String dataStart = "";
+        String dataEnd = "";
         StringBuffer sql = new StringBuffer();
         sql.append("select * from " + tableName + " where");
 
@@ -203,12 +202,47 @@ sbf = new StringBuffer("");//重新new
         Iterator<Map.Entry<String, String>> it = set.iterator();
         while (it.hasNext()) {
             Map.Entry<String, String> entry = it.next();
+            if (entry.getKey().toString().equals("起始日期") == true) {//T.B.D
+                dataStart = entry.getValue().toString();
+                continue;
+            }
+            if (entry.getKey().toString().equals("结束日期") == true) {//T.B.D
+                dataEnd = entry.getValue().toString();
+                continue;
+            }
+/*
+public static boolean isEmpty(String str)
+判断某字符串是否为空，为空的标准是 str==null 或 str.length()==0
+下面是 StringUtils 判断是否为空的示例：
+
+StringUtils.isEmpty(null) = true
+StringUtils.isEmpty("") = true
+StringUtils.isEmpty(" ") = false //注意在 StringUtils 中空格作非空处理
+StringUtils.isEmpty("   ") = false
+StringUtils.isEmpty("bob") = false
+StringUtils.isEmpty(" bob ") = false
+*/
             if (!StringUtils.isEmpty(entry.getValue().toString())) {
-                sql.append(" " + entry.getKey() + "='" + entry.getValue() + "'");
+                sql.append(" " + entry.getKey().toString() + " like '%" + entry.getValue().toString() + "%'");
                 sql.append(sqlAnd);
             }
         }
-        sql.delete((sql.length() - sqlAnd.length()),sql.length());
+
+        //T.B.D
+        if (dataStart.equals("") == true && dataEnd.equals("") == false) {
+            dataStart = "(select min(" + "起始日期" + ")";
+            sql.append(" 起始日期" + " between '" + dataStart + "' and '" + dataEnd + "'");
+        } else if (dataStart.equals("") == false && dataEnd.equals("") == true) {
+            dataEnd = "(select max(" + "起始日期" + ")";
+            sql.append(" 起始日期" + " between '" + dataStart + "' and '" + dataEnd + "'");
+        } else if (dataStart.equals("") == false && dataEnd.equals("") == false) {
+            sql.append(" 起始日期" + " between '" + dataStart + "' and '" + dataEnd + "'");
+        } else if (dataStart.equals("") == true && dataEnd.equals("") == true)  {
+            if (sql.indexOf(sqlAnd) >= 0) {
+                sql.delete((sql.length() - sqlAnd.length()),sql.length());
+            }
+        }
+
         //sql.append(" concat_ws(" + queryConditions.getKeys() + ")");
 
         List<Data> dataList = getJdbcTemplate().query(sql.toString(), new DataMapper());
@@ -320,24 +354,19 @@ SELECT information_schema.SCHEMATA.SCHEMA_NAME FROM information_schema.SCHEMATA 
                 return true;
             } else {
                 ApplicationContext context = new ClassPathXmlApplicationContext("com/example/eurasia/config/applicationContext.xml");
-                DataXMLReader dataXMLReader = (DataXMLReader) context.getBean("columnsName");
+                IdentityDataXMLReader dataXMLReader = (IdentityDataXMLReader) context.getBean("columnsName");
 
                 StringBuffer sb = new StringBuffer();
                 sb.append("CREATE TABLE `" + tableName + "` (");
                 sb.append(" `id` int(11) NOT NULL AUTO_INCREMENT,");
-                Map<String,String> map = dataXMLReader.getKeyValue();
-//                for (String key : map.keySet()) {//遍历map中的键
-//                    sb.append("`" + key + "` varchar(255) DEFAULT '',");
-//                }
-//                for (String key : map.keySet()) {//遍历map中的值
-//                    sb.append("`" + map.get(key) + "` varchar(255) DEFAULT '',");
-//                }
-                for (String value : map.values()) {//遍历map中的值
-                    //sb.append("`" + value + "` varchar(255),");
-                    sb.append("`" + value + "` varchar(255) DEFAULT '',");
+                IdentityHashMap<String,String> map = dataXMLReader.getKeyValue();
+                for (Map.Entry<String, String> entry : map.entrySet()) {
+                    sb.append("`" + entry.getValue() + "` " + entry.getKey() + " NOT NULL,");
                 }
                 sb.append(" PRIMARY KEY (`id`)");
                 sb.append(") ENGINE=InnoDB DEFAULT CHARSET=gbk;");
+//MyISAM适合：(1)做很多count 的计算；(2)插入不频繁，查询非常频繁；(3)没有事务。
+//InnoDB适合：(1)可靠性要求比较高，或者要求事务；(2)表更新和查询都相当的频繁，并且行锁定的机会比较大的情况
 
                 getJdbcTemplate().update(sb.toString());
                 return true;
