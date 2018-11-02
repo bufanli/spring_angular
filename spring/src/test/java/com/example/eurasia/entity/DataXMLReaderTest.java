@@ -6,7 +6,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.LinkedHashMap;
-import java.util.Map;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -20,9 +19,9 @@ public class DataXMLReaderTest {
     }
 
     public void testMapCopy() {
-        Map<String, String> map = new LinkedHashMap<String, String>(1);
+        LinkedHashMap<String, String> map = new LinkedHashMap<String, String>(1);
         map.put("name", "Marydon");
-        Map<String, Object> map2 = new LinkedHashMap<String, Object>(1);
+        LinkedHashMap<String, Object> map2 = new LinkedHashMap<String, Object>(1);
         map2.put("age", 20);
         // 测试⼀一:是否实现拷⻉贝
         dataXMLReader.mapCopy(map2, map);

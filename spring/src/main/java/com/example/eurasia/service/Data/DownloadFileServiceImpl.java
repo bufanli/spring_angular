@@ -76,8 +76,21 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
 
     private int writeExcel(XSSFWorkbook wb, Sheet sheet, List<Map<String,Object>> titleList, List<Data> rowList) {
 
+        //T.B.D getHeader取出来的顺序是乱的，暂时这么回避。
+        List<Map<String,Object>> title = new ArrayList<Map<String, Object>>();
+        Map map = new LinkedHashMap<String, Object>();
+        map.putAll(rowList.get(0).getKeyValue());
+        Set<Map.Entry<String, String>> set = rowList.get(0).getKeyValue().entrySet();
+        Iterator<Map.Entry<String, String>> it = set.iterator();
+        while (it.hasNext()) {
+            map.put(it.next().getKey(),it.next().getKey());
+        }
+        title.add(map);
+
+
         int rowIndex = 0;
-        rowIndex = writeTitlesToExcel(wb, sheet, titleList);
+        //rowIndex = writeTitlesToExcel(wb, sheet, titleList);
+        rowIndex = writeTitlesToExcel(wb, sheet, title);
         rowIndex = writeRowsToExcel(wb, sheet, rowList, rowIndex);
         autoSizeColumns(sheet, (titleList.size() + 1));
         return rowIndex;
@@ -123,7 +136,7 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
         return rowIndex;
     }
 
-    private int writeRowsToExcel(XSSFWorkbook wb, Sheet sheet, List<Data> rows, int rowIndex) {
+    private int writeRowsToExcel(XSSFWorkbook wb, Sheet sheet, List<Data> rowList, int rowIndex) {
         int colIndex = 0;
 
         // 设置字体
@@ -138,7 +151,7 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
         dataStyle.setFont(dataFont);
         setBorder(dataStyle, BorderStyle.THIN, new XSSFColor(new java.awt.Color(0, 0, 0)));
 
-        for (Data rowData : rows) {
+        for (Data rowData : rowList) {
             Row dataRow = sheet.createRow(rowIndex);
             // dataRow.setHeightInPoints(25);
             colIndex = 0;

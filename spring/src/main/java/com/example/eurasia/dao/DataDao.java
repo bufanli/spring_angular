@@ -1,7 +1,7 @@
 package com.example.eurasia.dao;
 
 import com.example.eurasia.entity.Data;
-import com.example.eurasia.entity.IdentityDataXMLReader;
+import com.example.eurasia.entity.DataXMLReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -36,7 +36,7 @@ public class DataDao {
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
-    public int addData(String tableName, Data data) {
+    public int addData(String tableName, Data data) throws Exception {
 
         StringBuffer sql = new StringBuffer();
         int size = data.getKeyValue().size();
@@ -68,7 +68,7 @@ sbf = new StringBuffer("");//重新new
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
-    public void batchAddData(String tableName, Data[] data) {
+    public void batchAddData(String tableName, Data[] data) throws Exception {
         //Nothing to do
     }
 
@@ -80,7 +80,7 @@ sbf = new StringBuffer("");//重新new
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
-    public void deleteData(String tableName, Data data) {
+    public void deleteData(String tableName, Data data) throws Exception {
         //Nothing to do
     }
 
@@ -92,7 +92,7 @@ sbf = new StringBuffer("");//重新new
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
-    public int deleteSameData(String tableName) {
+    public int deleteSameData(String tableName) throws Exception {
 
         StringBuffer strCcolsName = new StringBuffer();
         List<Map<String,Object>> colsNameList = queryListForColumnName(tableName);
@@ -134,7 +134,7 @@ sbf = new StringBuffer("");//重新new
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
-    public void updateData(String tableName, Data data) {
+    public void updateData(String tableName, Data data) throws Exception {
         //Nothing to do
     }
 
@@ -146,7 +146,7 @@ sbf = new StringBuffer("");//重新new
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
-    public void batchUpdateData(String tableName, Data[] data) {
+    public void batchUpdateData(String tableName, Data[] data) throws Exception {
         //Nothing to do
     }
 
@@ -158,7 +158,7 @@ sbf = new StringBuffer("");//重新new
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
-    public Long queryTableNumbers(String tableName) {
+    public Long queryTableNumbers(String tableName) throws Exception {
         // 获得jdbcTemplate对象
         //ApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
         //JdbcTemplate jdbcTemplate = (JdbcTemplate) ctx.getBean("jdbcTemplate");
@@ -178,7 +178,7 @@ sbf = new StringBuffer("");//重新new
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
-    public Object queryForObject(String tableName, Data queryConditions) {
+    public Object queryForObject(String tableName, Data queryConditions) throws Exception {
         //Nothing to do
         return null;
     }
@@ -257,7 +257,7 @@ StringUtils.isEmpty(" bob ") = false
      * @author FuJia
      * @Time 2018-10-27 00:00:00
      */
-    public List<Data> queryListForAllObject(String tableName) {
+    public List<Data> queryListForAllObject(String tableName) throws Exception {
         StringBuffer sql = new StringBuffer();
         sql.append("select * from " + tableName);
         return getJdbcTemplate().query(sql.toString(), new DataMapper());
@@ -272,7 +272,7 @@ StringUtils.isEmpty(" bob ") = false
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
-    public int saveData(String tableName, Data data) {
+    public int saveData(String tableName, Data data) throws Exception {
         int re = 0;
         try {
             StringBuffer sql = new StringBuffer();
@@ -354,14 +354,14 @@ SELECT information_schema.SCHEMATA.SCHEMA_NAME FROM information_schema.SCHEMATA 
                 return true;
             } else {
                 ApplicationContext context = new ClassPathXmlApplicationContext("com/example/eurasia/config/applicationContext.xml");
-                IdentityDataXMLReader dataXMLReader = (IdentityDataXMLReader) context.getBean("columnsName");
+                DataXMLReader dataXMLReader = (DataXMLReader) context.getBean("columnsName");
 
                 StringBuffer sb = new StringBuffer();
                 sb.append("CREATE TABLE `" + tableName + "` (");
                 sb.append(" `id` int(11) NOT NULL AUTO_INCREMENT,");
-                IdentityHashMap<String,String> map = dataXMLReader.getKeyValue();
+                Map<String,String> map = dataXMLReader.getKeyValue();
                 for (Map.Entry<String, String> entry : map.entrySet()) {
-                    sb.append("`" + entry.getValue() + "` " + entry.getKey() + " NOT NULL,");
+                    sb.append("`" + entry.getKey() + "` " + entry.getValue() + " NOT NULL,");//key字段名 value字段类型
                 }
                 sb.append(" PRIMARY KEY (`id`)");
                 sb.append(") ENGINE=InnoDB DEFAULT CHARSET=gbk;");
@@ -415,7 +415,7 @@ SELECT information_schema.SCHEMATA.SCHEMA_NAME FROM information_schema.SCHEMATA 
      * @author FuJia
      * @Time 2018-10-15 23:11:00
      */
-    public List<Map<String,Object>> queryListForColumnName(String tableName) {
+    public List<Map<String,Object>> queryListForColumnName(String tableName) throws Exception {
         /*
         Select COLUMN_NAME 列名, DATA_TYPE 字段类型, COLUMN_COMMENT 字段注释
         from INFORMATION_SCHEMA.COLUMNS
@@ -427,7 +427,7 @@ SELECT information_schema.SCHEMATA.SCHEMA_NAME FROM information_schema.SCHEMATA 
         StringBuffer sql = new StringBuffer();
         sql.append("select COLUMN_NAME from information_schema.COLUMNS where table_name = '" + tableName);
         sql.append("' and table_schema = 'eurasia'");//#mysql> create database eurasia;
-        List<Map<String,Object>> colsNameList = getJdbcTemplate().queryForList(sql.toString());
+        List<Map<String, Object>> colsNameList = getJdbcTemplate().queryForList(sql.toString());//T.B.D HashMap顺序乱
 /*
         for(Map<String,Object> colsName: colsNameList) {
             Set<Map.Entry<String, Object>> set = colsName.entrySet();

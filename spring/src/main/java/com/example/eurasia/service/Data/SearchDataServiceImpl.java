@@ -48,7 +48,7 @@ public class SearchDataServiceImpl implements ISearchDataService {
         return new ResponseResultUtil().success(ResponseCodeEnum.SEARCH_DATA_INFO_FROM_SQL_SUCCESS, dataList);
     }
 
-    private List<Data> searchDataFromSQL(String tableName, Data queryConditions) {
+    private List<Data> searchDataFromSQL(String tableName, Data queryConditions) throws Exception {
         return dataService.searchData(tableName, queryConditions);
     }
 

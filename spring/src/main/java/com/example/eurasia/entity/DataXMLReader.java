@@ -11,7 +11,7 @@ import java.util.*;
 public class DataXMLReader {
 
     private String filePath;
-    private Map<String, String> keyValue;
+    private LinkedHashMap<String, String> keyValue;
 
     public void init() {
         parseXml();
@@ -40,12 +40,12 @@ public class DataXMLReader {
             //System.out.println("加载xml初始化文件出错" + e);
             e.printStackTrace();
         }
-        this.keyValue = new LinkedHashMap<>();
+        this.keyValue = new LinkedHashMap<>();//有序的。但，跟listOrderMap的区别？T.B.D
         Element root = doc.getRootElement();
         List<Element> eleList = root.selectNodes("/mapping/column");
         for (Element e : eleList) {// 循环读取每个节点
-            String key = e.attributeValue("key");
-            String value = e.attributeValue("value");
+            String key = e.attributeValue("key");//字段名
+            String value = e.attributeValue("value");//字段类型
             //System.out.println(key + value);
             this.keyValue.put(key, value);
         }
@@ -59,7 +59,7 @@ public class DataXMLReader {
         return this.filePath;
     }
 
-    public Map<String, String> getKeyValue() {
+    public LinkedHashMap<String, String> getKeyValue() {
         return this.keyValue;
     }
 
@@ -70,7 +70,7 @@ public class DataXMLReader {
      * @param paramsMap 被拷⻉贝对象
      * @param resultMap 拷⻉贝后的对象
      */
-    public static void mapCopy(Map paramsMap, Map resultMap) {
+    public static void mapCopy(LinkedHashMap paramsMap, LinkedHashMap resultMap) {
         if (resultMap == null) resultMap = new LinkedHashMap();
         if (paramsMap == null) return;
         Iterator it = paramsMap.entrySet().iterator();

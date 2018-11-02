@@ -15,7 +15,7 @@ import java.util.Set;
  */
 public class Data{
 
-    private Map<String, String> keyValue;
+    private LinkedHashMap<String, String> keyValue;
 
     /**
      * 构造方法
@@ -27,7 +27,7 @@ public class Data{
         this.keyValue.putAll(keyValue);
     }
 
-    public Map<String, String> getKeyValue() {
+    public LinkedHashMap<String, String> getKeyValue() {
         return this.keyValue;
     }
 

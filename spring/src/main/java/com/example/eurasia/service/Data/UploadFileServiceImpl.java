@@ -352,7 +352,7 @@ public class UploadFileServiceImpl implements IUploadFileService {
 //                        continue;
 //                    }
                     String cellValue = this.getValue(cell);
-                    keyValue.put(entry.getValue(), cellValue);//首行(表头)值，单元格值.T.B.D有重复列的的话，会覆盖之前的。
+                    keyValue.put(entry.getValue(), cellValue);//首行(表头)值，单元格值
                 }
             }
 
@@ -402,7 +402,7 @@ public class UploadFileServiceImpl implements IUploadFileService {
         return false;//没找到
     }
 
-    private int saveDataToSQL(String tableName, Data data) {
+    private int saveDataToSQL(String tableName, Data data) throws Exception {
         return dataService.addData(tableName, data);
     }
 

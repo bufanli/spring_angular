@@ -11,7 +11,7 @@
                         http://www.springframework.org/schema/context/spring-context.xsd">
 
     <!-- Excel表格的列名 -->
-    <bean id="columnsName" class="com.example.eurasia.entity.IdentityDataXMLReader"
+    <bean id="columnsName" class="com.example.eurasia.entity.DataXMLReader"
           init-method="init">
         <property name="filePath" value="com/example/eurasia/config/columnsName.xml" />
     </bean>

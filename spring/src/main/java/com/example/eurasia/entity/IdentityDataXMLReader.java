@@ -44,8 +44,8 @@ public class IdentityDataXMLReader {
         Element root = doc.getRootElement();
         List<Element> eleList = root.selectNodes("/mapping/column");
         for (Element e : eleList) {// 循环读取每个节点
-            String key = e.attributeValue("key");
-            String value = e.attributeValue("value");
+            String key = e.attributeValue("key");//字段名
+            String value = e.attributeValue("value");//字段类型
             //System.out.println(key + value);
             this.keyValue.put(key, value);
         }

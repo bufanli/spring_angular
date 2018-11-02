@@ -31,8 +31,12 @@ public class StartEurasiaApplication {
         //ApplicationContext context = new FileSystemXmlApplicationContext("main/java/com/example/eurasia/config/applicationContext.xml");
         DataService dataService = (DataService) context.getBean("dataService");
         //dataService.createDatabase("eurasia");//T.B.D.
-        dataService.createTable(DataService.TABLE_NAME);//T.B.D.
+        try {
+            dataService.createTable(DataService.TABLE_NAME);//T.B.D.
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-		SpringApplication.run(StartEurasiaApplication.class, args);
+        SpringApplication.run(StartEurasiaApplication.class, args);
 	}
 }

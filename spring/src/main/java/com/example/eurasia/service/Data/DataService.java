@@ -6,10 +6,7 @@ import com.example.eurasia.entity.QueryCondition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class DataService {
@@ -38,7 +35,7 @@ public class DataService {
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
-    public int addData(String tableName, Data data) {
+    public int addData(String tableName, Data data) throws Exception {
         return getDataDao().addData(tableName, data);
     }
 
@@ -50,7 +47,7 @@ public class DataService {
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
-    public List<Data> searchData(String tableName, Data queryConditions) {
+    public List<Data> searchData(String tableName, Data queryConditions) throws Exception {
         if (!queryConditions.isValuesAllNULL()) {
             return getDataDao().queryListForObject(tableName, queryConditions);
         } else {
@@ -66,7 +63,7 @@ public class DataService {
      * @author FuJia
      * @Time 2018-10-27 00:00:00
      */
-    public List<Data> searchAllData(String tableName) {
+    public List<Data> searchAllData(String tableName) throws Exception {
         return getDataDao().queryListForAllObject(tableName);
     }
 
@@ -78,7 +75,7 @@ public class DataService {
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
-    public List<Map<String,Object>> getHeaders(String tableName) {
+    public List<Map<String,Object>> getHeaders(String tableName) throws Exception {
         return getDataDao().queryListForColumnName(tableName);
     }
 
@@ -90,7 +87,7 @@ public class DataService {
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
-    public String getQueryConditions(String tableName) {
+    public String getQueryConditions(String tableName) throws Exception {
         return null;//T.B.D
     }
 
@@ -102,7 +99,7 @@ public class DataService {
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
-    public boolean createTable(String tableName) {
+    public boolean createTable(String tableName) throws Exception {
         try {
             return getDataDao().createTable(tableName);
         } catch (Exception e) {
@@ -119,7 +116,7 @@ public class DataService {
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
-    public boolean createDatabase(String databaseName) {
+    public boolean createDatabase(String databaseName) throws Exception {
         try {
             return getDataDao().createDatabase(databaseName);
         } catch (Exception e) {
@@ -136,8 +133,8 @@ public class DataService {
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
-    public Map<String, String> queryConditionsArrToMap(QueryCondition[] queryConditionsArr) {
-        Map<String, String> keyValue = new HashMap<>();
+    public Map<String, String> queryConditionsArrToMap(QueryCondition[] queryConditionsArr) throws Exception {
+        Map<String, String> keyValue = new LinkedHashMap<>();
         for (int i=0; i<queryConditionsArr.length; i++) {
             keyValue.put(queryConditionsArr[i].getKey(), queryConditionsArr[i].getValue());
         }
@@ -154,7 +151,7 @@ public class DataService {
      */
     public List<Data> geteTestData() {
         List<Data> dataList = new ArrayList<>();
-        Map<String, String> keyValue = new HashMap<>();
+        Map<String, String> keyValue = new LinkedHashMap<>();
         keyValue.put("结束日期","2018/10/27");
         keyValue.put("起始日期","2018/10/27");
         keyValue.put("商品名称","1");

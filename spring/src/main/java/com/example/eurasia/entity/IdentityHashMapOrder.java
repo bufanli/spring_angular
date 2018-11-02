@@ -3,7 +3,7 @@ package com.example.eurasia.entity;
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
 
-public class IdentityHashMapOperate {
+public class IdentityHashMapOrder {
 
     public static IdentityHashMap addValue(IdentityHashMap map, String key, Object value)
     {

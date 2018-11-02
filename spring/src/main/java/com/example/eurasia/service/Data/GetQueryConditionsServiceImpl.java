@@ -26,7 +26,7 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
         return new ResponseResultUtil().success();
     }
 
-    private void getQueryConditionsFromSQL(String tableName) {
+    private void getQueryConditionsFromSQL(String tableName) throws Exception {
         dataService.getHeaders(tableName);
     }
 }
