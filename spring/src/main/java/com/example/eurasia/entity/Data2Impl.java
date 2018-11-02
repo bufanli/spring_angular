@@ -1,8 +1,8 @@
 package com.example.eurasia.entity;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -26,7 +26,7 @@ public class Data2Impl implements IData, Serializable {
     }
 
     public void setKeyValue(Map<String, String> keyValue) {
-        this.keyValue = new HashMap<>();
+        this.keyValue = new LinkedHashMap<>();
         this.keyValue.putAll(keyValue);
     }
 

@@ -17,7 +17,7 @@
     <column key="VARCHAR(20)" value="牛种" />
     <column key="VARCHAR(20)" value="级别" />
     <column key="VARCHAR(20)" value="饲料" />
-    <column key="VARCHAR(50)" value="规格型号" />
+    <column key="VARCHAR(255)" value="规格型号" />
     <column key="VARCHAR(10)" value="成交方式" />
     <column key="DECIMAL(9,2) UNSIGNED" value="申报单价" />
     <column key="DECIMAL(9,2) UNSIGNED" value="申报总价" />

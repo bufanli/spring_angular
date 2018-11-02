@@ -230,13 +230,13 @@ StringUtils.isEmpty(" bob ") = false
 
         //T.B.D
         if (dataStart.equals("") == true && dataEnd.equals("") == false) {
-            dataStart = "(select min(" + "起始日期" + ")";
-            sql.append(" 起始日期" + " between '" + dataStart + "' and '" + dataEnd + "'");
+            dataStart = "(select min(" + "日期" + ")";
+            sql.append(" 日期" + " between '" + dataStart + "' and '" + dataEnd + "'");
         } else if (dataStart.equals("") == false && dataEnd.equals("") == true) {
-            dataEnd = "(select max(" + "起始日期" + ")";
-            sql.append(" 起始日期" + " between '" + dataStart + "' and '" + dataEnd + "'");
+            dataEnd = "(select max(" + "日期" + ")";
+            sql.append(" 日期" + " between '" + dataStart + "' and '" + dataEnd + "'");
         } else if (dataStart.equals("") == false && dataEnd.equals("") == false) {
-            sql.append(" 起始日期" + " between '" + dataStart + "' and '" + dataEnd + "'");
+            sql.append(" 日期" + " between '" + dataStart + "' and '" + dataEnd + "'");
         } else if (dataStart.equals("") == true && dataEnd.equals("") == true)  {
             if (sql.indexOf(sqlAnd) >= 0) {
                 sql.delete((sql.length() - sqlAnd.length()),sql.length());

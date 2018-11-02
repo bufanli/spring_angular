@@ -6,7 +6,7 @@ import org.springframework.jdbc.core.RowMapper;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /*要注意这个DataMapper.java应该要和具体的Sql语句对应。*/
@@ -24,7 +24,7 @@ public class DataMapper implements RowMapper<Data> {
         Boolean isAutoIncrement = md.isAutoIncrement(1); //如果此列自动递增，则返回 true。这类列通常为键，而且始终是只读的。
         int columnType = md.getColumnType(1); //返回此列的 SQL 数据类型。这些数据类型包括
         */
-        Map<String, String> keyValue = new HashMap<>();
+        Map<String, String> keyValue = new LinkedHashMap<>();
         for (int i = 1; i < columnCount; i++) {
             keyValue.put(md.getColumnName(i),resultSet.getString(i));
         }
