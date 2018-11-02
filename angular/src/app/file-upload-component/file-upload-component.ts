@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FileUploader } from 'ng2-file-upload';
 import { FileItem } from 'ng2-file-upload';
 import { ParsedResponseHeaders } from 'ng2-file-upload';
+import {UploadStatus} from './data-entry/upload-status';
 
 const URL = 'uploadFile';
 
@@ -12,9 +13,10 @@ const URL = 'uploadFile';
 })
 export class FileUploadComponent {
   public uploader: FileUploader = new FileUploader({ url: URL });
-
+  public uploadStatus: {[key: string]: UploadStatus} = {};
   constructor() {
     this.uploader.onCompleteItem = this.successItem;
+    this.uploadStatus['aa'] = new UploadStatus('上传成功', '');
   }
 
   successItem(item: FileItem, response: string, status: number, headers: ParsedResponseHeaders): any {
