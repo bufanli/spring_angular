@@ -83,7 +83,8 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
         Set<Map.Entry<String, String>> set = rowList.get(0).getKeyValue().entrySet();
         Iterator<Map.Entry<String, String>> it = set.iterator();
         while (it.hasNext()) {
-            map.put(it.next().getKey(),it.next().getKey());
+            Map.Entry<String,String> temp = it.next();
+            map.put(temp.getKey(),temp.getKey());
         }
         title.add(map);
 
