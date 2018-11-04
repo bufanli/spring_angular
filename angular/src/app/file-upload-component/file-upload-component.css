@@ -24,11 +24,22 @@ button {
   position: absolute;
   top: 0;
   left: 0;
+  width: 0;
   font-size: 34px;
   opacity: 0;
 }
 
 .fix-height {
-  height: 300px;
+  height: 400px;
   overflow: auto;
+}
+
+.va {
+  vertical-align: middle;
+}
+
+.inline {
+  display: inline;
+  font-size: 12px;
+  border: 1px dashed #000;
 }
