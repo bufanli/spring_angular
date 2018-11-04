@@ -304,6 +304,11 @@ public class UploadFileServiceImpl implements IUploadFileService {
                 log.error("第{}/{}列标题在数据中不存在。",(n+1),numTitleCells);
                 continue;
             }
+            if (this.checkSameTitle(cellValue,valueList)) {
+                rowErrorMsg.append(DataService.BR + "第" + (n+1) + "列标题重复，请仔细检查。");
+                log.error("第{}/{}列标题重复。",(n+1),numTitleCells);
+                continue;
+            }
             Map<Integer,String> titleMap = new LinkedHashMap<>();
             titleMap.put(n,cellValue);//列号，列值
             valueList.add(titleMap);
@@ -314,9 +319,9 @@ public class UploadFileServiceImpl implements IUploadFileService {
             msg.append(rowErrorMsg);
         } else {
             msg.setLength(0);
+            titleList.addAll(valueList);
         }
 
-        titleList.addAll(valueList);
         return msg;
     }
 
@@ -395,6 +400,22 @@ public class UploadFileServiceImpl implements IUploadFileService {
                 //System.out.println("Key:" + entry.getKey() + " Value:" + entry.getValue());
                 if (entry.getValue().toString().equals(cellValue) == true) {
                     return true;//excel这个表头，在数据库表头中找到了
+                }
+            }
+        }
+
+        return false;//没找到
+    }
+
+    private boolean checkSameTitle(String cellValue, List<Map<Integer,String>> titleList) throws Exception {
+        //重复列名的检查
+        for (Map<Integer, String> title : titleList) {//循环已遍历的列
+            Set<Map.Entry<Integer, String>> set = title.entrySet();
+            Iterator<Map.Entry<Integer, String>> it = set.iterator();
+            while (it.hasNext()) {
+                Map.Entry<Integer, String> entry = it.next();
+                if (cellValue.equals(entry.getValue()) == true) {//列值
+                    return true;
                 }
             }
         }

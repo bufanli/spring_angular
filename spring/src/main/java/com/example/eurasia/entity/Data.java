@@ -100,6 +100,50 @@ public class Data{
     }
 
     /**
+     * 将所有的Value连接成以逗号间隔的字符串，并有Single quotation marks。
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-10-26 00:00:00
+     */
+    @JsonIgnore
+    public String getValuesWithSingle() {
+        StringBuilder sb = new StringBuilder();
+
+        Set<Map.Entry<String, String>> set = this.keyValue.entrySet();
+        Iterator<Map.Entry<String, String>> it = set.iterator();
+        while (it.hasNext()) {
+            sb.append("'" + it.next().getValue() + "',");
+        }
+        sb.deleteCharAt(sb.length() - ",".length());
+
+        return sb.toString();
+    }
+
+    /**
+     * 将所有的Value连接成以逗号间隔的字符串，并有Double quotation marks。
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-10-26 00:00:00
+     */
+    @JsonIgnore
+    public String getValuesWithDouble() {
+        StringBuilder sb = new StringBuilder();
+
+        Set<Map.Entry<String, String>> set = this.keyValue.entrySet();
+        Iterator<Map.Entry<String, String>> it = set.iterator();
+        while (it.hasNext()) {
+            sb.append("\"" + it.next().getValue() + "\",");
+        }
+        sb.deleteCharAt(sb.length() - ",".length());
+
+        return sb.toString();
+    }
+
+    /**
      * 所有的Key是不是都是空值。
      * @param
      * @return true:都是空值。false:不都是空值。
