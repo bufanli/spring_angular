@@ -25,7 +25,7 @@ public class DataMapper implements RowMapper<Data> {
         int columnType = md.getColumnType(1); //返回此列的 SQL 数据类型。这些数据类型包括
         */
         Map<String, String> keyValue = new LinkedHashMap<>();
-        for (int i = 1; i < columnCount; i++) {
+        for (int i = 1; i <= columnCount; i++) {
             keyValue.put(md.getColumnName(i),resultSet.getString(i));
         }
 

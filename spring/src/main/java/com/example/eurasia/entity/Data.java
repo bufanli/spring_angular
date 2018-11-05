@@ -68,7 +68,8 @@ public class Data{
         Set<Map.Entry<String, String>> set = this.keyValue.entrySet();
         Iterator<Map.Entry<String, String>> it = set.iterator();
         while (it.hasNext()) {
-            sb.append(it.next().getKey());
+            Map.Entry<String,String> entry = it.next();
+            sb.append(entry.getKey());
             sb.append(",");
         }
         sb.deleteCharAt(sb.length() - ",".length());
@@ -91,7 +92,8 @@ public class Data{
         Set<Map.Entry<String, String>> set = this.keyValue.entrySet();
         Iterator<Map.Entry<String, String>> it = set.iterator();
         while (it.hasNext()) {
-            sb.append(it.next().getValue());
+            Map.Entry<String,String> entry = it.next();
+            sb.append(entry.getValue());
             sb.append(",");
         }
         sb.deleteCharAt(sb.length() - ",".length());
@@ -114,7 +116,8 @@ public class Data{
         Set<Map.Entry<String, String>> set = this.keyValue.entrySet();
         Iterator<Map.Entry<String, String>> it = set.iterator();
         while (it.hasNext()) {
-            sb.append("'" + it.next().getValue() + "',");
+            Map.Entry<String,String> entry = it.next();
+            sb.append("'" + entry.getValue() + "',");
         }
         sb.deleteCharAt(sb.length() - ",".length());
 
@@ -136,7 +139,8 @@ public class Data{
         Set<Map.Entry<String, String>> set = this.keyValue.entrySet();
         Iterator<Map.Entry<String, String>> it = set.iterator();
         while (it.hasNext()) {
-            sb.append("\"" + it.next().getValue() + "\",");
+            Map.Entry<String,String> entry = it.next();
+            sb.append("\"" + entry.getValue() + "\",");
         }
         sb.deleteCharAt(sb.length() - ",".length());
 
@@ -157,7 +161,8 @@ public class Data{
         Set<Map.Entry<String, String>> set = this.keyValue.entrySet();
         Iterator<Map.Entry<String, String>> it = set.iterator();
         while (it.hasNext()) {
-            if (it.next().getKey().length() != 0) {
+            Map.Entry<String,String> entry = it.next();
+            if (entry.getKey().length() != 0) {
                 return false;
             }
         }
@@ -178,7 +183,8 @@ public class Data{
         Set<Map.Entry<String, String>> set = this.keyValue.entrySet();
         Iterator<Map.Entry<String, String>> it = set.iterator();
         while (it.hasNext()) {
-            if (it.next().getValue().length() != 0) {
+            Map.Entry<String,String> entry = it.next();
+            if (entry.getValue().length() != 0) {
                 return false;
             }
         }

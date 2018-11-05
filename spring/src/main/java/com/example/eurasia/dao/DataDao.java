@@ -357,12 +357,15 @@ SELECT information_schema.SCHEMATA.SCHEMA_NAME FROM information_schema.SCHEMATA 
                 ApplicationContext context = new ClassPathXmlApplicationContext("com/example/eurasia/config/applicationContext.xml");
                 DataXMLReader dataXMLReader = (DataXMLReader) context.getBean("columnsName");
 
+                int i = 0;//comment
                 StringBuffer sb = new StringBuffer();
                 sb.append("CREATE TABLE `" + tableName + "` (");
-                sb.append(" `id` int(11) NOT NULL AUTO_INCREMENT,");
+                sb.append(" `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '" + i + "',");
+                i++;
                 Map<String,String> map = dataXMLReader.getKeyValue();
                 for (Map.Entry<String, String> entry : map.entrySet()) {
-                    sb.append("`" + entry.getKey() + "` " + entry.getValue() + " NOT NULL,");//key字段名 value字段类型
+                    sb.append("`" + entry.getKey() + "` " + entry.getValue() + " NOT NULL COMMENT '" + i + "',");//key字段名 value字段类型
+                    i++;
                 }
                 sb.append(" PRIMARY KEY (`id`)");
                 sb.append(") ENGINE=InnoDB DEFAULT CHARSET=gbk;");
@@ -427,7 +430,7 @@ SELECT information_schema.SCHEMATA.SCHEMA_NAME FROM information_schema.SCHEMATA 
 
         StringBuffer sql = new StringBuffer();
         sql.append("select COLUMN_NAME from information_schema.COLUMNS where table_name = '" + tableName);
-        sql.append("' and table_schema = 'eurasia'");//#mysql> create database eurasia;
+        sql.append("' and table_schema = 'eurasia' order by comment asc");//在这之前要手动创建完数据库。asc生序，desc降序。
         List<Map<String, Object>> colsNameList = getJdbcTemplate().queryForList(sql.toString());//T.B.D HashMap顺序乱
 /*
         for(Map<String,Object> colsName: colsNameList) {
