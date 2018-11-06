@@ -75,8 +75,36 @@ public class DataService {
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
-    public List<Map<String,Object>> getHeaders(String tableName) throws Exception {
-        return getDataDao().queryListForColumnName(tableName);
+    public List<Map<String,String>> getHeaders(String tableName) throws Exception {
+        List<Map<String,String>> headerList = new ArrayList<>();
+
+        List<Map<String, Object>> colsNameList = getDataDao().queryListForColumnName(tableName);
+        for(Map<String,Object> colsName: colsNameList) {
+            Map<String,String> nameMap = new LinkedHashMap<>();
+            nameMap.put(colsName.get("ORDINAL_POSITION").toString(),colsName.get("COLUMN_NAME").toString());
+            headerList.add(nameMap);
+        }
+
+        return headerList;
+    }
+
+    /**
+     * 取得表头
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-11-06 00:00:00
+     */
+    public List<String> getHeaderNames(String tableName) throws Exception {
+        List<String> headerList = new ArrayList<>();
+
+        List<Map<String, Object>> colsNameList = getDataDao().queryListForColumnName(tableName);
+        for(Map<String,Object> colsName: colsNameList) {
+            headerList.add(colsName.get("COLUMN_NAME").toString());
+        }
+
+        return headerList;
     }
 
     /**

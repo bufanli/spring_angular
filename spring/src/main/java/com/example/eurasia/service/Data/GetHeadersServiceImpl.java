@@ -29,7 +29,7 @@ public class GetHeadersServiceImpl implements IGetHeadersService {
     public ResponseResult getHeaders() throws Exception {
 
         Header[] headers;
-        List<Map<String,Object>> colsNameList;
+        List<Map<String,String>> colsNameList;
         try {
             colsNameList = this.getHeadersFromSQL(DataService.TABLE_NAME);
             if (colsNameList == null) {
@@ -41,13 +41,13 @@ public class GetHeadersServiceImpl implements IGetHeadersService {
 
             headers = new Header[colsNameList.size()];
             int i = 0;
-            for(Map<String,Object> colsName: colsNameList) {
-                Set<Map.Entry<String, Object>> set = colsName.entrySet();
-                Iterator<Map.Entry<String, Object>> it = set.iterator();
+            for(Map<String,String> colsName: colsNameList) {
+                Set<Map.Entry<String, String>> set = colsName.entrySet();
+                Iterator<Map.Entry<String, String>> it = set.iterator();
                 while (it.hasNext()) {
-                    Map.Entry<String,Object> entry = it.next();
+                    Map.Entry<String,String> entry = it.next();
                     //System.out.println("Key:" + entry.getKey() + " Value:" + entry.getValue());
-                    headers[i] = new Header(entry.getValue().toString(), entry.getValue().toString());
+                    headers[i] = new Header(entry.getKey().toString(), entry.getValue().toString());
                 }
                 i++;
             }
@@ -59,13 +59,13 @@ public class GetHeadersServiceImpl implements IGetHeadersService {
         return new ResponseResultUtil().success(ResponseCodeEnum.HEADER_GET_INFO_FROM_SQL_SUCCESS, headers);
     }
 
-    private List<Map<String,Object>> getHeadersFromSQL(String tableName) throws Exception {
+    private List<Map<String,String>> getHeadersFromSQL(String tableName) throws Exception {
         return dataService.getHeaders(tableName);
     }
 
     class Header implements Cloneable {
-        private String field;
-        private String title;
+        private String field;//ORDINAL_POSITION
+        private String title;//COLUMN_NAME
 
         Header (String field, String title) {
             this.field = field;

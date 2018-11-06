@@ -386,17 +386,17 @@ public class UploadFileServiceImpl implements IUploadFileService {
     }
 
     private boolean checkTitles(String cellValue) throws Exception {
-        List<Map<String,Object>> colsNameList = this.getTitles(DataService.TABLE_NAME);
+        List<Map<String,String>> colsNameList = this.getTitles(DataService.TABLE_NAME);
         if (colsNameList.size() == 0) {
             log.info(ResponseCodeEnum.UPLOAD_GET_HEADER_INFO_FROM_SQL_ZERO.getMessage());
             return false;
         }
 
-        for(Map<String,Object> colsName: colsNameList) {
-            Set<Map.Entry<String, Object>> set = colsName.entrySet();
-            Iterator<Map.Entry<String, Object>> it = set.iterator();
+        for(Map<String,String> colsName: colsNameList) {
+            Set<Map.Entry<String, String>> set = colsName.entrySet();
+            Iterator<Map.Entry<String, String>> it = set.iterator();
             while (it.hasNext()) {
-                Map.Entry<String,Object> entry = it.next();
+                Map.Entry<String,String> entry = it.next();
                 //System.out.println("Key:" + entry.getKey() + " Value:" + entry.getValue());
                 if (entry.getValue().toString().equals(cellValue) == true) {
                     return true;//excel这个表头，在数据库表头中找到了
@@ -427,8 +427,8 @@ public class UploadFileServiceImpl implements IUploadFileService {
         return dataService.addData(tableName, data);
     }
 
-    private List<Map<String,Object>> getTitles(String tableName) throws Exception {
-        List<Map<String,Object>> colsNameList;
+    private List<Map<String,String>> getTitles(String tableName) throws Exception {
+        List<Map<String,String>> colsNameList;
         try {
             log.info("文件上传，取得表头开始");
 

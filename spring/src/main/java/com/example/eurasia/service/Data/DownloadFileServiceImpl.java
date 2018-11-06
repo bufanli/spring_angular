@@ -39,7 +39,7 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
     @Override
     public ResponseResult exportExcel(HttpServletResponse response, QueryCondition[] queryConditionsArr) throws Exception {
 
-        List<Map<String,Object>> colsNameList = this.getTitles(DataService.TABLE_NAME);
+        List<String> colsNameList = this.getTitles(DataService.TABLE_NAME);
         if (colsNameList.size() == 0) {
             log.info(ResponseCodeEnum.EXPORT_GET_HEADER_INFO_FROM_SQL_ZERO.getMessage());
             return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_GET_HEADER_INFO_FROM_SQL_ZERO);
@@ -74,30 +74,16 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
         return new ResponseResultUtil().success(ResponseCodeEnum.EXPORT_DATA_INFO_SUCCESS,responseMsg);
     }
 
-    private int writeExcel(XSSFWorkbook wb, Sheet sheet, List<Map<String,Object>> titleList, List<Data> rowList) {
-
-        //T.B.D getHeader取出来的顺序是乱的，暂时这么回避。
-        List<Map<String,Object>> title = new ArrayList<Map<String, Object>>();
-        Map map = new LinkedHashMap<String, Object>();
-        map.putAll(rowList.get(0).getKeyValue());
-        Set<Map.Entry<String, String>> set = rowList.get(0).getKeyValue().entrySet();
-        Iterator<Map.Entry<String, String>> it = set.iterator();
-        while (it.hasNext()) {
-            Map.Entry<String,String> entry = it.next();
-            map.put(entry.getKey(),entry.getKey());
-        }
-        title.add(map);
-
+    private int writeExcel(XSSFWorkbook wb, Sheet sheet, List<String> colsNameList, List<Data> rowList) {
 
         int rowIndex = 0;
-        //rowIndex = writeTitlesToExcel(wb, sheet, titleList);
-        rowIndex = writeTitlesToExcel(wb, sheet, title);
+        rowIndex = writeTitlesToExcel(wb, sheet, colsNameList);
         rowIndex = writeRowsToExcel(wb, sheet, rowList, rowIndex);
-        autoSizeColumns(sheet, (titleList.size() + 1));
+        autoSizeColumns(sheet, (colsNameList.size() + 1));
         return rowIndex;
     }
 
-    private int writeTitlesToExcel(XSSFWorkbook wb, Sheet sheet, List<Map<String,Object>> titleList) {
+    private int writeTitlesToExcel(XSSFWorkbook wb, Sheet sheet, List<String> colsNameList) {
         int rowIndex = 0;
         int colIndex = 0;
 
@@ -120,17 +106,11 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
         // titleRow.setHeightInPoints(25);
         colIndex = 0;
 
-        for(Map<String,Object> colsName: titleList) {
-            Set<Map.Entry<String, Object>> set = colsName.entrySet();
-            Iterator<Map.Entry<String, Object>> it = set.iterator();
-            while (it.hasNext()) {
-                Map.Entry<String,Object> entry = it.next();
-                //System.out.println("Key:" + entry.getKey() + " Value:" + entry.getValue());
-                Cell cell = titleRow.createCell(colIndex);
-                cell.setCellValue(entry.getValue().toString());
-                cell.setCellStyle(titleStyle);
-                colIndex++;
-            }
+        for(String colsName: colsNameList) {
+            Cell cell = titleRow.createCell(colIndex);
+            cell.setCellValue(colsName);
+            cell.setCellStyle(titleStyle);
+            colIndex++;
         }
 
         rowIndex++;
@@ -217,12 +197,12 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
         outputStream.close();
     }
 
-    private List<Map<String,Object>> getTitles(String tableName) throws Exception {
-        List<Map<String,Object>> colsNameList;
+    private List<String> getTitles(String tableName) throws Exception {
+        List<String> colsNameList;
         try {
             log.info("文件导出，取得表头开始");
 
-            colsNameList = dataService.getHeaders(tableName);
+            colsNameList = dataService.getHeaderNames(tableName);
             if (colsNameList == null) {
                 throw new Exception(ResponseCodeEnum.EXPORT_GET_HEADER_INFO_FROM_SQL_NULL.getMessage());
             }
