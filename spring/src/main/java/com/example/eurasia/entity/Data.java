@@ -2,10 +2,7 @@ package com.example.eurasia.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 
 /**
@@ -15,6 +12,10 @@ import java.util.Set;
  */
 public class Data{
 
+/*
+LinkedHashMap保证了元素迭代的顺序。该迭代顺序可以是插入顺序或者是访问顺序。
+可以认为是HashMap+LinkedList,即它既使用HashMap操作数据结构,又使用LinkedList维护插入元素的先后顺序
+*/
     private LinkedHashMap<String, String> keyValue;
 
     /**
@@ -145,6 +146,27 @@ public class Data{
         sb.deleteCharAt(sb.length() - ",".length());
 
         return sb.toString();
+    }
+
+    /**
+     * 将所有的Value放到数组 里。
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-10-26 00:00:00
+     */
+    @JsonIgnore
+    public String[] getValuesToArray() {
+        StringBuilder sb = new StringBuilder();
+
+        Collection<String> valueCollection = this.keyValue.values();
+        final int size = valueCollection.size();
+        List<String> valueList = new ArrayList<String>(valueCollection);
+        String[] valueArray = new String[size];
+        this.keyValue.values().toArray(valueArray);
+
+        return valueArray;
     }
 
     /**
