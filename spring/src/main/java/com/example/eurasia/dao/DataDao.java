@@ -41,8 +41,7 @@ public class DataDao {
         StringBuffer sql = new StringBuffer();
         int size = data.getKeyValue().size();
         String columnsNames = data.getKeys();
-        //String columnsValues = data.getValues();
-        String columnsValues = data.getValuesWithSingle();
+        String columnsValues = data.getValues();
         String[] columnsValuesArr = columnsValues.split(",");
 
         sql.append("insert into " + tableName + "(" + columnsNames + ") values (");

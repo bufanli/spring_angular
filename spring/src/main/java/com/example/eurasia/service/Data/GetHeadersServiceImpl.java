@@ -47,7 +47,7 @@ public class GetHeadersServiceImpl implements IGetHeadersService {
                 while (it.hasNext()) {
                     Map.Entry<String,String> entry = it.next();
                     //System.out.println("Key:" + entry.getKey() + " Value:" + entry.getValue());
-                    headers[i] = new Header(entry.getKey().toString(), entry.getValue().toString());
+                    headers[i] = new Header(entry.getValue().toString(), entry.getValue().toString());
                 }
                 i++;
             }
@@ -64,7 +64,7 @@ public class GetHeadersServiceImpl implements IGetHeadersService {
     }
 
     class Header implements Cloneable {
-        private String field;//ORDINAL_POSITION
+        private String field;//COLUMN_NAME
         private String title;//COLUMN_NAME
 
         Header (String field, String title) {
@@ -76,18 +76,18 @@ public class GetHeadersServiceImpl implements IGetHeadersService {
             this.field = field;
         }
         public String getField() {
-            return this.field;
-        }
-        public void setTitle(String title) {
-            this.title = title;
-        }
-        public String getTitle() {
-            return this.title;
-        }
+                return this.field;
+            }
+            public void setTitle(String title) {
+                this.title = title;
+            }
+            public String getTitle() {
+                return this.title;
+            }
 
-        @Override
-        protected Object clone() throws CloneNotSupportedException {
-            return super.clone();
+            @Override
+            protected Object clone() throws CloneNotSupportedException {
+                return super.clone();
         }
     }
 
