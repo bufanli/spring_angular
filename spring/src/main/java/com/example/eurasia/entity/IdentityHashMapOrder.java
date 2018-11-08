@@ -5,7 +5,7 @@ import java.util.IdentityHashMap;
 
 public class IdentityHashMapOrder {
 
-    public static IdentityHashMap addValue(IdentityHashMap map, String key, Object value)
+    public static IdentityHashMap addValue(IdentityHashMap<String,Object> map, String key, Object value)
     {
         if(map.get("sort") == null)//没有顺序控制key
         {
@@ -23,10 +23,10 @@ public class IdentityHashMapOrder {
         return map;
     }
 
-    public static ArrayList getValues(IdentityHashMap map)
+    public static ArrayList<Object> getValues(IdentityHashMap<String,Object> map)
     {
         String sort = map.get("sort").toString();
-        ArrayList values = new ArrayList();
+        ArrayList<Object> values = new ArrayList();
 
         if(sort != null)
         {

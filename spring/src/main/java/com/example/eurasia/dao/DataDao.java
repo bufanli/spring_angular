@@ -5,13 +5,18 @@ import com.example.eurasia.entity.DataXMLReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.jdbc.core.ColumnMapRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.SingleColumnRowMapper;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
 import java.sql.*;
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Repository
 public class DataDao {
@@ -423,6 +428,10 @@ SELECT information_schema.SCHEMATA.SCHEMA_NAME FROM information_schema.SCHEMATA 
         Where table_name = 'companies'  ##表名
         AND table_schema = 'testhuicard'##数据库名
         AND column_name LIKE 'c_name'   ##字段名
+
+        mysql查询表所有列名，并用逗号分隔
+        SELECT GROUP_CONCAT(COLUMN_NAME SEPARATOR ",") FROM information_schema.COLUMNS
+        WHERE TABLE_SCHEMA = 'db_name' AND TABLE_NAME = 'table_name'
         */
 
         StringBuffer sql = new StringBuffer();
@@ -442,4 +451,49 @@ SELECT information_schema.SCHEMATA.SCHEMA_NAME FROM information_schema.SCHEMATA 
         return colsNameList;
     }
 
+    /**
+     * T.B.D
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-10-15 23:11:00
+     */
+    public List getFirstName(int userID)
+    {
+        String sql = "select firstname from users where user_id = " + userID;
+
+        SingleColumnRowMapper rowMapper = new SingleColumnRowMapper(String.class);
+        List firstNameList = (List) getJdbcTemplate().query(sql, rowMapper);
+
+        for(Object firstName: firstNameList)
+            System.out.println(firstName.toString());
+
+        return firstNameList;
+    }
+
+    /**
+     * T.B.D
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-10-15 23:11:00
+     */
+    public List<Map<String, Object>> getUserData(int userID)
+    {
+        String sql = "select firstname, lastname, dept from users where userID = ? ";
+
+        ColumnMapRowMapper rowMapper = new ColumnMapRowMapper();
+        List<Map<String, Object>> userDataList =  getJdbcTemplate().query(sql, rowMapper, userID);
+
+        for(Map<String, Object> map: userDataList){
+            System.out.println("FirstName = " + map.get("firstname"));
+            System.out.println("LastName = " + map.get("lastname"));
+            System.out.println("Department = " + map.get("dept"));
+        }
+
+        return userDataList;
+
+    }
 }

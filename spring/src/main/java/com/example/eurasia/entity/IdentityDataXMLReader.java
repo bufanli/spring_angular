@@ -42,10 +42,12 @@ public class IdentityDataXMLReader {
         }
         this.keyValue = new IdentityHashMap<>();
         Element root = doc.getRootElement();
-        List<Element> eleList = root.selectNodes("/mapping/column");
-        for (Element e : eleList) {// 循环读取每个节点
-            String key = e.attributeValue("key");//字段名
-            String value = e.attributeValue("value");//字段类型
+        List eleList = root.selectNodes("/mapping/column");
+        Iterator it = eleList.iterator();
+        while (it.hasNext()) {// 循环读取每个节点
+            Element entry = (Element)it.next();
+            String key = entry.attributeValue("key");//字段名
+            String value = entry.attributeValue("value");//字段类型
             //System.out.println(key + value);
             this.keyValue.put(key, value);
         }
@@ -70,14 +72,14 @@ public class IdentityDataXMLReader {
      * @param paramsMap 被拷⻉贝对象
      * @param resultMap 拷⻉贝后的对象
      */
-    public static void mapCopy(IdentityHashMap paramsMap, IdentityHashMap resultMap) {
+    public static void mapCopy(IdentityHashMap<String, String> paramsMap, IdentityHashMap<String, String> resultMap) {
         if (resultMap == null) resultMap = new IdentityHashMap();
         if (paramsMap == null) return;
         Iterator it = paramsMap.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry entry = (Map.Entry) it.next();
             Object key = entry.getKey();
-            resultMap.put(key, paramsMap.get(key) != null ? paramsMap.get(key) : "");
+            resultMap.put(String.valueOf(key), paramsMap.get(key) != null ? paramsMap.get(key) : "");
         }
     }
 
