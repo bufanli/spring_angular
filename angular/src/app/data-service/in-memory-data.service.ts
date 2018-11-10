@@ -158,17 +158,17 @@ export class InMemoryDataService implements InMemoryDbService {
     ];
     let headers: Header[];
     headers = [
-      { field: 'id', title: '顺序号', visible: true },
-      { field: 'date', title: '日期', visible: true },
-      { field: 'hs_code', title: 'HS编码', visible: true },
-      { field: 'enterprise', title: '进出口企业', visible: true },
-      { field: 'client', title: '品牌及客户', visible: true },
-      { field: 'description', title: '产品描述', visible: true },
-      { field: 'country', title: '国家', visible: true },
-      { field: 'unit_price', title: '申请单价', visible: true },
-      { field: 'total_price', title: '申请总价', visible: true },
-      { field: 'amount', title: '数量', visible: true },
-      { field: 'amount_unit', title: '数量单位', visible: true },
+      { field: 'id', title: '顺序号', visible: true , formatter : null , class : 'colStyle' , width: 100},
+      { field: 'date', title: '日期', visible: true , formatter : null, class : 'colStyle', width: 100},
+      { field: 'hs_code', title: 'HS编码', visible: true , formatter : null, class : 'colStyle', width: 100},
+      { field: 'enterprise', title: '进出口企业', visible: true , formatter : null, class : 'colStyle', width: 100},
+      { field: 'client', title: '品牌及客户', visible: true , formatter : null, class : 'colStyle', width: 100},
+      { field: 'description', title: '产品描述', visible: true , formatter : null, class : 'colStyle', width: 100},
+      { field: 'country', title: '国家', visible: true , formatter : null, class : 'colStyle', width: 100},
+      { field: 'unit_price', title: '申请单价', visible: true , formatter : null, class : 'colStyle', width: 100},
+      { field: 'total_price', title: '申请总价', visible: true , formatter : null, class : 'colStyle', width: 100},
+      { field: 'amount', title: '数量', visible: true , formatter : null, class : 'colStyle', width: 100},
+      { field: 'amount_unit', title: '数量单位', visible: true , formatter : null, class : 'colStyle', width: 100},
     ];
     const headersResponse = {
       code: '200',

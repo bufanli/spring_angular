@@ -13,6 +13,8 @@ import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
 import java.sql.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -199,6 +201,7 @@ sbf = new StringBuffer("");//重新new
      */
     public List<Data> queryListForObject(String tableName, Data queryConditions) {
         String sqlAnd = " and ";
+        String sqlOr= " or ";
         String dataStart = "";
         String dataEnd = "";
         StringBuffer sql = new StringBuffer();
@@ -229,20 +232,38 @@ StringUtils.isEmpty("bob") = false
 StringUtils.isEmpty(" bob ") = false
 */
             if (!StringUtils.isEmpty(entry.getValue().toString())) {
-                sql.append(" " + entry.getKey().toString() + " like '%" + entry.getValue().toString() + "%'");
-                sql.append(sqlAnd);
+                if(!entry.getValue().toString().contains("||")) {
+                    sql.append(" " + entry.getKey().toString() + " like '%" + entry.getValue().toString() + "%'");
+                    sql.append(sqlAnd);
+                }else{
+                    String values[] = entry.getValue().toString().split("\\|\\|");
+                    sql.append("( ");
+                    for(String value : values){
+                       sql.append(entry.getKey().toString() + " like '%" + value + "%'");
+                       sql.append(sqlOr);
+                    }
+                    if (sql.indexOf(sqlOr) >= 0) {
+                        sql.delete((sql.length() - sqlOr.length()),sql.length());
+                    }
+                    sql.append(" )");
+                    sql.append(sqlAnd);
+                }
             }
         }
 
         //T.B.D
-        if (dataStart.equals("") == true && dataEnd.equals("") == false) {
+        if (dataStart.equals("") == true&& dataEnd.equals("") == false) {
             dataStart = "(select min(" + "日期" + ")";
-            sql.append(" 日期" + " between '" + dataStart + "' and '" + dataEnd + "'");
+            dataEnd = convertDateToNewFormat(dataEnd);
+            sql.append(" (日期" + " between " + dataStart + " and '" + dataEnd + "')");
         } else if (dataStart.equals("") == false && dataEnd.equals("") == true) {
-            dataEnd = "(select max(" + "日期" + ")";
-            sql.append(" 日期" + " between '" + dataStart + "' and '" + dataEnd + "'");
+            dataEnd = "(select max(" + "日期" + "))";
+            dataStart = convertDateToNewFormat(dataStart);
+            sql.append(" (日期" + " between '" + dataStart + "' and " + dataEnd + ")");
         } else if (dataStart.equals("") == false && dataEnd.equals("") == false) {
-            sql.append(" 日期" + " between '" + dataStart + "' and '" + dataEnd + "'");
+            dataStart = convertDateToNewFormat(dataStart);
+            dataEnd = convertDateToNewFormat(dataEnd);
+            sql.append(" (日期" + " between '" + dataStart + "' and '" + dataEnd + "')");
         } else if (dataStart.equals("") == true && dataEnd.equals("") == true)  {
             if (sql.indexOf(sqlAnd) >= 0) {
                 sql.delete((sql.length() - sqlAnd.length()),sql.length());
@@ -253,6 +274,18 @@ StringUtils.isEmpty(" bob ") = false
 
         List<Data> dataList = getJdbcTemplate().query(sql.toString(), new DataMapper());
         return dataList;
+    }
+    // angular得到的时间格式是 2018/9/11 和数据库里面不一致，所以转换一下
+    private String convertDateToNewFormat(String dateFromAngular){
+        try {
+            java.util.Date tempDateEnd= new SimpleDateFormat("yyyy/mm/dd").parse(dateFromAngular);
+            SimpleDateFormat newDateFormat = new SimpleDateFormat("yyyy-mm-dd");
+            return newDateFormat.format(tempDateEnd);
+        }catch(ParseException e){
+            e.printStackTrace();
+            // 格式不正确的时候至少返回原来的时间字符串
+            return dateFromAngular;
+        }
     }
 
     /**

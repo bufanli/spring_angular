@@ -23,13 +23,13 @@ public class DataXMLReaderTest {
         map.put("name", "Marydon");
         LinkedHashMap<String, Object> map2 = new LinkedHashMap<String, Object>(1);
         map2.put("age", 20);
-        // 测试⼀一:是否实现拷⻉贝
-        dataXMLReader.mapCopy(map2, map);
-        System.out.println(map);// {age=20, name=Marydon}
-        System.out.println(map2);// {age=20}
-        // 测试⼆二:拷⻉贝后的map对象是否受原map对象的影响 map2.clear();
-        System.out.println(map);// {age=20, name=Marydon}
-        System.out.println(map2);// {}
+//        // 测试⼀一:是否实现拷⻉贝
+//        dataXMLReader.mapCopy(map2, map);
+//        System.out.println(map);// {age=20, name=Marydon}
+//        System.out.println(map2);// {age=20}
+//        // 测试⼆二:拷⻉贝后的map对象是否受原map对象的影响 map2.clear();
+//        System.out.println(map);// {age=20, name=Marydon}
+//        System.out.println(map2);// {}
     }
 }
 

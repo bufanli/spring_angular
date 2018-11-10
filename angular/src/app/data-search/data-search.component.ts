@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewChecked } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Http, Headers, RequestOptions, Response, ResponseContentType } from '@angular/http';
 import { URLSearchParams } from '@angular/http';
@@ -31,25 +31,38 @@ const httpDownloadOptions = {
   templateUrl: './data-search.component.html',
   styleUrls: ['./data-search.component.css']
 })
-export class DataSearchComponent implements OnInit {
+export class DataSearchComponent implements OnInit, AfterViewChecked {
   private searchUrl = 'searchData';  // URL to web api
   private exportUrl = 'downloadFile';  // URL to web api
   private headersUrl = 'getHeaders';  // URL to web api
   // search parameters
   searchParam = [
-    { key: '海关编码', value: '' },
+    { key: '进口关区', value: ''},
     { key: '起始日期', value: '' },
     { key: '结束日期', value: '' },
-    { key: '商品名称', value: '' },
-    { key: '贸易方式', value: '' },
-    { key: '企业名称', value: '' },
-    { key: '收发货地', value: '' }
+    { key: '产品名称', value: '' },
+    { key: '装货港', value: '' },
+    { key: '商品编码', value: '' },
+    { key: '规格型号', value: '' }
   ];
+  public importCustoms: string[] = [];
 
   onSearch(): void {
     this.getQueryTime();
+    this.convertSelection();
     this.searchData().subscribe(result =>
       this.searchDataNotification(result));
+  }
+
+  convertSelection(): void {
+    let result = '';
+    for (const custom of this.importCustoms) {
+      result = result + custom;
+      result = result + '||';
+    }
+    // get rid of last two chars
+    result = result.substr(0, result.lastIndexOf('||'));
+    this.searchParam[0].value = result;
   }
 
   // download file when exporting data
@@ -86,18 +99,46 @@ export class DataSearchComponent implements OnInit {
       $('#table').bootstrapTable('load', this.reshapeData(result.data));
     }
   }
-  exportNotification(result: any) {
-    alert('export ok');
-  }
+
   getHeadersNotification(headersResponse: HeadersResponse) {
     // if donot destroy table at first, table will not be shown
     $('#table').bootstrapTable('destroy');
     // show table's columns
     this.filterColumns(headersResponse.data);
-    $('#table').bootstrapTable({ columns: headersResponse.data });
+    const allHeaders: Header[] = this.addFormatterToHeaders(headersResponse.data);
+    $('#table').bootstrapTable({ columns: allHeaders });
     // show all products after headers are shown
     this.searchData().subscribe(products =>
       this.searchDataNotification(products));
+  }
+  addFormatterToHeaders(headers: Header[]) {
+    const seq: Header = new Header('seq', '', true);
+    seq.width = 50;
+    seq.formatter = function (value, row, index) {
+      return index + 1;
+    };
+    let allHeaders: Header[] = [seq];
+    for (const header of headers) {
+      header.class = 'colStyle';
+      if (header.title.length > 4) {
+        header.width = 200;
+      } else {
+        header.width = 200;
+      }
+      header.formatter = function (value, row, index) {
+        value = value ? value : '';
+        let length = value.length;
+        if (length && length > 12) {
+          length = 12;
+          return '<span class = "text-primary" data-toggle = "tooltip" \
+                  title = ' + value + '>' + value.substring(0, length) + '...' + '</span>';
+        } else {
+          return value;
+        }
+      };
+    }
+    allHeaders = allHeaders.concat(headers);
+    return allHeaders;
   }
 
   ngOnInit() {
@@ -125,8 +166,8 @@ export class DataSearchComponent implements OnInit {
     });
 
     // selectpicker must be called, otherwise select will not be shown
-    $('#trade-mode').selectpicker('destroy');
-    $('#trade-mode').selectpicker();
+    $('#import-custom').selectpicker('destroy');
+    $('#import-custom').selectpicker();
   }
   // get start and end time for querying
   getQueryTime() {
@@ -179,5 +220,11 @@ export class DataSearchComponent implements OnInit {
       index++;
     }
     return result;
+  }
+  // show tooltip when completing to upload file
+  ngAfterViewChecked() {
+    $('[data-toggle="tooltip"]').each(function () {
+      $(this).tooltip();
+    });
   }
 }
