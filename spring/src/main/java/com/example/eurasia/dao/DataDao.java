@@ -275,12 +275,12 @@ StringUtils.isEmpty(" bob ") = false
         List<Data> dataList = getJdbcTemplate().query(sql.toString(), new DataMapper());
         return dataList;
     }
-    // angular得到的时间格式是 2018/9/11 和数据库里面不一致，所以转换一下
+    // angular得到的时间格式是 2018/9/11 和数据库2018/09/11里面不一致，所以转换一下
     private String convertDateToNewFormat(String dateFromAngular){
         try {
-            java.util.Date tempDateEnd= new SimpleDateFormat("yyyy/mm/dd").parse(dateFromAngular);
-            SimpleDateFormat newDateFormat = new SimpleDateFormat("yyyy-mm-dd");
-            return newDateFormat.format(tempDateEnd);
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+            java.util.Date tempDateEnd= sdf.parse(dateFromAngular);
+            return sdf.format(tempDateEnd);
         }catch(ParseException e){
             e.printStackTrace();
             // 格式不正确的时候至少返回原来的时间字符串

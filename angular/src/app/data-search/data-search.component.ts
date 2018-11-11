@@ -149,7 +149,7 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
     // set date picker's formatter
     $('.input-daterange input').each(function () {
       $(this).datepicker({
-        format: 'yyyy-mm-dd',
+        format: 'yyyy/mm/dd',
         autoclose: true,
         todayBtn: 'linked',
         language: 'zh-CN',

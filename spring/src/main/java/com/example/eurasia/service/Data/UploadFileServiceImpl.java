@@ -507,7 +507,7 @@ public class UploadFileServiceImpl implements IUploadFileService {
                             // 如果是Date类型则，取得该Cell的Date值
                             date = cell.getDateCellValue();
                         }
-                        DateFormat formater = new SimpleDateFormat("yyyy-MM-dd");
+                        DateFormat formater = new SimpleDateFormat("yyyy/MM/dd");
                         val = formater.format(date);
 
                     } else {
