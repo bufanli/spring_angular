@@ -32,7 +32,7 @@ public class StartEurasiaApplication {
         DataService dataService = (DataService) context.getBean("dataService");
         //dataService.createDatabase("eurasia");//T.B.D.
         try {
-            dataService.createTable(DataService.TABLE_NAME);//T.B.D.
+            dataService.createTable(DataService.TABLE_DATA);//T.B.D.
         } catch (Exception e) {
             e.printStackTrace();
         }

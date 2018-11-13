@@ -10,7 +10,7 @@ import java.util.*;
  * @author FuJia
  * @Time 2018-09-20 00:00:00
  */
-public class Data{
+public class Data {
 
 /*
 LinkedHashMap保证了元素迭代的顺序。该迭代顺序可以是插入顺序或者是访问顺序。

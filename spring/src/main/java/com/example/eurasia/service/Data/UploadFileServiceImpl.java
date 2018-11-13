@@ -263,7 +263,7 @@ public class UploadFileServiceImpl implements IUploadFileService {
 
             int addDataNum = 0;
             for (Data data : dataList) {
-                addDataNum = this.saveDataToSQL(DataService.TABLE_NAME, data);//导入一行数据。
+                addDataNum = this.saveDataToSQL(DataService.TABLE_DATA, data);//导入一行数据。
             }
             log.info("导入成功，共{}条数据！",dataList.size());
             sheetMsg.append("导入成功，共" + dataList.size() + "条数据！");
@@ -386,7 +386,7 @@ public class UploadFileServiceImpl implements IUploadFileService {
     }
 
     private boolean checkTitles(String cellValue) throws Exception {
-        List<Map<String,String>> colsNameList = this.getTitles(DataService.TABLE_NAME);
+        List<Map<String,String>> colsNameList = this.getTitles(DataService.TABLE_DATA);
         if (colsNameList.size() == 0) {
             log.info(ResponseCodeEnum.UPLOAD_GET_HEADER_INFO_FROM_SQL_ZERO.getMessage());
             return false;

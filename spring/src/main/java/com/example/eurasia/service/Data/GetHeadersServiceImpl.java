@@ -31,7 +31,7 @@ public class GetHeadersServiceImpl implements IGetHeadersService {
         Header[] headers;
         List<Map<String,String>> colsNameList;
         try {
-            colsNameList = this.getHeadersFromSQL(DataService.TABLE_NAME);
+            colsNameList = this.getHeadersFromSQL(DataService.TABLE_DATA);
             if (colsNameList == null) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.HEADER_GET_INFO_FROM_SQL_NULL);
             }

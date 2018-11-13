@@ -27,13 +27,9 @@ public class SearchDataServiceImpl implements ISearchDataService {
     @Override
     public ResponseResult searchData(QueryCondition[] queryConditionsArr) throws Exception {
 
-        //List<Data> dumyDataList = dataService.geteTestData();
-        //dataService.addData(DataService.TABLE_NAME, dumyDataList.get(0));
-
-        Data queryConditions = new Data(dataService.queryConditionsArrToMap(queryConditionsArr));
         List<Data> dataList;
         try {
-            dataList = this.searchDataFromSQL(DataService.TABLE_NAME, queryConditions);
+            dataList = this.searchDataFromSQL(DataService.TABLE_DATA, queryConditionsArr);
             if (dataList == null) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.SEARCH_DATA_INFO_FROM_SQL_NULL);
             }
@@ -48,8 +44,8 @@ public class SearchDataServiceImpl implements ISearchDataService {
         return new ResponseResultUtil().success(ResponseCodeEnum.SEARCH_DATA_INFO_FROM_SQL_SUCCESS, dataList);
     }
 
-    private List<Data> searchDataFromSQL(String tableName, Data queryConditions) throws Exception {
-        return dataService.searchData(tableName, queryConditions);
+    private List<Data> searchDataFromSQL(String tableName, QueryCondition[] queryConditionsArr) throws Exception {
+        return dataService.searchData(tableName, queryConditionsArr);
     }
 
 }

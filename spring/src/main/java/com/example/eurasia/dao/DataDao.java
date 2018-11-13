@@ -2,6 +2,7 @@ package com.example.eurasia.dao;
 
 import com.example.eurasia.entity.Data;
 import com.example.eurasia.entity.DataXMLReader;
+import com.example.eurasia.entity.QueryCondition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -275,6 +276,27 @@ StringUtils.isEmpty(" bob ") = false
         List<Data> dataList = getJdbcTemplate().query(sql.toString(), new DataMapper());
         return dataList;
     }
+    /**
+     * 查询并返回List集合
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-09-20 00:00:00
+     */
+    public List<Data> queryListForObject(String tableName, QueryCondition[] queryConditionsArr) {
+        String sqlAnd = " and ";
+        String sqlOr= " or ";
+        String dataStart = "";
+        String dataEnd = "";
+        StringBuffer sql = new StringBuffer();
+        sql.append("select * from " + tableName + " where");
+
+        //T.B.D.
+
+        List<Data> dataList = getJdbcTemplate().query(sql.toString(), new DataMapper());
+        return dataList;
+    }
     // angular得到的时间格式是 2018/9/11 和数据库2018/09/11里面不一致，所以转换一下
     private String convertDateToNewFormat(String dateFromAngular){
         try {
@@ -393,7 +415,7 @@ SELECT information_schema.SCHEMATA.SCHEMA_NAME FROM information_schema.SCHEMATA 
                 return true;
             } else {
                 ApplicationContext context = new ClassPathXmlApplicationContext("com/example/eurasia/config/applicationContext.xml");
-                DataXMLReader dataXMLReader = (DataXMLReader) context.getBean("columnsName");
+                DataXMLReader dataXMLReader = (DataXMLReader) context.getBean("columnsDefaultName");
 
                 StringBuffer sb = new StringBuffer();
                 sb.append("CREATE TABLE `" + tableName + "` (");

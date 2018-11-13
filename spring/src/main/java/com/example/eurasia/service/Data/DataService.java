@@ -6,7 +6,10 @@ import com.example.eurasia.entity.QueryCondition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class DataService {
@@ -23,7 +26,8 @@ public class DataService {
         this.dataDao = dataDao;
     }
 
-    public static final String TABLE_NAME = "eurasiaTable";
+    public static final String TABLE_DATA = "eurasiaTable";
+    public static final String TABLE_QUERY_CONDITION = "queryConditionTable";
     public static final String EXPORT_EXCEL_SHEET_NAME = "统计表";
     public static final String BR = "<br/>";
 
@@ -53,6 +57,36 @@ public class DataService {
         } else {
             return this.searchAllData(tableName);
         }
+    }
+
+    /**
+     * 根据查询条件进行数据查询
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-09-20 00:00:00
+     */
+    public List<Data> searchData(String tableName, QueryCondition[] queryConditionsArr) throws Exception {
+        Boolean isExistDate = false;
+        for (QueryCondition queryCondition : queryConditionsArr) {
+            if (queryCondition.getType().equals(QueryCondition.QUERY_CONDITION_TYPE_DATE)) {
+                isExistDate = true;
+                break;
+            }
+        }
+
+        if (isExistDate == true) {
+            for (QueryCondition queryCondition : queryConditionsArr) {
+                if (!queryCondition.getValue().equals("")) {
+                    return getDataDao().queryListForObject(tableName, queryConditionsArr);
+                }
+            }
+
+            return this.searchAllData(tableName);
+        }
+
+        return null;
     }
 
     /**
@@ -151,22 +185,6 @@ public class DataService {
             e.printStackTrace();
         }
         return false;
-    }
-
-    /**
-     * 创建数据库
-     * @param
-     * @return
-     * @exception
-     * @author FuJia
-     * @Time 2018-09-20 00:00:00
-     */
-    public Map<String, String> queryConditionsArrToMap(QueryCondition[] queryConditionsArr) throws Exception {
-        Map<String, String> keyValue = new LinkedHashMap<>();
-        for (int i=0; i<queryConditionsArr.length; i++) {
-            keyValue.put(queryConditionsArr[i].getKey(), queryConditionsArr[i].getValue());
-        }
-        return keyValue;
     }
 
     /**

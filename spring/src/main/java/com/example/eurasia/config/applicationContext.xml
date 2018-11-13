@@ -11,9 +11,9 @@
                         http://www.springframework.org/schema/context/spring-context.xsd">
 
     <!-- Excel表格的列名 -->
-    <bean id="columnsName" class="com.example.eurasia.entity.DataXMLReader"
+    <bean id="columnsDefaultName" class="com.example.eurasia.entity.DataXMLReader"
           init-method="init">
-        <property name="filePath" value="com/example/eurasia/config/columnsName.xml" />
+        <property name="filePath" value="com/example/eurasia/config/columnsDefaultName.xml" />
     </bean>
 
     <!--
@@ -155,10 +155,16 @@
     <bean id="dataDao" class="com.example.eurasia.dao.DataDao">
         <property name="jdbcTemplate" ref="jdbcTemplate"></property>
     </bean>
+    <bean id="userDao" class="com.example.eurasia.dao.UserDao">
+        <property name="jdbcTemplate" ref="jdbcTemplate"></property>
+    </bean>
 
     <!-- 配置业务层Service -->
     <bean id="dataService" class="com.example.eurasia.service.Data.DataService">
         <property name="dataDao" ref="dataDao"></property><!-- 属性注入 -->
+    </bean>
+    <bean id="userService" class="com.example.eurasia.service.User.UserService">
+        <property name="userDao" ref="userDao"></property><!-- 属性注入 -->
     </bean>
 
 </beans>

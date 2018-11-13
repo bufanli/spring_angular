@@ -39,12 +39,12 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
     @Override
     public ResponseResult exportExcel(HttpServletResponse response, QueryCondition[] queryConditionsArr) throws Exception {
 
-        List<String> colsNameList = this.getTitles(DataService.TABLE_NAME);
+        List<String> colsNameList = this.getTitles(DataService.TABLE_DATA);
         if (colsNameList.size() == 0) {
             log.info(ResponseCodeEnum.EXPORT_GET_HEADER_INFO_FROM_SQL_ZERO.getMessage());
             return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_GET_HEADER_INFO_FROM_SQL_ZERO);
         }
-        List<Data> dataList = this.getRows(DataService.TABLE_NAME,queryConditionsArr);
+        List<Data> dataList = this.getRows(DataService.TABLE_DATA,queryConditionsArr);
         if (dataList.size() == 0) {
             log.info(ResponseCodeEnum.EXPORT_GET_DATA_INFO_FROM_SQL_ZERO.getMessage());
             return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_GET_DATA_INFO_FROM_SQL_ZERO);
