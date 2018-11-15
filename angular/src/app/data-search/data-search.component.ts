@@ -142,10 +142,11 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
   }
 
   ngOnInit() {
+    // init table at first
+    $('#table').bootstrapTable({toggle: 'table'});
     // get headers from in memory api
     this.getHeaders().subscribe(headersResponse =>
       this.getHeadersNotification(headersResponse));
-
     // set date picker's formatter
     $('.input-daterange input').each(function () {
       $(this).datepicker({
