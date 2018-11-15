@@ -115,7 +115,7 @@ sbf = new StringBuffer("");//重新new
             }
         }
         strCcolsName.deleteCharAt(strCcolsName.length() - ",".length());
-        String[] name = strCcolsName.toString().split(",");
+        String[] name = strCcolsName.toString().split(",",-1);
 
         StringBuffer sql =  new StringBuffer();
         sql.append("delete " + tableName);
@@ -203,8 +203,8 @@ sbf = new StringBuffer("");//重新new
     public List<Data> queryListForObject(String tableName, Data queryConditions) {
         String sqlAnd = " and ";
         String sqlOr= " or ";
-        String dataStart = "";
-        String dataEnd = "";
+        String dateStart = "";
+        String dateEnd = "";
         StringBuffer sql = new StringBuffer();
         sql.append("select * from " + tableName + " where");
 
@@ -213,11 +213,11 @@ sbf = new StringBuffer("");//重新new
         while (it.hasNext()) {
             Map.Entry<String, String> entry = it.next();
             if (entry.getKey().toString().equals("起始日期") == true) {//T.B.D
-                dataStart = entry.getValue().toString();
+                dateStart = entry.getValue().toString();
                 continue;
             }
             if (entry.getKey().toString().equals("结束日期") == true) {//T.B.D
-                dataEnd = entry.getValue().toString();
+                dateEnd = entry.getValue().toString();
                 continue;
             }
 /*
@@ -237,7 +237,7 @@ StringUtils.isEmpty(" bob ") = false
                     sql.append(" " + entry.getKey().toString() + " like '%" + entry.getValue().toString() + "%'");
                     sql.append(sqlAnd);
                 }else{
-                    String values[] = entry.getValue().toString().split("\\|\\|");
+                    String values[] = entry.getValue().toString().split("\\|\\|",-1);
                     sql.append("( ");
                     for(String value : values){
                        sql.append(entry.getKey().toString() + " like '%" + value + "%'");
@@ -253,19 +253,19 @@ StringUtils.isEmpty(" bob ") = false
         }
 
         //T.B.D
-        if (dataStart.equals("") == true&& dataEnd.equals("") == false) {
-            dataStart = "(select min(" + "日期" + ")";
-            dataEnd = convertDateToNewFormat(dataEnd);
-            sql.append(" (日期" + " between " + dataStart + " and '" + dataEnd + "')");
-        } else if (dataStart.equals("") == false && dataEnd.equals("") == true) {
-            dataEnd = "(select max(" + "日期" + "))";
-            dataStart = convertDateToNewFormat(dataStart);
-            sql.append(" (日期" + " between '" + dataStart + "' and " + dataEnd + ")");
-        } else if (dataStart.equals("") == false && dataEnd.equals("") == false) {
-            dataStart = convertDateToNewFormat(dataStart);
-            dataEnd = convertDateToNewFormat(dataEnd);
-            sql.append(" (日期" + " between '" + dataStart + "' and '" + dataEnd + "')");
-        } else if (dataStart.equals("") == true && dataEnd.equals("") == true)  {
+        if (dateStart.equals("") == true && dateEnd.equals("") == false) {
+            dateStart = "(select min(" + "日期" + ")";
+            dateEnd = convertDateToNewFormat(dateEnd);
+            sql.append(" (日期" + " between " + dateStart + " and '" + dateEnd + "')");
+        } else if (dateStart.equals("") == false && dateEnd.equals("") == true) {
+            dateEnd = "(select max(" + "日期" + "))";
+            dateStart = convertDateToNewFormat(dateStart);
+            sql.append(" (日期" + " between '" + dateStart + "' and " + dateEnd + ")");
+        } else if (dateStart.equals("") == false && dateEnd.equals("") == false) {
+            dateStart = convertDateToNewFormat(dateStart);
+            dateEnd = convertDateToNewFormat(dateEnd);
+            sql.append(" (日期" + " between '" + dateStart + "' and '" + dateEnd + "')");
+        } else if (dateStart.equals("") == true && dateEnd.equals("") == true)  {
             if (sql.indexOf(sqlAnd) >= 0) {
                 sql.delete((sql.length() - sqlAnd.length()),sql.length());
             }
@@ -287,12 +287,93 @@ StringUtils.isEmpty(" bob ") = false
     public List<Data> queryListForObject(String tableName, QueryCondition[] queryConditionsArr) {
         String sqlAnd = " and ";
         String sqlOr= " or ";
-        String dataStart = "";
-        String dataEnd = "";
         StringBuffer sql = new StringBuffer();
         sql.append("select * from " + tableName + " where");
 
-        //T.B.D.
+        for (QueryCondition queryCondition : queryConditionsArr) {
+            String key = queryCondition.getValue();
+            switch (queryCondition.getType()) {
+                case QueryCondition.QUERY_CONDITION_TYPE_STRING:
+                    String value = queryCondition.getValue();
+                    sql.append(" " + key + " like '%" + value + "%'");
+                    sql.append(sqlAnd);
+                    break;
+                case QueryCondition.QUERY_CONDITION_TYPE_DATE:
+                    String dateArr[] = queryCondition.getValue().split(QueryCondition.SPLIT_DATE,-1);
+                    String dateStart = dateArr[0];
+                    String dateEnd = dateArr[1];
+                    if (dateStart.equals("") == true && dateEnd.equals("") == false) {
+                        dateStart = "(select min(" + key + ")";
+                        dateEnd = convertDateToNewFormat(dateEnd);
+                        sql.append(" (" + key + " between " + dateStart + " and '" + dateEnd + "')");
+                    } else if (dateStart.equals("") == false && dateEnd.equals("") == true) {
+                        dateEnd = "(select max(" + key + "))";
+                        dateStart = convertDateToNewFormat(dateStart);
+                        sql.append(" (" + key + " between '" + dateStart + "' and " + dateEnd + ")");
+                    } else if (dateStart.equals("") == false && dateEnd.equals("") == false) {
+                        dateStart = convertDateToNewFormat(dateStart);
+                        dateEnd = convertDateToNewFormat(dateEnd);
+                        sql.append(" (" + key + " between '" + dateStart + "' and '" + dateEnd + "')");
+                    } else if (dateStart.equals("") == true && dateEnd.equals("") == true) {
+                        if (sql.indexOf(sqlAnd) >= 0) {
+                            sql.delete((sql.length() - sqlAnd.length()),sql.length());
+                        }
+                    }
+                    break;
+                case QueryCondition.QUERY_CONDITION_TYPE_LIST:
+                    String listArr[] = queryCondition.getValue().split(QueryCondition.SPLIT_LIST,-1);
+                    sql.append("( ");
+                    for (String list : listArr) {
+                        sql.append(key + " like '%" + list + "%'");
+                        sql.append(sqlOr);
+                    }
+                    if (sql.indexOf(sqlOr) >= 0) {
+                        sql.delete((sql.length() - sqlOr.length()),sql.length());
+                    }
+                    sql.append(" )");
+                    sql.append(sqlAnd);
+                    
+                    break;
+                case QueryCondition.QUERY_CONDITION_TYPE_MONEY:
+                    String moneyArr[] = queryCondition.getValue().split(QueryCondition.SPLIT_MONEY,-1);
+                    String moneyStart = moneyArr[0];
+                    String moneyEnd = moneyArr[1];
+                    if (moneyStart.equals("") == true && moneyEnd.equals("") == false) {
+                        moneyStart = "(select min(" + key + ")";
+                        sql.append(" (" + key + " between " + moneyStart + " and '" + moneyEnd + "')");
+                    } else if (moneyStart.equals("") == false && moneyEnd.equals("") == true) {
+                        moneyEnd = "(select max(" + key + "))";
+                        sql.append(" (" + key + " between '" + moneyStart + "' and " + moneyEnd + ")");
+                    } else if (moneyStart.equals("") == false && moneyEnd.equals("") == false) {
+                        sql.append(" (" + key + " between '" + moneyStart + "' and '" + moneyEnd + "')");
+                    } else if (moneyStart.equals("") == true && moneyEnd.equals("") == true) {
+                        if (sql.indexOf(sqlAnd) >= 0) {
+                            sql.delete((sql.length() - sqlAnd.length()),sql.length());
+                        }
+                    }
+                    break;
+                case QueryCondition.QUERY_CONDITION_TYPE_AMOUNT:
+                    String amountArr[] = queryCondition.getValue().split(QueryCondition.SPLIT_AMOUNT,-1);
+                    String amountStart = amountArr[0];
+                    String amountEnd = amountArr[1];
+                    if (amountStart.equals("") == true && amountEnd.equals("") == false) {
+                        amountStart = "(select min(" + key + ")";
+                        sql.append(" (" + key + " between " + amountStart + " and '" + amountEnd + "')");
+                    } else if (amountStart.equals("") == false && amountEnd.equals("") == true) {
+                        amountEnd = "(select max(" + key + "))";
+                        sql.append(" (" + key + " between '" + amountStart + "' and " + amountEnd + ")");
+                    } else if (amountStart.equals("") == false && amountEnd.equals("") == false) {
+                        sql.append(" (" + key + " between '" + amountStart + "' and '" + amountEnd + "')");
+                    } else if (amountStart.equals("") == true && amountEnd.equals("") == true) {
+                        if (sql.indexOf(sqlAnd) >= 0) {
+                            sql.delete((sql.length() - sqlAnd.length()),sql.length());
+                        }
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
 
         List<Data> dataList = getJdbcTemplate().query(sql.toString(), new DataMapper());
         return dataList;
@@ -504,6 +585,18 @@ SELECT information_schema.SCHEMATA.SCHEMA_NAME FROM information_schema.SCHEMATA 
         }
 */
         return colsNameList;
+    }
+
+    /**
+     * 查询条件
+     * @param tableName
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-11-15 00:00:00
+     */
+    public QueryCondition[] queryListForQueryConditions(String tableName) throws Exception {
+        return null;//T.B.D
     }
 
     /**

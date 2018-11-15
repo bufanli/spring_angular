@@ -1,5 +1,6 @@
 package com.example.eurasia.service.Data;
 
+import com.example.eurasia.entity.QueryCondition;
 import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -21,12 +22,14 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
 
     @Override
     public ResponseResult getQueryConditions() throws Exception {
+        QueryCondition[] queryConditions;
+
         String tableName = "*";//T.B.D. dummy
         this.getQueryConditionsFromSQL(tableName);
         return new ResponseResultUtil().success();
     }
 
-    private void getQueryConditionsFromSQL(String tableName) throws Exception {
-        dataService.getHeaders(tableName);
+    private QueryCondition[] getQueryConditionsFromSQL(String tableName) throws Exception {
+        return dataService.getQueryConditions(tableName);
     }
 }

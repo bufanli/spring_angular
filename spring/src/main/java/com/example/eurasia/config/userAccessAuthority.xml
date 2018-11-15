@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mapping>
+    <column key="User" value="VARCHAR(10)" />
+    <column key="auth1" value="VARCHAR(10)" />
+    <column key="auth2" value="VARCHAR(10)" />
+    <column key="auth3" value="VARCHAR(10)" />
+    <column key="auth4" value="VARCHAR(10)" />
+    <column key="auth5" value="VARCHAR(10)" />
+    <column key="auth6" value="VARCHAR(10)" />
+    <column key="auth7" value="VARCHAR(10)" />
+    <column key="auth8" value="VARCHAR(10)" />
+    <column key="auth9" value="VARCHAR(10)" />
+    <column key="auth10" value="VARCHAR(10)" />
+    <column key="auth11" value="VARCHAR(10)" />
+    <column key="auth12" value="VARCHAR(10)" />
+    <column key="auth13" value="VARCHAR(10)" />
+    <column key="auth14" value="VARCHAR(10)" />
+</mapping>

@@ -27,7 +27,8 @@ public class DataService {
     }
 
     public static final String TABLE_DATA = "eurasiaTable";
-    public static final String TABLE_QUERY_CONDITION = "queryConditionTable";
+    public static final String TABLE_QUERY_CONDITION_DEFAULT_DISPLAY = "queryConditionDefaultDisplayTable";
+    public static final String TABLE_QUERY_CONDITION_TYPE = "queryConditionTypeTable";
     public static final String EXPORT_EXCEL_SHEET_NAME = "统计表";
     public static final String BR = "<br/>";
 
@@ -68,25 +69,13 @@ public class DataService {
      * @Time 2018-09-20 00:00:00
      */
     public List<Data> searchData(String tableName, QueryCondition[] queryConditionsArr) throws Exception {
-        Boolean isExistDate = false;
         for (QueryCondition queryCondition : queryConditionsArr) {
-            if (queryCondition.getType().equals(QueryCondition.QUERY_CONDITION_TYPE_DATE)) {
-                isExistDate = true;
-                break;
+            if (queryCondition.isValuesNotNULL()) {
+                return getDataDao().queryListForObject(tableName, queryConditionsArr);
             }
         }
 
-        if (isExistDate == true) {
-            for (QueryCondition queryCondition : queryConditionsArr) {
-                if (!queryCondition.getValue().equals("")) {
-                    return getDataDao().queryListForObject(tableName, queryConditionsArr);
-                }
-            }
-
-            return this.searchAllData(tableName);
-        }
-
-        return null;
+        return this.searchAllData(tableName);
     }
 
     /**
@@ -149,8 +138,8 @@ public class DataService {
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
-    public String getQueryConditions(String tableName) throws Exception {
-        return null;//T.B.D
+    public QueryCondition[] getQueryConditions(String tableName) throws Exception {
+        return getDataDao().queryListForQueryConditions(tableName);
     }
 
     /**
@@ -188,30 +177,16 @@ public class DataService {
     }
 
     /**
-     * 测试dummy数据
+     * 获取默认搜索日期区间,数据库中最新的一个月。
      * @param
      * @return
      * @exception
      * @author FuJia
-     * @Time 2018-10-27 00:00:00
+     * @Time 2018-11-15 00:00:00
      */
-    public List<Data> geteTestData() {
-        List<Data> dataList = new ArrayList<>();
-        Map<String, String> keyValue = new LinkedHashMap<>();
-        keyValue.put("结束日期","2018/10/27");
-        keyValue.put("起始日期","2018/10/27");
-        keyValue.put("商品名称","1");
-        keyValue.put("海关编码","1");
-        keyValue.put("企业名称","1");
-        keyValue.put("收发货地","1");
-        keyValue.put("贸易方式","1");
-        keyValue.put("原产国（目的国）","1");
-        keyValue.put("商品编码_8","1");
-        keyValue.put("商品编码_2","1");
-        keyValue.put("产品名称","1");
-        keyValue.put("规格型号","1");
-        dataList.add(new Data(keyValue));
+    public String[] getTheLastMonth(String databaseName) throws Exception {
 
-        return dataList;
+        return null;
     }
+
 }

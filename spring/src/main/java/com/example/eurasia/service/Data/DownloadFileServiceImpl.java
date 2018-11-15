@@ -217,12 +217,11 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
     }
 
     private List<Data> getRows(String tableName, QueryCondition[] queryConditionsArr) throws Exception {
-        Data queryConditions = new Data(dataService.queryConditionsArrToMap(queryConditionsArr));
         List<Data> dataList;
         try {
             log.info("文件导出，查询数据开始");
 
-            dataList = dataService.searchData(tableName, queryConditions);
+            dataList = dataService.searchData(tableName, queryConditionsArr);
             if (dataList == null) {
                 throw new Exception(ResponseCodeEnum.EXPORT_GET_DATA_INFO_FROM_SQL_NULL.getMessage());
             }

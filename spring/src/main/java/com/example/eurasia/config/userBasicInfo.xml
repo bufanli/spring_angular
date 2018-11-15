@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mapping>
+    <column key="User" value="VARCHAR(10)" />
+    <column key="Info1" value="VARCHAR(10)" />
+    <column key="Info2" value="VARCHAR(10)" />
+    <column key="Info3" value="VARCHAR(10)" />
+    <column key="Info4" value="VARCHAR(10)" />
+    <column key="Info5" value="VARCHAR(10)" />
+    <column key="Info6" value="VARCHAR(10)" />
+    <column key="Info7" value="VARCHAR(10)" />
+    <column key="Info8" value="VARCHAR(10)" />
+    <column key="Info9" value="VARCHAR(10)" />
+    <column key="Info10" value="VARCHAR(10)" />
+    <column key="Info11" value="VARCHAR(10)" />
+    <column key="Info12" value="VARCHAR(10)" />
+    <column key="Info13" value="VARCHAR(10)" />
+    <column key="Info14" value="VARCHAR(10)" />
+</mapping>

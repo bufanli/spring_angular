@@ -1,5 +1,6 @@
 package com.example.eurasia.service.Data;
 
+import com.example.eurasia.entity.Header;
 import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;
@@ -61,34 +62,6 @@ public class GetHeadersServiceImpl implements IGetHeadersService {
 
     private List<Map<String,String>> getHeadersFromSQL(String tableName) throws Exception {
         return dataService.getHeaders(tableName);
-    }
-
-    class Header implements Cloneable {
-        private String field;//COLUMN_NAME
-        private String title;//COLUMN_NAME
-
-        Header (String field, String title) {
-            this.field = field;
-            this.title = title;
-        }
-
-        public void setField(String field) {
-            this.field = field;
-        }
-        public String getField() {
-                return this.field;
-            }
-            public void setTitle(String title) {
-                this.title = title;
-            }
-            public String getTitle() {
-                return this.title;
-            }
-
-            @Override
-            protected Object clone() throws CloneNotSupportedException {
-                return super.clone();
-        }
     }
 
 }

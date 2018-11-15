@@ -1,6 +1,7 @@
 package com.example.eurasia;
 
 import com.example.eurasia.service.Data.DataService;
+import com.example.eurasia.service.User.UserService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
@@ -32,7 +33,15 @@ public class StartEurasiaApplication {
         DataService dataService = (DataService) context.getBean("dataService");
         //dataService.createDatabase("eurasia");//T.B.D.
         try {
-            dataService.createTable(DataService.TABLE_DATA);//T.B.D.
+            dataService.createTable(DataService.TABLE_DATA);
+            dataService.createTable(DataService.TABLE_QUERY_CONDITION_DEFAULT_DISPLAY);
+            dataService.createTable(DataService.TABLE_QUERY_CONDITION_TYPE);
+
+            dataService.createTable(UserService.TABLE_USER_ACCESS_AUTHORITY);
+            dataService.createTable(UserService.TABLE_USER_BASIC_INFO);
+            dataService.createTable(UserService.TABLE_USER_QUERY_CONDITION);
+            dataService.createTable(UserService.TABLE_USER_COLUMN_WIDTH);
+            dataService.createTable(UserService.TABLE_USER_COLUMN_DISPLAY);
         } catch (Exception e) {
             e.printStackTrace();
         }
