@@ -3116,18 +3116,18 @@ fieldset[disabled] .btn-default.focus {
 .btn-primary {
   color: #fff;
   background-color: #0288D1;
-  border-color: #2e6da4;
+  border-color: #4084c0;
 }
 .btn-primary:focus,
 .btn-primary.focus {
   color: #fff;
   background-color: 01579B;
-  border-color: #122b40;
+  border-color: #1e678b;
 }
 .btn-primary:hover {
   color: #fff;
   background-color: #286090;
-  border-color: #204d74;
+  border-color: #122b40;
 }
 .btn-primary:active,
 .btn-primary.active,
