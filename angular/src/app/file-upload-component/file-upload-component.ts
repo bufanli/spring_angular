@@ -65,4 +65,8 @@ export class FileUploadComponent implements AfterViewChecked {
       $(this).tooltip();
     });
   }
+  // click file select button
+  selectFile(): void {
+    $('#file-select').click();
+  }
 }

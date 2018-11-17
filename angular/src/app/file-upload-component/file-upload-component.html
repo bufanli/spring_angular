@@ -5,10 +5,10 @@
         <div class="panel-heading">
           <div class="row">
             <div class="col-md-2">
-              <button class="btn btn-primary btn-block btn-large" type="button">
+              <button class="btn btn-primary btn-large" type="button" (click)="this.selectFile();">
                 <span class="glyphicon glyphicon-folder-open">&nbsp;&nbsp;选择文件</span>
               </button>
-              <input type="file" ng2FileSelect [uploader]="uploader" class="file-input" multiple>
+              <input type="file" id="file-select" ng2FileSelect [uploader]="uploader" class="file-input" multiple>
             </div>
           </div>
         </div>
@@ -71,10 +71,6 @@
         <button type="button" class="btn btn-default btn-s" (click)="uploader.clearQueue()" [disabled]="!uploader.queue.length">
           <span class="glyphicon glyphicon-trash"></span> 删除全部
         </button>
-        <button type="button" class="btn btn-default btn-s" (click)="test()">
-          <span class="glyphicon glyphicon-trash"></span> 测试
-        </button>
-
       </div>
     </div>
   </div>
