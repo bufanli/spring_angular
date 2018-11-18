@@ -15,6 +15,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { HttpModule } from '@angular/http';
 import { registerLocaleData } from '@angular/common';
 import zh from '@angular/common/locales/zh';
+import { LoginComponent } from './login/login.component';
 registerLocaleData(zh);
 
 @NgModule({
@@ -22,6 +23,7 @@ registerLocaleData(zh);
     AppComponent,
     FileUploadComponent,
     DataSearchComponent,
+    LoginComponent,
   ],
   imports: [
     BrowserModule,
@@ -40,6 +42,6 @@ registerLocaleData(zh);
   providers: [
     { provide: LOCALE_ID, useValue: 'zh-CN' },
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [LoginComponent]
 })
 export class AppModule { }
