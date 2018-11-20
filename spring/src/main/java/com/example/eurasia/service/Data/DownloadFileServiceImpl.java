@@ -202,7 +202,7 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
         try {
             log.info("文件导出，取得表头开始");
 
-            colsNameList = dataService.getHeaderNames(tableName);
+            colsNameList = dataService.getAllHeaderNames(tableName);
             if (colsNameList == null) {
                 throw new Exception(ResponseCodeEnum.EXPORT_GET_HEADER_INFO_FROM_SQL_NULL.getMessage());
             }

@@ -73,7 +73,7 @@ public class DataXMLReader {
      * @param resultMap 拷⻉贝后的对象
      */
     public static void mapCopy(LinkedHashMap<String, String> paramsMap, LinkedHashMap<String, String> resultMap) {
-        if (resultMap == null) resultMap = new LinkedHashMap();
+        if (resultMap == null) resultMap = new LinkedHashMap<String, String>();
         if (paramsMap == null) return;
         Iterator it = paramsMap.entrySet().iterator();
         while (it.hasNext()) {

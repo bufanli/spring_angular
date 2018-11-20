@@ -29,7 +29,7 @@ public class SearchDataServiceImpl implements ISearchDataService {
 
         List<Data> dataList;
         try {
-            dataList = this.searchDataFromSQL(DataService.TABLE_DATA, queryConditionsArr);
+            dataList = dataService.searchData(DataService.TABLE_DATA, queryConditionsArr);
             if (dataList == null) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.SEARCH_DATA_INFO_FROM_SQL_NULL);
             }
@@ -42,10 +42,6 @@ public class SearchDataServiceImpl implements ISearchDataService {
         }
 
         return new ResponseResultUtil().success(ResponseCodeEnum.SEARCH_DATA_INFO_FROM_SQL_SUCCESS, dataList);
-    }
-
-    private List<Data> searchDataFromSQL(String tableName, QueryCondition[] queryConditionsArr) throws Exception {
-        return dataService.searchData(tableName, queryConditionsArr);
     }
 
 }

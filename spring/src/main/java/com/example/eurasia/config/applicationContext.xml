@@ -10,10 +10,58 @@
                         http://www.springframework.org/schema/context
                         http://www.springframework.org/schema/context/spring-context.xsd">
 
-    <!-- Excel表格的列名 -->
-    <bean id="columnsDefaultName" class="com.example.eurasia.entity.DataXMLReader"
+    <!-- 各种xml -->
+    <bean id="columnDefaultName" class="com.example.eurasia.entity.DataXMLReader"
           init-method="init">
-        <property name="filePath" value="com/example/eurasia/config/columnsDefaultName.xml" />
+        <property name="filePath" value="com/example/eurasia/config/columnDefaultName.xml" />
+    </bean>
+    <bean id="queryConditionType" class="com.example.eurasia.entity.DataXMLReader"
+          init-method="init">
+        <property name="filePath" value="com/example/eurasia/config/queryConditionType.xml" />
+    </bean>
+    <bean id="queryConditionDisplayDefault" class="com.example.eurasia.entity.DataXMLReader"
+          init-method="init">
+        <property name="filePath" value="com/example/eurasia/config/queryConditionDisplayDefault.xml" />
+    </bean>
+    <bean id="queryConditionDisplayAdmin" class="com.example.eurasia.entity.DataXMLReader"
+          init-method="init">
+        <property name="filePath" value="com/example/eurasia/config/queryConditionDisplayAdmin.xml" />
+    </bean>
+    <bean id="headerDisplayDefault" class="com.example.eurasia.entity.DataXMLReader"
+          init-method="init">
+        <property name="filePath" value="com/example/eurasia/config/headerDisplayDefault.xml" />
+    </bean>
+    <bean id="headerDisplayAdmin" class="com.example.eurasia.entity.DataXMLReader"
+          init-method="init">
+        <property name="filePath" value="com/example/eurasia/config/headerDisplayAdmin.xml" />
+    </bean>
+    <bean id="accessAuthorityDefault" class="com.example.eurasia.entity.DataXMLReader"
+          init-method="init">
+        <property name="filePath" value="com/example/eurasia/config/accessAuthorityDefault.xml" />
+    </bean>
+    <bean id="accessAuthorityAdmin" class="com.example.eurasia.entity.DataXMLReader"
+          init-method="init">
+        <property name="filePath" value="com/example/eurasia/config/accessAuthorityAdmin.xml" />
+    </bean>
+    <bean id="userBasicInfo" class="com.example.eurasia.entity.DataXMLReader"
+          init-method="init">
+        <property name="filePath" value="com/example/eurasia/config/userBasicInfo.xml" />
+    </bean>
+    <bean id="userAccessAuthority" class="com.example.eurasia.entity.DataXMLReader"
+          init-method="init">
+        <property name="filePath" value="com/example/eurasia/config/userAccessAuthority.xml" />
+    </bean>
+    <bean id="userHeaderDisplay" class="com.example.eurasia.entity.DataXMLReader"
+          init-method="init">
+        <property name="filePath" value="com/example/eurasia/config/userHeaderDisplay.xml" />
+    </bean>
+    <bean id="userHeaderWidth" class="com.example.eurasia.entity.DataXMLReader"
+          init-method="init">
+        <property name="filePath" value="com/example/eurasia/config/userHeaderWidth.xml" />
+    </bean>
+    <bean id="userQueryConditionDisplay" class="com.example.eurasia.entity.DataXMLReader"
+          init-method="init">
+        <property name="filePath" value="com/example/eurasia/config/userQueryConditionDisplay.xml" />
     </bean>
 
     <!--
@@ -152,11 +200,12 @@
     </bean>
 
     <!-- 配置数据访问层Dao(持久层) -->
-    <bean id="dataDao" class="com.example.eurasia.dao.DataDao">
+    <bean id="commonDao" class="com.example.eurasia.dao.CommonDao">
         <property name="jdbcTemplate" ref="jdbcTemplate"></property>
     </bean>
+    <bean id="dataDao" class="com.example.eurasia.dao.DataDao">
+    </bean>
     <bean id="userDao" class="com.example.eurasia.dao.UserDao">
-        <property name="jdbcTemplate" ref="jdbcTemplate"></property>
     </bean>
 
     <!-- 配置业务层Service -->

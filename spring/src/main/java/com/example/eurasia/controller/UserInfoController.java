@@ -1,8 +1,8 @@
 package com.example.eurasia.controller;
 
-import com.example.eurasia.service.Data.IGetQueryConditionsService;
 import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;
+import com.example.eurasia.service.User.IUserInfoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -13,30 +13,30 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 @Slf4j
 @Controller
-public class GetQueryConditionsController {
+public class UserInfoController {
 
     //注入Service服务对象
-    @Qualifier("GetQueryConditionsServiceImpl")
+    @Qualifier("UserInfoServiceImpl")
     @Autowired
-    private IGetQueryConditionsService getQueryConditionsService;
+    private IUserInfoService userInfoServiceImpl;
 
     /**
      * @author
-     * @date 2018-10-14
-     * @description 取得查询条件
+     * @date 2018-11-18
+     * @description 取得表头
      */
-    @RequestMapping(value="/getQueryConditions", method = RequestMethod.GET)
+    @RequestMapping(value="/setLoginUserID", method = RequestMethod.GET)
     public @ResponseBody
-    ResponseResult getHeaders() {
+    ResponseResult setLoginUserID() {
         ResponseResult responseResult;
         try {
-            log.info("取得查询条件开始");
-            responseResult = getQueryConditionsService.getQueryConditionDisplay();
+            log.info("设定登陆用户ID开始");
+            responseResult = null;//T.B.D
         } catch (Exception e) {
             e.printStackTrace();
             responseResult = new ResponseResultUtil().error();
         }
-        log.info("取得查询条件结束");
+        log.info("设定登陆用户ID结束");
         return responseResult;
     }
 }

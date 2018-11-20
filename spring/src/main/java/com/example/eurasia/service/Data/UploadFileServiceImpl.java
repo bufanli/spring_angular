@@ -386,7 +386,7 @@ public class UploadFileServiceImpl implements IUploadFileService {
     }
 
     private boolean checkTitles(String cellValue) throws Exception {
-        List<Map<String,String>> colsNameList = this.getTitles(DataService.TABLE_DATA);
+        List<Map<String,String>> colsNameList = this.getTitles();
         if (colsNameList.size() == 0) {
             log.info(ResponseCodeEnum.UPLOAD_GET_HEADER_INFO_FROM_SQL_ZERO.getMessage());
             return false;
@@ -427,12 +427,12 @@ public class UploadFileServiceImpl implements IUploadFileService {
         return dataService.addData(tableName, data);
     }
 
-    private List<Map<String,String>> getTitles(String tableName) throws Exception {
+    private List<Map<String,String>> getTitles() throws Exception {
         List<Map<String,String>> colsNameList;
         try {
             log.info("文件上传，取得表头开始");
 
-            colsNameList = dataService.getHeaders(tableName);
+            colsNameList = dataService.getAllHeaders();
             if (colsNameList == null) {
                 throw new Exception(ResponseCodeEnum.UPLOAD_GET_HEADER_INFO_FROM_SQL_NULL.getMessage());
             }

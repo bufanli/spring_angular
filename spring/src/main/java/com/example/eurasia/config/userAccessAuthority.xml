@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mapping>
-    <column key="User" value="VARCHAR(10)" />
+    <column key="userID" value="VARCHAR(50)" />
     <column key="auth1" value="VARCHAR(10)" />
     <column key="auth2" value="VARCHAR(10)" />
     <column key="auth3" value="VARCHAR(10)" />

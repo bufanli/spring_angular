@@ -30,13 +30,13 @@ public class GetHeadersController {
     ResponseResult getHeaders() {
         ResponseResult responseResult;
         try {
-            log.info("取得表头开始");
-            responseResult = getHeadersService.getHeaders();
+            log.info("取得用户列显示开始");
+            responseResult = getHeadersService.getHeaderDisplay();
         } catch (Exception e) {
             e.printStackTrace();
             responseResult = new ResponseResultUtil().error();
         }
-        log.info("取得表头结束");
+        log.info("取得用户列显示结束");
         return responseResult;
     }
 }

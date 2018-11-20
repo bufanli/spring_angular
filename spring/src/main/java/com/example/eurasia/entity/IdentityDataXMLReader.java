@@ -73,7 +73,7 @@ public class IdentityDataXMLReader {
      * @param resultMap 拷⻉贝后的对象
      */
     public static void mapCopy(IdentityHashMap<String, String> paramsMap, IdentityHashMap<String, String> resultMap) {
-        if (resultMap == null) resultMap = new IdentityHashMap();
+        if (resultMap == null) resultMap = new IdentityHashMap<String, String>();
         if (paramsMap == null) return;
         Iterator it = paramsMap.entrySet().iterator();
         while (it.hasNext()) {

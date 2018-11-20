@@ -6,10 +6,7 @@ import com.example.eurasia.entity.QueryCondition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class DataService {
@@ -27,10 +24,30 @@ public class DataService {
     }
 
     public static final String TABLE_DATA = "eurasiaTable";
-    public static final String TABLE_QUERY_CONDITION_DEFAULT_DISPLAY = "queryConditionDefaultDisplayTable";
     public static final String TABLE_QUERY_CONDITION_TYPE = "queryConditionTypeTable";
+
+    public static final String BEAN_NAME_COLUMNS_DEFAULT_NAME = "columnDefaultName";
+    public static final String BEAN_NAME_QUERY_CONDITION_TYPE = "queryConditionType";
+
     public static final String EXPORT_EXCEL_SHEET_NAME = "统计表";
     public static final String BR = "<br/>";
+
+    /**
+     * 添加数据
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-11-17 00:00:00
+     */
+    public void dataServiceInit() throws Exception {
+        try {
+            this.createTable(DataService.TABLE_DATA,BEAN_NAME_COLUMNS_DEFAULT_NAME);
+            this.createTable(DataService.TABLE_QUERY_CONDITION_TYPE,BEAN_NAME_QUERY_CONDITION_TYPE);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     /**
      * 添加数据
@@ -98,12 +115,12 @@ public class DataService {
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
-    public List<Map<String,String>> getHeaders(String tableName) throws Exception {
+    public List<Map<String,String>> getAllHeaders() throws Exception {
         List<Map<String,String>> headerList = new ArrayList<>();
 
-        List<Map<String, Object>> colsNameList = getDataDao().queryListForColumnName(tableName);
+        List<Map<String, Object>> colsNameList = getDataDao().queryListForColumnName(DataService.TABLE_DATA);
         for(Map<String,Object> colsName: colsNameList) {
-            Map<String,String> nameMap = new LinkedHashMap<>();
+            Map<String,String> nameMap = new LinkedHashMap<String,String>();
             nameMap.put(colsName.get("ORDINAL_POSITION").toString(),colsName.get("COLUMN_NAME").toString());
             headerList.add(nameMap);
         }
@@ -119,11 +136,11 @@ public class DataService {
      * @author FuJia
      * @Time 2018-11-06 00:00:00
      */
-    public List<String> getHeaderNames(String tableName) throws Exception {
+    public List<String> getAllHeaderNames(String tableName) throws Exception {
         List<String> headerList = new ArrayList<>();
 
         List<Map<String, Object>> colsNameList = getDataDao().queryListForColumnName(tableName);
-        for(Map<String,Object> colsName: colsNameList) {
+        for (Map<String,Object> colsName: colsNameList) {
             headerList.add(colsName.get("COLUMN_NAME").toString());
         }
 
@@ -131,15 +148,20 @@ public class DataService {
     }
 
     /**
-     * 取得查询条件
+     * 取得所有的查询条件(key和type)
      * @param
      * @return
      * @exception
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
-    public QueryCondition[] getQueryConditions(String tableName) throws Exception {
-        return getDataDao().queryListForQueryConditions(tableName);
+    public List<Data> getAllQueryConditions() throws Exception {
+        List<Data> allQueryConditionsList = getDataDao().queryListForAllObject(DataService.TABLE_QUERY_CONDITION_TYPE);
+        if (allQueryConditionsList.size() != 1) {
+            return null;
+        }
+
+        return allQueryConditionsList;
     }
 
     /**
@@ -150,9 +172,9 @@ public class DataService {
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
-    public boolean createTable(String tableName) throws Exception {
+    public boolean createTable(String tableName, String beanName) throws Exception {
         try {
-            return getDataDao().createTable(tableName);
+            return getDataDao().createTable(tableName,beanName);
         } catch (Exception e) {
             e.printStackTrace();
         }

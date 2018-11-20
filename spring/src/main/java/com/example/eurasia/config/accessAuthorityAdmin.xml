@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mapping>
+    <column key="auth1" value="TRUE" />
+    <column key="auth2" value="TRUE" />
+    <column key="auth3" value="TRUE" />
+    <column key="auth4" value="TRUE" />
+    <column key="auth5" value="TRUE" />
+    <column key="auth6" value="TRUE" />
+    <column key="auth7" value="TRUE" />
+    <column key="auth8" value="TRUE" />
+    <column key="auth9" value="TRUE" />
+    <column key="auth10" value="TRUE" />
+    <column key="auth11" value="TRUE" />
+    <column key="auth12" value="TRUE" />
+    <column key="auth13" value="TRUE" />
+    <column key="auth14" value="TRUE" />
+</mapping>

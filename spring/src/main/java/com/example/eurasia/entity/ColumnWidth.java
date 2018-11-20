@@ -5,5 +5,5 @@ package com.example.eurasia.entity;
  * @author FuJia
  * @Time 2018-11-12 00:00:00
  */
-public class ColumnProperty {
+public class ColumnWidth {
 }

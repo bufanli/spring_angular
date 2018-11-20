@@ -158,7 +158,6 @@ LinkedHashMap保证了元素迭代的顺序。该迭代顺序可以是插入顺�
      */
     @JsonIgnore
     public String[] getValuesToArray() {
-        StringBuilder sb = new StringBuilder();
 
         Collection<String> valueCollection = this.keyValue.values();
         final int size = valueCollection.size();

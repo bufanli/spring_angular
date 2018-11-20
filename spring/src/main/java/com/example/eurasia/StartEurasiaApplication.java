@@ -31,17 +31,12 @@ public class StartEurasiaApplication {
         ApplicationContext context = new ClassPathXmlApplicationContext("com/example/eurasia/config/applicationContext.xml");
         //ApplicationContext context = new FileSystemXmlApplicationContext("main/java/com/example/eurasia/config/applicationContext.xml");
         DataService dataService = (DataService) context.getBean("dataService");
+        UserService userService = (UserService) context.getBean("userService");
         //dataService.createDatabase("eurasia");//T.B.D.
         try {
-            dataService.createTable(DataService.TABLE_DATA);
-            dataService.createTable(DataService.TABLE_QUERY_CONDITION_DEFAULT_DISPLAY);
-            dataService.createTable(DataService.TABLE_QUERY_CONDITION_TYPE);
+            dataService.dataServiceInit();
+            userService.userServiceInit();
 
-            dataService.createTable(UserService.TABLE_USER_ACCESS_AUTHORITY);
-            dataService.createTable(UserService.TABLE_USER_BASIC_INFO);
-            dataService.createTable(UserService.TABLE_USER_QUERY_CONDITION);
-            dataService.createTable(UserService.TABLE_USER_COLUMN_WIDTH);
-            dataService.createTable(UserService.TABLE_USER_COLUMN_DISPLAY);
         } catch (Exception e) {
             e.printStackTrace();
         }

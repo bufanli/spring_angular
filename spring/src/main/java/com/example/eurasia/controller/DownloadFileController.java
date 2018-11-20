@@ -35,30 +35,20 @@ public class DownloadFileController {
         //导出excel
         try {
             log.info("进行excel文件导出开始");
-            responseResult = this.exportExcel(response,queryConditionsArr);
+            /**
+             * 导出excel比较重要的api有以下几个。
+             *  创建一个excel文件工作薄；（HSSFWorkbook workbook = new HSSFWorkbook()）
+             *  创建一张表；HSSFSheet sheet = workbook.createSheet("统计表")
+             *  创建一行；HSSFRow row = sheet.createRow(0)
+             *  填充一列数据; row.createCell(0).setCellValue("数据")
+             *  设置一个单元格样式；cell.setCellStyle(style)
+             */
+            responseResult = downloadFileService.exportExcel(response,queryConditionsArr);
         } catch (Exception e) {
             e.printStackTrace();
             responseResult = new ResponseResultUtil().error();
         }
         log.info("进行excel文件导出结束");
-    }
-
-    /**
-     * @author
-     * @date 2018-10-14
-     * @description 导出excel
-     */
-    public ResponseResult exportExcel(HttpServletResponse response, QueryCondition[] queryConditionsArr) throws Exception {
-        /**
-         * 导出excel比较重要的api有以下几个。
-         *  创建一个excel文件工作薄；（HSSFWorkbook workbook = new HSSFWorkbook()）
-         *  创建一张表；HSSFSheet sheet = workbook.createSheet("统计表")
-         *  创建一行；HSSFRow row = sheet.createRow(0)
-         *  填充一列数据; row.createCell(0).setCellValue("数据")
-         *  设置一个单元格样式；cell.setCellStyle(style)
-         */
-
-        return downloadFileService.exportExcel(response,queryConditionsArr);
     }
 
 }
