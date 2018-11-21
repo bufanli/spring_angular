@@ -424,4 +424,31 @@ StringUtils.isEmpty(" bob ") = false
         return colsNameList;
     }
 
+    /**
+     * 查询某表的列名
+     * @param tableName
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-10-15 23:11:00
+     */
+    public List<Map<String,Object>> queryListForTheLastMouth(String tableName) throws Exception {
+        StringBuffer sql = new StringBuffer();
+/*
+        //近30天
+        select 日期 from eurasiaTable where DATE_SUB(CURDATE(), INTERVAL 30 DAY) <= date(日期);
+        //本月
+        select 日期 from eurasiaTable where DATE_FORMAT(日期,'%Y-%m') = DATE_FORMAT(CURDATE(),'%Y-%m');
+        //上个月
+        SELECT * FROM eurasiaTable WHERE PERIOD_DIFF(DATE_FORMAT(NOW(),'%Y-%m'),DATE_FORMAT(字段名,'%Y-%m'))=1;
+        SELECT * FROM eurasiaTable WHERE PERIOD_DIFF(DATE_FORMAT(CURDATE(),'%Y-%m'),DATE_FORMAT(字段名,'%Y-%m'))=1;
+        //最近一个月
+        SELECT 日期 FROM eurasiaTable WHERE DATE_SUB(CURDATE(), INTERVAL 1 MONTH) <= date(now());
+        //查询距离当前现在6个月的数据
+        select 日期 from eurasiaTable where 日期 between date_sub(now(),interval 6 month) and now();
+*/
+        List<Map<String, Object>> colsNameList = getJdbcTemplate().queryForList(sql.toString());
+
+        return null;
+    }
 }

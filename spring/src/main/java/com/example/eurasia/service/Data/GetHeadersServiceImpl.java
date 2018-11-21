@@ -94,7 +94,7 @@ public class GetHeadersServiceImpl implements IGetHeadersService {
     }
 
     private List<String> getHeaderDisplayFromSQL() throws Exception {
-        return userService.getHeaderDisplay(userService.getUserID());
+        return userService.getUserHeaderDisplay(userService.getUserID());
     }
 
 }

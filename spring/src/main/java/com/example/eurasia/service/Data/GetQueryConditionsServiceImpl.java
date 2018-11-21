@@ -96,7 +96,7 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
     private QueryCondition[] getQueryConditionDisplayFromSQL() throws Exception {
 
         // 取得该用户可显示的查询条件
-        List<String> queryConditionsDisplayList = userService.getQueryConditionDisplay(userService.getUserID());
+        List<String> queryConditionsDisplayList = userService.getUserQueryConditionDisplay(userService.getUserID());
         // 取得所以的查询条件(Data的Map-key是查询条件的key，Data的Map-value是查询条件的type)
         List<Data> allQueryConditionsList = dataService.getAllQueryConditions();
 

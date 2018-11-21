@@ -269,19 +269,6 @@ public class UserService {
     }
 
     /**
-     * 获取用户可以搜索的日期区间。
-     * @param
-     * @return
-     * @exception
-     * @author FuJia
-     * @Time 2018-11-15 00:00:00
-     */
-    public String[] getUserCanSearchDate(String tableName) throws Exception {
-
-        return null;
-    }
-
-    /**
      * 获取用户默认搜索日期区间,数据库中最新的一个月。
      * @param
      * @return
@@ -317,25 +304,47 @@ public class UserService {
     }
 
     /**
-     * 取得可显示的表头
+     * 取得用户自定义属性
      * @param
      * @return
      * @exception
      * @author FuJia
      * @Time 2018-11-18 00:00:00
      */
-    public List<String> getHeaderDisplay(String userID) throws Exception {
+    public List<String> getUserBasicInfo(String tableName, String userID) throws Exception {
         if (StringUtils.isEmpty(userID)) {
             return null;
         }
 
-        List<List<String>> userCustomsList = getUserDao().queryListForUserCustom(UserService.TABLE_USER_HEADER_DISPLAY,userID);
-        if (userCustomsList.size() != 1) {
+        List<List<String>> userBasicInfosList = getUserDao().queryListForUserCustom(UserService.TABLE_USER_BASIC_INFO,userID);
+        if (userBasicInfosList.size() != 1) {
             return null;
         }
-        List<String> userCustomList = userCustomsList.get(0);
+        List<String> userBasicInfoList = userBasicInfosList.get(0);
 
-        return userCustomList;
+        return userBasicInfoList;
+    }
+
+    /**
+     * 获取用户访问权限。
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-11-21 00:00:00
+     */
+    public List<String> getUserAccessAuthority(String tableName) throws Exception {
+        if (StringUtils.isEmpty(userID)) {
+            return null;
+        }
+
+        List<List<String>> userAccessAuthoritysList = getUserDao().queryListForUserCustom(UserService.TABLE_USER_ACCESS_AUTHORITY,userID);
+        if (userAccessAuthoritysList.size() != 1) {
+            return null;
+        }
+        List<String> userAccessAuthorityList = userAccessAuthoritysList.get(0);
+
+        return userAccessAuthorityList;
     }
 
     /**
@@ -346,18 +355,62 @@ public class UserService {
      * @author FuJia
      * @Time 2018-11-18 00:00:00
      */
-    public List<String> getQueryConditionDisplay(String userID) throws Exception {
+    public List<String> getUserQueryConditionDisplay(String userID) throws Exception {
         if (StringUtils.isEmpty(userID)) {
             return null;
         }
 
-        List<List<String>> userCustomsList = getUserDao().queryListForUserCustom(UserService.TABLE_USER_QUERY_CONDITION_DISPLAY,userID);
-        if (userCustomsList.size() != 1) {
+        List<List<String>> userQueryConditionDisplaysList = getUserDao().queryListForUserCustom(UserService.TABLE_USER_QUERY_CONDITION_DISPLAY,userID);
+        if (userQueryConditionDisplaysList.size() != 1) {
             return null;
         }
-        List<String> queryConditionDisplayList = userCustomsList.get(0);
+        List<String> userQueryConditionDisplayList = userQueryConditionDisplaysList.get(0);
 
-        return queryConditionDisplayList;
+        return userQueryConditionDisplayList;
+    }
+
+    /**
+     * 取得可显示的表头的宽度
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-11-18 00:00:00
+     */
+    public List<String> getUserHeaderWidth(String userID) throws Exception {
+        if (StringUtils.isEmpty(userID)) {
+            return null;
+        }
+
+        List<List<String>> userHeaderWidthsList = getUserDao().queryListForUserCustom(UserService.TABLE_USER_HEADER_WIDTH,userID);
+        if (userHeaderWidthsList.size() != 1) {
+            return null;
+        }
+        List<String> userHeaderWidthList = userHeaderWidthsList.get(0);
+
+        return userHeaderWidthList;
+    }
+
+    /**
+     * 取得可显示的表头
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-11-18 00:00:00
+     */
+    public List<String> getUserHeaderDisplay(String userID) throws Exception {
+        if (StringUtils.isEmpty(userID)) {
+            return null;
+        }
+
+        List<List<String>> userHeaderDisplaysList = getUserDao().queryListForUserCustom(UserService.TABLE_USER_HEADER_DISPLAY,userID);
+        if (userHeaderDisplaysList.size() != 1) {
+            return null;
+        }
+        List<String> userHeaderDisplayList = userHeaderDisplaysList.get(0);
+
+        return userHeaderDisplayList;
     }
 
 }
