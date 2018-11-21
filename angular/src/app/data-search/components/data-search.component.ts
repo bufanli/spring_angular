@@ -4,14 +4,14 @@ import { Http, Headers, RequestOptions, Response, ResponseContentType } from '@a
 import { URLSearchParams } from '@angular/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
-import { Product } from './data-entry/product';
-import { Header } from './data-entry/header';
+import { Product } from '../entities/product';
+import { Header } from '../entities/header';
 import 'jquery';
 import 'bootstrap';
 import 'bootstrap-datepicker';
 import 'bootstrap-table';
 import 'bootstrap-select';
-import { HeadersResponse } from './data-entry/headers-response';
+import { HeadersResponse } from '../entities/headers-response';
 import { saveAs as importedSaveAs } from 'file-saver';
 
 // json header for post

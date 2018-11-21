@@ -1,0 +1,35 @@
+root(root module)
+ components
+ module.ts
+
+login(login module)
+ components
+ module.ts
+
+main(main module)
+ components
+ module.ts
+
+data-search(main module)
+ components
+ entities
+ services
+
+file-upload(main module)
+ components
+ entities
+ services
+
+user-config(main module)
+ components
+ entities
+ serivces
+
+data-config(main module)
+ components
+ entities
+ services
+
+common
+ services
+ entities

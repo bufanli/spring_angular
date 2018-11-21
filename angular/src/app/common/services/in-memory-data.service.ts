@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { InMemoryDbService } from 'angular-in-memory-web-api';
-import { Product } from '../data-search/data-entry/product';
-import { Header } from '../data-search/data-entry/header';
-import { HeadersResponse } from '../data-search/data-entry/headers-response';
+import { Product } from '../../data-search/entities/product';
+import { Header } from '../../data-search/entities/header';
+import { HeadersResponse } from '../../data-search/entities/headers-response';
 
 @Injectable({
   providedIn: 'root'

@@ -2,14 +2,14 @@ import { Component, AfterViewChecked } from '@angular/core';
 import { FileUploader } from 'ng2-file-upload';
 import { FileItem } from 'ng2-file-upload';
 import { ParsedResponseHeaders } from 'ng2-file-upload';
-import { UploadStatus } from './data-entry/upload-status';
+import { UploadStatus } from '../entities/upload-status';
 
 const URL = 'uploadFile';
 
 @Component({
   selector: 'app-file-upload',
-  templateUrl: './file-upload-component.html',
-  styleUrls: ['./file-upload-component.css']
+  templateUrl: './file-upload.component.html',
+  styleUrls: ['./file-upload.component.css']
 })
 export class FileUploadComponent implements AfterViewChecked {
   public uploader: FileUploader = new FileUploader({ url: URL });
