@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { MainComponent } from './components/main.component';
 
-const mainRoutes = [
+const mainRoutes: Routes = [
     {
         path: '',
         redirectTo: 'data-search',
@@ -14,12 +14,12 @@ const mainRoutes = [
     },
     {
         path: 'file-upload',
-        loadChildren: '../file-upload/file-upload.module#FileUploadModule'
+        loadChildren: '../data-upload/data-upload.module#DataUploadModule'
     }
 ];
 @NgModule({
   imports: [
-    RouterModule.forRoot(mainRoutes),
+    RouterModule.forChild(mainRoutes),
   ],
   exports: [ RouterModule ],
   declarations: [

@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from './components/login.component';
 
-export const loginRoutes = [
+export const loginRoutes: Routes = [
     {
         path: '',
         component: LoginComponent

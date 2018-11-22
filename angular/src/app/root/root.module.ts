@@ -6,7 +6,7 @@ import { RootComponent } from './components/root.component';
 import { OurCommonModule } from '../common/our-common.module';
 import {BrowserModule} from '@angular/platform-browser';
 
-const rootRoutes = [
+const rootRoutes: Routes = [
     {
         path: '',
         redirectTo: 'login',

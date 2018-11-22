@@ -8,10 +8,10 @@ const URL = 'uploadFile';
 
 @Component({
   selector: 'app-file-upload',
-  templateUrl: './file-upload.component.html',
-  styleUrls: ['./file-upload.component.css']
+  templateUrl: './data-upload.component.html',
+  styleUrls: ['./data-upload.component.css']
 })
-export class FileUploadComponent implements AfterViewChecked {
+export class DataUploadComponent implements AfterViewChecked {
   public uploader: FileUploader = new FileUploader({ url: URL });
   constructor() {
     this.uploader.onCompleteItem = this.successItem;

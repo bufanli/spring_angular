@@ -2,9 +2,10 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { DataSearchComponent } from './components/data-search.component';
 import { FormsModule } from '@angular/forms';
-import { BrowserModule } from '@angular/platform-browser';
+import { HttpClientModule } from '@angular/common/http';
+import { HttpModule } from '@angular/http';
 
-const dataSearchRoutes = [
+const dataSearchRoutes: Routes = [
     {
         path: '',
         component: DataSearchComponent
@@ -18,7 +19,8 @@ const dataSearchRoutes = [
   imports: [
     RouterModule.forChild(<any>dataSearchRoutes),
     FormsModule,
-    BrowserModule,
+    HttpClientModule,
+    HttpModule,
   ],
 
 })
