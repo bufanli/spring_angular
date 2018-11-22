@@ -440,13 +440,16 @@ StringUtils.isEmpty(" bob ") = false
         //本月
         select 日期 from eurasiaTable where DATE_FORMAT(日期,'%Y-%m') = DATE_FORMAT(CURDATE(),'%Y-%m');
         //上个月
-        SELECT * FROM eurasiaTable WHERE PERIOD_DIFF(DATE_FORMAT(NOW(),'%Y-%m'),DATE_FORMAT(字段名,'%Y-%m'))=1;
-        SELECT * FROM eurasiaTable WHERE PERIOD_DIFF(DATE_FORMAT(CURDATE(),'%Y-%m'),DATE_FORMAT(字段名,'%Y-%m'))=1;
+        SELECT * FROM eurasiaTable WHERE PERIOD_DIFF(DATE_FORMAT(NOW(),'%Y%m'),DATE_FORMAT(字段名,'%Y%m'))=1;
+        SELECT * FROM eurasiaTable WHERE PERIOD_DIFF(DATE_FORMAT(CURDATE(),'%Y%m'),DATE_FORMAT(字段名,'%Y%m'))=1;
         //最近一个月
         SELECT 日期 FROM eurasiaTable WHERE DATE_SUB(CURDATE(), INTERVAL 1 MONTH) <= date(now());
         //查询距离当前现在6个月的数据
         select 日期 from eurasiaTable where 日期 between date_sub(now(),interval 6 month) and now();
 */
+/* 测试用表
+select PERIOD_DIFF(DATE_FORMAT(CURDATE(),'%Y%m'),DATE_FORMAT(日期,'%Y%m')) from dual;
+ */
         List<Map<String, Object>> colsNameList = getJdbcTemplate().queryForList(sql.toString());
 
         return null;

@@ -40,6 +40,10 @@ public enum ResponseCodeEnum {
     QUERY_CONDITION_FROM_SQL_FAILED(ResponseCode.RESPONSE_CODE_NG, "从数据库取得查询条件失败"),
     QUERY_CONDITION_FROM_SQL_NULL(ResponseCode.RESPONSE_CODE_NULL, "从数据库取得查询条件为NULL"),
     QUERY_CONDITION_FROM_SQL_ZERO(ResponseCode.RESPONSE_CODE_OK, "从数据库取得查询条件为0"),
+    QUERY_CONDITION_DATE_DEFAULT_VALUE_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "从数据库取得日期默认值成功"),
+    QUERY_CONDITION_DATE_DEFAULT_VALUE_FAILED(ResponseCode.RESPONSE_CODE_NG, "从数据库取得日期默认值失败"),
+    QUERY_CONDITION_DATE_DEFAULT_VALUE_NULL(ResponseCode.RESPONSE_CODE_NULL, "从数据库取得日期默认值为NULL"),
+    QUERY_CONDITION_DATE_DEFAULT_VALUE_WRONG(ResponseCode.RESPONSE_CODE_OK, "从数据库取得日期默认值为0"),
 
     /* 文件上传 */
     UPLOAD_FILE_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "上传文件成功"),

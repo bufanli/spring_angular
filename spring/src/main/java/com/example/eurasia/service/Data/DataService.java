@@ -207,6 +207,7 @@ public class DataService {
      * @Time 2018-11-15 00:00:00
      */
     public String[] getTheLastMonth(String databaseName) throws Exception {
+
         return null;
     }
 

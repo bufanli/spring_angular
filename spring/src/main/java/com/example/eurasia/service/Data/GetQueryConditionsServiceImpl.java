@@ -32,6 +32,14 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
     @Autowired
     private UserService userService;
 
+    /**
+     * 取得所有的查询条件
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-11-22 00:00:00
+     */
     @Override
     public ResponseResult getAllQueryConditions() throws Exception {
         QueryCondition[] queryConditions;
@@ -52,6 +60,14 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
         return new ResponseResultUtil().success(ResponseCodeEnum.QUERY_CONDITION_FROM_SQL_SUCCESS, queryConditions);
     }
 
+    /**
+     * 取得可显示的查询条件
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-11-22 00:00:00
+     */
     @Override
     public ResponseResult getQueryConditionDisplay() throws Exception {
         QueryCondition[] queryConditions;
@@ -70,7 +86,36 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
             return new ResponseResultUtil().error(ResponseCodeEnum.QUERY_CONDITION_DISPLAY_FROM_SQL_FAILED);
         }
 
-        return new ResponseResultUtil().success(ResponseCodeEnum.QUERY_CONDITION_FROM_SQL_SUCCESS, queryConditions);
+        return new ResponseResultUtil().success(ResponseCodeEnum.QUERY_CONDITION_DISPLAY_FROM_SQL_SUCCESS, queryConditions);
+    }
+
+    /**
+     * 取得数据中最近的月份
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-11-22 00:00:00
+     */
+    @Override
+    public ResponseResult getDateDefaultValue() throws Exception {
+
+        String[] dateArr = null;
+        try {
+            dateArr = userService.getUserTheLastMonth(DataService.TABLE_DATA);
+            if (dateArr == null) {
+                return new ResponseResultUtil().error(ResponseCodeEnum.QUERY_CONDITION_DATE_DEFAULT_VALUE_NULL);
+            }
+            if (dateArr.length != 2) {
+                return new ResponseResultUtil().success(ResponseCodeEnum.QUERY_CONDITION_DATE_DEFAULT_VALUE_WRONG);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseResultUtil().error(ResponseCodeEnum.QUERY_CONDITION_DATE_DEFAULT_VALUE_FAILED);
+        }
+
+        String defaultValue = dateArr[0] + QueryCondition.QUERY_CONDITION_SPLIT + dateArr[1] ;
+        return new ResponseResultUtil().success(ResponseCodeEnum.QUERY_CONDITION_DATE_DEFAULT_VALUE_SUCCESS, defaultValue);
     }
 
     private QueryCondition[] getAllQueryConditionsFromSQL() throws Exception {
@@ -95,7 +140,7 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
 
     private QueryCondition[] getQueryConditionDisplayFromSQL() throws Exception {
 
-        // 取得该用户可显示的查询条件
+        // 取得该用户可显示的查询条件(注意：日期是必须的!)
         List<String> queryConditionsDisplayList = userService.getUserQueryConditionDisplay(userService.getUserID());
         // 取得所以的查询条件(Data的Map-key是查询条件的key，Data的Map-value是查询条件的type)
         List<Data> allQueryConditionsList = dataService.getAllQueryConditions();
@@ -103,9 +148,6 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
         if (queryConditionsDisplayList == null || allQueryConditionsList == null) {
             return null;
         }
-
-        // 取得最近一个月的时间
-        //T.B.D String[] = userService.getUserTheLastMonth(DataService.TABLE_DATA);
 
         // 组合成数组返回
         QueryCondition[] queryConditions = new QueryCondition[allQueryConditionsList.get(0).getKeyValue().size()];
@@ -117,12 +159,32 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
             for (String queryConditionsDisplay : queryConditionsDisplayList) {
                 if (queryConditionsDisplay.equals(entry.getKey())) {
                     queryConditions[i].setKey(entry.getKey());
-                    queryConditions[i].setKey(entry.getValue());
+                    queryConditions[i].setValue(getQueryConditionDisplayValue(entry.getKey(),entry.getValue()));
+                    queryConditions[i].setType(entry.getValue());
                     i++;
                 }
             }
         }
 
         return queryConditions;
+    }
+
+    private String getQueryConditionDisplayValue(String key, String type) throws Exception {
+
+        // 根据可显示的查询条件的类型以及权限，返回对应的值 T.B.D
+        switch (type) {
+            case QueryCondition.QUERY_CONDITION_TYPE_STRING:
+                break;
+            case QueryCondition.QUERY_CONDITION_TYPE_DATE:
+                break;
+            case QueryCondition.QUERY_CONDITION_TYPE_LIST:
+                break;
+            case QueryCondition.QUERY_CONDITION_TYPE_MONEY:
+            case QueryCondition.QUERY_CONDITION_TYPE_AMOUNT:
+                break;
+            default:
+                break;
+        }
+        return "";
     }
 }
