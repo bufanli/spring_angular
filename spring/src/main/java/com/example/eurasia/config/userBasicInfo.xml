@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mapping>
-    <column key="userID" value="VARCHAR(50)" />
-    <column key="name" value="VARCHAR(50)" />
-    <column key="password" value="VARCHAR(20)" />
-    <column key="weChatID" value="VARCHAR(50)" />
-    <column key="age" value="VARCHAR(10)" />
-    <column key="address" value="VARCHAR(50)" />
-    <column key="telephone" value="VARCHAR(20)" />
-    <column key="email" value="VARCHAR(50)" />
+    <column key="userID" value="VARCHAR(50)" /><!--必填项-->
+    <column key="昵称" value="VARCHAR(50)" />
+    <column key="性别" value="VARCHAR(50)" />
+    <column key="名字" value="VARCHAR(50)" /><!--必填项-->
+    <column key="密码" value="VARCHAR(20)" />
+    <column key="年龄" value="VARCHAR(10)" />
+    <column key="国家" value="VARCHAR(10)" />
+    <column key="城市" value="VARCHAR(10)" />
+    <column key="省份" value="VARCHAR(10)" />
+    <column key="地址" value="VARCHAR(50)" />
+    <column key="手机号码" value="VARCHAR(20)" /><!--必填项-->
+    <column key="电子邮价" value="VARCHAR(50)" />
 </mapping>
