@@ -17,6 +17,11 @@ const mainRoutes: Routes = [
         path: 'data-upload',
         component: MainComponent,
         loadChildren: '../data-upload/data-upload.module#DataUploadModule'
+    },
+    {
+        path: 'user-conf',
+        component: MainComponent,
+        loadChildren: '../user-conf/user-conf.module#UserConfModule'
     }
 ];
 @NgModule({
