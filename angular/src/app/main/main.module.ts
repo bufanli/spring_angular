@@ -10,10 +10,12 @@ const mainRoutes: Routes = [
     },
     {
         path: 'data-search',
+        component: MainComponent,
         loadChildren: '../data-search/data-search.module#DataSearchModule'
     },
     {
-        path: 'file-upload',
+        path: 'data-upload',
+        component: MainComponent,
         loadChildren: '../data-upload/data-upload.module#DataUploadModule'
     }
 ];
@@ -23,7 +25,7 @@ const mainRoutes: Routes = [
   ],
   exports: [ RouterModule ],
   declarations: [
-     MainComponent
-  ]
+    MainComponent,
+  ],
 })
 export class MainModule { }
