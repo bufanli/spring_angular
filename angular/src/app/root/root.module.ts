@@ -5,6 +5,10 @@ import { RouterModule, Routes } from '@angular/router';
 import { RootComponent } from './components/root.component';
 import { OurCommonModule } from '../common/our-common.module';
 import {BrowserModule} from '@angular/platform-browser';
+import { InMemoryDataService } from '../common/services/in-memory-data.service';
+import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
+import { HttpModule } from '@angular/http';
+import { HttpClientModule } from '@angular/common/http';
 
 const rootRoutes: Routes = [
     {
@@ -32,6 +36,11 @@ const rootRoutes: Routes = [
     CommonModule,
     RouterModule.forRoot(rootRoutes),
     OurCommonModule,
+    HttpModule,
+    HttpClientModule,
+    HttpClientInMemoryWebApiModule.forRoot(
+      InMemoryDataService, { dataEncapsulation: false }
+    ),
   ],
   bootstrap: [RootComponent]
 })

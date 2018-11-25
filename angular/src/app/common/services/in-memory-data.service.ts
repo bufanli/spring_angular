@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { InMemoryDbService } from 'angular-in-memory-web-api';
 import { Product } from '../../data-search/entities/product';
-import { Header } from '../../data-search/entities/header';
+import { Header } from '../entities/header';
 import { HeadersResponse } from '../../data-search/entities/headers-response';
-
+import { User } from '../../user-conf/entities/user';
 @Injectable({
   providedIn: 'root'
 })
@@ -175,7 +175,16 @@ export class InMemoryDataService implements InMemoryDbService {
       message: '数据表头成功',
       data: headers,
     };
-    return { 'products': products, 'search': products.slice(0, 5), 'getHeaders': headersResponse };
+    // setup users list
+    let users: User[];
+    users = [
+      {'userID': 'wechat0001', '昵称': '沧海笑', '名字': '李大宝', '国家': '中国',
+      '地址': '江苏南京', '城市': '南京', '密码': '123456', '年龄': '23', '性别': '男',
+      '电子邮件': 'dabao@163.com', '电话号码': '13423456719', '省份': '江苏'},
+    ];
+    return { 'products': products, 'search': products.slice(0, 5), 'getHeaders': headersResponse,
+          'getUsers': users };
   }
-  constructor() { }
+  constructor() {
+   }
 }

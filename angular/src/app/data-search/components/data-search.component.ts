@@ -5,7 +5,7 @@ import { URLSearchParams } from '@angular/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { Product } from '../entities/product';
-import { Header } from '../entities/header';
+import { Header } from '../../common/entities/header';
 import 'jquery';
 import 'bootstrap';
 import 'bootstrap-datepicker';
