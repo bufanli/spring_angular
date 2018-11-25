@@ -4,6 +4,7 @@ import { UserListComponent } from './components/user-list/user-list.component';
 import { UserAddComponent } from './components/user-add/user-add.component';
 import { UserConfComponent } from './components/user-conf/user-conf.component';
 import { RouterModule, Routes } from '@angular/router';
+import { HttpClientModule } from '@angular/common/http';
 
 const userConfRoutes: Routes = [
   {
@@ -14,6 +15,7 @@ const userConfRoutes: Routes = [
 @NgModule({
   imports: [
     CommonModule,
+    HttpClientModule,
     RouterModule.forChild(userConfRoutes),
   ],
   declarations: [UserListComponent, UserAddComponent, UserConfComponent]

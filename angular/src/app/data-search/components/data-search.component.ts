@@ -11,7 +11,7 @@ import 'bootstrap';
 import 'bootstrap-datepicker';
 import 'bootstrap-table';
 import 'bootstrap-select';
-import { HeadersResponse } from '../entities/headers-response';
+import { HttpResponse } from '../../common/entities/http-response';
 import { saveAs as importedSaveAs } from 'file-saver';
 
 // json header for post
@@ -81,18 +81,18 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
   }
 
   /**get headers from in memory api */
-  getHeaders(): Observable<HeadersResponse> {
-    return this.http.get<HeadersResponse>(this.headersUrl);
+  getHeaders(): Observable<HttpResponse> {
+    return this.http.get<HttpResponse>(this.headersUrl);
   }
 
   /** search products from the server */
-  searchData(): Observable<any> {
-    return this.http.post<any>(this.searchUrl, this.searchParam, httpOptions);
+  searchData(): Observable<HttpResponse> {
+    return this.http.post<HttpResponse>(this.searchUrl, this.searchParam, httpOptions);
   }
   constructor(private http: HttpClient, private downloadHttp: Http) {
   }
 
-  searchDataNotification(result: any) {
+  searchDataNotification(result: HttpResponse) {
     if (result.data == null) {
       $('#table').bootstrapTable('load', []);
     } else {
@@ -100,12 +100,12 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
     }
   }
 
-  getHeadersNotification(headersResponse: HeadersResponse) {
+  getHeadersNotification(httpResponse: HttpResponse) {
     // if donot destroy table at first, table will not be shown
     $('#table').bootstrapTable('destroy');
     // show table's columns
-    this.filterColumns(headersResponse.data);
-    const allHeaders: Header[] = this.addFormatterToHeaders(headersResponse.data);
+    this.filterColumns(httpResponse.data);
+    const allHeaders: Header[] = this.addFormatterToHeaders(httpResponse.data);
     $('#table').bootstrapTable({ columns: allHeaders });
     // show all products after headers are shown
     this.searchData().subscribe(products =>

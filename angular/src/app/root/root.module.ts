@@ -13,15 +13,15 @@ import { HttpClientModule } from '@angular/common/http';
 const rootRoutes: Routes = [
     {
         path: '',
-        redirectTo: 'login',
+        redirectTo: 'web/login',
         pathMatch: 'full'
     },
     {
-        path: 'login',
+        path: 'web/login',
         loadChildren: '../login/login.module#LoginModule'
     },
     {
-        path: 'main',
+        path: 'web/main',
         loadChildren: '../main/main.module#MainModule'
     }
 ];
