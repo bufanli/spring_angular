@@ -13,6 +13,7 @@ import 'bootstrap-table';
 import 'bootstrap-select';
 import { HttpResponse } from '../../common/entities/http-response';
 import { saveAs as importedSaveAs } from 'file-saver';
+import { CommonUtilitiesService } from '../../common/services/common-utilities.service';
 
 // json header for post
 const httpOptions = {
@@ -89,14 +90,16 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
   searchData(): Observable<HttpResponse> {
     return this.http.post<HttpResponse>(this.searchUrl, this.searchParam, httpOptions);
   }
-  constructor(private http: HttpClient, private downloadHttp: Http) {
+  constructor(private http: HttpClient,
+              private downloadHttp: Http,
+              private commonUtilitiesService: CommonUtilitiesService) {
   }
 
   searchDataNotification(result: HttpResponse) {
     if (result.data == null) {
       $('#table').bootstrapTable('load', []);
     } else {
-      $('#table').bootstrapTable('load', this.reshapeData(result.data));
+      $('#table').bootstrapTable('load', this.commonUtilitiesService.reshapeData(result.data));
     }
   }
 
@@ -118,25 +121,7 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
       return index + 1;
     };
     let allHeaders: Header[] = [seq];
-    for (const header of headers) {
-      header.class = 'colStyle';
-      if (header.title.length > 4) {
-        header.width = 200;
-      } else {
-        header.width = 200;
-      }
-      header.formatter = function (value, row, index) {
-        value = value ? value : '';
-        let length = value.length;
-        if (length && length > 12) {
-          length = 12;
-          return '<span class = "text-primary" data-toggle = "tooltip" \
-                  title = ' + value + '>' + value.substring(0, length) + '...' + '</span>';
-        } else {
-          return value;
-        }
-      };
-    }
+    this.commonUtilitiesService.addTooltipFormatter(headers, 200);
     allHeaders = allHeaders.concat(headers);
     return allHeaders;
   }
@@ -203,25 +188,7 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
       }
     }
   }
-  // reshape data result
-  // input
-  // [
-  // {keyvalue:{code:11,message:22}},
-  // {keyvalue:{code:33,message:44}},
-  // ]
-  // output
-  // [{code:11, message:22},
-  // {code:33, message:44}
-  // ]
-  reshapeData(data: any) {
-    const result: any[] = [];
-    let index = 0;
-    for (const row of data) {
-      result[index] = row.keyValue;
-      index++;
-    }
-    return result;
-  }
+
   // show tooltip when completing to upload file
   ngAfterViewChecked() {
     $('[data-toggle="tooltip"]').each(function () {

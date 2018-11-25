@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit , AfterViewChecked} from '@angular/core';
 import { Header } from '../../../common/entities/header';
 import { HttpResponse } from '../../../common/entities/http-response';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
+import { CommonUtilitiesService } from '../../../common/services/common-utilities.service';
 
 const header = new HttpHeaders({ 'Content-Type': 'application/json' });
 
@@ -11,13 +12,13 @@ const header = new HttpHeaders({ 'Content-Type': 'application/json' });
   templateUrl: './user-list.component.html',
   styleUrls: ['./user-list.component.css']
 })
-export class UserListComponent implements OnInit {
+export class UserListComponent implements OnInit , AfterViewChecked {
 
   private getUsersUrl = 'getUsers';  // URL to get user list
 
   private userListHeaders: Header[] = [
     new Header('userID', 'userID', false),
-    new Header('用户昵称', '用户昵称', true),
+    new Header('昵称', '昵称', true),
     new Header('性别', '性别', true),
     new Header('名字', '名字', true),
     new Header('密码', '密码', true),
@@ -29,14 +30,19 @@ export class UserListComponent implements OnInit {
     new Header('电子邮件', '电子邮件', true),
     new Header('权限设置', '权限设置', true),
   ];
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient,
+              private commonUtilitiesService: CommonUtilitiesService) {
   }
 
   ngOnInit() {
     // set headers for user list
     $('#table').bootstrapTable({ toggle: 'table' });
     $('#table').bootstrapTable('destroy');
+    this.commonUtilitiesService.addTooltipFormatter(this.userListHeaders, 50);
     $('#table').bootstrapTable({ columns: this.userListHeaders });
+    // get users from server
+    this.getUsers().subscribe(httpResponse =>
+      this.getUsersNotification(httpResponse));
   }
 
   /**get users */
@@ -45,13 +51,19 @@ export class UserListComponent implements OnInit {
   }
 
   getUsersNotification(httpResponse: HttpResponse) {
-    $('#table').bootstrapTable('destroy');
     // show user list
-    $('#table').bootstrapTable('load', httpResponse.data);
+    console.log(httpResponse.data['电子邮件']);
+    $('#table').bootstrapTable('load', this.commonUtilitiesService.reshapeData(httpResponse.data));
   }
 
   // add formatter to user list
   addFormatterToHeaders() {
 
+  }
+  // show tooltip when completing to upload file
+  ngAfterViewChecked() {
+    $('[data-toggle="tooltip"]').each(function () {
+      $(this).tooltip();
+    });
   }
 }
