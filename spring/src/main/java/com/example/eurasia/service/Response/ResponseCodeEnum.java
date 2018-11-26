@@ -5,7 +5,6 @@ public enum ResponseCodeEnum {
     SYSTEM_OPERATE_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "操作成功"),
     SYSTEM_OPERATE_FAILED(ResponseCode.RESPONSE_CODE_NG, "操作失败"),
     SYSTEM_UNLOGIN_FAILED(ResponseCode.RESPONSE_CODE_NG, "没有登录"),
-    SYSTEM_GET_SERVICE_FAILED(ResponseCode.RESPONSE_CODE_NG, "没有登录"),
 
     /* 用户 */
     USER_SAVE_INFO_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "保存用户信息成功"),
@@ -14,6 +13,7 @@ public enum ResponseCodeEnum {
     USER_GET_INFO_FAILED(ResponseCode.RESPONSE_CODE_NG, "取得用户信息失败"),
     USER_WECHAT_VALID_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "微信验证成功"),
     USER_WECHAT_VALID_FAILED(ResponseCode.RESPONSE_CODE_NG, "微信验证失败"),
+    USER_LOGIN_FAILED(ResponseCode.RESPONSE_CODE_NG, "用户登陆失败"),
     USER_GET_AUTH_INFO_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "根据条件获取用户授权信息成功"),
     USER_GET_AUTH_INFO_FAILED(ResponseCode.RESPONSE_CODE_NG, "根据条件获取用户授权信息失败"),
     USER_SAVE_AUTH_INFO_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "保存用户授权成功"),

@@ -9,4 +9,34 @@ import org.springframework.stereotype.Service;
 @Service("UserInfoServiceImpl")
 @Component
 public class UserInfoServiceImpl implements IUserInfoService {
+
+    @Override
+    public boolean setLoginUserID(String loginUserID) throws Exception {
+        return true;
+    }
+
+    @Override
+    public void addUser() throws Exception {
+
+    }
+
+    @Override
+    public void getUserBasicInfo() throws Exception {
+
+    }
+
+    @Override
+    public void setUserBasicInfo() throws Exception {
+
+    }
+
+    @Override
+    public void getUserAccessAuthority() throws Exception {
+
+    }
+
+    @Override
+    public void setUserAccessAuthority() throws Exception {
+
+    }
 }
