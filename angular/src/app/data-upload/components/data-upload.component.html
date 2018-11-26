@@ -1,0 +1,76 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <div class="row">
+            <div class="col-md-2">
+              <button class="btn btn-primary btn-large" type="button" (click)="this.selectFile();">
+                <span class="glyphicon glyphicon-folder-open">&nbsp;&nbsp;选择文件</span>
+              </button>
+              <input type="file" id="file-select" ng2FileSelect [uploader]="uploader" class="file-input" multiple>
+            </div>
+          </div>
+        </div>
+        <div class="panel-body fix-height">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>文件名</th>
+                <th>文件大小</th>
+                <th>上传进度</th>
+                <th>上传状态</th>
+                <th>导入结果</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of uploader.queue">
+                <td><strong>{{ item?.file?.name }}</strong></td>
+                <td nowrap>{{ item?.file?.size/1024/1024 | number:'.2' }} MB</td>
+                <td>
+                  <div class="progress" style="margin-bottom: 0;">
+                    <div class="progress-bar" role="progressbar" [ngStyle]="{ 'width': item.progress + '%' }"></div>
+                  </div>
+                </td>
+                <td class="text-center">
+                  <span *ngIf="item.isSuccess"><i class="glyphicon glyphicon-ok"></i></span>
+                  <span *ngIf="item.isCancel"><i class="glyphicon glyphicon-ban-circle"></i></span>
+                  <span *ngIf="item.isError"><i class="glyphicon glyphicon-remove"></i></span>
+                </td>
+                <td class="text-left">
+                  <span *ngIf="item.formData['upload_succeeded'] != undefined && item.formData['upload_succeeded'] == true">
+                    {{item.formData['summary']}}</span>
+                  <span *ngIf="item.formData['upload_succeeded'] != undefined && item.formData['upload_succeeded'] == false"
+                    class="text-primary" data-toggle="tooltip"
+                    title="{{item.formData['failedDetail']}}">{{item.formData['summary']}}</span>
+                </td>
+                <td nowrap>
+                  <button type="button" class="btn btn-primary btn-xs" (click)="item.upload()" [disabled]="item.isReady || item.isUploading || item.isSuccess">
+                    <span class="glyphicon glyphicon-upload"></span> 上传
+                  </button>
+                  <button type="button" class="btn btn-default btn-xs" (click)="item.cancel()" [disabled]="!item.isUploading">
+                    <span class="glyphicon glyphicon-ban-circle"></span> 取消
+                  </button>
+                  <button type="button" class="btn btn-default btn-xs" (click)="item.remove()">
+                    <span class="glyphicon glyphicon-trash"></span> 删除
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div>
+        <button type="button" class="btn btn-primary btn-s" (click)="uploader.uploadAll()" [disabled]="!uploader.getNotUploadedItems().length">
+          <span class="glyphicon glyphicon-upload"></span> 上传全部
+        </button>
+        <button type="button" class="btn btn-default btn-s" (click)="uploader.cancelAll()" [disabled]="!uploader.isUploading">
+          <span class="glyphicon glyphicon-ban-circle"></span> 取消全部
+        </button>
+        <button type="button" class="btn btn-default btn-s" (click)="uploader.clearQueue()" [disabled]="!uploader.queue.length">
+          <span class="glyphicon glyphicon-trash"></span> 删除全部
+        </button>
+      </div>
+    </div>
+  </div>
