@@ -1,16 +1,16 @@
 package com.example.eurasia.entity;
 
 /**
- * 用户类
+ * 权限类
  * @author FuJia
  * @Time 2018-11-12 00:00:00
  */
-public class UserBasicInfo implements Cloneable {
+public class UserAccessAuthority implements Cloneable {
 
     private String key;
     private String value;
 
-    public UserBasicInfo (String key, String value) {
+    public UserAccessAuthority (String key, String value) {
         this.key = key;
         this.value = value;
     }
