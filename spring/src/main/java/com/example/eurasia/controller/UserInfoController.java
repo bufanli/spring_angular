@@ -1,10 +1,11 @@
 package com.example.eurasia.controller;
 
-import com.example.eurasia.entity.Data;
+import com.example.eurasia.entity.UserInfo;
 import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;
 import com.example.eurasia.service.User.IUserInfoService;
+import com.example.eurasia.service.User.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -13,11 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @Controller
@@ -33,7 +29,7 @@ public class UserInfoController {
      * @date 2018-11-18
      * @description 设定登陆用户ID
      */
-    @RequestMapping(value="/setLoginUserID", method = RequestMethod.GET)
+    @RequestMapping(value="/setLoginUserID", method = RequestMethod.POST)
     public @ResponseBody
     ResponseResult setLoginUserID(@RequestBody String loginUserID) {
         ResponseResult responseResult;
@@ -56,20 +52,65 @@ public class UserInfoController {
     /**
      * @author
      * @date 2018-11-18
+     * @description 保存用户
+     */
+    @RequestMapping(value="/saveUser", method = RequestMethod.POST)
+    public @ResponseBody
+    ResponseResult saveUser(@RequestBody UserInfo userInfo) {
+        ResponseResult responseResult;
+        try {
+            log.info("保存用户开始");
+            responseResult = userInfoServiceImpl.saveUser(userInfo);
+        } catch (Exception e) {
+            e.printStackTrace();
+            responseResult = new ResponseResultUtil().error(ResponseCodeEnum.USER_SAVE_FAILED);
+        }
+        log.info("保存用户结束");
+        return responseResult;
+    }
+
+    /**
+     * @author
+     * @date 2018-11-18
      * @description 添加用户
      */
-    @RequestMapping(value="/addUser", method = RequestMethod.GET)
+    @RequestMapping(value="/addUser", method = RequestMethod.POST)
     public @ResponseBody
-    ResponseResult addUser() {
+    ResponseResult addUser(@RequestBody UserInfo userInfo) {
         ResponseResult responseResult;
         try {
             log.info("添加用户开始");
-            responseResult = null;//T.B.D
+            boolean isAddSuccessful = userInfoServiceImpl.addUser(userInfo);
+            if (isAddSuccessful == true) {
+                responseResult = new ResponseResultUtil().success(ResponseCodeEnum.USER_ADD_SUCCESS);
+            } else {
+                responseResult = new ResponseResultUtil().success(ResponseCodeEnum.USER_ADD_FAILED);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             responseResult = new ResponseResultUtil().error();
         }
         log.info("添加用户结束");
+        return responseResult;
+    }
+
+    /**
+     * @author
+     * @date 2018-11-18
+     * @description 取得所有用户的基本信息
+     */
+    @RequestMapping(value="/getUserBasicInfoList", method = RequestMethod.GET)
+    public @ResponseBody
+    ResponseResult getUserBasicInfoList() {
+        ResponseResult responseResult;
+        try {
+            log.info("取得所有用户的基本信息开始");
+            responseResult = userInfoServiceImpl.getUserBasicInfoList();
+        } catch (Exception e) {
+            e.printStackTrace();
+            responseResult = new ResponseResultUtil().error();
+        }
+        log.info("取得所有用户的基本信息结束");
         return responseResult;
     }
 
@@ -84,7 +125,7 @@ public class UserInfoController {
         ResponseResult responseResult;
         try {
             log.info("取得用户默认的基本信息开始");
-            responseResult = null;//T.B.D
+            responseResult = userInfoServiceImpl.getUserBasicInfo(UserService.USER_DEFAULT);
         } catch (Exception e) {
             e.printStackTrace();
             responseResult = new ResponseResultUtil().error();
@@ -100,34 +141,16 @@ public class UserInfoController {
      */
     @RequestMapping(value="/getUserBasicInfo", method = RequestMethod.GET)
     public @ResponseBody
-    ResponseResult getUserBasicInfo() {
+    ResponseResult getUserBasicInfo(String userID) {
         ResponseResult responseResult;
         try {
             log.info("取得用户的基本信息开始");
-            responseResult = null;//T.B.D
+            responseResult = userInfoServiceImpl.getUserBasicInfo(userID);
         } catch (Exception e) {
             e.printStackTrace();
             responseResult = new ResponseResultUtil().error();
         }
         log.info("取得用户的基本信息结束");
-        return responseResult;
-    }
-
-    /**
-     * @author
-     * @date 2018-11-18
-     * @description 设定用户的基本信息
-     */
-    private ResponseResult setUserBasicInfo() {
-        ResponseResult responseResult;
-        try {
-            log.info("设定用户的基本信息开始");
-            responseResult = null;//T.B.D
-        } catch (Exception e) {
-            e.printStackTrace();
-            responseResult = new ResponseResultUtil().error();
-        }
-        log.info("设定用户的基本信息结束");
         return responseResult;
     }
 
@@ -142,7 +165,7 @@ public class UserInfoController {
         ResponseResult responseResult;
         try {
             log.info("取得用户默认的访问权限开始");
-            responseResult = null;//T.B.D
+            responseResult = userInfoServiceImpl.getUserAccessAuthority(UserService.USER_DEFAULT);
         } catch (Exception e) {
             e.printStackTrace();
             responseResult = new ResponseResultUtil().error();
@@ -158,34 +181,16 @@ public class UserInfoController {
      */
     @RequestMapping(value="/getUserAccessAuthority", method = RequestMethod.GET)
     public @ResponseBody
-    ResponseResult getUserAccessAuthority() {
+    ResponseResult getUserAccessAuthority(String userID) {
         ResponseResult responseResult;
         try {
             log.info("取得用户的访问权限开始");
-            responseResult = null;//T.B.D
+            responseResult = userInfoServiceImpl.getUserAccessAuthority(userID);
         } catch (Exception e) {
             e.printStackTrace();
             responseResult = new ResponseResultUtil().error();
         }
         log.info("取得用户的访问权限结束");
-        return responseResult;
-    }
-
-    /**
-     * @author
-     * @date 2018-11-18
-     * @description 设定用户的访问权限
-     */
-    private ResponseResult setUserAccessAuthority() {
-        ResponseResult responseResult;
-        try {
-            log.info("设定用户的访问权限开始");
-            responseResult = null;//T.B.D
-        } catch (Exception e) {
-            e.printStackTrace();
-            responseResult = new ResponseResultUtil().error();
-        }
-        log.info("设定用户的访问权限结束");
         return responseResult;
     }
 
@@ -200,7 +205,7 @@ public class UserInfoController {
         ResponseResult responseResult;
         try {
             log.info("取得用户默认的可见表头开始");
-            responseResult = null;//T.B.D
+            responseResult = userInfoServiceImpl.getUserHeaderDisplay(UserService.USER_DEFAULT);
         } catch (Exception e) {
             e.printStackTrace();
             responseResult = new ResponseResultUtil().error();
@@ -214,13 +219,13 @@ public class UserInfoController {
      * @date 2018-11-18
      * @description 取得用户的可见表头
      */
-    @RequestMapping(value="/getUserHeaderDisplay", method = RequestMethod.GET)
+    @RequestMapping(value="/getUserHeaderDisplay", method = RequestMethod.POST)
     public @ResponseBody
-    ResponseResult getUserHeaderDisplay() {
+    ResponseResult getUserHeaderDisplay(String userID) {
         ResponseResult responseResult;
         try {
             log.info("取得用户的可见表头开始");
-            responseResult = null;//T.B.D
+            responseResult = userInfoServiceImpl.getUserHeaderDisplay(userID);
         } catch (Exception e) {
             e.printStackTrace();
             responseResult = new ResponseResultUtil().error();
@@ -229,45 +234,18 @@ public class UserInfoController {
         return responseResult;
     }
 
-    /**
-     * @author
-     * @date 2018-11-18
-     * @description 设定用户的可见表头
-     */
-    private ResponseResult setUserHeaderDisplay() {
+    @RequestMapping(value="/getUsers", method = RequestMethod.GET)
+    public @ResponseBody
+    ResponseResult getUsers() {
         ResponseResult responseResult;
         try {
-            log.info("设定用户的可见表头开始");
-            responseResult = null;//T.B.D
+            log.info("取得用户信息开始");
+            responseResult = userInfoServiceImpl.getUserBasicInfoList();
         } catch (Exception e) {
             e.printStackTrace();
             responseResult = new ResponseResultUtil().error();
         }
-        log.info("设定用户的可见表头结束");
+        log.info("取得用户信息结束");
         return responseResult;
-    }
-
-    @RequestMapping(value="/getUsers", method = RequestMethod.GET)
-    public @ResponseBody
-    ResponseResult getUsers() {
-
-        //Dummy
-        List<Data> dataList = new ArrayList<Data>();
-        Map<String, String> user = new HashMap<String, String>();
-        user.put("userId", "webchat0001");
-        user.put("昵称", "常海啸");
-        user.put("性别", "男");
-        user.put("名字", "张力");
-        user.put("密码", "123456");
-        user.put("年龄", "23");
-        user.put("国家", "中国");
-        user.put("城市", "南京");
-        user.put("省份", "江苏");
-        user.put("地址", "江苏省南京市**路");
-        user.put("手机号码", "134534096847");
-        user.put("电子邮件", "zhangli@163.com");
-        Data data = new Data(user);
-        dataList.add(data);
-        return new ResponseResultUtil().success(ResponseCodeEnum.SEARCH_DATA_INFO_FROM_SQL_SUCCESS, dataList);
     }
 }
