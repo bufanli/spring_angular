@@ -1,18 +1,20 @@
-import { Component, OnInit , AfterViewChecked} from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { AfterViewChecked, Component, OnInit } from '@angular/core';
+import { Observable } from 'rxjs';
 import { Header } from '../../../common/entities/header';
 import { HttpResponse } from '../../../common/entities/http-response';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
 import { CommonUtilitiesService } from '../../../common/services/common-utilities.service';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { UserEditComponent } from '../user-edit/user-edit.component';
 
-const header = new HttpHeaders({ 'Content-Type': 'application/json' });
+const OPERATION_HEADER_INDEX = 11;
 
 @Component({
   selector: 'app-user-list',
   templateUrl: './user-list.component.html',
   styleUrls: ['./user-list.component.css']
 })
-export class UserListComponent implements OnInit , AfterViewChecked {
+export class UserListComponent implements OnInit, AfterViewChecked {
 
   private getUsersUrl = 'getUsers';  // URL to get user list
 
@@ -28,10 +30,11 @@ export class UserListComponent implements OnInit , AfterViewChecked {
     new Header('地址', '地址', true),
     new Header('手机号码', '手机号码', true),
     new Header('电子邮件', '电子邮件', true),
-    new Header('权限设置', '权限设置', true),
+    new Header('操作', '操作', true),
   ];
   constructor(private http: HttpClient,
-              private commonUtilitiesService: CommonUtilitiesService) {
+    private commonUtilitiesService: CommonUtilitiesService,
+    public modalService: NgbModal) {
   }
 
   ngOnInit() {
@@ -39,6 +42,8 @@ export class UserListComponent implements OnInit , AfterViewChecked {
     $('#table').bootstrapTable({ toggle: 'table' });
     $('#table').bootstrapTable('destroy');
     this.commonUtilitiesService.addTooltipFormatter(this.userListHeaders, 50);
+    // add operation formatter to header
+    this.addOperationFormatter(this.userListHeaders[OPERATION_HEADER_INDEX]);
     $('#table').bootstrapTable({ columns: this.userListHeaders });
     // get users from server
     this.getUsers().subscribe(httpResponse =>
@@ -52,18 +57,27 @@ export class UserListComponent implements OnInit , AfterViewChecked {
 
   getUsersNotification(httpResponse: HttpResponse) {
     // show user list
-    console.log(httpResponse.data['电子邮件']);
     $('#table').bootstrapTable('load', this.commonUtilitiesService.reshapeData(httpResponse.data));
+    // bind user edit event, this.modalService is passed as target.data
+    $('#user-edit').on('click', this.modalService, this.showUserSettingModal);
   }
 
   // add formatter to user list
-  addFormatterToHeaders() {
-
+  addOperationFormatter(operationHeader: Header) {
+    operationHeader.formatter = function (value, row, index) {
+      return '<button type=\'button\' id=\'user-edit\' class=\'btn btn-primary \'>\
+      <span class=\'glyphicon glyphicon-cog\'></span> 设定</button>';
+    };
   }
   // show tooltip when completing to upload file
   ngAfterViewChecked() {
     $('[data-toggle="tooltip"]').each(function () {
       $(this).tooltip();
     });
+  }
+  // show modal for user setting
+  showUserSettingModal(target): void {
+    const service: NgbModal = target.data;
+    service.open(UserEditComponent);
   }
 }
