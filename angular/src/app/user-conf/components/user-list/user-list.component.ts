@@ -6,6 +6,7 @@ import { HttpResponse } from '../../../common/entities/http-response';
 import { CommonUtilitiesService } from '../../../common/services/common-utilities.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { UserEditComponent } from '../user-edit/user-edit.component';
+import { User} from '../../entities/user';
 
 const OPERATION_HEADER_INDEX = 11;
 
@@ -58,15 +59,25 @@ export class UserListComponent implements OnInit, AfterViewChecked {
   getUsersNotification(httpResponse: HttpResponse) {
     // show user list
     $('#table').bootstrapTable('load', this.commonUtilitiesService.reshapeData(httpResponse.data));
+    // get current page data
+    const currentPageData = $('#table').bootstrapTable('getData');
     // bind user edit event, this.modalService is passed as target.data
-    $('#user-edit').on('click', this.modalService, this.showUserSettingModal);
+    for (let i = 0; i < currentPageData.length; i++) {
+      const buttonId = '#user-edit-' + currentPageData[i]['userId'];
+      $(buttonId).on('click', this, this.showUserSettingModal);
+    }
+  }
+
+  bindHandlerToUserEdit(target) {
+    $(target).on('click', this, this.showUserSettingModal);
   }
 
   // add formatter to user list
   addOperationFormatter(operationHeader: Header) {
     operationHeader.formatter = function (value, row, index) {
-      return '<button type=\'button\' id=\'user-edit\' class=\'btn btn-primary \'>\
-      <span class=\'glyphicon glyphicon-cog\'></span> 设定</button>';
+      const buttonId = 'user-edit-' + row.userId;
+      return '<button type=\'button\' id=' + buttonId + ' class=\'btn btn-primary btn-xs \'>\
+      <span class=\'glyphicon glyphicon-cog\'></span> 编辑</button>';
     };
   }
   // show tooltip when completing to upload file
@@ -77,7 +88,7 @@ export class UserListComponent implements OnInit, AfterViewChecked {
   }
   // show modal for user setting
   showUserSettingModal(target): void {
-    const service: NgbModal = target.data;
+    const service: NgbModal = target.data.modalService;
     service.open(UserEditComponent);
   }
 }

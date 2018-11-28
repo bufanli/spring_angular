@@ -95,7 +95,10 @@ public class UserInfoServiceImpl implements IUserInfoService {
             user.put("手机号码", "134534096847");
             user.put("电子邮件", "zhangli@163.com");
             Data data = new Data(user);
+            user.put("userId", "webchat0002");
+            Data data2 = new Data(user);
             userList.add(data);
+            userList.add(data2);
 
             if (userList == null) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.USER_GET_INFO_FROM_SQL_NULL);
