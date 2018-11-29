@@ -6,7 +6,7 @@ import { HttpResponse } from '../../../common/entities/http-response';
 import { CommonUtilitiesService } from '../../../common/services/common-utilities.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { UserEditComponent } from '../user-edit/user-edit.component';
-import { User} from '../../entities/user';
+import { User } from '../../entities/user';
 
 const OPERATION_HEADER_INDEX = 11;
 
@@ -89,6 +89,9 @@ export class UserListComponent implements OnInit, AfterViewChecked {
   // show modal for user setting
   showUserSettingModal(target): void {
     const service: NgbModal = target.data.modalService;
-    service.open(UserEditComponent);
+    const modalRef = service.open(UserEditComponent);
+    const currentUser = new User();
+    currentUser.国家 = '中国';
+    modalRef.componentInstance.currentUser = currentUser;
   }
 }

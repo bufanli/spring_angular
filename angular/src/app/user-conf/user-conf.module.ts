@@ -7,6 +7,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { UserEditComponent } from './components/user-edit/user-edit.component';
 import { NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
+import { FormsModule } from '@angular/forms';
 
 const userConfRoutes: Routes = [
   {
@@ -19,6 +20,7 @@ const userConfRoutes: Routes = [
     CommonModule,
     HttpClientModule,
     NgbModalModule,
+    FormsModule,
     RouterModule.forChild(userConfRoutes),
   ],
   declarations: [UserListComponent, UserAddComponent, UserConfComponent, UserEditComponent],
