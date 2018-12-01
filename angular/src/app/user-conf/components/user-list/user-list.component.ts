@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { Header } from '../../../common/entities/header';
 import { HttpResponse } from '../../../common/entities/http-response';
 import { CommonUtilitiesService } from '../../../common/services/common-utilities.service';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbModalOptions, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
 import { UserEditComponent } from '../user-edit/user-edit.component';
 import { User } from '../../entities/user';
 
@@ -86,10 +86,20 @@ export class UserListComponent implements OnInit, AfterViewChecked {
       $(this).tooltip();
     });
   }
+  // adjust modal options
+  // if don't adjust modal options, modal will not be shown correctly
+  adjustModalOptions(): NgbModalOptions {
+    const options: NgbModalOptions = new NgbModalConfig();
+    options.backdrop = false;
+    options.windowClass = 'modal fade in';
+    return options;
+  }
   // show modal for user setting
   showUserSettingModal(target): void {
     const service: NgbModal = target.data.modalService;
-    const modalRef = service.open(UserEditComponent);
+    // you can not call this.adjustModalOptions,
+    // because showUserSettingModal called in html context
+    const modalRef = service.open(UserEditComponent, target.data.adjustModalOptions());
     const currentUser = new User();
     currentUser.国家 = '中国';
     modalRef.componentInstance.currentUser = currentUser;
