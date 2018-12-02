@@ -69,11 +69,11 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
      * @Time 2018-11-22 00:00:00
      */
     @Override
-    public ResponseResult getQueryConditionDisplay() throws Exception {
+    public ResponseResult getQueryConditionDisplay(String userID) throws Exception {
         QueryCondition[] queryConditions;
 
         try {
-            queryConditions = this.getQueryConditionDisplayFromSQL();
+            queryConditions = this.getQueryConditionDisplayFromSQL(userID);
 
             if (queryConditions == null) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.QUERY_CONDITION_DISPLAY_FROM_SQL_NULL);
@@ -98,11 +98,11 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
      * @Time 2018-11-22 00:00:00
      */
     @Override
-    public ResponseResult getDateDefaultValue() throws Exception {
+    public ResponseResult getDateDefaultValue(String userID) throws Exception {
 
         String[] dateArr = null;
         try {
-            dateArr = userService.getUserTheLastMonth(DataService.TABLE_DATA);
+            dateArr = userService.getUserTheLastMonth(DataService.TABLE_DATA,userID);
             if (dateArr == null) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.QUERY_CONDITION_DATE_DEFAULT_VALUE_NULL);
             }
@@ -139,7 +139,7 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
         return null;
     }
 
-    private QueryCondition[] getQueryConditionDisplayFromSQL() throws Exception {
+    private QueryCondition[] getQueryConditionDisplayFromSQL(String userID) throws Exception {
 
         // 取得该用户可显示的查询条件(注意：日期是必须的!)
         List<String> queryConditionsDisplayList = userService.getUserQueryConditionDisplay(userService.getUserID());

@@ -11,7 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-/*要注意这个DataMapper.java应该要和具体的Sql语句对应。*/
+/*要注意这个*Mapper.java应该要和具体的Sql语句对应。*/
 public class PermissionMapper implements RowMapper<List<String>> {
 
     @Override
@@ -32,7 +32,7 @@ public class PermissionMapper implements RowMapper<List<String>> {
         for (int i = 1; i <= columnCount; i++) {
             keyValue.put(md.getColumnName(i),resultSet.getString(i));
             if (resultSet.getString(i).equals(UserService.PERMITION_TRUE)) {
-                permition.add(resultSet.getString(i));
+                permition.add(md.getColumnName(i));
             }
         }
 

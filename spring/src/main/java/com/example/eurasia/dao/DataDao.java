@@ -5,8 +5,6 @@ import com.example.eurasia.entity.QueryCondition;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -29,17 +27,17 @@ public class DataDao extends CommonDao {
         int size = data.getKeyValue().size();
         String columnsNames = data.getKeys();
         //String columnsValues = data.getValues();
-        //String[] columnsValuesArr = columnsValues.split(",",-1);
+        //String[] columnsValuesArr = columnsValues.split(CommonDao.COMMA,-1);
         String[] columnsValuesArr = data.getValuesToArray();
 
         sql.append("insert into " + tableName + "(" + columnsNames + ") values (");
         for (int i=0; i<size; i++) {
             sql.append("?,");
         }
-        sql.deleteCharAt(sql.length() - ",".length());
+        sql.deleteCharAt(sql.length() - CommonDao.COMMA.length());
         sql.append(")");
         int num = getJdbcTemplate().update(sql.toString(),(Object[])columnsValuesArr);
-        return num;//大于0，插入成功。
+        return num;//大于0，插入成功。返回影响的行数。
 /*
 StringBuffer sbf = new  StringBuffer("Hello World!");
 sbf .setLength(0);//设置长度 (清楚内容效率最高)
@@ -90,11 +88,11 @@ sbf = new StringBuffer("");//重新new
             while (it.hasNext()) {
                 Map.Entry<String,Object> entry = it.next();
                 strCcolsName.append(entry.getValue());
-                strCcolsName.append(",");
+                strCcolsName.append(CommonDao.COMMA);
             }
         }
-        strCcolsName.deleteCharAt(strCcolsName.length() - ",".length());
-        String[] name = strCcolsName.toString().split(",",-1);
+        strCcolsName.deleteCharAt(strCcolsName.length() - CommonDao.COMMA.length());
+        String[] name = strCcolsName.toString().split(CommonDao.COMMA,-1);
 
         StringBuffer sql =  new StringBuffer();
         sql.append("delete " + tableName);
@@ -326,18 +324,6 @@ StringUtils.isEmpty(" bob ") = false
         List<Data> dataList = getJdbcTemplate().query(sql.toString(), new DataMapper());
         return dataList;
     }
-    // angular得到的时间格式是 2018/9/11 和数据库2018/09/11里面不一致，所以转换一下
-    private String convertDateToNewFormat(String dateFromAngular){
-        try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-            java.util.Date tempDateEnd= sdf.parse(dateFromAngular);
-            return sdf.format(tempDateEnd);
-        }catch(ParseException e){
-            e.printStackTrace();
-            // 格式不正确的时候至少返回原来的时间字符串
-            return dateFromAngular;
-        }
-    }
 
     /**
      * 查询并返回List集合
@@ -370,14 +356,14 @@ StringUtils.isEmpty(" bob ") = false
             Map<String,String> map = data.getKeyValue();
             Set<String> set = map.keySet();
             for (String key : set) {
-                sql.append(key + ",");
+                sql.append(key + CommonDao.COMMA);
             }
-            sql.deleteCharAt(sql.length() - ",".length());
+            sql.deleteCharAt(sql.length() - CommonDao.COMMA.length());
             sql.append(" ) values ( ");
             for (String key : set) {
                 sql.append("'" + map.get(key) + "',");
             }
-            sql.deleteCharAt(sql.length() - ",".length());
+            sql.deleteCharAt(sql.length() - CommonDao.COMMA.length());
             sql.append(" ) ");
             re = getJdbcTemplate().update(sql.toString());
         } catch (Exception e) {
@@ -424,34 +410,4 @@ StringUtils.isEmpty(" bob ") = false
         return colsNameList;
     }
 
-    /**
-     * 查询某表的列名
-     * @param tableName
-     * @return
-     * @exception
-     * @author FuJia
-     * @Time 2018-10-15 23:11:00
-     */
-    public List<Map<String,Object>> queryListForTheLastMouth(String tableName) throws Exception {
-        StringBuffer sql = new StringBuffer();
-/*
-        //近30天
-        select 日期 from eurasiaTable where DATE_SUB(CURDATE(), INTERVAL 30 DAY) <= date(日期);
-        //本月
-        select 日期 from eurasiaTable where DATE_FORMAT(日期,'%Y-%m') = DATE_FORMAT(CURDATE(),'%Y-%m');
-        //上个月
-        SELECT * FROM eurasiaTable WHERE PERIOD_DIFF(DATE_FORMAT(NOW(),'%Y%m'),DATE_FORMAT(字段名,'%Y%m'))=1;
-        SELECT * FROM eurasiaTable WHERE PERIOD_DIFF(DATE_FORMAT(CURDATE(),'%Y%m'),DATE_FORMAT(字段名,'%Y%m'))=1;
-        //最近一个月
-        SELECT 日期 FROM eurasiaTable WHERE DATE_SUB(CURDATE(), INTERVAL 1 MONTH) <= date(now());
-        //查询距离当前现在6个月的数据
-        select 日期 from eurasiaTable where 日期 between date_sub(now(),interval 6 month) and now();
-*/
-/* 测试用表
-select PERIOD_DIFF(DATE_FORMAT(CURDATE(),'%Y%m'),DATE_FORMAT(日期,'%Y%m')) from dual;
- */
-        List<Map<String, Object>> colsNameList = getJdbcTemplate().queryForList(sql.toString());
-
-        return null;
-    }
 }

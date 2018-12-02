@@ -8,9 +8,14 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
 import java.sql.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.Map;
 
 public class CommonDao {
+
+    public static final String COMMA = ",";
 
     // 属性注入
     // 加入JdbcTemplate作为成员变变量
@@ -136,6 +141,18 @@ SELECT information_schema.SCHEMATA.SCHEMA_NAME FROM information_schema.SCHEMATA 
         return false;
     }
 
+    // angular得到的时间格式是 2018/9/11 和数据库2018/09/11里面不一致，所以转换一下
+    public String convertDateToNewFormat(String dateFromAngular){
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+            java.util.Date tempDateEnd= sdf.parse(dateFromAngular);
+            return sdf.format(tempDateEnd);
+        }catch(ParseException e){
+            e.printStackTrace();
+            // 格式不正确的时候至少返回原来的时间字符串
+            return dateFromAngular;
+        }
+    }
 
     /**
      * 查询表的记录数
@@ -168,6 +185,53 @@ SELECT information_schema.SCHEMATA.SCHEMA_NAME FROM information_schema.SCHEMATA 
         Long columns = getJdbcTemplate().queryForObject(sql.toString(), Long.class);
         //System.out.println("查询出来的字段数为：" + columns);
         return columns;
+    }
+
+    /**
+     * 查询数据库中的最近一个月
+     * @param tableName
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-10-15 23:11:00
+     */
+    public String[] queryListForTheLastMouth(String tableName, String dateColumnName) throws Exception {
+
+/*
+        //近30天
+        select 日期 from eurasiaTable where DATE_SUB(CURDATE(), INTERVAL 30 DAY) <= date(日期);
+        //本月
+        select 日期 from eurasiaTable where DATE_FORMAT(日期,'%Y-%m') = DATE_FORMAT(CURDATE(),'%Y-%m');
+        //上个月
+        SELECT * FROM eurasiaTable WHERE PERIOD_DIFF(DATE_FORMAT(NOW(),'%Y%m'),DATE_FORMAT(字段名,'%Y%m'))=1;
+        SELECT * FROM eurasiaTable WHERE PERIOD_DIFF(DATE_FORMAT(CURDATE(),'%Y%m'),DATE_FORMAT(字段名,'%Y%m'))=1;
+        //最近一个月
+        SELECT 日期 FROM eurasiaTable WHERE DATE_SUB(CURDATE(), INTERVAL 1 MONTH) <= date(now());
+        //查询距离当前现在6个月的数据
+        select 日期 from eurasiaTable where 日期 between date_sub(now(),interval 6 month) and now();
+*/
+/* 测试用表
+select PERIOD_DIFF(DATE_FORMAT(CURDATE(),'%Y%m'),DATE_FORMAT(日期,'%Y%m')) from dual;
+ */
+
+        StringBuffer sql = new StringBuffer();
+        sql.append("SELECT top 1 " + dateColumnName + " FROM " + tableName);
+        sql.append(" WHERE DATE_SUB(CURDATE(), INTERVAL 1 MONTH) <= date(now()) order by " + dateColumnName);
+
+        StringBuffer sqlAsc = new StringBuffer();
+        sqlAsc.append(" asc");
+
+        StringBuffer sqlDesc = new StringBuffer();
+        sqlDesc.append(" desc");
+
+        List<Map<String, Object>> dateAscList = getJdbcTemplate().queryForList(sql.append(sqlAsc).toString());
+
+        List<Map<String, Object>> dateDescList = getJdbcTemplate().queryForList(sql.append(sqlDesc).toString());
+
+        String[] dateArr =  new String[2];
+        dateArr[0] = dateAscList.get(0).get(dateColumnName).toString();
+        dateArr[1] = dateDescList.get(0).get(dateColumnName).toString();
+        return dateArr;
     }
 
 }
