@@ -5,12 +5,12 @@ package com.example.eurasia.entity;
  * @author FuJia
  * @Time 2018-11-12 00:00:00
  */
-public class UserBasicInfo implements Cloneable {
+public class UserCustom implements Cloneable {
 
     private String key;
     private String value;
 
-    public UserBasicInfo (String key, String value) {
+    public UserCustom (String key, String value) {
         this.key = key;
         this.value = value;
     }

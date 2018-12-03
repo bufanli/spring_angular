@@ -48,7 +48,7 @@ public class QueryCondition implements Cloneable {
 
     @JsonIgnore
     public String[] getQueryConditionToArr() {
-        String queryConditionArr[] = this.getValue().split(QUERY_CONDITION_SPLIT,-1);
+        String queryConditionArr[] = this.getValue().split(QueryCondition.QUERY_CONDITION_SPLIT,-1);
         return queryConditionArr;
     }
 

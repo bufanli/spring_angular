@@ -54,16 +54,16 @@ public class UserInfoController {
      * @date 2018-11-18
      * @description 保存用户
      */
-    @RequestMapping(value="/saveUser", method = RequestMethod.POST)
+    @RequestMapping(value="/updateUser", method = RequestMethod.POST)
     public @ResponseBody
-    ResponseResult saveUser(@RequestBody UserInfo userInfo) {
+    ResponseResult updateUser(@RequestBody UserInfo userInfo) {
         ResponseResult responseResult;
         try {
             log.info("保存用户开始");
-            responseResult = userInfoServiceImpl.saveUser(userInfo);
+            responseResult = userInfoServiceImpl.updateUser(userInfo);
         } catch (Exception e) {
             e.printStackTrace();
-            responseResult = new ResponseResultUtil().error(ResponseCodeEnum.USER_SAVE_FAILED);
+            responseResult = new ResponseResultUtil().error(ResponseCodeEnum.USER_UPDATE_FAILED);
         }
         log.info("保存用户结束");
         return responseResult;

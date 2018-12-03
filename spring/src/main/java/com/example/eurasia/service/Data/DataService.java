@@ -58,7 +58,15 @@ public class DataService {
      * @Time 2018-09-20 00:00:00
      */
     public int addData(String tableName, Data data) throws Exception {
-        return getDataDao().addData(tableName, data);
+        int addNum = 0;
+        int deleteNum = 0;
+
+        addNum = getDataDao().addData(tableName, data);
+        if (addNum > 0) {
+            deleteNum = getDataDao().deleteSameData(tableName);
+        }
+
+        return (deleteNum != -1) ? addNum : 0;
     }
 
     /**

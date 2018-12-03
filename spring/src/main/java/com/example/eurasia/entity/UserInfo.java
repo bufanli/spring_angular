@@ -7,29 +7,29 @@ package com.example.eurasia.entity;
  */
 public class UserInfo implements Cloneable {
 
-    private UserBasicInfo[] userBasicInfos;
-    private UserAccessAuthority[] userAccessAuthorities;
+    private UserCustom[] userBasicInfos;
+    private UserCustom[] userAccessAuthorities;
 
-    public UserInfo (UserBasicInfo[] userBasicInfos, UserAccessAuthority[] userAccessAuthorities) {
-        this.userBasicInfos = new UserBasicInfo[userBasicInfos.length];
+    public UserInfo (UserCustom[] userBasicInfos, UserCustom[] userAccessAuthorities) {
+        this.userBasicInfos = new UserCustom[userBasicInfos.length];
         System.arraycopy(userBasicInfos, 0, this.userBasicInfos, 0, userBasicInfos.length);
 
-        this.userAccessAuthorities = new UserAccessAuthority[userAccessAuthorities.length];
+        this.userAccessAuthorities = new UserCustom[userAccessAuthorities.length];
         System.arraycopy(userAccessAuthorities, 0, this.userAccessAuthorities, 0, userAccessAuthorities.length);
     }
 
-    public void setUserBasicInfos(UserBasicInfo[] userBasicInfos) {
-        this.userBasicInfos = new UserBasicInfo[userBasicInfos.length];
+    public void setUserBasicInfos(UserCustom[] userBasicInfos) {
+        this.userBasicInfos = new UserCustom[userBasicInfos.length];
         System.arraycopy(userBasicInfos, 0, this.userBasicInfos, 0, userBasicInfos.length);
     }
-    public UserBasicInfo[] getUserBasicInfos() {
+    public UserCustom[] getUserBasicInfos() {
         return this.userBasicInfos;
     }
-    public void setUserAccessAuthorities(UserAccessAuthority[] userAccessAuthorities) {
-        this.userAccessAuthorities = new UserAccessAuthority[userAccessAuthorities.length];
+    public void setUserAccessAuthorities(UserCustom[] userAccessAuthorities) {
+        this.userAccessAuthorities = new UserCustom[userAccessAuthorities.length];
         System.arraycopy(userAccessAuthorities, 0, this.userAccessAuthorities, 0, userAccessAuthorities.length);
     }
-    public UserAccessAuthority[] getUserAccessAuthorities() {
+    public UserCustom[] getUserAccessAuthorities() {
         return this.userAccessAuthorities;
     }
 
