@@ -177,7 +177,7 @@ export class InMemoryDataService implements InMemoryDbService {
     // setup users list
     let users: User[];
     users = [
-      {'userID': 'wechat0001', 'nickName': '沧海笑', '名字': '李大宝', '国家': '中国',
+      {'userID': 'wechat0001', '昵称': '沧海笑', '名字': '李大宝', '国家': '中国',
       '地址': '江苏南京', '城市': '南京', '密码': '123456', '年龄': '23', '性别': '男',
       '电子邮件': 'dabao@163.com', '电话号码': '13423456719', '省份': '江苏'},
     ];

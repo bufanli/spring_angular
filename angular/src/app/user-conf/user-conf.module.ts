@@ -8,6 +8,8 @@ import { HttpClientModule } from '@angular/common/http';
 import { UserEditComponent } from './components/user-edit/user-edit.component';
 import { NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule } from '@angular/forms';
+import { UserBasicInfoComponent } from './components/user-basic-info/user-basic-info.component';
+import { UserPermissionComponent } from './components/user-permission/user-permission.component';
 
 const userConfRoutes: Routes = [
   {
@@ -23,7 +25,13 @@ const userConfRoutes: Routes = [
     FormsModule,
     RouterModule.forChild(userConfRoutes),
   ],
-  declarations: [UserListComponent, UserAddComponent, UserConfComponent, UserEditComponent],
+  declarations: [
+    UserListComponent,
+    UserAddComponent,
+    UserConfComponent,
+    UserEditComponent,
+    UserBasicInfoComponent,
+    UserPermissionComponent],
   entryComponents: [UserEditComponent],
 })
 export class UserConfModule { }

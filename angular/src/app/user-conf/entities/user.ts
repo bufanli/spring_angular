@@ -1,6 +1,6 @@
 export class User {
   userID: string;
-  nickName: string;
+  昵称: string;
   性别: string;
   名字: string;
   密码: string;

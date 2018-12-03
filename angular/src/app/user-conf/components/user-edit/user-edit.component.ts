@@ -10,8 +10,8 @@ import { Permission } from '../../entities/permission';
 })
 export class UserEditComponent implements OnInit {
 
-  public currentUser: User = null;
   public currentUserPermission: Permission = null;
+  public currentUser: User = null;
 
   constructor(private activeModal: NgbActiveModal) {
   }

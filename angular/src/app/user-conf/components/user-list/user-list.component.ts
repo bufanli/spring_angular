@@ -18,6 +18,8 @@ const OPERATION_HEADER_INDEX = 11;
 export class UserListComponent implements OnInit, AfterViewChecked {
 
   private getUsersUrl = 'getUsers';  // URL to get user list
+  // this is a dummy property which is just for compiling ok.
+  private id: string = null;
 
   private userListHeaders: Header[] = [
     new Header('userID', 'userID', false),
@@ -59,23 +61,46 @@ export class UserListComponent implements OnInit, AfterViewChecked {
   getUsersNotification(httpResponse: HttpResponse) {
     // show user list
     $('#table').bootstrapTable('load', this.commonUtilitiesService.reshapeData(httpResponse.data));
-    // get current page data
-    const currentPageData = $('#table').bootstrapTable('getData');
-    // bind user edit event, this.modalService is passed as target.data
-    for (let i = 0; i < currentPageData.length; i++) {
-      const buttonId = '#user-edit-' + currentPageData[i]['userId'];
-      $(buttonId).on('click', this, this.showUserSettingModal);
-    }
+    $('#table').bootstrapTable({
+      'onPageChange': function (number, size) {
+        alert(number);
+      }
+    });
+    // $('#table').on('page-change.bs.table', function (e, number, size) {
+    //   // ...
+    //   alert(number);
+    // });
+    $('#table').on('page-change.bs.table', this, this.bindUserEditEventHandler);
+    this.bindUserEditEventHandler(null);
   }
 
-  bindHandlerToUserEdit(target) {
-    $(target).on('click', this, this.showUserSettingModal);
+  bindUserEditEventHandler(target): void {
+    // call from component context
+    if (target == null) {
+      // get current page data
+      const currentPageData = $('#table').bootstrapTable('getData');
+      // bind user edit event, this.modalService is passed as target.data
+      for (let i = 0; i < currentPageData.length; i++) {
+        const buttonId = '#' + currentPageData[i]['userId'];
+        $(buttonId).on('click', this, this.showUserSettingModal);
+      }
+    } else {
+      // call from html context
+      const component = target.data;
+      // get current page data
+      const currentPageData = $('#table').bootstrapTable('getData');
+      // bind user edit event, this.modalService is passed as target.data
+      for (let i = 0; i < currentPageData.length; i++) {
+        const buttonId = '#' + currentPageData[i]['userId'];
+        $(buttonId).on('click', component, component.showUserSettingModal);
+      }
+    }
   }
 
   // add formatter to user list
   addOperationFormatter(operationHeader: Header) {
     operationHeader.formatter = function (value, row, index) {
-      const buttonId = 'user-edit-' + row.userId;
+      const buttonId = row.userId;
       return '<button type=\'button\' id=' + buttonId + ' class=\'btn btn-primary btn-xs \'>\
       <span class=\'glyphicon glyphicon-cog\'></span> 编辑</button>';
     };
@@ -97,11 +122,16 @@ export class UserListComponent implements OnInit, AfterViewChecked {
   // show modal for user setting
   showUserSettingModal(target): void {
     const service: NgbModal = target.data.modalService;
+    const user: User = target.data.getCurrentUser(this.id);
     // you can not call this.adjustModalOptions,
     // because showUserSettingModal called in html context
     const modalRef = service.open(UserEditComponent, target.data.adjustModalOptions());
-    const currentUser = new User();
-    currentUser.国家 = '中国';
-    modalRef.componentInstance.currentUser = currentUser;
+    modalRef.componentInstance.currentUser = user;
+  }
+
+  // get current user according to button's id(user's id)
+  getCurrentUser(userId: string): User {
+    const user: any = $('#table').bootstrapTable('getRowByUniqueId', userId);
+    return user;
   }
 }
