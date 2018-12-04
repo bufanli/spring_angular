@@ -132,6 +132,7 @@ body {
 .content{
   background-color: #f5f5f5;
   top:50px;
+  overflow-x:auto;
 }
 .login-client-page {
   display: -webkit-box;
