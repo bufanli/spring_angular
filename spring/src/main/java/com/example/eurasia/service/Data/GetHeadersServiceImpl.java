@@ -39,10 +39,10 @@ public class GetHeadersServiceImpl implements IGetHeadersService {
         try {
             allHeadersList = this.getAllHeadersFromSQL();
             if (allHeadersList == null) {
-                return new ResponseResultUtil().error(ResponseCodeEnum.HEADER_GET_INFO_FROM_SQL_NULL);
+                return new ResponseResultUtil().error(ResponseCodeEnum.HEADER_GET_ALL_INFO_FROM_SQL_NULL);
             }
             if (allHeadersList.size() == 0) {
-                return new ResponseResultUtil().success(ResponseCodeEnum.HEADER_GET_INFO_FROM_SQL_ZERO);
+                return new ResponseResultUtil().success(ResponseCodeEnum.HEADER_GET_ALL_INFO_FROM_SQL_ZERO);
             }
 
             headers = new Header[allHeadersList.size()];
@@ -57,10 +57,10 @@ public class GetHeadersServiceImpl implements IGetHeadersService {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return new ResponseResultUtil().error(ResponseCodeEnum.HEADER_GET_INFO_FROM_SQL_FAILED);
+            return new ResponseResultUtil().error(ResponseCodeEnum.HEADER_GET_ALL_INFO_FROM_SQL_FAILED);
         }
 
-        return new ResponseResultUtil().success(ResponseCodeEnum.HEADER_GET_INFO_FROM_SQL_SUCCESS, headers);
+        return new ResponseResultUtil().success(ResponseCodeEnum.HEADER_GET_ALL_INFO_FROM_SQL_SUCCESS, headers);
     }
 
     @Override

@@ -4,6 +4,7 @@ import com.example.eurasia.entity.DataXMLReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
@@ -50,13 +51,13 @@ public class CommonDao {
 检测数据库是否存在：
 SELECT information_schema.SCHEMATA.SCHEMA_NAME FROM information_schema.SCHEMATA where SCHEMA_NAME="database_name"
  */
-            StringBuffer sb = new StringBuffer();
-            sb.append("CREATE DATABASE IF NOT EXISTS " + databaseName);
+            StringBuffer sql = new StringBuffer();
+            sql.append("CREATE DATABASE IF NOT EXISTS " + databaseName);
             stmt = conn.createStatement();
-            databases = stmt.executeQuery(sb.toString());
+            databases = stmt.executeQuery(sql.toString());
 
-            sb.append("CREATE DATABASE IF NOT EXISTS ?");
-            preStatement = conn.prepareStatement(sb.toString());
+            sql.append("CREATE DATABASE IF NOT EXISTS ?");
+            preStatement = conn.prepareStatement(sql.toString());
             preStatement.setString(1, databaseName);
 
             return preStatement.execute();
@@ -89,26 +90,83 @@ SELECT information_schema.SCHEMATA.SCHEMA_NAME FROM information_schema.SCHEMATA 
             } else {
                 ApplicationContext context = new ClassPathXmlApplicationContext("com/example/eurasia/config/applicationContext.xml");
                 DataXMLReader dataXMLReader = (DataXMLReader) context.getBean(beanName);
-
-                StringBuffer sb = new StringBuffer();
-                sb.append("CREATE TABLE `" + tableName + "` (");
-                sb.append(" `id` int(11) NOT NULL AUTO_INCREMENT,");
                 Map<String,String> map = dataXMLReader.getKeyValue();
+
+                StringBuffer sql = new StringBuffer();
+                sql.append("CREATE TABLE `" + tableName + "` (");
+                sql.append(" `id` int(11) NOT NULL AUTO_INCREMENT,");
                 for (Map.Entry<String, String> entry : map.entrySet()) {
-                    sb.append("`" + entry.getKey() + "` " + entry.getValue() + " NOT NULL,");//key字段名 value字段类型
+                    sql.append("`" + entry.getKey() + "` " + entry.getValue() + " NOT NULL,");//key字段名 value字段类型
                 }
-                sb.append(" PRIMARY KEY (`id`)");
-                sb.append(") ENGINE=InnoDB DEFAULT CHARSET=gbk;");
+                sql.append(" PRIMARY KEY (`id`)");
+                sql.append(") ENGINE=InnoDB DEFAULT CHARSET=gbk;");
 //MyISAM适合：(1)做很多count 的计算；(2)插入不频繁，查询非常频繁；(3)没有事务。
 //InnoDB适合：(1)可靠性要求比较高，或者要求事务；(2)表更新和查询都相当的频繁，并且行锁定的机会比较大的情况
 
-                getJdbcTemplate().update(sb.toString());
+                getJdbcTemplate().update(sql.toString());
                 return true;
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         return false;
+    }
+
+    /**
+     * 创建SPRING_SESSION
+     * @param tableName
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-09-20 00:00:00
+     */
+    public boolean createSpringSessionTable(String tableName, String beanName) throws Exception {
+
+        try {
+            StringBuffer sql = new StringBuffer();
+            sql.append("CREATE TABLE `SPRING_SESSION` (");
+            sql.append("`SESSION_ID` char(36) NOT NULL DEFAULT '',");
+            sql.append("`CREATION_TIME` bigint(20) NOT NULL,");
+            sql.append("`LAST_ACCESS_TIME` bigint(20) NOT NULL,");
+            sql.append("`MAX_INACTIVE_INTERVAL` int(11) NOT NULL,");
+            sql.append("`PRINCIPAL_NAME` varchar(100) DEFAULT NULL,");
+            sql.append("PRIMARY KEY (`SESSION_ID`) USING BTREE,");
+            sql.append("KEY `SPRING_SESSION_IX1` (`LAST_ACCESS_TIME`) USING BTREE");
+            sql.append(") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+            getJdbcTemplate().update(sql.toString());
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 创建SPRING_SESSION_ATTRIBUTES
+     * @param tableName
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-09-20 00:00:00
+     */
+    public boolean createSpringSessionAttributesTable(String tableName, String beanName) throws Exception {
+
+        try {
+            StringBuffer sql = new StringBuffer();
+            sql.append("CREATE TABLE `SPRING_SESSION_ATTRIBUTES` (");
+            sql.append("`SESSION_ID` char(36) NOT NULL DEFAULT '',");
+            sql.append("`ATTRIBUTE_NAME` varchar(100) NOT NULL DEFAULT '',");
+            sql.append("`ATTRIBUTE_BYTES` blob,");
+            sql.append("PRIMARY KEY (`SESSION_ID`,`ATTRIBUTE_NAME`),");
+            sql.append("KEY `SPRING_SESSION_ATTRIBUTES_IX1` (`SESSION_ID`) USING BTREE,");
+            sql.append("CONSTRAINT `SPRING_SESSION_ATTRIBUTES_ibfk_1` FOREIGN KEY (`SESSION_ID`) REFERENCES `SPRING_SESSION` (`SESSION_ID`) ON DELETE CASCADE");
+            sql.append(") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+            getJdbcTemplate().update(sql.toString());
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 
     /**

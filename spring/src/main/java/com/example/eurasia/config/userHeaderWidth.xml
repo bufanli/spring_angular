@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mapping>
     <column key="userID" value="VARCHAR(50)" />
-    <column key="年度" value="TINYINT" />
-    <column key="季度" value="TINYINT" />
-    <column key="月份" value="TINYINT" />
     <column key="日期" value="TINYINT" />
     <column key="进口" value="TINYINT" />
     <column key="进口关区" value="TINYINT" />

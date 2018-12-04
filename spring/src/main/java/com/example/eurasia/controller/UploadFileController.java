@@ -13,7 +13,10 @@ import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -53,7 +56,30 @@ public class UploadFileController {
      */
     @RequestMapping(value="/uploadFile", method = RequestMethod.POST)
     public @ResponseBody
-    ResponseResult uploadFiles(@RequestParam("file") MultipartFile[] files, HttpServletRequest request) throws IOException {
+    ResponseResult uploadFiles(@RequestParam("file") MultipartFile[] files,
+                               HttpServletRequest request,
+                               HttpServletResponse response,
+                               HttpSession httpSession) throws IOException {
+
+//just for testing session ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+        /*
+          //true表示如果这个HTTP请求中,有session，那么可以直接通过getSession获取当前的session，
+          //如果当前的请求中没有session，则会自动新建一个session
+          HttpSession session=request.getSession(true);
+
+          //false表示只能获取当前请求中的session，如果没有也不能自动创建。
+          HttpSession session=request.getSession(false);
+
+         */
+        HttpSession session = request.getSession();//这就是session的创建
+        session.setAttribute("username","TOM");//给session添加属性属性name： username,属性 value：TOM
+        session.setAttribute("password","tommmm");//添加属性 name: password; value: tommmm
+
+        String sessionId = session.getId();
+        Cookie cookie = new Cookie("JSESSIONID", sessionId);
+        cookie.setPath(request.getContextPath());
+        response.addCookie(cookie);
+//↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
 
         ResponseResult responseResult;
 

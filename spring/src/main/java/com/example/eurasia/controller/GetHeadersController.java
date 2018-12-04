@@ -31,7 +31,8 @@ public class GetHeadersController {
         ResponseResult responseResult;
         try {
             log.info("取得用户列显示开始");
-            responseResult = getHeadersService.getHeaderDisplay();
+            responseResult = getHeadersService.getAllHeaders();//T.B.D
+            //responseResult = getHeadersService.getHeaderDisplay();
         } catch (Exception e) {
             e.printStackTrace();
             responseResult = new ResponseResultUtil().error();
