@@ -114,6 +114,10 @@ public class UserService {
      * @Time 2018-11-17 00:00:00
      */
     public boolean createTable(String tableName, String beanName) throws Exception {
+        if (StringUtils.isEmpty(tableName) || StringUtils.isEmpty(beanName)) {
+            return false;
+        }
+
         try {
             return getUserDao().createTable(tableName,beanName);
         } catch (Exception e) {
@@ -131,6 +135,10 @@ public class UserService {
      * @Time 2018-11-17 00:00:00
      */
     private boolean addDefaultUser(String userID) throws Exception {
+        if (StringUtils.isEmpty(userID)) {
+            return false;
+        }
+
         try {
             this.addUserForBasicInfo(userID,null);
             this.addUserForAccessAuthority(userID,null);
@@ -154,6 +162,10 @@ public class UserService {
      * @Time 2018-11-17 00:00:00
      */
     public int addUserForBasicInfo(String userID, Data value) throws Exception {
+        if (StringUtils.isEmpty(userID) || value == null) {
+            return -1;
+        }
+
         switch (userID) {
             case UserService.USER_DEFAULT:
                 return -1;
@@ -175,6 +187,10 @@ public class UserService {
      * @Time 2018-11-17 00:00:00
      */
     public int addUserForAccessAuthority(String userID, Data value) throws Exception {
+        if (StringUtils.isEmpty(userID) || value == null) {
+            return -1;
+        }
+
         ApplicationContext context;
         DataXMLReader dataXMLReader;
         Data data;
@@ -205,6 +221,10 @@ public class UserService {
      * @Time 2018-11-17 00:00:00
      */
     public int addUserForQueryConditionDisplay(String userID, Data value) throws Exception {
+        if (StringUtils.isEmpty(userID) || value == null) {
+            return -1;
+        }
+
         ApplicationContext context;
         DataXMLReader dataXMLReader;
         Data data;
@@ -235,6 +255,10 @@ public class UserService {
      * @Time 2018-11-17 00:00:00
      */
     public int addUserForHeaderWidth(String userID, Data value) throws Exception {
+        if (StringUtils.isEmpty(userID) || value == null) {
+            return -1;
+        }
+
         switch (userID) {
             case UserService.USER_DEFAULT:
                 break;
@@ -257,6 +281,10 @@ public class UserService {
      * @Time 2018-11-17 00:00:00
      */
     public int addUserForHeaderDisplay(String userID, Data value) throws Exception {
+        if (StringUtils.isEmpty(userID) || value == null) {
+            return -1;
+        }
+
         ApplicationContext context;
         DataXMLReader dataXMLReader;
         Data data;
@@ -302,6 +330,10 @@ public class UserService {
      * @Time 2018-12-02 00:00:00
      */
     public boolean checkUserData(String userID, Data data) throws Exception {
+        if (StringUtils.isEmpty(userID) || data == null) {
+            return false;
+        }
+
         return getUserDao().checkUserData(userID,data);
     }
 
@@ -314,6 +346,9 @@ public class UserService {
      * @Time 2018-11-15 00:00:00
      */
     public String[] getUserTheLastMonth(String tableName, String userID) throws Exception {
+        if (StringUtils.isEmpty(tableName) || StringUtils.isEmpty(userID)) {
+            return null;
+        }
 
         switch (userID) {
             case UserService.USER_DEFAULT:
@@ -355,6 +390,10 @@ public class UserService {
      * @Time 2018-11-18 00:00:00
      */
     public List<Data> getUserBasicInfo(String userID) throws Exception {
+        if (StringUtils.isEmpty(userID)) {
+            return null;
+        }
+
         List<Data> userBasicInfosList = this.getUserCustom(UserService.TABLE_USER_BASIC_INFO, userID);
 
         return userBasicInfosList;
@@ -369,6 +408,10 @@ public class UserService {
      * @Time 2018-11-18 00:00:00
      */
     public boolean updateUserBasicInfo(UserCustom[] userCustoms) throws Exception {
+        if (userCustoms == null) {
+            return false;
+        }
+
         return this.updateUserCustom(UserService.TABLE_USER_BASIC_INFO, userCustoms);
     }
 
@@ -381,6 +424,10 @@ public class UserService {
      * @Time 2018-11-21 00:00:00
      */
     public List<Data> getUserAccessAuthority(String userID) throws Exception {
+        if (StringUtils.isEmpty(userID)) {
+            return null;
+        }
+
         List<Data> userAccessAuthoritiesList = this.getUserCustom(UserService.TABLE_USER_ACCESS_AUTHORITY, userID);
 
         return userAccessAuthoritiesList;
@@ -395,6 +442,10 @@ public class UserService {
      * @Time 2018-11-18 00:00:00
      */
     public boolean updateUserAccessAuthority(UserCustom[] userCustoms) throws Exception {
+        if (userCustoms == null) {
+            return false;
+        }
+
         return this.updateUserCustom(UserService.TABLE_USER_ACCESS_AUTHORITY, userCustoms);
     }
 
@@ -407,6 +458,10 @@ public class UserService {
      * @Time 2018-11-18 00:00:00
      */
     public List<String> getUserQueryConditionDisplay(String userID) throws Exception {
+        if (StringUtils.isEmpty(userID)) {
+            return null;
+        }
+
         List<String> userQueryConditionDisplayList = this.getUserCustomDisplay(UserService.TABLE_USER_QUERY_CONDITION_DISPLAY,userID);
 
         return userQueryConditionDisplayList;
@@ -421,6 +476,10 @@ public class UserService {
      * @Time 2018-11-18 00:00:00
      */
     public boolean updateUserQueryConditionDisplay(UserCustom[] userCustoms) throws Exception {
+        if (userCustoms == null) {
+            return false;
+        }
+
         return this.updateUserCustom(UserService.TABLE_USER_QUERY_CONDITION_DISPLAY, userCustoms);
     }
 
@@ -433,6 +492,9 @@ public class UserService {
      * @Time 2018-11-18 00:00:00
      */
     public List<Data> getUserHeaderWidth(String userID) throws Exception {
+        if (StringUtils.isEmpty(userID)) {
+            return null;
+        }
 
         //T.B.D依赖于getUserHeaderDisplay的返回值
         List<Data> userHeaderWidthsList = this.getUserCustom(UserService.TABLE_USER_HEADER_WIDTH, userID);
@@ -449,6 +511,10 @@ public class UserService {
      * @Time 2018-11-18 00:00:00
      */
     public boolean updateUserHeaderWidth(UserCustom[] userCustoms) throws Exception {
+        if (userCustoms == null) {
+            return false;
+        }
+
         return this.updateUserCustom(UserService.TABLE_USER_HEADER_WIDTH, userCustoms);
     }
 
@@ -461,6 +527,10 @@ public class UserService {
      * @Time 2018-11-18 00:00:00
      */
     public List<String> getUserHeaderDisplay(String userID) throws Exception {
+        if (StringUtils.isEmpty(userID)) {
+            return null;
+        }
+
         List<String> userHeaderDisplayList = this.getUserCustomDisplay(UserService.TABLE_USER_HEADER_DISPLAY,userID);
 
         return userHeaderDisplayList;
@@ -475,6 +545,10 @@ public class UserService {
      * @Time 2018-11-18 00:00:00
      */
     public boolean updateUserHeaderDisplay(UserCustom[] userCustoms) throws Exception {
+        if (userCustoms == null) {
+            return false;
+        }
+
         return this.updateUserCustom(UserService.TABLE_USER_HEADER_DISPLAY,userCustoms);
     }
 
@@ -518,6 +592,10 @@ public class UserService {
      * @Time 2018-12-02 00:00:00
      */
     private boolean updateUserCustom(String tableName, UserCustom[] userCustoms) throws Exception {
+        if (StringUtils.isEmpty(tableName) || userCustoms == null) {
+            return false;
+        }
+
         int num = getUserDao().updateUserCustom(UserService.TABLE_USER_BASIC_INFO, userCustoms);
         if (num > 0) {
             return true;

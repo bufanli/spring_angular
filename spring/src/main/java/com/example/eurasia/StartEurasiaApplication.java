@@ -5,7 +5,10 @@ import com.example.eurasia.service.User.UserService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 @SpringBootApplication
 public class StartEurasiaApplication {
@@ -43,4 +46,9 @@ public class StartEurasiaApplication {
 
         SpringApplication.run(StartEurasiaApplication.class, args);
 	}
+
+    @Bean
+    public TaskScheduler taskScheduler(){
+        return new ThreadPoolTaskScheduler();
+    }
 }

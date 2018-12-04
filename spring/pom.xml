@@ -26,7 +26,7 @@
 	</properties>
 
 	<dependencies>
-        <!-- 因为web项目启动模块-->
+		<!-- web项目启动模块-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
@@ -37,65 +37,72 @@
 			<scope>compile</scope>
 		</dependency>
 
-        <!-- 引入Spring Boot 测试模块-->
+		<!-- 引入Spring Boot 测试模块-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
 
-        <!-- 引入Spring封装的jdbc-->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-jdbc</artifactId>
-        </dependency>
-        <!--
-        通过jdbc这个模块为我们做了以下几件事
-        tomcat-jdbc－{version}.jar为我们自动配置DataSource.
-        如果你没有定义任何DataSource，SpringBoot将会自动配置一个内存的数据库资源设置
-        如果没有设置任一个beans，SpringBoot会自动注册它
-        初始化数据库
-        如果我们在classpath里定义了schema.sql和data.sql文件，springBoot将会使用这些文件自动初始化数据库(但你必须选建库)
-        除了载入schema.sql和data.sql外，SpringBoot也会载入schema-${platform}.sql和data-${platform}.sql，如果在你的classpath下存在的话。
-        spring.datasource.schema=xxxx-db.sql 可以定义你的建库文件
-        spring.datasource.data=xxxx-data.sql  可以定义你的数据文件
-        spring.datasource.initialize＝true|false 可以决定是不是要初始化这些数据库文件
-        spring.datasource.continueOnError＝true|false 有了错误是否继续运行
-        -->
+		<!-- 引入Spring封装的jdbc-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-jdbc</artifactId>
+		</dependency>
+<!--
+通过jdbc这个模块为我们做了以下几件事
+tomcat-jdbc－{version}.jar为我们自动配置DataSource.
+如果你没有定义任何DataSource，SpringBoot将会自动配置一个内存的数据库资源设置
+如果没有设置任一个beans，SpringBoot会自动注册它
+初始化数据库
+如果我们在classpath里定义了schema.sql和data.sql文件，springBoot将会使用这些文件自动初始化数据库(但你必须选建库)
+除了载入schema.sql和data.sql外，SpringBoot也会载入schema-${platform}.sql和data-${platform}.sql，如果在你的classpath下存在的话。
+spring.datasource.schema=xxxx-db.sql 可以定义你的建库文件
+spring.datasource.data=xxxx-data.sql  可以定义你的数据文件
+spring.datasource.initialize＝true|false 可以决定是不是要初始化这些数据库文件
+spring.datasource.continueOnError＝true|false 有了错误是否继续运行
+-->
 
-        <!-- 引入mysql数据库连接驱动-->
+		<!-- 引入mysql数据库连接驱动-->
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
-            <scope>runtime</scope>
+			<scope>runtime</scope>
 			<version>5.1.46</version>
 		</dependency>
 
-        <!-- 读写Excel文件 -->
+		<!-- 读写Excel文件 -->
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi-ooxml</artifactId>
 			<version>3.17</version>
 		</dependency>
 
-        <!-- 解析或者生成Xml文件 -->
+		<!-- 解析或者生成Xml文件 -->
 		<dependency>
 			<groupId>dom4j</groupId>
 			<artifactId>dom4j</artifactId>
 			<version>1.6.1</version>
 		</dependency>
-        <dependency>
-            <groupId>jaxen</groupId>
-            <artifactId>jaxen</artifactId>
-            <version>1.1.6</version>
-        </dependency>
+		<dependency>
+			<groupId>jaxen</groupId>
+			<artifactId>jaxen</artifactId>
+			<version>1.1.6</version>
+		</dependency>
 
-        <!-- 连接池 -->
-        <dependency>
-            <groupId>com.zaxxer</groupId>
-            <artifactId>HikariCP</artifactId>
-            <version>2.6.1</version>
-        </dependency>
+		<!-- 连接池 -->
+		<dependency>
+			<groupId>com.zaxxer</groupId>
+			<artifactId>HikariCP</artifactId>
+			<version>2.6.1</version>
+		</dependency>
+
+		<!-- 数据库session管理 -->
+		<dependency>
+			<groupId>org.springframework.session</groupId>
+			<artifactId>spring-session-jdbc</artifactId>
+			<version>2.0.4.RELEASE</version>
+		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
 		<!--需要添加lombok plugin-->
@@ -119,14 +126,14 @@
 			<version>4.3.12.RELEASE</version>
 		</dependency>
 
-    </dependencies>
+</dependencies>
 
 	<build>
 		<finalName>demo</finalName>
 
 		<plugins>
 
-            <!-- springboot maven插件  项目以maven方式进行打包jar/war -->
+			<!-- springboot maven插件  项目以maven方式进行打包jar/war -->
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
@@ -134,7 +141,7 @@
 				<executions>
 					<execution>
 						<goals>
-                            <!-- 默认打包参数,在mvn package之后,再次打包可执行的jar/war -->
+							<!-- 默认打包参数,在mvn package之后,再次打包可执行的jar/war -->
 							<goal>repackage</goal>
 						</goals>
 					</execution>
@@ -146,7 +153,7 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.21.0</version>
 				<configuration>
-                    <!-- 测试代码出错不影响项目的编译 -->
+					<!-- 测试代码出错不影响项目的编译 -->
 					<testFailureIgnore>true</testFailureIgnore>
 				</configuration>
 			</plugin>
@@ -198,18 +205,18 @@
 
 		</plugins>
 
-        <!--解决Intellij构建项目时，target/classes目录下不存在mapper.xml文件-->
-        <resources>
+		<!--解决Intellij构建项目时，target/classes目录下不存在mapper.xml文件-->
+		<resources>
 			<resource>
 				<directory>${basedir}/src/main/resources</directory>
 			</resource>
-            <resource>
-                <directory>${basedir}/src/main/java</directory>
-                <includes>
-                    <include>**/*.xml</include>
-                </includes>
-            </resource>
-        </resources>
-    </build>
+			<resource>
+				<directory>${basedir}/src/main/java</directory>
+				<includes>
+					<include>**/*.xml</include>
+				</includes>
+			</resource>
+		</resources>
+	</build>
 
 </project>

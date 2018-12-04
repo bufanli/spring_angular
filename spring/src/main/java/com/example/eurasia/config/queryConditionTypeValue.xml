@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mapping>
-    <column key="年度" value="String" />
-    <column key="季度" value="String" />
-    <column key="月份" value="String" />
     <column key="日期" value="Date" />
     <column key="进口" value="List" />
     <column key="进口关区" value="List" />
