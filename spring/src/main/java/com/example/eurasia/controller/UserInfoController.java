@@ -29,9 +29,9 @@ public class UserInfoController {
      * @date 2018-11-18
      * @description 设定登陆用户ID
      */
-    @RequestMapping(value="/setLoginUserID", method = RequestMethod.POST)
+    @RequestMapping(value="/login", method = RequestMethod.POST)
     public @ResponseBody
-    ResponseResult setLoginUserID(@RequestBody String loginUserID) {
+    ResponseResult login(@RequestBody String loginUserID) {
         ResponseResult responseResult;
         try {
             log.info("设定登陆用户ID开始");
@@ -52,7 +52,7 @@ public class UserInfoController {
     /**
      * @author
      * @date 2018-11-18
-     * @description 保存用户
+     * @description 保存(更新)用户
      */
     @RequestMapping(value="/updateUser", method = RequestMethod.POST)
     public @ResponseBody
@@ -99,13 +99,13 @@ public class UserInfoController {
      * @date 2018-11-18
      * @description 取得所有用户的基本信息
      */
-    @RequestMapping(value="/getUserBasicInfoList", method = RequestMethod.GET)
+    @RequestMapping(value="/getAllUserBasicInfo", method = RequestMethod.GET)
     public @ResponseBody
-    ResponseResult getUserBasicInfoList() {
+    ResponseResult getAllUserBasicInfo() {
         ResponseResult responseResult;
         try {
             log.info("取得所有用户的基本信息开始");
-            responseResult = userInfoServiceImpl.getUserBasicInfoList();
+            responseResult = userInfoServiceImpl.getAllUserBasicInfo();
         } catch (Exception e) {
             e.printStackTrace();
             responseResult = new ResponseResultUtil().error();
@@ -156,96 +156,42 @@ public class UserInfoController {
 
     /**
      * @author
-     * @date 2018-11-18
-     * @description 取得用户默认的访问权限
+     * @date 2018-12-07
+     * @description 取得用户默认的详细信息(访问权限，可显示列等)
      */
-    @RequestMapping(value="/getUserDefaultAccessAuthority", method = RequestMethod.GET)
+    @RequestMapping(value="/getUserDefaultDetailedInfos", method = RequestMethod.GET)
     public @ResponseBody
-    ResponseResult getUserDefaultAccessAuthority() {
+    ResponseResult getUserDefaultDetailedInfos() {
         ResponseResult responseResult;
         try {
-            log.info("取得用户默认的访问权限开始");
-            responseResult = userInfoServiceImpl.getUserAccessAuthority(UserService.USER_DEFAULT);
+            log.info("取得用户默认的详细信息开始");
+            responseResult = userInfoServiceImpl.getUserDetailedInfos(UserService.USER_DEFAULT);
         } catch (Exception e) {
             e.printStackTrace();
             responseResult = new ResponseResultUtil().error();
         }
-        log.info("取得用户默认的访问权限结束");
+        log.info("取得用户默认的详细信息结束");
         return responseResult;
     }
 
     /**
      * @author
-     * @date 2018-11-18
-     * @description 取得用户的访问权限
+     * @date 2018-12-07
+     * @description 取得用户的详细信息(访问权限，可显示列等)
      */
-    @RequestMapping(value="/getUserAccessAuthority", method = RequestMethod.GET)
+    @RequestMapping(value="/getUserDetailedInfos", method = RequestMethod.GET)
     public @ResponseBody
-    ResponseResult getUserAccessAuthority(String userID) {
+    ResponseResult getUserDetailedInfos(String userID) {
         ResponseResult responseResult;
         try {
-            log.info("取得用户的访问权限开始");
-            responseResult = userInfoServiceImpl.getUserAccessAuthority(userID);
+            log.info("取得用户的详细信息开始");
+            responseResult = userInfoServiceImpl.getUserDetailedInfos(userID);
         } catch (Exception e) {
             e.printStackTrace();
             responseResult = new ResponseResultUtil().error();
         }
-        log.info("取得用户的访问权限结束");
+        log.info("取得用户的详细信息结束");
         return responseResult;
     }
 
-    /**
-     * @author
-     * @date 2018-11-18
-     * @description 取得用户默认的可见表头
-     */
-    @RequestMapping(value="/getUserDefaultHeaderDisplay", method = RequestMethod.GET)
-    public @ResponseBody
-    ResponseResult getUserDefaultHeaderDispaly() {
-        ResponseResult responseResult;
-        try {
-            log.info("取得用户默认的可见表头开始");
-            responseResult = userInfoServiceImpl.getUserHeaderDisplay(UserService.USER_DEFAULT);
-        } catch (Exception e) {
-            e.printStackTrace();
-            responseResult = new ResponseResultUtil().error();
-        }
-        log.info("取得用户默认的可见表头结束");
-        return responseResult;
-    }
-
-    /**
-     * @author
-     * @date 2018-11-18
-     * @description 取得用户的可见表头
-     */
-    @RequestMapping(value="/getUserHeaderDisplay", method = RequestMethod.POST)
-    public @ResponseBody
-    ResponseResult getUserHeaderDisplay(String userID) {
-        ResponseResult responseResult;
-        try {
-            log.info("取得用户的可见表头开始");
-            responseResult = userInfoServiceImpl.getUserHeaderDisplay(userID);
-        } catch (Exception e) {
-            e.printStackTrace();
-            responseResult = new ResponseResultUtil().error();
-        }
-        log.info("取得用户的可见表头结束");
-        return responseResult;
-    }
-
-    @RequestMapping(value="/getUsers", method = RequestMethod.GET)
-    public @ResponseBody
-    ResponseResult getUsers() {
-        ResponseResult responseResult;
-        try {
-            log.info("取得用户信息开始");
-            responseResult = userInfoServiceImpl.getUserBasicInfoList();
-        } catch (Exception e) {
-            e.printStackTrace();
-            responseResult = new ResponseResultUtil().error();
-        }
-        log.info("取得用户信息结束");
-        return responseResult;
-    }
 }

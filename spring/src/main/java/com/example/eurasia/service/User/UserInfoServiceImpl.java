@@ -9,11 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 /*@Transactional(readOnly = true)事物注解*/
@@ -38,67 +36,52 @@ public class UserInfoServiceImpl implements IUserInfoService {
     @Override
     public ResponseResult updateUser(UserInfo userInfo) throws Exception {
 
-        ResponseResult responseResult;
-
         log.info("保存用户的基本信息开始");
-        boolean isupdateSuccessful = this.updateUserBasicInfo(userInfo.getUserBasicInfos());
-        if (isupdateSuccessful == true) {
-            responseResult = new ResponseResultUtil().success(ResponseCodeEnum.USER_UPDATE_BASIC_INFO_SUCCESS);
-        } else {
+        boolean isupdateSuccessful = userService.updateUserBasicInfo(userInfo.getUserBasicInfos());
+        if (this.checkUserBasicInfo(userInfo.getUserBasicInfos()) == false) {
+            return new ResponseResultUtil().error(ResponseCodeEnum.USER_CHECK_BASIC_INFO_FAILED);
+        }
+        if (isupdateSuccessful == false) {
             return new ResponseResultUtil().error(ResponseCodeEnum.USER_UPDATE_BASIC_INFO_FAILED);
         }
         log.info("保存用户的基本信息结束");
 
         log.info("保存用户的访问权限开始");
-        isupdateSuccessful = this.updateUserAccessAuthority(userInfo.getUserAccessAuthorities());
-        if (isupdateSuccessful == true) {
-            responseResult = new ResponseResultUtil().success(ResponseCodeEnum.USER_UPDATE_ACCESS_AUTHORITY_INFO_SUCCESS);
-        } else {
+        if (this.checkUserAccessAuthority(userInfo.getUserDetailedInfos().getUserAccessAuthorities()) == false) {
+            return new ResponseResultUtil().error(ResponseCodeEnum.USER_CHECK_ACCESS_AUTHORITY_INFO_FAILED);
+        }
+        isupdateSuccessful = userService.updateUserAccessAuthority(userInfo.getUserDetailedInfos().getUserAccessAuthorities());
+        if (isupdateSuccessful == false) {
             return new ResponseResultUtil().error(ResponseCodeEnum.USER_UPDATE_ACCESS_AUTHORITY_INFO_FAILED);
         }
         log.info("保存用户的访问权限结束");
 
         log.info("保存用户的可见查询条件开始");
-        isupdateSuccessful = this.updateUserQueryConditionDisplay(null);//T.B.D
-        if (isupdateSuccessful == true) {
-            responseResult = new ResponseResultUtil().success(ResponseCodeEnum.USER_UPDATE_QUERY_CONDITION_DISPLAY_SUCCESS);
-        } else {
+        isupdateSuccessful = userService.updateUserQueryConditionDisplay(userInfo.getUserDetailedInfos().getUserQueryConditionDisplays());
+        isupdateSuccessful = true;//T.B.D
+        if (isupdateSuccessful == false) {
             return new ResponseResultUtil().error(ResponseCodeEnum.USER_UPDATE_QUERY_CONDITION_DISPLAY_FAILED);
         }
         log.info("保存用户的可见查询条件结束");
 
         log.info("保存用户的可见表头开始");
-        isupdateSuccessful = this.updateUserHeaderDisplay(null);//T.B.D
-        if (isupdateSuccessful == true) {
-            responseResult = new ResponseResultUtil().success(ResponseCodeEnum.USER_UPDATE_HEADER_DISPLAY_SUCCESS);
-        } else {
+        isupdateSuccessful = userService.updateUserHeaderDisplay(userInfo.getUserDetailedInfos().getUserHeaderDisplays());
+        isupdateSuccessful = true;//T.B.D
+        if (isupdateSuccessful == false) {
             return new ResponseResultUtil().error(ResponseCodeEnum.USER_UPDATE_HEADER_DISPLAY_FAILED);
         }
         log.info("保存用户的可见表头结束");
-
-        log.info("保存用户的可见表头宽度开始");
-        isupdateSuccessful = this.updateUserHeaderWidth(null);//T.B.D
-        if (isupdateSuccessful == true) {
-            responseResult = new ResponseResultUtil().success(ResponseCodeEnum.USER_UPDATE_HEADER_WIDTH_SUCCESS);
-        } else {
-            return new ResponseResultUtil().error(ResponseCodeEnum.USER_UPDATE_HEADER_WIDTH_FAILED);
-        }
-        log.info("保存用户的可见表头宽度结束");
 
         return new ResponseResultUtil().success(ResponseCodeEnum.USER_UPDATE_SUCCESS);
     }
 
     @Override
     public boolean addUser(UserInfo userInfo) throws Exception {
-        //T.B.D
-        if (userService.createTable("","")) {
-            return true;
-        }
-        return false;
+        return userService.addUser(userService.getUserID(),userInfo);
     }
 
     @Override
-    public ResponseResult getUserBasicInfoList() throws Exception {
+    public ResponseResult getAllUserBasicInfo() throws Exception {
         return this.getUserBasicInfo(userService.USER_ALL);
     }
 
@@ -106,36 +89,12 @@ public class UserInfoServiceImpl implements IUserInfoService {
     public ResponseResult getUserBasicInfo(String userID) throws Exception {
         List<Data> userBasicInfosList;
         try {
-
             userBasicInfosList = userService.getUserBasicInfo(userID);
-
-            //Dummy
-            List<Data> userList = new ArrayList<>();
-            Map<String, String> user = new HashMap<String, String>();
-            user.put("userId", "webchat0001");
-            user.put("昵称", "常海啸");
-            user.put("性别", "男");
-            user.put("名字", "张力");
-            user.put("密码", "123456");
-            user.put("年龄", "23");
-            user.put("国家", "中国");
-            user.put("城市", "南京");
-            user.put("省份", "江苏");
-            user.put("地址", "江苏省南京市**路");
-            user.put("手机号码", "134534096847");
-            user.put("电子邮件", "zhangli@163.com");
-            Data data = new Data(user);
-            user.put("userId", "webchat0002");
-            Data data2 = new Data(user);
-            userList.add(data);
-            userList.add(data2);
-            new ResponseResultUtil().success(ResponseCodeEnum.USER_GET_BASIC_INFO_FROM_SQL_SUCCESS, userList);
-
             if (userBasicInfosList == null) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.USER_GET_BASIC_INFO_FROM_SQL_NULL);
             }
             if (userBasicInfosList.size() == 0) {
-                return new ResponseResultUtil().success(ResponseCodeEnum.USER_GET_BASIC_INFO_FROM_SQL_ZERO);
+                return new ResponseResultUtil().error(ResponseCodeEnum.USER_GET_BASIC_INFO_FROM_SQL_ZERO);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -146,112 +105,98 @@ public class UserInfoServiceImpl implements IUserInfoService {
     }
 
     @Override
-    public boolean updateUserBasicInfo(UserCustom[] userCustoms) throws Exception {
-        return userService.updateUserBasicInfo(userCustoms);
-    }
-
-    @Override
-    public ResponseResult getUserAccessAuthority(String userID) throws Exception {
+    public ResponseResult getUserDetailedInfos(String userID) throws Exception {
         List<Data> userAccessAuthoritiesList;
+        List<Data> userQueryConditionDisplaysList;
+        List<Data> userHeaderDisplaysList;
         try {
-
             userAccessAuthoritiesList = userService.getUserAccessAuthority(userID);
-
             if (userAccessAuthoritiesList == null) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.USER_GET_ACCESS_AUTHORITY_FROM_SQL_NULL);
             }
             if (userAccessAuthoritiesList.size() == 0) {
-                return new ResponseResultUtil().success(ResponseCodeEnum.USER_GET_ACCESS_AUTHORITY_FROM_SQL_ZERO);
+                return new ResponseResultUtil().error(ResponseCodeEnum.USER_GET_ACCESS_AUTHORITY_FROM_SQL_ZERO);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseResultUtil().error(ResponseCodeEnum.USER_GET_ACCESS_AUTHORITY_FROM_SQL_FAILED);
-        }
-
-        return new ResponseResultUtil().success(ResponseCodeEnum.USER_GET_ACCESS_AUTHORITY_FROM_SQL_SUCCESS, userAccessAuthoritiesList);
-    }
-
-    @Override
-    public boolean updateUserAccessAuthority(UserCustom[] userCustoms) throws Exception {
-        return userService.updateUserAccessAuthority(userCustoms);
-    }
-
-    @Override
-    public ResponseResult getUserQueryConditionDisplay(String userID) throws Exception {
-        List<String> userQueryConditionDisplaysList;
-        try {
 
             userQueryConditionDisplaysList = userService.getUserQueryConditionDisplay(userID);
-
             if (userQueryConditionDisplaysList == null) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.USER_GET_QUERY_CONDITION_DISPLAY_FROM_SQL_NULL);
             }
             if (userQueryConditionDisplaysList.size() == 0) {
-                return new ResponseResultUtil().success(ResponseCodeEnum.USER_GET_QUERY_CONDITION_DISPLAY_FROM_SQL_ZERO);
+                return new ResponseResultUtil().error(ResponseCodeEnum.USER_GET_QUERY_CONDITION_DISPLAY_FROM_SQL_ZERO);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseResultUtil().error(ResponseCodeEnum.USER_GET_QUERY_CONDITION_DISPLAY_FROM_SQL_FAILED);
-        }
-
-        return new ResponseResultUtil().success(ResponseCodeEnum.USER_GET_QUERY_CONDITION_DISPLAY_FROM_SQL_SUCCESS, userQueryConditionDisplaysList);
-    }
-
-    @Override
-    public boolean updateUserQueryConditionDisplay(UserCustom[] userCustoms) throws Exception {
-        return userService.updateUserQueryConditionDisplay(userCustoms);
-    }
-
-    @Override
-    public ResponseResult getUserHeaderDisplay(String userID) throws Exception {
-        List<String> userHeaderDisplaysList;
-        try {
 
             userHeaderDisplaysList = userService.getUserHeaderDisplay(userID);
-
             if (userHeaderDisplaysList == null) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.USER_GET_HEADER_DISPLAY_FROM_SQL_NULL);
             }
             if (userHeaderDisplaysList.size() == 0) {
-                return new ResponseResultUtil().success(ResponseCodeEnum.USER_GET_HEADER_DISPLAY_FROM_SQL_ZERO);
+                return new ResponseResultUtil().error(ResponseCodeEnum.USER_GET_HEADER_DISPLAY_FROM_SQL_ZERO);
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return new ResponseResultUtil().error(ResponseCodeEnum.USER_GET_HEADER_DISPLAY_FROM_SQL_FAILED);
+            return new ResponseResultUtil().error(ResponseCodeEnum.USER_GET_DETAILED_INFOS_FAILED);
+        }
+        UserDetailedInfos userDetailedInfos = new UserDetailedInfos(userAccessAuthoritiesList.get(0).toUserCustomArr(),
+                userQueryConditionDisplaysList.get(0).toUserCustomArr(),
+                userHeaderDisplaysList.get(0).toUserCustomArr());
+        return new ResponseResultUtil().success(ResponseCodeEnum.USER_GET_DETAILED_INFOS_SUCCESS, userDetailedInfos);
+    }
+
+    /**
+     * 保存用户访问权限时，检查数据的有效性
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-12-02 00:00:00
+     */
+    private boolean checkUserBasicInfo(UserCustom[] userCustoms) {
+        int isOK = 0xFFFF;
+        for (UserCustom userCustom:userCustoms) {
+            if (userCustom.getKey().equals(userService.MUST_USER_NAME) ||
+                    userCustom.getKey().equals(userService.MUST_USER_PHONE)) {
+                if (!StringUtils.isEmpty(userCustom.getValue())) {
+                    isOK = 0xFFFF << 1;
+                    break;
+                }
+            }
         }
 
-        return new ResponseResultUtil().success(ResponseCodeEnum.USER_GET_HEADER_DISPLAY_FROM_SQL_SUCCESS, userHeaderDisplaysList);
+        if (isOK != 0xFFFF) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    @Override
-    public boolean updateUserHeaderDisplay(UserCustom[] userCustoms) throws Exception {
-        return userService.updateUserHeaderDisplay(userCustoms);
-    }
-
-    @Override
-    public ResponseResult getUserHeaderWidth(String userID) throws Exception {
-        List<Data> userHeaderWidthsList;
-        try {
-
-            userHeaderWidthsList = userService.getUserHeaderWidth(userID);
-
-            if (userHeaderWidthsList == null) {
-                return new ResponseResultUtil().error(ResponseCodeEnum.USER_GET_HEADER_WIDTH_FROM_SQL_NULL);
+    /**
+     * 保存用户访问权限时，检查数据的有效性
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-12-02 00:00:00
+     */
+    private boolean checkUserAccessAuthority(UserCustom[] userCustoms) {
+        int isOK = 0xFFFF;
+        for (UserCustom userCustom:userCustoms) {
+            if (userCustom.getKey().equals(userService.MUST_PRODUCT_DATE) ||
+                    userCustom.getKey().equals(userService.MUST_PRODUCT_NUMBER)) {
+                String queryConditionArr[] = userCustom.getValue().split(QueryCondition.QUERY_CONDITION_SPLIT,-1);
+                for (String queryCondition : queryConditionArr) {
+                    if (!StringUtils.isEmpty(queryCondition)) {
+                        isOK = 0xFFFF << 1;
+                        break;
+                    }
+                }
             }
-            if (userHeaderWidthsList.size() == 0) {
-                return new ResponseResultUtil().success(ResponseCodeEnum.USER_GET_HEADER_WIDTH_FROM_SQL_ZERO);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseResultUtil().error(ResponseCodeEnum.USER_GET_HEADER_WIDTH_FROM_SQL_FAILED);
         }
 
-        return new ResponseResultUtil().success(ResponseCodeEnum.USER_GET_HEADER_WIDTH_FROM_SQL_SUCCESS, userHeaderWidthsList);
+        if (isOK != 0xFFFF) {
+            return true;
+        } else {
+            return false;
+        }
     }
-
-    @Override
-    public boolean updateUserHeaderWidth(UserCustom[] userCustoms) throws Exception {
-        return userService.updateUserHeaderWidth(userCustoms);
-    }
-
 }

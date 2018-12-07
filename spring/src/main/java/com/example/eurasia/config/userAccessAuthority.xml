@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mapping>
     <column key="userID" value="VARCHAR(50)" />
-    <column key="日期范围" value="VARCHAR(50)" />
-    <column key="商品编码" value="VARCHAR(50)" />
+    <column key="日期范围" value="VARCHAR(50)" /><!--必填项-->
+    <column key="商品编码" value="VARCHAR(50)" /><!--必填项-->
     <column key="账号有效期" value="VARCHAR(50)" />
     <column key="上传可否" value="VARCHAR(50)" />
     <column key="看的页数" value="VARCHAR(50)" />
