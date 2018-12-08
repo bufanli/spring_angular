@@ -237,6 +237,36 @@ public class UserInfoServiceImpl implements IUserInfoService {
         return new ResponseResultUtil().success(ResponseCodeEnum.USER_GET_DETAILED_INFOS_SUCCESS, userDetailedInfos);
     }
 
+    @Override
+    public ResponseResult getUserAccessAuthority(String userID) throws Exception {
+        List<Data> userAccessAuthoritiesList;
+        try {
+            userAccessAuthoritiesList = userService.getUserAccessAuthority(userID);
+            if (userAccessAuthoritiesList == null) {
+                return new ResponseResultUtil().error(ResponseCodeEnum.USER_GET_ACCESS_AUTHORITY_FROM_SQL_NULL);
+            }
+            if (userAccessAuthoritiesList.size() == 0) {
+                return new ResponseResultUtil().error(ResponseCodeEnum.USER_GET_ACCESS_AUTHORITY_FROM_SQL_ZERO);
+            }
+
+//            userAccessAuthorities = new UserCustom[userAccessAuthoritiesList.size()];
+//            int i = 0;
+//            Set<Map.Entry<String, String>> set = userAccessAuthoritiesList.get(0).getKeyValue().entrySet();
+//            Iterator<Map.Entry<String, String>> it = set.iterator();
+//            while (it.hasNext()) {
+//                Map.Entry<String,String> entry = it.next();
+//                userAccessAuthorities[i].setKey(entry.getKey());
+//                userAccessAuthorities[i].setValue(entry.getValue());
+//                i++;
+//            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseResultUtil().error(ResponseCodeEnum.USER_GET_ACCESS_AUTHORITY_FROM_SQL_FAILED);
+        }
+
+        return new ResponseResultUtil().success(ResponseCodeEnum.USER_GET_ACCESS_AUTHORITY_FROM_SQL_SUCCESS, userAccessAuthoritiesList);
+    }
+
     /**
      * 保存用户访问权限时，检查数据的有效性
      * @param

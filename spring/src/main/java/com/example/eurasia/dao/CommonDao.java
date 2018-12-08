@@ -203,7 +203,7 @@ CREATE TABLE SPRING_SESSION_ATTRIBUTES (
     public boolean createSpringSessionAttributesTable() throws Exception {
 
         try {
-            if (isExistTableName("SPRING_SESSION")) {
+            if (isExistTableName("SPRING_SESSION_ATTRIBUTES")) {
                 return true;
             } else {
                 StringBuffer sql = new StringBuffer();

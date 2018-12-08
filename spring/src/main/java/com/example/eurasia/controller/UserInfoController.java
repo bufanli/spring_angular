@@ -300,4 +300,29 @@ public class UserInfoController {
         return responseResult;
     }
 
+    /**
+     * @author
+     * @date 2018-12-08
+     * @description 取得用户的可以访问的访问权限
+     */
+    @RequestMapping(value="/getUserAccessAuthority", method = RequestMethod.GET)
+    public @ResponseBody
+    ResponseResult getUserAccessAuthority(HttpServletRequest request) {
+        ResponseResult responseResult;
+        try {
+            log.info("取得用户的详细信息开始");
+            String userID = userInfoServiceImpl.getUserID(request);
+            if (StringUtils.isEmpty(userID) == true) {
+                responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
+            } else {
+                responseResult = userInfoServiceImpl.getUserAccessAuthority(userID);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            responseResult = new ResponseResultUtil().error();
+        }
+        log.info("取得用户的详细信息结束");
+        return responseResult;
+    }
+
 }
