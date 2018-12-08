@@ -27,7 +27,7 @@ public class UserInfoServiceImpl implements IUserInfoService {
     private UserService userService;
 
     @Override
-    public String isUserIDExist(HttpServletRequest request) throws Exception {
+    public String getUserID(HttpServletRequest request) throws Exception {
         HttpSession session = request.getSession();
         String userID = (String)session.getAttribute("userID");
 

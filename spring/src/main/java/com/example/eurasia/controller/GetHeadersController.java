@@ -39,7 +39,7 @@ public class GetHeadersController {
         ResponseResult responseResult;
         try {
             log.info("取得用户列显示开始");
-            String userID = userInfoServiceImpl.isUserIDExist(request);
+            String userID = userInfoServiceImpl.getUserID(request);
             if (StringUtils.isEmpty(userID) == true) {
                 responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
             } else {

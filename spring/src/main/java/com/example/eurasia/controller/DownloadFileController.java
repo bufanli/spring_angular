@@ -42,7 +42,7 @@ public class DownloadFileController {
         //导出excel
         try {
             log.info("进行excel文件导出开始");
-            String userID = userInfoServiceImpl.isUserIDExist(request);
+            String userID = userInfoServiceImpl.getUserID(request);
             if (StringUtils.isEmpty(userID) == true) {
                 responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
             } else {

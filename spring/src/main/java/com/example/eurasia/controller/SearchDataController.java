@@ -41,7 +41,7 @@ public class SearchDataController {
         ResponseResult responseResult;
         try {
             log.info("数据查询开始");
-            String userID = userInfoServiceImpl.isUserIDExist(request);
+            String userID = userInfoServiceImpl.getUserID(request);
             if (StringUtils.isEmpty(userID) == true) {
                 responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
             } else {

@@ -79,6 +79,7 @@ public enum ResponseCodeEnum {
     USER_UPDATE_HEADER_WIDTH_FAILED(ResponseCode.RESPONSE_CODE_NG, "更新用户可显示的表头宽度失败"),
     USER_ADD_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "添加用户成功"),
     USER_ADD_FAILED(ResponseCode.RESPONSE_CODE_NG, "添加用户失败"),
+    USER_ADD_IS_EXIST(ResponseCode.RESPONSE_CODE_NG, "添加用户ID已存在"),
     USER_UPDATE_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "更新用户成功"),
     USER_UPDATE_FAILED(ResponseCode.RESPONSE_CODE_NG, "更新用户失败"),
     USER_CHECK_INFO_FAILED(ResponseCode.RESPONSE_CODE_NG, "更新用户信息失败,信息不足"),

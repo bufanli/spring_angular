@@ -6,7 +6,7 @@ import com.example.eurasia.service.Response.ResponseResult;
 import javax.servlet.http.HttpServletRequest;
 
 public interface IUserInfoService {
-    String isUserIDExist(HttpServletRequest request) throws Exception;
+    String getUserID(HttpServletRequest request) throws Exception;
     boolean isUserIDExist(String userID) throws Exception;
     ResponseResult updateUser(UserInfo userInfo) throws Exception;
     boolean addUser(UserInfo userInfo) throws Exception;

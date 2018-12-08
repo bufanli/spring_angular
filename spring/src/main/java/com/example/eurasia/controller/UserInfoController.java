@@ -70,13 +70,13 @@ public class UserInfoController {
      * @date 2018-12-08
      * @description 判读用户session是否过期或者userID不存在
      */
-    @RequestMapping(value="/isUserIDExist", method = RequestMethod.GET)
+    @RequestMapping(value="/getUserID", method = RequestMethod.GET)
     public @ResponseBody
-    ResponseResult isUserIDExist(HttpServletRequest request) {
+    ResponseResult getUserID(HttpServletRequest request) {
         ResponseResult responseResult;
         try {
             log.info("判断用户session过期开始");
-            String userID = userInfoServiceImpl.isUserIDExist(request);
+            String userID = userInfoServiceImpl.getUserID(request);
             if (StringUtils.isEmpty(userID) == true) {
                 responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_NOT_ING);
             } else {
@@ -92,6 +92,30 @@ public class UserInfoController {
 
     /**
      * @author
+     * @date 2018-12-08
+     * @description 判读添加的用户ID是否已存在
+     */
+    @RequestMapping(value="/isUserIDExist", method = RequestMethod.GET)
+    public @ResponseBody
+    ResponseResult isUserIDExist(HttpServletRequest request) {
+        ResponseResult responseResult;
+        boolean isExist = false;
+        try {
+            log.info("判断添加用户是否已存在开始");
+            HttpSession session = request.getSession();
+            String userID = (String)session.getAttribute("userID");
+            isExist = userInfoServiceImpl.isUserIDExist(userID);
+            responseResult = new ResponseResultUtil().success(ResponseCodeEnum.USER_ADD_IS_EXIST,isExist);
+        } catch (Exception e) {
+            e.printStackTrace();
+            responseResult = new ResponseResultUtil().error(ResponseCodeEnum.USER_ADD_FAILED);
+        }
+        log.info("判断添加用户是否已存在结束");
+        return responseResult;
+    }
+
+    /**
+     * @author
      * @date 2018-11-18
      * @description 保存(更新)用户
      */
@@ -101,7 +125,7 @@ public class UserInfoController {
         ResponseResult responseResult;
         try {
             log.info("保存用户开始");
-            String userID = userInfoServiceImpl.isUserIDExist(request);
+            String userID = userInfoServiceImpl.getUserID(request);
             if (StringUtils.isEmpty(userID) == true) {
                 responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
             } else {
@@ -126,7 +150,7 @@ public class UserInfoController {
         ResponseResult responseResult;
         try {
             log.info("添加用户开始");
-            String userID = userInfoServiceImpl.isUserIDExist(request);
+            String userID = userInfoServiceImpl.getUserID(request);
             if (StringUtils.isEmpty(userID) == true) {
                 responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
             } else {
@@ -162,7 +186,7 @@ public class UserInfoController {
         ResponseResult responseResult;
         try {
             log.info("取得所有用户的基本信息开始");
-            String userID = userInfoServiceImpl.isUserIDExist(request);
+            String userID = userInfoServiceImpl.getUserID(request);
             if (StringUtils.isEmpty(userID) == true) {
                 responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
             } else {
@@ -187,7 +211,7 @@ public class UserInfoController {
         ResponseResult responseResult;
         try {
             log.info("取得用户默认的基本信息开始");
-            String userID = userInfoServiceImpl.isUserIDExist(request);
+            String userID = userInfoServiceImpl.getUserID(request);
             if (StringUtils.isEmpty(userID) == true) {
                 responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
             } else {
@@ -212,7 +236,7 @@ public class UserInfoController {
         ResponseResult responseResult;
         try {
             log.info("取得用户的基本信息开始");
-            String userID = userInfoServiceImpl.isUserIDExist(request);
+            String userID = userInfoServiceImpl.getUserID(request);
             if (StringUtils.isEmpty(userID) == true) {
                 responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
             } else {
@@ -237,7 +261,7 @@ public class UserInfoController {
         ResponseResult responseResult;
         try {
             log.info("取得用户默认的详细信息开始");
-            String userID = userInfoServiceImpl.isUserIDExist(request);
+            String userID = userInfoServiceImpl.getUserID(request);
             if (StringUtils.isEmpty(userID) == true) {
                 responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
             } else {
@@ -262,7 +286,7 @@ public class UserInfoController {
         ResponseResult responseResult;
         try {
             log.info("取得用户的详细信息开始");
-            String userID = userInfoServiceImpl.isUserIDExist(request);
+            String userID = userInfoServiceImpl.getUserID(request);
             if (StringUtils.isEmpty(userID) == true) {
                 responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
             } else {
