@@ -27,11 +27,11 @@ public class GetQueryConditionsController {
      */
     @RequestMapping(value="/getQueryConditions", method = RequestMethod.GET)
     public @ResponseBody
-    ResponseResult getHeaders(String userID) {
+    ResponseResult getQueryConditions() {
         ResponseResult responseResult;
         try {
             log.info("取得查询条件开始");
-            responseResult = getQueryConditionsService.getQueryConditionDisplay(userID);
+            responseResult = getQueryConditionsService.getQueryConditionDisplay();
         } catch (Exception e) {
             e.printStackTrace();
             responseResult = new ResponseResultUtil().error();

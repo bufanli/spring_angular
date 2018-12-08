@@ -37,19 +37,6 @@ public class UserDao extends CommonDao {
     }
 
     /**
-     * 添加用户时，检查数据的有效性
-     * @param
-     * @return
-     * @exception
-     * @author FuJia
-     * @Time 2018-12-02 00:00:00
-     */
-    public boolean checkUserData(String userID, Data data) throws Exception {
-        //T.B.D
-        return true;
-    }
-
-    /**
      * 查询UserID
      * @param
      * @return
@@ -89,6 +76,21 @@ public class UserDao extends CommonDao {
     public List<Data> queryListForUserCustom(String tableName, String userID) throws Exception {
         StringBuffer sql = new StringBuffer();
         sql.append("select * from " + tableName + " where user_id = " + userID);
+        List<Data> dataList = getJdbcTemplate().query(sql.toString(), new DataMapper());
+        return dataList;
+    }
+
+    /**
+     * 获取某个数据库表里的指定的用户属性
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-12-07 00:00:00
+     */
+    public List<Data> queryOneForUserCustom(String tableName, String userID, String columnName) throws Exception {
+        StringBuffer sql = new StringBuffer();
+        sql.append("select " + columnName + "from " + tableName + " where user_id = " + userID);
         List<Data> dataList = getJdbcTemplate().query(sql.toString(), new DataMapper());
         return dataList;
     }

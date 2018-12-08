@@ -42,7 +42,7 @@ public class GetHeadersServiceImpl implements IGetHeadersService {
                 return new ResponseResultUtil().error(ResponseCodeEnum.HEADER_GET_ALL_INFO_FROM_SQL_NULL);
             }
             if (allHeadersList.size() == 0) {
-                return new ResponseResultUtil().success(ResponseCodeEnum.HEADER_GET_ALL_INFO_FROM_SQL_ZERO);
+                return new ResponseResultUtil().error(ResponseCodeEnum.HEADER_GET_ALL_INFO_FROM_SQL_ZERO);
             }
 
             headers = new Header[allHeadersList.size()];
@@ -74,13 +74,14 @@ public class GetHeadersServiceImpl implements IGetHeadersService {
                 return new ResponseResultUtil().error(ResponseCodeEnum.HEADER_GET_INFO_FROM_SQL_NULL);
             }
             if (headerDisplayList.size() == 0) {
-                return new ResponseResultUtil().success(ResponseCodeEnum.HEADER_GET_INFO_FROM_SQL_ZERO);
+                return new ResponseResultUtil().error(ResponseCodeEnum.HEADER_GET_INFO_FROM_SQL_ZERO);
             }
 
-            headers = new Header[headerDisplayList.size()];
+            headers = new Header[headerDisplayList.size() + 1];//+1是为了在最后面显示"更多"列。
             for (int i = 0;i < headerDisplayList.size();i++) {
                 headers[i] = new Header(headerDisplayList.get(i), headerDisplayList.get(i));
             }
+            headers[headerDisplayList.size()] = new Header(UserService.COLUMN_SHOW_MORE,UserService.COLUMN_SHOW_MORE);
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseResultUtil().error(ResponseCodeEnum.HEADER_GET_INFO_FROM_SQL_FAILED);
@@ -94,7 +95,7 @@ public class GetHeadersServiceImpl implements IGetHeadersService {
     }
 
     private List<String> getHeaderDisplayFromSQL() throws Exception {
-        return userService.getUserHeaderDisplay(userService.getUserID());
+        return userService.getUserHeaderDisplayByTrue(userService.getUserID());
     }
 
 }

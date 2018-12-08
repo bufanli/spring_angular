@@ -4,6 +4,7 @@ import com.example.eurasia.dao.UserDao;
 import com.example.eurasia.entity.Data;
 import com.example.eurasia.entity.DataXMLReader;
 import com.example.eurasia.entity.UserCustom;
+import com.example.eurasia.entity.UserInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -71,14 +72,18 @@ public class UserService {
     public static final String USER_ALL_NORMAL = "sinoshuju_all_normal";//所有的客户,不包括默认用户，管理员用户，临时访问客户等,仅仅是注册的客户。
 
     // 必要的字段名称
-    public static final String NAME_PRODUCT_DATE = "日期";
-    public static final String NAME_PRODUCT_NUMBER = "商品编码";
+    public static final String MUST_USER_NAME = "名字";
+    public static final String MUST_USER_PHONE = "手机号码";
+    public static final String MUST_PRODUCT_DATE = "日期";
+    public static final String MUST_PRODUCT_NUMBER = "商品编码";
 
     public static final String PERMITION_TRUE = "TRUE";//有权限
     public static final String PERMITION_TRUE_ANY = "TRUE_ANY";//有权限,所有数据无限制
     public static final String PERMITION_FALSE = "FALSE";//没有权限
 
     public static final String VALUE_CONDITION_SPLIT = "～～";//字段数据中的的分隔符号
+
+    public static final String COLUMN_SHOW_MORE = "更多";//在显示数据的表格最后增加的列
 
     /**
      * 添加数据
@@ -96,9 +101,10 @@ public class UserService {
             //this.createTable(UserService.TABLE_USER_HEADER_WIDTH,BEAN_NAME_USER_HEADER_WIDTH);
             this.createTable(UserService.TABLE_USER_HEADER_DISPLAY,BEAN_NAME_USER_HEADER_DISPLAY);
 
-            this.addDefaultUser(UserService.USER_DEFAULT);
-            this.addDefaultUser(UserService.USER_ADMINISTRATOR);
-            this.addDefaultUser(UserService.USER_GUEST);
+            //添加默认用户，管理员，临时客户以及其相关数据
+            this.addUser(UserService.USER_DEFAULT,null);
+            this.addUser(UserService.USER_ADMINISTRATOR,null);
+            this.addUser(UserService.USER_GUEST,null);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -127,24 +133,30 @@ public class UserService {
     }
 
     /**
-     * 添加默认用户，管理员，临时客户以及其相关数据,初始化时用。
+     * 添加用户
      * @param
      * @return
      * @exception
      * @author FuJia
      * @Time 2018-11-17 00:00:00
      */
-    private boolean addDefaultUser(String userID) throws Exception {
+    public boolean addUser(String userID, UserInfo userInfo) throws Exception {
         if (StringUtils.isEmpty(userID)) {
             return false;
         }
 
         try {
-            this.addUserForBasicInfo(userID,null);
-            this.addUserForAccessAuthority(userID,null);
-            this.addUserForQueryConditionDisplay(userID,null);
-            //this.addUserForHeaderWidth(userID,null);
-            this.addUserForHeaderDisplay(userID,null);
+            if (userInfo == null) {
+                this.addUserForBasicInfo(userID,null);
+                this.addUserForAccessAuthority(userID,null);
+                this.addUserForQueryConditionDisplay(userID,null);
+                this.addUserForHeaderDisplay(userID,null);
+            } else {
+                this.addUserForBasicInfo(userID,this.userCustomsArrToData(userInfo.getUserBasicInfos()));
+                this.addUserForAccessAuthority(userID,this.userCustomsArrToData(userInfo.getUserDetailedInfos().getUserAccessAuthorities()));
+                this.addUserForQueryConditionDisplay(userID,this.userCustomsArrToData(userInfo.getUserDetailedInfos().getUserQueryConditionDisplays()));
+                this.addUserForHeaderDisplay(userID,this.userCustomsArrToData(userInfo.getUserDetailedInfos().getUserHeaderDisplays()));
+            }
 
             return true;
         } catch (Exception e) {
@@ -161,7 +173,7 @@ public class UserService {
      * @author FuJia
      * @Time 2018-11-17 00:00:00
      */
-    public int addUserForBasicInfo(String userID, Data value) throws Exception {
+    private int addUserForBasicInfo(String userID, Data value) throws Exception {
         if (StringUtils.isEmpty(userID) || value == null) {
             return -1;
         }
@@ -186,7 +198,7 @@ public class UserService {
      * @author FuJia
      * @Time 2018-11-17 00:00:00
      */
-    public int addUserForAccessAuthority(String userID, Data value) throws Exception {
+    private int addUserForAccessAuthority(String userID, Data value) throws Exception {
         if (StringUtils.isEmpty(userID) || value == null) {
             return -1;
         }
@@ -220,7 +232,7 @@ public class UserService {
      * @author FuJia
      * @Time 2018-11-17 00:00:00
      */
-    public int addUserForQueryConditionDisplay(String userID, Data value) throws Exception {
+    private int addUserForQueryConditionDisplay(String userID, Data value) throws Exception {
         if (StringUtils.isEmpty(userID) || value == null) {
             return -1;
         }
@@ -254,7 +266,7 @@ public class UserService {
      * @author FuJia
      * @Time 2018-11-17 00:00:00
      */
-    public int addUserForHeaderWidth(String userID, Data value) throws Exception {
+    private int addUserForHeaderWidth(String userID, Data value) throws Exception {
         if (StringUtils.isEmpty(userID) || value == null) {
             return -1;
         }
@@ -280,7 +292,7 @@ public class UserService {
      * @author FuJia
      * @Time 2018-11-17 00:00:00
      */
-    public int addUserForHeaderDisplay(String userID, Data value) throws Exception {
+    private int addUserForHeaderDisplay(String userID, Data value) throws Exception {
         if (StringUtils.isEmpty(userID) || value == null) {
             return -1;
         }
@@ -322,19 +334,20 @@ public class UserService {
     }
 
     /**
-     * 添加用户时，检查数据的有效性
+     * 用户信息对象数组转成Data。
      * @param
      * @return
      * @exception
      * @author FuJia
-     * @Time 2018-12-02 00:00:00
+     * @Time 2018-12-07 00:00:00
      */
-    public boolean checkUserData(String userID, Data data) throws Exception {
-        if (StringUtils.isEmpty(userID) || data == null) {
-            return false;
+    public Data userCustomsArrToData(UserCustom[] userCustoms) throws Exception {
+        LinkedHashMap<String, String> keyValue = new LinkedHashMap<>();
+        for (UserCustom userCustom:userCustoms) {
+            keyValue.put(userCustom.getKey(),userCustom.getValue());
         }
 
-        return getUserDao().checkUserData(userID,data);
+        return new Data(keyValue);
     }
 
     /**
@@ -355,7 +368,7 @@ public class UserService {
             case UserService.USER_ADMINISTRATOR:
             case UserService.USER_GUEST:
                 //查询数据库中的最近一个月
-                return getUserDao().queryListForTheLastMouth(tableName,UserService.NAME_PRODUCT_DATE);
+                return getUserDao().queryListForTheLastMouth(tableName,UserService.MUST_PRODUCT_DATE);
             default:
                 //查询用户可见的最近一个月
                 List<Data> userBasicInfosList = this.getUserBasicInfo(userID);
@@ -367,7 +380,7 @@ public class UserService {
                     Iterator<Map.Entry<String, String>> it = set.iterator();
                     while (it.hasNext()) {
                         Map.Entry<String,String> entry = it.next();
-                        if (entry.getKey().equals(UserService.NAME_PRODUCT_DATE)) {
+                        if (entry.getKey().equals(UserService.MUST_PRODUCT_DATE)) {
                             strDate = entry.getValue();
                             break;
                         }
@@ -396,6 +409,29 @@ public class UserService {
 
         List<Data> userBasicInfosList = this.getUserCustom(UserService.TABLE_USER_BASIC_INFO, userID);
 
+        //Dummy T.B.D
+        Map<String, String> user = new HashMap<String, String>();
+        user.put("userId", "webchat0001");
+        user.put("昵称", "常海啸");
+        user.put("性别", "男");
+        user.put("名字", "张力");
+        user.put("密码", "123456");
+        user.put("年龄", "23");
+        user.put("国家", "中国");
+        user.put("城市", "南京");
+        user.put("省份", "江苏");
+        user.put("地址", "江苏省南京市**路");
+        user.put("手机号码", "134534096847");
+        user.put("电子邮件", "zhangli@163.com");
+        Data data = new Data(user);
+        user.put("userId", "webchat0002");
+        Data data2 = new Data(user);
+        userBasicInfosList.add(data);
+        userBasicInfosList.add(data2);
+
+        if (userBasicInfosList.size() != 1) {
+            return null;
+        }
         return userBasicInfosList;
     }
 
@@ -429,7 +465,9 @@ public class UserService {
         }
 
         List<Data> userAccessAuthoritiesList = this.getUserCustom(UserService.TABLE_USER_ACCESS_AUTHORITY, userID);
-
+        if (userAccessAuthoritiesList.size() != 1) {
+            return null;
+        }
         return userAccessAuthoritiesList;
     }
 
@@ -457,13 +495,35 @@ public class UserService {
      * @author FuJia
      * @Time 2018-11-18 00:00:00
      */
-    public List<String> getUserQueryConditionDisplay(String userID) throws Exception {
+    public List<String> getUserQueryConditionDisplayByTrue(String userID) throws Exception {
         if (StringUtils.isEmpty(userID)) {
             return null;
         }
 
-        List<String> userQueryConditionDisplayList = this.getUserCustomDisplay(UserService.TABLE_USER_QUERY_CONDITION_DISPLAY,userID);
+        List<String> userQueryConditionDisplayList = this.getUserTrueCustom(UserService.TABLE_USER_QUERY_CONDITION_DISPLAY,userID);
+        if (userQueryConditionDisplayList.size() != 1) {
+            return null;
+        }
+        return userQueryConditionDisplayList;
+    }
 
+    /**
+     * 取得用户可显示的查询条件
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-12-07 00:00:00
+     */
+    public List<Data> getUserQueryConditionDisplay(String userID) throws Exception {
+        if (StringUtils.isEmpty(userID)) {
+            return null;
+        }
+
+        List<Data> userQueryConditionDisplayList = this.getUserCustom(UserService.TABLE_USER_QUERY_CONDITION_DISPLAY,userID);
+        if (userQueryConditionDisplayList.size() != 1) {
+            return null;
+        }
         return userQueryConditionDisplayList;
     }
 
@@ -498,7 +558,9 @@ public class UserService {
 
         //T.B.D依赖于getUserHeaderDisplay的返回值
         List<Data> userHeaderWidthsList = this.getUserCustom(UserService.TABLE_USER_HEADER_WIDTH, userID);
-
+        if (userHeaderWidthsList.size() != 1) {
+            return null;
+        }
         return userHeaderWidthsList;
     }
 
@@ -526,18 +588,40 @@ public class UserService {
      * @author FuJia
      * @Time 2018-11-18 00:00:00
      */
-    public List<String> getUserHeaderDisplay(String userID) throws Exception {
+    public List<String> getUserHeaderDisplayByTrue(String userID) throws Exception {
         if (StringUtils.isEmpty(userID)) {
             return null;
         }
 
-        List<String> userHeaderDisplayList = this.getUserCustomDisplay(UserService.TABLE_USER_HEADER_DISPLAY,userID);
-
+        List<String> userHeaderDisplayList = this.getUserTrueCustom(UserService.TABLE_USER_HEADER_DISPLAY,userID);
+        if (userHeaderDisplayList.size() != 1) {
+            return null;
+        }
         return userHeaderDisplayList;
     }
 
     /**
      * 取得可显示的表头
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-11-18 00:00:00
+     */
+    public List<Data> getUserHeaderDisplay(String userID) throws Exception {
+        if (StringUtils.isEmpty(userID)) {
+            return null;
+        }
+
+        List<Data> userHeaderDisplayList = this.getUserCustom(UserService.TABLE_USER_HEADER_DISPLAY,userID);
+        if (userHeaderDisplayList.size() != 1) {
+            return null;
+        }
+        return userHeaderDisplayList;
+    }
+
+    /**
+     * 保存可显示的表头
      * @param
      * @return
      * @exception
@@ -612,7 +696,7 @@ public class UserService {
      * @author FuJia
      * @Time 2018-11-21 00:00:00
      */
-    private List<String> getUserCustomDisplay(String tableName, String userID) throws Exception {
+    private List<String> getUserTrueCustom(String tableName, String userID) throws Exception {
         if (StringUtils.isEmpty(tableName) || StringUtils.isEmpty(userID)) {
             return null;
         }
@@ -623,6 +707,30 @@ public class UserService {
         }
         List<String> displayList = displaysList.get(0);
         return displayList;
+    }
+
+    /**
+     * 获取指定的用户属性的值。
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-12-07 00:00:00
+     */
+    public String getOneUserCustom(String tableName, String userID, String columnName) throws Exception {
+        if (StringUtils.isEmpty(tableName) || StringUtils.isEmpty(userID) || StringUtils.isEmpty(columnName)) {
+            return null;
+        }
+
+        List<Data> dataList = getUserDao().queryOneForUserCustom(tableName,userID,columnName);
+        if (dataList.size() != 1) {
+            return null;
+        }
+        if (dataList.get(0).getKeyValue().size() != 1) {
+            return null;
+        }
+
+        return dataList.get(0).getKeyValue().get(columnName);
     }
 }
 

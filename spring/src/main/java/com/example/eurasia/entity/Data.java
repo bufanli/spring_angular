@@ -24,7 +24,7 @@ LinkedHashMap保证了元素迭代的顺序。该迭代顺序可以是插入顺�
      */
     public Data(Map<String, String> keyValue) {
         super();
-        this.keyValue = new LinkedHashMap<>();
+        this.keyValue = new LinkedHashMap<String, String>();
         this.keyValue.putAll(keyValue);
     }
 
@@ -212,4 +212,26 @@ LinkedHashMap保证了元素迭代的顺序。该迭代顺序可以是插入顺�
         return true;
     }
 
+    /**
+     * 转成UserCustom[]。
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-12-07 00:00:00
+     */
+    @JsonIgnore
+    public UserCustom[] toUserCustomArr() {
+
+        int i = 0;
+        UserCustom[] userCustoms = new UserCustom[this.keyValue.size()];
+        Set<Map.Entry<String, String>> set = this.keyValue.entrySet();
+        Iterator<Map.Entry<String, String>> it = set.iterator();
+        while (it.hasNext()) {
+            Map.Entry<String,String> entry = it.next();
+            userCustoms[i] = new UserCustom(entry.getKey(),entry.getValue());
+        }
+
+        return userCustoms;
+    }
 }

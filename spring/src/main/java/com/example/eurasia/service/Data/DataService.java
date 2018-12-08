@@ -119,13 +119,7 @@ public class DataService {
             return null;
         }
 
-        for (QueryCondition queryCondition : queryConditionsArr) {
-            if (queryCondition.isValuesNotNULL()) {
-                return getDataDao().queryListForObject(tableName, queryConditionsArr);
-            }
-        }
-
-        return this.searchAllData(tableName);
+        return getDataDao().queryListForObject(tableName, queryConditionsArr);
     }
 
     /**
@@ -145,7 +139,7 @@ public class DataService {
     }
 
     /**
-     * 取得表头
+     * 取得指定表的所有表头[COLUMN_NAME,名字]
      * @param
      * @return
      * @exception
@@ -166,7 +160,7 @@ public class DataService {
     }
 
     /**
-     * 取得表头
+     * 取得指定表的所有表头[名字]
      * @param
      * @return
      * @exception

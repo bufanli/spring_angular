@@ -45,13 +45,27 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
         QueryCondition[] queryConditions;
 
         try {
-            queryConditions = this.getAllQueryConditionsFromSQL();
-            if (queryConditions == null) {
+            // 取得所以的查询条件(Data的Map-key是查询条件的key，Data的Map-value是查询条件的type)
+            List<Data> allQueryConditionsList = dataService.getAllQueryConditions();
+            if (allQueryConditionsList == null) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.QUERY_CONDITION_FROM_SQL_NULL);
             }
-            if (queryConditions.length == 0) {
-                return new ResponseResultUtil().success(ResponseCodeEnum.QUERY_CONDITION_FROM_SQL_ZERO);
+            if (allQueryConditionsList.size() == 0) {
+                return new ResponseResultUtil().error(ResponseCodeEnum.QUERY_CONDITION_FROM_SQL_ZERO);
             }
+
+            queryConditions = new QueryCondition[allQueryConditionsList.get(0).getKeyValue().size()];
+            int i = 0;
+            Set<Map.Entry<String, String>> set = allQueryConditionsList.get(0).getKeyValue().entrySet();
+            Iterator<Map.Entry<String, String>> it = set.iterator();
+            while (it.hasNext()) {
+                Map.Entry<String,String> entry = it.next();
+                queryConditions[i].setKey(entry.getKey());
+                queryConditions[i].setValue(QueryCondition.QUERY_CONDITION_SPLIT);
+                queryConditions[i].setType(entry.getValue());
+                i++;
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseResultUtil().error(ResponseCodeEnum.QUERY_CONDITION_FROM_SQL_FAILED);
@@ -69,24 +83,74 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
      * @Time 2018-11-22 00:00:00
      */
     @Override
-    public ResponseResult getQueryConditionDisplay(String userID) throws Exception {
+    public ResponseResult getQueryConditionDisplay() throws Exception {
         QueryCondition[] queryConditions;
 
         try {
-            queryConditions = this.getQueryConditionDisplayFromSQL(userID);
+            // 取得所以的查询条件(Data的Map-key是查询条件的key，Data的Map-value是查询条件的type)
+            List<Data> allQueryConditionsList = dataService.getAllQueryConditions();
+            if (allQueryConditionsList == null) {
+                return new ResponseResultUtil().error(ResponseCodeEnum.QUERY_CONDITION_FROM_SQL_NULL);
+            }
+            if (allQueryConditionsList.size() == 0) {
+                return new ResponseResultUtil().error(ResponseCodeEnum.QUERY_CONDITION_FROM_SQL_ZERO);
+            }
 
-            if (queryConditions == null) {
+            // 取得该用户可显示的查询条件
+            List<String> userQueryConditionDisplayList = userService.getUserQueryConditionDisplayByTrue(userService.getUserID());
+            if (userQueryConditionDisplayList == null) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.QUERY_CONDITION_DISPLAY_FROM_SQL_NULL);
             }
-            if (queryConditions.length == 0) {
-                return new ResponseResultUtil().success(ResponseCodeEnum.QUERY_CONDITION_DISPLAY_FROM_SQL_ZERO);
+            if (userQueryConditionDisplayList.size() == 0) {
+                return new ResponseResultUtil().error(ResponseCodeEnum.QUERY_CONDITION_DISPLAY_FROM_SQL_ZERO);
             }
+
+            // 重新组合成数组返回
+            int i = 0;
+            queryConditions = new QueryCondition[userQueryConditionDisplayList.size()];
+            Set<Map.Entry<String, String>> set = allQueryConditionsList.get(0).getKeyValue().entrySet();
+            Iterator<Map.Entry<String, String>> it = set.iterator();
+            while (it.hasNext()) {
+                Map.Entry<String,String> entry = it.next();
+
+                for (String userQueryConditionDisplay:userQueryConditionDisplayList) {
+                    if (entry.getKey().equals(userQueryConditionDisplay)) {
+                        queryConditions[i].setKey(entry.getKey());
+                        queryConditions[i].setValue(getQueryConditionDisplayValue(entry.getKey()));
+                        queryConditions[i].setType(entry.getValue());
+                        break;
+                    }
+                }
+                i++;
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseResultUtil().error(ResponseCodeEnum.QUERY_CONDITION_DISPLAY_FROM_SQL_FAILED);
         }
 
         return new ResponseResultUtil().success(ResponseCodeEnum.QUERY_CONDITION_DISPLAY_FROM_SQL_SUCCESS, queryConditions);
+    }
+
+    private String getQueryConditionDisplayValue(String key) throws Exception {
+
+        String queryConditionValue = null;
+        switch (key) {
+            case UserService.MUST_PRODUCT_DATE://"日期"。从用户权限表里获得。
+                queryConditionValue = userService.getOneUserCustom(userService.TABLE_USER_ACCESS_AUTHORITY,
+                        userService.getUserID(),
+                        UserService.MUST_PRODUCT_DATE);
+                break;
+            case UserService.MUST_PRODUCT_NUMBER://"商品编码"。从用户权限表里获得。
+                queryConditionValue = userService.getOneUserCustom(userService.TABLE_USER_ACCESS_AUTHORITY,
+                        userService.getUserID(),
+                        UserService.MUST_PRODUCT_NUMBER);
+                break;
+            default:
+                queryConditionValue = QueryCondition.QUERY_CONDITION_SPLIT;
+                break;
+        }
+        return queryConditionValue;
     }
 
     /**
@@ -97,17 +161,16 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
      * @author FuJia
      * @Time 2018-11-22 00:00:00
      */
-    @Override
-    public ResponseResult getDateDefaultValue(String userID) throws Exception {
+    private ResponseResult getDateDefaultValue() throws Exception {
 
         String[] dateArr = null;
         try {
-            dateArr = userService.getUserTheLastMonth(DataService.TABLE_DATA,userID);
+            dateArr = userService.getUserTheLastMonth(DataService.TABLE_DATA,userService.getUserID());
             if (dateArr == null) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.QUERY_CONDITION_DATE_DEFAULT_VALUE_NULL);
             }
             if (dateArr.length != 2) {
-                return new ResponseResultUtil().success(ResponseCodeEnum.QUERY_CONDITION_DATE_DEFAULT_VALUE_WRONG);
+                return new ResponseResultUtil().error(ResponseCodeEnum.QUERY_CONDITION_DATE_DEFAULT_VALUE_WRONG);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -116,76 +179,5 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
 
         String defaultValue = dateArr[0] + QueryCondition.QUERY_CONDITION_SPLIT + dateArr[1] ;
         return new ResponseResultUtil().success(ResponseCodeEnum.QUERY_CONDITION_DATE_DEFAULT_VALUE_SUCCESS, defaultValue);
-    }
-
-    private QueryCondition[] getAllQueryConditionsFromSQL() throws Exception {
-        List<Data> allQueryConditionsList = dataService.getAllQueryConditions();
-        if (allQueryConditionsList == null) {
-            return null;
-        }
-
-        QueryCondition[] queryConditions = new QueryCondition[allQueryConditionsList.get(0).getKeyValue().size()];
-        int i = 0;
-        Set<Map.Entry<String, String>> set = allQueryConditionsList.get(0).getKeyValue().entrySet();
-        Iterator<Map.Entry<String, String>> it = set.iterator();
-        while (it.hasNext()) {
-            Map.Entry<String,String> entry = it.next();
-            queryConditions[i].setKey(entry.getKey());
-            queryConditions[i].setValue("");//T.B.D
-            queryConditions[i].setType(entry.getValue());
-            i++;
-        }
-
-        return null;
-    }
-
-    private QueryCondition[] getQueryConditionDisplayFromSQL(String userID) throws Exception {
-
-        // 取得该用户可显示的查询条件(注意：日期是必须的!)
-        List<String> queryConditionsDisplayList = userService.getUserQueryConditionDisplay(userService.getUserID());
-        // 取得所以的查询条件(Data的Map-key是查询条件的key，Data的Map-value是查询条件的type)
-        List<Data> allQueryConditionsList = dataService.getAllQueryConditions();
-
-        if (queryConditionsDisplayList == null || allQueryConditionsList == null) {
-            return null;
-        }
-
-        // 组合成数组返回
-        QueryCondition[] queryConditions = new QueryCondition[allQueryConditionsList.get(0).getKeyValue().size()];
-        int i = 0;
-        Set<Map.Entry<String, String>> set = allQueryConditionsList.get(0).getKeyValue().entrySet();
-        Iterator<Map.Entry<String, String>> it = set.iterator();
-        while (it.hasNext()) {
-            Map.Entry<String,String> entry = it.next();
-            for (String queryConditionsDisplay : queryConditionsDisplayList) {
-                if (queryConditionsDisplay.equals(entry.getKey())) {
-                    queryConditions[i].setKey(entry.getKey());
-                    queryConditions[i].setValue(getQueryConditionDisplayValue(entry.getKey(),entry.getValue()));
-                    queryConditions[i].setType(entry.getValue());
-                    i++;
-                }
-            }
-        }
-
-        return queryConditions;
-    }
-
-    private String getQueryConditionDisplayValue(String key, String type) throws Exception {
-
-        // 根据可显示的查询条件的类型以及权限，返回对应的值 T.B.D
-        switch (type) {
-            case QueryCondition.QUERY_CONDITION_TYPE_STRING:
-                break;
-            case QueryCondition.QUERY_CONDITION_TYPE_DATE:
-                break;
-            case QueryCondition.QUERY_CONDITION_TYPE_LIST:
-                break;
-            case QueryCondition.QUERY_CONDITION_TYPE_MONEY:
-            case QueryCondition.QUERY_CONDITION_TYPE_AMOUNT:
-                break;
-            default:
-                break;
-        }
-        return "";
     }
 }
