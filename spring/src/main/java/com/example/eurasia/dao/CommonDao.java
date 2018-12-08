@@ -166,19 +166,25 @@ CREATE TABLE SPRING_SESSION_ATTRIBUTES (
 */
 
         try {
-            StringBuffer sql = new StringBuffer();
-            sql.append("CREATE TABLE `SPRING_SESSION` (");
-            sql.append("`PRIMARY_ID` char(36) NOT NULL,");
-            sql.append("`SESSION_ID` char(36) NOT NULL DEFAULT '',");
-            sql.append("`CREATION_TIME` BIGINT NOT NULL,");
-            sql.append("`LAST_ACCESS_TIME` BIGINT NOT NULL,");
-            sql.append("`MAX_INACTIVE_INTERVAL` INT NOT NULL,");
-            sql.append("`EXPIRY_TIME` BIGINT NOT NULL,");
-            sql.append("`PRINCIPAL_NAME` varchar(100) DEFAULT NULL,");
-            sql.append("PRIMARY KEY (`SESSION_ID`) USING BTREE,");
-            sql.append("KEY `SPRING_SESSION_IX1` (`LAST_ACCESS_TIME`) USING BTREE");
-            sql.append(") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
-            getJdbcTemplate().update(sql.toString());
+            // 判断数据库是否已经存在这个名称的表，如果有某表，直接返回；否则动态创建表之后再返回
+            if (isExistTableName("SPRING_SESSION")) {
+                return true;
+            } else {
+                StringBuffer sql = new StringBuffer();
+                sql.append("CREATE TABLE `SPRING_SESSION` (");
+                sql.append("`PRIMARY_ID` char(36) NOT NULL,");
+                sql.append("`SESSION_ID` char(36) NOT NULL DEFAULT '',");
+                sql.append("`CREATION_TIME` BIGINT NOT NULL,");
+                sql.append("`LAST_ACCESS_TIME` BIGINT NOT NULL,");
+                sql.append("`MAX_INACTIVE_INTERVAL` INT NOT NULL,");
+                sql.append("`EXPIRY_TIME` BIGINT NOT NULL,");
+                sql.append("`PRINCIPAL_NAME` varchar(100) DEFAULT NULL,");
+                sql.append("CONSTRAINT SPRING_SESSION_PK PRIMARY KEY (PRIMARY_ID)");
+                //sql.append("PRIMARY KEY (`SESSION_ID`) USING BTREE,");
+                //sql.append("KEY `SPRING_SESSION_IX1` (`LAST_ACCESS_TIME`) USING BTREE");
+                sql.append(") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+                getJdbcTemplate().update(sql.toString());
+            }
         } catch (DataAccessException e) {
             e.printStackTrace();
             return false;
@@ -197,16 +203,22 @@ CREATE TABLE SPRING_SESSION_ATTRIBUTES (
     public boolean createSpringSessionAttributesTable() throws Exception {
 
         try {
-            StringBuffer sql = new StringBuffer();
-            sql.append("CREATE TABLE `SPRING_SESSION_ATTRIBUTES` (");
-            sql.append("`SESSION_ID` char(36) NOT NULL DEFAULT '',");
-            sql.append("`ATTRIBUTE_NAME` varchar(200) NOT NULL DEFAULT '',");
-            sql.append("`ATTRIBUTE_BYTES` blob NOT NULL,");
-            sql.append("PRIMARY KEY (`SESSION_ID`,`ATTRIBUTE_NAME`),");
-            sql.append("KEY `SPRING_SESSION_ATTRIBUTES_IX1` (`SESSION_ID`) USING BTREE,");
-            sql.append("CONSTRAINT `SPRING_SESSION_ATTRIBUTES_ibfk_1` FOREIGN KEY (`SESSION_ID`) REFERENCES `SPRING_SESSION` (`SESSION_ID`) ON DELETE CASCADE");
-            sql.append(") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
-            getJdbcTemplate().update(sql.toString());
+            if (isExistTableName("SPRING_SESSION")) {
+                return true;
+            } else {
+                StringBuffer sql = new StringBuffer();
+                sql.append("CREATE TABLE `SPRING_SESSION_ATTRIBUTES` (");
+                sql.append("`SESSION_PRIMARY_ID` char(36) NOT NULL DEFAULT '',");
+                sql.append("`ATTRIBUTE_NAME` varchar(200) NOT NULL DEFAULT '',");
+                sql.append("`ATTRIBUTE_BYTES` blob NOT NULL,");
+                sql.append("CONSTRAINT SPRING_SESSION_ATTRIBUTES_PK PRIMARY KEY (SESSION_PRIMARY_ID, ATTRIBUTE_NAME),");
+                sql.append("CONSTRAINT SPRING_SESSION_ATTRIBUTES_FK FOREIGN KEY (SESSION_PRIMARY_ID) REFERENCES SPRING_SESSION(PRIMARY_ID) ON DELETE CASCADE");
+                //sql.append("PRIMARY KEY (`SESSION_PRIMARY_ID`,`ATTRIBUTE_NAME`),");
+                //sql.append("KEY `SPRING_SESSION_ATTRIBUTES_IX1` (`SESSION_PRIMARY_ID`) USING BTREE,");
+                //sql.append("CONSTRAINT `SPRING_SESSION_ATTRIBUTES_ibfk_1` FOREIGN KEY (`SESSION_PRIMARY_ID`) REFERENCES `SPRING_SESSION` (`SESSION_ID`) ON DELETE CASCADE");
+                sql.append(") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+                getJdbcTemplate().update(sql.toString());
+            }
         } catch (DataAccessException e) {
             e.printStackTrace();
             return false;
