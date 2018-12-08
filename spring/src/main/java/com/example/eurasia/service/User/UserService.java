@@ -429,9 +429,6 @@ public class UserService {
         userBasicInfosList.add(data);
         userBasicInfosList.add(data2);
 
-        if (userBasicInfosList.size() != 1) {
-            return null;
-        }
         return userBasicInfosList;
     }
 
