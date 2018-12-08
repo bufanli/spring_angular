@@ -83,7 +83,7 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
      * @Time 2018-11-22 00:00:00
      */
     @Override
-    public ResponseResult getQueryConditionDisplay() throws Exception {
+    public ResponseResult getQueryConditionDisplay(String userID) throws Exception {
         QueryCondition[] queryConditions;
 
         try {
@@ -97,7 +97,7 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
             }
 
             // 取得该用户可显示的查询条件
-            List<String> userQueryConditionDisplayList = userService.getUserQueryConditionDisplayByTrue(userService.getUserID());
+            List<String> userQueryConditionDisplayList = userService.getUserQueryConditionDisplayByTrue(userID);
             if (userQueryConditionDisplayList == null) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.QUERY_CONDITION_DISPLAY_FROM_SQL_NULL);
             }
@@ -116,7 +116,7 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
                 for (String userQueryConditionDisplay:userQueryConditionDisplayList) {
                     if (entry.getKey().equals(userQueryConditionDisplay)) {
                         queryConditions[i].setKey(entry.getKey());
-                        queryConditions[i].setValue(getQueryConditionDisplayValue(entry.getKey()));
+                        queryConditions[i].setValue(getQueryConditionDisplayValue(userID,entry.getKey()));
                         queryConditions[i].setType(entry.getValue());
                         break;
                     }
@@ -132,18 +132,18 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
         return new ResponseResultUtil().success(ResponseCodeEnum.QUERY_CONDITION_DISPLAY_FROM_SQL_SUCCESS, queryConditions);
     }
 
-    private String getQueryConditionDisplayValue(String key) throws Exception {
+    private String getQueryConditionDisplayValue(String userID, String key) throws Exception {
 
         String queryConditionValue = null;
         switch (key) {
             case UserService.MUST_PRODUCT_DATE://"日期"。从用户权限表里获得。
                 queryConditionValue = userService.getOneUserCustom(userService.TABLE_USER_ACCESS_AUTHORITY,
-                        userService.getUserID(),
+                        userID,
                         UserService.MUST_PRODUCT_DATE);
                 break;
             case UserService.MUST_PRODUCT_NUMBER://"商品编码"。从用户权限表里获得。
                 queryConditionValue = userService.getOneUserCustom(userService.TABLE_USER_ACCESS_AUTHORITY,
-                        userService.getUserID(),
+                        userID,
                         UserService.MUST_PRODUCT_NUMBER);
                 break;
             default:
@@ -161,11 +161,11 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
      * @author FuJia
      * @Time 2018-11-22 00:00:00
      */
-    private ResponseResult getDateDefaultValue() throws Exception {
+    private ResponseResult getDateDefaultValue(String userID) throws Exception {
 
         String[] dateArr = null;
         try {
-            dateArr = userService.getUserTheLastMonth(DataService.TABLE_DATA,userService.getUserID());
+            dateArr = userService.getUserTheLastMonth(DataService.TABLE_DATA,userID);
             if (dateArr == null) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.QUERY_CONDITION_DATE_DEFAULT_VALUE_NULL);
             }

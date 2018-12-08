@@ -35,6 +35,10 @@ public class UserInfo implements Cloneable {
         return this.userDetailedInfos;
     }
 
+    public String getUserIDFromBasicInfos() {
+        return this.userBasicInfos[0].getValue();
+    }
+
     @Override
     protected Object clone() throws CloneNotSupportedException {
         return super.clone();

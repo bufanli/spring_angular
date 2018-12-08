@@ -64,12 +64,12 @@ public class GetHeadersServiceImpl implements IGetHeadersService {
     }
 
     @Override
-    public ResponseResult getHeaderDisplay() throws Exception {
+    public ResponseResult getHeaderDisplay(String userID) throws Exception {
 
         Header[] headers;
         List<String> headerDisplayList;
         try {
-            headerDisplayList = this.getHeaderDisplayFromSQL();
+            headerDisplayList = this.getHeaderDisplayFromSQL(userID);
             if (headerDisplayList == null) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.HEADER_GET_INFO_FROM_SQL_NULL);
             }
@@ -77,11 +77,10 @@ public class GetHeadersServiceImpl implements IGetHeadersService {
                 return new ResponseResultUtil().error(ResponseCodeEnum.HEADER_GET_INFO_FROM_SQL_ZERO);
             }
 
-            headers = new Header[headerDisplayList.size() + 1];//+1是为了在最后面显示"更多"列。
+            headers = new Header[headerDisplayList.size()];
             for (int i = 0;i < headerDisplayList.size();i++) {
                 headers[i] = new Header(headerDisplayList.get(i), headerDisplayList.get(i));
             }
-            headers[headerDisplayList.size()] = new Header(UserService.COLUMN_SHOW_MORE,UserService.COLUMN_SHOW_MORE);
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseResultUtil().error(ResponseCodeEnum.HEADER_GET_INFO_FROM_SQL_FAILED);
@@ -94,8 +93,8 @@ public class GetHeadersServiceImpl implements IGetHeadersService {
         return dataService.getAllHeaders();
     }
 
-    private List<String> getHeaderDisplayFromSQL() throws Exception {
-        return userService.getUserHeaderDisplayByTrue(userService.getUserID());
+    private List<String> getHeaderDisplayFromSQL(String userID) throws Exception {
+        return userService.getUserHeaderDisplayByTrue(userID);
     }
 
 }

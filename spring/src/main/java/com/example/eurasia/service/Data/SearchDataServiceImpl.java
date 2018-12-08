@@ -30,12 +30,12 @@ public class SearchDataServiceImpl implements ISearchDataService {
     private UserService userService;
 
     @Override
-    public ResponseResult searchData(QueryCondition[] queryConditionsArr) throws Exception {
+    public ResponseResult searchData(String userID, QueryCondition[] queryConditionsArr) throws Exception {
 
         List<Data> dataList;
         try {
             if (this.isQueryConditionsNotNULL(queryConditionsArr) == false ) {
-                this.setUserQueryConditionValue(queryConditionsArr);//T.B.D
+                this.setUserQueryConditionValue(userID,queryConditionsArr);//T.B.D
             }
             dataList = dataService.searchData(DataService.TABLE_DATA, queryConditionsArr);
 
@@ -62,19 +62,19 @@ public class SearchDataServiceImpl implements ISearchDataService {
         return false;
     }
 
-    private void setUserQueryConditionValue(QueryCondition[] queryConditionsArr) throws Exception {
+    private void setUserQueryConditionValue(String userID, QueryCondition[] queryConditionsArr) throws Exception {
 
         for (QueryCondition queryCondition : queryConditionsArr) {
             String queryConditionValue = null;
             switch (queryCondition.getKey()) {
                 case UserService.MUST_PRODUCT_DATE://"日期"。从用户权限表里获得。
                     queryConditionValue = userService.getOneUserCustom(userService.TABLE_USER_ACCESS_AUTHORITY,
-                            userService.getUserID(),
+                            userID,
                             UserService.MUST_PRODUCT_DATE);
                     break;
                 case UserService.MUST_PRODUCT_NUMBER://"商品编码"。从用户权限表里获得。
                     queryConditionValue = userService.getOneUserCustom(userService.TABLE_USER_ACCESS_AUTHORITY,
-                            userService.getUserID(),
+                            userID,
                             UserService.MUST_PRODUCT_NUMBER);
                     break;
                 default:

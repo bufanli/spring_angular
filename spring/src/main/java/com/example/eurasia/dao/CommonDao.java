@@ -113,6 +113,25 @@ SELECT information_schema.SCHEMATA.SCHEMA_NAME FROM information_schema.SCHEMATA 
     }
 
     /**
+     * 给表中某个字段添加唯一属性
+     * @param tableName
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-12-08 00:00:00
+     */
+    public boolean addUnique(String tableName, String columnName) throws Exception {
+        try {
+            StringBuffer sql = new StringBuffer();
+            sql.append("ALTER TABLE " + tableName + " ADD unique(" + columnName + ")");
+            getJdbcTemplate().update(sql.toString());
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+    /**
      * 创建SPRING_SESSION
      * @param tableName
      * @return

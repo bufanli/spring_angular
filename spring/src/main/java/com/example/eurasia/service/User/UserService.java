@@ -28,16 +28,6 @@ public class UserService {
         this.userDao = userDao;
     }
 
-    // 登陆用户ID
-    private String userID;
-    public String getUserID() {
-        return userID;
-    }
-
-    public void setUserID(String userID) {
-        this.userID = userID;
-    }
-
     // 生成的表名
     public static final String TABLE_USER_BASIC_INFO = "userBasicInfoTable";//用户基本信息
     public static final String TABLE_USER_ACCESS_AUTHORITY = "userAccessAuthorityTable";//用户权限
@@ -72,6 +62,7 @@ public class UserService {
     public static final String USER_ALL_NORMAL = "sinoshuju_all_normal";//所有的客户,不包括默认用户，管理员用户，临时访问客户等,仅仅是注册的客户。
 
     // 必要的字段名称
+    public static final String MUST_USER_ID = "userID";
     public static final String MUST_USER_NAME = "名字";
     public static final String MUST_USER_PHONE = "手机号码";
     public static final String MUST_PRODUCT_DATE = "日期";
@@ -101,10 +92,14 @@ public class UserService {
             //this.createTable(UserService.TABLE_USER_HEADER_WIDTH,BEAN_NAME_USER_HEADER_WIDTH);
             this.createTable(UserService.TABLE_USER_HEADER_DISPLAY,BEAN_NAME_USER_HEADER_DISPLAY);
 
+            //给以下字段添加唯一属性
+            this.addUnique(UserService.TABLE_USER_BASIC_INFO, UserService.MUST_USER_ID);
+            this.addUnique(UserService.TABLE_USER_BASIC_INFO, UserService.MUST_USER_PHONE);
+
             //添加默认用户，管理员，临时客户以及其相关数据
-            this.addUser(UserService.USER_DEFAULT,null);
-            this.addUser(UserService.USER_ADMINISTRATOR,null);
-            this.addUser(UserService.USER_GUEST,null);
+            this.addDefaultUser(UserService.USER_DEFAULT);
+            this.addDefaultUser(UserService.USER_ADMINISTRATOR);
+            this.addDefaultUser(UserService.USER_GUEST);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -133,6 +128,27 @@ public class UserService {
     }
 
     /**
+     * 根据表名称创建一张表
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-11-17 00:00:00
+     */
+    public boolean addUnique(String tableName, String columnName) throws Exception {
+        if (StringUtils.isEmpty(tableName) || StringUtils.isEmpty(columnName)) {
+            return false;
+        }
+
+        try {
+            return getUserDao().addUnique(tableName,columnName);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
      * 添加用户
      * @param
      * @return
@@ -140,29 +156,46 @@ public class UserService {
      * @author FuJia
      * @Time 2018-11-17 00:00:00
      */
-    public boolean addUser(String userID, UserInfo userInfo) throws Exception {
+    public boolean addDefaultUser(String userID) throws Exception {
         if (StringUtils.isEmpty(userID)) {
             return false;
         }
 
         try {
-            if (userInfo == null) {
-                this.addUserForBasicInfo(userID,null);
-                this.addUserForAccessAuthority(userID,null);
-                this.addUserForQueryConditionDisplay(userID,null);
-                this.addUserForHeaderDisplay(userID,null);
-            } else {
-                this.addUserForBasicInfo(userID,this.userCustomsArrToData(userInfo.getUserBasicInfos()));
-                this.addUserForAccessAuthority(userID,this.userCustomsArrToData(userInfo.getUserDetailedInfos().getUserAccessAuthorities()));
-                this.addUserForQueryConditionDisplay(userID,this.userCustomsArrToData(userInfo.getUserDetailedInfos().getUserQueryConditionDisplays()));
-                this.addUserForHeaderDisplay(userID,this.userCustomsArrToData(userInfo.getUserDetailedInfos().getUserHeaderDisplays()));
-            }
-
-            return true;
+            this.addUserForBasicInfo(userID,null);
+            this.addUserForAccessAuthority(userID,null);
+            this.addUserForQueryConditionDisplay(userID,null);
+            this.addUserForHeaderDisplay(userID,null);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return false;
+        return true;
+    }
+
+    /**
+     * 添加用户
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-11-17 00:00:00
+     */
+    public boolean addUser(UserInfo userInfo) throws Exception {
+
+        if (userInfo == null) {
+            return false;
+        } else {
+            this.addUserForBasicInfo(userInfo.getUserIDFromBasicInfos(),
+                    this.userCustomsArrToData(userInfo.getUserBasicInfos()));
+            this.addUserForAccessAuthority(userInfo.getUserIDFromBasicInfos(),
+                    this.userCustomsArrToData(userInfo.getUserDetailedInfos().getUserAccessAuthorities()));
+            this.addUserForQueryConditionDisplay(userInfo.getUserIDFromBasicInfos(),
+                    this.userCustomsArrToData(userInfo.getUserDetailedInfos().getUserQueryConditionDisplays()));
+            this.addUserForHeaderDisplay(userInfo.getUserIDFromBasicInfos(),
+                    this.userCustomsArrToData(userInfo.getUserDetailedInfos().getUserHeaderDisplays()));
+        }
+        return true;
+
     }
 
     /**
@@ -186,7 +219,7 @@ public class UserService {
             case UserService.USER_GUEST:
                 return -1;
             default:
-                return getUserDao().addUser(UserService.TABLE_USER_BASIC_INFO,userID,value);
+                return getUserDao().addUser(UserService.TABLE_USER_BASIC_INFO,value);
         }
     }
 
@@ -220,7 +253,7 @@ public class UserService {
             case UserService.USER_GUEST:
                 return getUserDao().addUser(UserService.TABLE_USER_ACCESS_AUTHORITY,userID,null);
             default:
-                return getUserDao().addUser(UserService.TABLE_USER_ACCESS_AUTHORITY,userID,value);
+                return getUserDao().addUser(UserService.TABLE_USER_ACCESS_AUTHORITY,value);
         }
     }
 
@@ -254,7 +287,7 @@ public class UserService {
             case UserService.USER_GUEST:
                 return getUserDao().addUser(UserService.TABLE_USER_QUERY_CONDITION_DISPLAY,userID,null);
             default:
-                return getUserDao().addUser(UserService.TABLE_USER_QUERY_CONDITION_DISPLAY,userID,value);
+                return getUserDao().addUser(UserService.TABLE_USER_QUERY_CONDITION_DISPLAY,value);
         }
     }
 
@@ -273,15 +306,14 @@ public class UserService {
 
         switch (userID) {
             case UserService.USER_DEFAULT:
-                break;
+                return -1;
             case UserService.USER_ADMINISTRATOR:
-                break;
+                return -1;
             case UserService.USER_GUEST:
-                break;
+                return -1;
             default:
-                break;
+                return getUserDao().addUser(UserService.TABLE_USER_HEADER_WIDTH,value);
         }
-        return getUserDao().addUser(UserService.TABLE_USER_HEADER_WIDTH,userID,value);
     }
 
     /**
@@ -314,7 +346,7 @@ public class UserService {
             case UserService.USER_GUEST:
                 return getUserDao().addUser(UserService.TABLE_USER_HEADER_DISPLAY,userID,null);
             default:
-                return getUserDao().addUser(UserService.TABLE_USER_HEADER_DISPLAY,userID,value);
+                return getUserDao().addUser(UserService.TABLE_USER_HEADER_DISPLAY,value);
         }
     }
 
@@ -327,7 +359,28 @@ public class UserService {
      * @Time 2018-11-29 00:00:00
      */
     public boolean isUserIDExist(String userID) throws Exception {
-        if (getUserDao().queryUserID(userID) == 0) {
+        if (StringUtils.isEmpty(userID) == true) {
+            return false;
+        }
+        if (getUserDao().queryUserID(UserService.TABLE_USER_BASIC_INFO,userID) == 0) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 该电话号码是否在数据库中。
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-11-29 00:00:00
+     */
+    public boolean isUserPhoneExist(String phone) throws Exception {
+        if (StringUtils.isEmpty(phone) == true) {
+            return true;
+        }
+        if (getUserDao().queryUserID(UserService.TABLE_USER_BASIC_INFO,phone) == 0) {
             return false;
         }
         return true;
@@ -395,23 +448,20 @@ public class UserService {
     }
 
     /**
-     * 取得用户基本属性。
+     * 取得所有的用户基本属性。
      * @param
      * @return
      * @exception
      * @author FuJia
      * @Time 2018-11-18 00:00:00
      */
-    public List<Data> getUserBasicInfo(String userID) throws Exception {
-        if (StringUtils.isEmpty(userID)) {
-            return null;
-        }
+    public List<Data> getAllUserBasicInfo() throws Exception {
 
-        List<Data> userBasicInfosList = this.getUserCustom(UserService.TABLE_USER_BASIC_INFO, userID);
+        List<Data> userBasicInfosList = this.getUserCustom(UserService.TABLE_USER_BASIC_INFO, UserService.USER_ALL);
 
         //Dummy T.B.D
         Map<String, String> user = new HashMap<String, String>();
-        user.put("userId", "webchat0001");
+        user.put("userID", "webchat0001");
         user.put("昵称", "常海啸");
         user.put("性别", "男");
         user.put("名字", "张力");
@@ -428,6 +478,24 @@ public class UserService {
         Data data2 = new Data(user);
         userBasicInfosList.add(data);
         userBasicInfosList.add(data2);
+
+        return userBasicInfosList;
+    }
+
+    /**
+     * 取得用户基本属性。
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-11-18 00:00:00
+     */
+    public List<Data> getUserBasicInfo(String userID) throws Exception {
+        if (StringUtils.isEmpty(userID)) {
+            return null;
+        }
+
+        List<Data> userBasicInfosList = this.getUserCustom(UserService.TABLE_USER_BASIC_INFO, userID);
 
         return userBasicInfosList;
     }
@@ -462,9 +530,7 @@ public class UserService {
         }
 
         List<Data> userAccessAuthoritiesList = this.getUserCustom(UserService.TABLE_USER_ACCESS_AUTHORITY, userID);
-        if (userAccessAuthoritiesList.size() != 1) {
-            return null;
-        }
+
         return userAccessAuthoritiesList;
     }
 
@@ -498,9 +564,7 @@ public class UserService {
         }
 
         List<String> userQueryConditionDisplayList = this.getUserTrueCustom(UserService.TABLE_USER_QUERY_CONDITION_DISPLAY,userID);
-        if (userQueryConditionDisplayList.size() != 1) {
-            return null;
-        }
+
         return userQueryConditionDisplayList;
     }
 
@@ -518,9 +582,7 @@ public class UserService {
         }
 
         List<Data> userQueryConditionDisplayList = this.getUserCustom(UserService.TABLE_USER_QUERY_CONDITION_DISPLAY,userID);
-        if (userQueryConditionDisplayList.size() != 1) {
-            return null;
-        }
+
         return userQueryConditionDisplayList;
     }
 
@@ -555,9 +617,7 @@ public class UserService {
 
         //T.B.D依赖于getUserHeaderDisplay的返回值
         List<Data> userHeaderWidthsList = this.getUserCustom(UserService.TABLE_USER_HEADER_WIDTH, userID);
-        if (userHeaderWidthsList.size() != 1) {
-            return null;
-        }
+
         return userHeaderWidthsList;
     }
 
@@ -591,9 +651,7 @@ public class UserService {
         }
 
         List<String> userHeaderDisplayList = this.getUserTrueCustom(UserService.TABLE_USER_HEADER_DISPLAY,userID);
-        if (userHeaderDisplayList.size() != 1) {
-            return null;
-        }
+
         return userHeaderDisplayList;
     }
 
@@ -611,9 +669,7 @@ public class UserService {
         }
 
         List<Data> userHeaderDisplayList = this.getUserCustom(UserService.TABLE_USER_HEADER_DISPLAY,userID);
-        if (userHeaderDisplayList.size() != 1) {
-            return null;
-        }
+
         return userHeaderDisplayList;
     }
 

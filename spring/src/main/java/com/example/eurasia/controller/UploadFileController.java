@@ -4,19 +4,18 @@ import com.example.eurasia.service.Data.IUploadFileService;
 import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;
+import com.example.eurasia.service.User.IUserInfoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.ResourceUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -40,6 +39,9 @@ public class UploadFileController {
     @Qualifier("UploadFileServiceImpl")
     @Autowired
     private IUploadFileService uploadFileService;
+    @Qualifier("UserInfoServiceImpl")
+    @Autowired
+    private IUserInfoService userInfoServiceImpl;
 
     //跳转到上传文件的页面
     @RequestMapping(value="/goUploadFile", method = RequestMethod.GET)
@@ -56,36 +58,16 @@ public class UploadFileController {
      */
     @RequestMapping(value="/uploadFile", method = RequestMethod.POST)
     public @ResponseBody
-    ResponseResult uploadFiles(@RequestParam("file") MultipartFile[] files,
-                               HttpServletRequest request,
-                               HttpServletResponse response,
-                               HttpSession httpSession) throws IOException {
-
-//just for testing session ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
-        /*
-          //true表示如果这个HTTP请求中,有session，那么可以直接通过getSession获取当前的session，
-          //如果当前的请求中没有session，则会自动新建一个session
-          HttpSession session=request.getSession(true);
-
-          //false表示只能获取当前请求中的session，如果没有也不能自动创建。
-          HttpSession session=request.getSession(false);
-
-         */
-        HttpSession session = request.getSession();//这就是session的创建
-        session.setAttribute("username","TOM");//给session添加属性属性name： username,属性 value：TOM
-        session.setAttribute("password","tommmm");//添加属性 name: password; value: tommmm
-
-        String sessionId = session.getId();
-        Cookie cookie = new Cookie("JSESSIONID", sessionId);
-        cookie.setPath(request.getContextPath());
-        response.addCookie(cookie);
-//↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
-
+    ResponseResult uploadFiles(@RequestParam("file") MultipartFile[] files, HttpServletRequest request) throws IOException {
         ResponseResult responseResult;
-
-        Date date = new Date(System.currentTimeMillis());
-        DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd");
-        String strFormat = dateFormat.format(date);
+        try {
+            String userID = userInfoServiceImpl.isUserIDExist(request);
+            if (StringUtils.isEmpty(userID) == true) {
+                responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
+            } else {
+                Date date = new Date(System.currentTimeMillis());
+                DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd");
+                String strFormat = dateFormat.format(date);
 /*
         另外使用以上代码需要注意，因为以jar包发布时，我们存储的路径是与jar包同级的static目录，
         因此我们需要在jar包目录的application.properties配置文件中设置静态资源路径，如下所示：
@@ -94,37 +76,33 @@ public class UploadFileController {
 
         以jar包发布springboot项目时，默认会先使用jar包跟目录下的application.properties来作为项目配置文件。
 */
-        //获取跟目录
-        File path = new File(ResourceUtils.getURL("classpath:").getPath());
-        if(!path.exists()) {
-            path = new File("");
-        }
-        //上传目录地址
-        //在开发测试模式时，得到的地址为：{项目跟目录}/target/static/uploadFile/
-        //在打包成jar正式发布时，得到的地址为：{发布jar包目录}/static/uploadFile/
-        File uploadDir = new File(path.getAbsolutePath(),"static/uploadFile/" + strFormat);
-        if (!uploadDir.exists()) {
-            uploadDir.mkdirs();
-        }
+                //获取跟目录
+                File path = new File(ResourceUtils.getURL("classpath:").getPath());
+                if(!path.exists()) {
+                    path = new File("");
+                }
+                //上传目录地址
+                //在开发测试模式时，得到的地址为：{项目跟目录}/target/static/uploadFile/
+                //在打包成jar正式发布时，得到的地址为：{发布jar包目录}/static/uploadFile/
+                File uploadDir = new File(path.getAbsolutePath(),"static/uploadFile/" + strFormat);
+                if (!uploadDir.exists()) {
+                    uploadDir.mkdirs();
+                }
 
-        try {
-            log.info("IP:{},进行文件上传开始",request.getRemoteAddr());
-            //responseResult = uploadFileService.batchUpload(filePath, files);
-            uploadFileService.batchUpload(uploadDir, files);//T.B.D 返回结果暂时不做处理
-        } catch (Exception e) {
-            e.printStackTrace();
-            //responseResult = new ResponseResultUtil().error(ResponseCodeEnum.UPLOAD_FILE_FAILED);//T.B.D
-        }
-        log.info("IP:{},进行文件上传结束",request.getRemoteAddr());
+                log.info("IP:{},进行文件上传开始",request.getRemoteAddr());
+                //responseResult = uploadFileService.batchUpload(filePath, files);
+                uploadFileService.batchUpload(uploadDir, files);//T.B.D 返回结果暂时不做处理
+                log.info("IP:{},进行文件上传结束",request.getRemoteAddr());
 
-        try {
-            log.info("Dir:{},进行文件读取开始",uploadDir);
-            responseResult = uploadFileService.readFile(uploadDir);
+                log.info("Dir:{},进行文件读取开始",uploadDir);
+                responseResult = uploadFileService.readFile(uploadDir);
+                log.info("Dir:{},进行文件读取结束",uploadDir);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             responseResult = new ResponseResultUtil().error(ResponseCodeEnum.READ_UPLOADED_FILE_FAILED);
         }
-        log.info("Dir:{},进行文件读取结束",uploadDir);
+
         return responseResult;
     }
 

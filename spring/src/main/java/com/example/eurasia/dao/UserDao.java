@@ -24,9 +24,32 @@ public class UserDao extends CommonDao {
         String columnsNames = data.getKeys();
         String[] columnsValuesArr = data.getValuesToArray();
 
-        //userID唯一性T.B.D
-        sql.append("insert into " + tableName + "(userID," + columnsNames + ") values (");
+        sql.append("insert into " + tableName + " (userID," + columnsNames + ") values (");
         sql.append(userID + CommonDao.COMMA);
+        for (int i=0; i<size; i++) {
+            sql.append("?,");
+        }
+        sql.deleteCharAt(sql.length() - CommonDao.COMMA.length());
+        sql.append(")");
+        int num = getJdbcTemplate().update(sql.toString(),(Object[])columnsValuesArr);
+        return num;//大于0，插入成功。
+    }
+
+    /**
+     * 添加用户以及其相关数据
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-12-08 00:00:00
+     */
+    public int addUser(String tableName, Data data) throws Exception {
+        StringBuffer sql = new StringBuffer();
+        int size = data.getKeyValue().size();
+        String columnsNames = data.getKeys();
+        String[] columnsValuesArr = data.getValuesToArray();
+
+        sql.append("insert into " + tableName + " (" + columnsNames + ") values (");
         for (int i=0; i<size; i++) {
             sql.append("?,");
         }
@@ -44,9 +67,9 @@ public class UserDao extends CommonDao {
      * @author FuJia
      * @Time 2018-11-29 23:11:00
      */
-    public int queryUserID(String userID)
+    public int queryUserID(String tableName, String userID)
     {
-        String sql = "select 1 from users where user_id = " + userID + " limit 1";
+        String sql = "select 1 from " + tableName +" where userID = " + userID + " limit 1";
 
         return getJdbcTemplate().update(sql);
     }
