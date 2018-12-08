@@ -1,5 +1,5 @@
 export class Permission {
-  public userId: string;
+  public userID: string;
   public 日期范围: string;
   public 商品编码: string;
   public 账号有效期: string;

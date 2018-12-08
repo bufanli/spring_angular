@@ -22,11 +22,11 @@
   <div id="user-container" class="tab-content">
     <div class="tab-pane fade in active" id="basic-info">
       <div class="clearfix" style="margin-bottom: 1em;"></div>
-      <app-user-basic-info [currentUser]="currentUser"></app-user-basic-info>
+      <app-user-basic-info #userBasicInfo [currentUser]="currentUser"></app-user-basic-info>
     </div>
     <div class="tab-pane fade in" id="permission">
       <div class="clearfix" style="margin-bottom: 1em;"></div>
-      <app-user-permission></app-user-permission>
+      <app-user-permission #userPermission [currentUserPermission]="currentUserPermission"></app-user-permission>
     </div>
   </div>
 </div>
@@ -34,7 +34,7 @@
   <button type="button" class="btn btn-default" data-dismiss="modal">
     <span class="glyphicon glyphicon-remove"></span>关闭
   </button>
-  <button type="button" class="btn btn-primary">
+  <button type="button" class="btn btn-primary" (click)="updateUserInfo()">
     <span class="glyphicon glyphicon-ok"></span>保存
   </button>
 </div>

@@ -18,7 +18,7 @@ const OPERATION_HEADER_INDEX = 11;
 export class UserListComponent implements OnInit, AfterViewChecked {
 
   private getUsersUrl = 'getAllUserBasicInfo';  // URL to get user list
-  // this is a dummy property which is just for compiling ok.
+  // this id is just for compiling pass
   private id: string = null;
 
   private userListHeaders: Header[] = [
