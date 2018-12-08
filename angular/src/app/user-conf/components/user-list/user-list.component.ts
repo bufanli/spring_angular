@@ -61,15 +61,6 @@ export class UserListComponent implements OnInit, AfterViewChecked {
   getUsersNotification(httpResponse: HttpResponse) {
     // show user list
     $('#table').bootstrapTable('load', this.commonUtilitiesService.reshapeData(httpResponse.data));
-    $('#table').bootstrapTable({
-      'onPageChange': function (number, size) {
-        alert(number);
-      }
-    });
-    // $('#table').on('page-change.bs.table', function (e, number, size) {
-    //   // ...
-    //   alert(number);
-    // });
     $('#table').on('page-change.bs.table', this, this.bindUserEditEventHandler);
     this.bindUserEditEventHandler(null);
   }

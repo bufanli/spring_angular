@@ -51,7 +51,6 @@ export class UserBasicInfoComponent implements OnInit, AfterViewInit {
   ];
   // editing user
   @Input() currentUser: User;
-  public gender = '男';
   constructor() {
   }
 

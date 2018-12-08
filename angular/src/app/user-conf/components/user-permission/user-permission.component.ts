@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit , Input} from '@angular/core';
+import { Permission } from '../../entities/permission';
 
 @Component({
   selector: 'app-user-permission',
@@ -7,6 +8,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class UserPermissionComponent implements OnInit {
 
+  @Input() currentUserPermission: Permission;
   constructor() { }
 
   ngOnInit() {

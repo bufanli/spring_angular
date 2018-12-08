@@ -1,3 +1,63 @@
-<div class='container'>
-
+<!-- <div class="row" *ngIf="currentUserPermission"> -->
+<div class="row">
+  <div class="col-md-4">
+    <div class="form-group">
+      <div class="input-group">
+        <span class="input-group-addon" id="nickname">昵称</span>
+        <!-- <input type="text" [(ngModel)]="currentUser['昵称']" name="nickname" class="form-control" placeholder="请输入昵称" -->
+          <!-- aria-describedby="nickname"> -->
+        <div class="checkbox">
+          <label>
+            <input type="checkbox" aria-describedby="nickname">请打勾
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- <div class="col-md-4">
+    <div class="form-group">
+      <select class="form-control selectpicker" title="请选择性别" id="gender" name="gender" [(ngModel)]="gender">
+        <option value="男">男</option>
+        <option value="女">女</option>
+      </select>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="form-group">
+      <div class="input-group">
+        <span class="input-group-addon" id="realname">名字</span>
+        <input type="text" [(ngModel)]="currentUser['名字']" name="realname" class="form-control" placeholder="请输入名字"
+          aria-describedby="realname">
+      </div>
+    </div>
+  </div>
+  </div>
+  <div class="row" *ngIf="currentUser">
+    <div class="col-md-4">
+      <div class="form-group">
+        <div class="input-group">
+          <span class="input-group-addon" id="password">密码</span>
+          <input type="password" [(ngModel)]="currentUser['密码']" name="password" class="form-control" placeholder="请输入密码"
+            aria-describedby="password">
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="form-group">
+        <div class="input-group">
+          <span class="input-group-addon" id="age">年龄</span>
+          <input type="number" [(ngModel)]="currentUser['年龄']" name="age" class="form-control" placeholder="请输入年龄"
+            aria-describedby="age">
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="form-group">
+        <div class="input-group">
+          <span class="input-group-addon" id="phone_number">手机</span>
+          <input type="text" [(ngModel)]="currentUser['手机号码']" name="phone_name" class="form-control" placeholder="请输入手机号码"
+            aria-describedby="phone_number">
+        </div>
+      </div>
+    </div> -->
 </div>
