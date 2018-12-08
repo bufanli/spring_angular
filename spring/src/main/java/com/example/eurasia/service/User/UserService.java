@@ -86,11 +86,16 @@ public class UserService {
      */
     public void userServiceInit() throws Exception {
         try {
+            //创建用户用表
             this.createTable(UserService.TABLE_USER_BASIC_INFO,BEAN_NAME_USER_BASIC_INFO);
             this.createTable(UserService.TABLE_USER_ACCESS_AUTHORITY,BEAN_NAME_USER_ACCESS_AUTHORITY);
             this.createTable(UserService.TABLE_USER_QUERY_CONDITION_DISPLAY,BEAN_NAME_USER_QUERY_CONDITION_DISPLAY);
             //this.createTable(UserService.TABLE_USER_HEADER_WIDTH,BEAN_NAME_USER_HEADER_WIDTH);
             this.createTable(UserService.TABLE_USER_HEADER_DISPLAY,BEAN_NAME_USER_HEADER_DISPLAY);
+
+            //创建session用表
+            getUserDao().createSpringSessionTable();
+            getUserDao().createSpringSessionAttributesTable();
 
             //给以下字段添加唯一属性
             this.addUnique(UserService.TABLE_USER_BASIC_INFO, UserService.MUST_USER_ID);

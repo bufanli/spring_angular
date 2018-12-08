@@ -133,13 +133,13 @@ SELECT information_schema.SCHEMATA.SCHEMA_NAME FROM information_schema.SCHEMATA 
     }
     /**
      * 创建SPRING_SESSION
-     * @param tableName
+     * @param
      * @return
      * @exception
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
-    public boolean createSpringSessionTable(String tableName, String beanName) throws Exception {
+    public boolean createSpringSessionTable() throws Exception {
 
         try {
             StringBuffer sql = new StringBuffer();
@@ -162,13 +162,13 @@ SELECT information_schema.SCHEMATA.SCHEMA_NAME FROM information_schema.SCHEMATA 
 
     /**
      * 创建SPRING_SESSION_ATTRIBUTES
-     * @param tableName
+     * @param
      * @return
      * @exception
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
-    public boolean createSpringSessionAttributesTable(String tableName, String beanName) throws Exception {
+    public boolean createSpringSessionAttributesTable() throws Exception {
 
         try {
             StringBuffer sql = new StringBuffer();
