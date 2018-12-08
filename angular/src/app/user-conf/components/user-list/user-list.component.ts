@@ -17,7 +17,7 @@ const OPERATION_HEADER_INDEX = 11;
 })
 export class UserListComponent implements OnInit, AfterViewChecked {
 
-  private getUsersUrl = 'getUsers';  // URL to get user list
+  private getUsersUrl = 'getAllUserBasicInfo';  // URL to get user list
   // this is a dummy property which is just for compiling ok.
   private id: string = null;
 
