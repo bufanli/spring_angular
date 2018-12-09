@@ -38,7 +38,7 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
   private headersUrl = 'getHeaders';  // URL to web api
   // search parameters
   searchParam = [
-    { key: '进口关区', value: '', type: 'list' },
+    { key: '进口关区', value: '', type: 'List' },
     { key: '起始日期', value: '', type: 'Date' },
     { key: '结束日期', value: '' , type: 'Date' },
     { key: '产品名称', value: '' , type: 'String'},
