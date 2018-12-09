@@ -363,14 +363,11 @@ public class UserService {
      * @author FuJia
      * @Time 2018-11-29 00:00:00
      */
-    public boolean isUserIDExist(String userID) throws Exception {
+    public int getUserIDNumber(String userID) throws Exception {
         if (StringUtils.isEmpty(userID) == true) {
-            return false;
+            return -1;
         }
-        if (getUserDao().queryUserID(UserService.TABLE_USER_BASIC_INFO,userID) == 0) {
-            return false;
-        }
-        return true;
+        return getUserDao().queryUserID(UserService.TABLE_USER_BASIC_INFO,userID);
     }
 
     /**

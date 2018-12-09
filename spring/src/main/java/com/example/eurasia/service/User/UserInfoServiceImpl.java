@@ -31,7 +31,7 @@ public class UserInfoServiceImpl implements IUserInfoService {
         HttpSession session = request.getSession();
         String userID = (String)session.getAttribute("userID");
 
-        if (!StringUtils.isEmpty(userID) && userService.isUserIDExist(userID) == true) {
+        if (!StringUtils.isEmpty(userID) && userService.getUserIDNumber(userID) == 1) {
             return userID;
         } else {
             return null;
@@ -39,7 +39,7 @@ public class UserInfoServiceImpl implements IUserInfoService {
     }
 
     public boolean isUserIDExist(String userID) throws Exception {
-        if (!StringUtils.isEmpty(userID) && userService.isUserIDExist(userID) == true) {
+        if (!StringUtils.isEmpty(userID) && userService.getUserIDNumber(userID) == 1) {
             return true;
         }
 

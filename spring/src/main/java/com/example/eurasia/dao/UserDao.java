@@ -69,9 +69,10 @@ public class UserDao extends CommonDao {
      */
     public int queryUserID(String tableName, String userID)
     {
-        String sql = "select 1 from " + tableName +" where userID = " + userID + " limit 1";
-
-        return getJdbcTemplate().update(sql);
+        //String sql = "select 1 from " + tableName +" where userID = '" + userID + "' limit 1";
+        String sql = "select count(*) from " + tableName +" where userID = '" + userID + "'";
+        int count = getJdbcTemplate().queryForObject(sql,Integer.class);
+        return count;
     }
 
     /**
@@ -84,7 +85,7 @@ public class UserDao extends CommonDao {
      */
     public List<List<String>> queryListForUserTrueCustom(String tableName, String userID) throws Exception {
         StringBuffer sql = new StringBuffer();
-        sql.append("select * from " + tableName + " where user_id = " + userID);
+        sql.append("select * from " + tableName + " where user_id = '" + userID + "'");
         return getJdbcTemplate().query(sql.toString(), new PermissionMapper());
     }
 
@@ -98,7 +99,7 @@ public class UserDao extends CommonDao {
      */
     public List<Data> queryListForUserCustom(String tableName, String userID) throws Exception {
         StringBuffer sql = new StringBuffer();
-        sql.append("select * from " + tableName + " where user_id = " + userID);
+        sql.append("select * from " + tableName + " where user_id = '" + userID + "'");
         List<Data> dataList = getJdbcTemplate().query(sql.toString(), new DataMapper());
         return dataList;
     }
@@ -113,7 +114,7 @@ public class UserDao extends CommonDao {
      */
     public List<Data> queryOneForUserCustom(String tableName, String userID, String columnName) throws Exception {
         StringBuffer sql = new StringBuffer();
-        sql.append("select " + columnName + "from " + tableName + " where user_id = " + userID);
+        sql.append("select " + columnName + "from " + tableName + " where user_id = '" + userID + "'");
         List<Data> dataList = getJdbcTemplate().query(sql.toString(), new DataMapper());
         return dataList;
     }
@@ -134,7 +135,7 @@ public class UserDao extends CommonDao {
         if (outUserIDList != null && outUserIDList.size() != 0) {
             sql.append(" where ");
             for (String outUserID : outUserIDList) {
-                sql.append("user_id<>" + outUserID);
+                sql.append("user_id<>'" + outUserID + "'");
                 sql.append(sqlAnd);
             }
             sql.delete((sql.length() - sqlAnd.length()),sql.length());
