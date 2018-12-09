@@ -38,13 +38,13 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
   private headersUrl = 'getHeaders';  // URL to web api
   // search parameters
   searchParam = [
-    { key: '进口关区', value: ''},
-    { key: '起始日期', value: '' },
-    { key: '结束日期', value: '' },
-    { key: '产品名称', value: '' },
-    { key: '装货港', value: '' },
-    { key: '商品编码', value: '' },
-    { key: '规格型号', value: '' }
+    { key: '进口关区', value: '', type: 'list' },
+    { key: '起始日期', value: '', type: 'Date' },
+    { key: '结束日期', value: '' , type: 'Date' },
+    { key: '产品名称', value: '' , type: 'String'},
+    { key: '装货港', value: '' , type: 'String'},
+    { key: '商品编码', value: '' , type: 'String'},
+    { key: '规格型号', value: '' , type: 'String'}
   ];
   public importCustoms: string[] = [];
 
@@ -91,8 +91,8 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
     return this.http.post<HttpResponse>(this.searchUrl, this.searchParam, httpOptions);
   }
   constructor(private http: HttpClient,
-              private downloadHttp: Http,
-              private commonUtilitiesService: CommonUtilitiesService) {
+    private downloadHttp: Http,
+    private commonUtilitiesService: CommonUtilitiesService) {
   }
 
   searchDataNotification(result: HttpResponse) {
@@ -128,7 +128,7 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
 
   ngOnInit() {
     // init table at first
-    $('#table').bootstrapTable({toggle: 'table'});
+    $('#table').bootstrapTable({ toggle: 'table' });
     // get headers from in memory api
     this.getHeaders().subscribe(headersResponse =>
       this.getHeadersNotification(headersResponse));
