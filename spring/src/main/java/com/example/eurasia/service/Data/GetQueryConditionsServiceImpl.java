@@ -161,7 +161,7 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
      * @author FuJia
      * @Time 2018-11-22 00:00:00
      */
-    private ResponseResult getDateDefaultValue(String userID) throws Exception {
+    public ResponseResult getDateDefaultValue(String userID) throws Exception {
 
         String[] dateArr = null;
         try {

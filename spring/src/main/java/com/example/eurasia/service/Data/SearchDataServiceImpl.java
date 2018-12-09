@@ -34,9 +34,8 @@ public class SearchDataServiceImpl implements ISearchDataService {
 
         List<Data> dataList;
         try {
-            if (this.isQueryConditionsNotNULL(queryConditionsArr) == false ) {
-                this.setUserQueryConditionValue(userID,queryConditionsArr);//T.B.D
-            }
+            this.setUserQueryConditionDefaultValue(userID,queryConditionsArr);
+
             dataList = dataService.searchData(DataService.TABLE_DATA, queryConditionsArr);
 
             if (dataList == null) {
@@ -62,20 +61,24 @@ public class SearchDataServiceImpl implements ISearchDataService {
         return false;
     }
 
-    private void setUserQueryConditionValue(String userID, QueryCondition[] queryConditionsArr) throws Exception {
+    private void setUserQueryConditionDefaultValue(String userID, QueryCondition[] queryConditionsArr) throws Exception {
 
         for (QueryCondition queryCondition : queryConditionsArr) {
             String queryConditionValue = null;
             switch (queryCondition.getKey()) {
-                case UserService.MUST_PRODUCT_DATE://"日期"。从用户权限表里获得。
-                    queryConditionValue = userService.getOneUserCustom(userService.TABLE_USER_ACCESS_AUTHORITY,
-                            userID,
-                            UserService.MUST_PRODUCT_DATE);
+                case UserService.MUST_PRODUCT_DATE://"日期"为空，从用户权限表里获得。
+                    if (queryCondition.getValue().equals(QueryCondition.QUERY_CONDITION_SPLIT)) {
+                        queryConditionValue = userService.getOneUserCustom(userService.TABLE_USER_ACCESS_AUTHORITY,
+                                userID,
+                                UserService.MUST_PRODUCT_DATE);
+                    }
                     break;
-                case UserService.MUST_PRODUCT_NUMBER://"商品编码"。从用户权限表里获得。
-                    queryConditionValue = userService.getOneUserCustom(userService.TABLE_USER_ACCESS_AUTHORITY,
-                            userID,
-                            UserService.MUST_PRODUCT_NUMBER);
+                case UserService.MUST_PRODUCT_NUMBER://"商品编码"为空，从用户权限表里获得。
+                    if (queryCondition.getValue().equals(QueryCondition.QUERY_CONDITION_SPLIT)) {
+                        queryConditionValue = userService.getOneUserCustom(userService.TABLE_USER_ACCESS_AUTHORITY,
+                                userID,
+                                UserService.MUST_PRODUCT_NUMBER);
+                    }
                     break;
                 default:
                     queryConditionValue = QueryCondition.QUERY_CONDITION_SPLIT;

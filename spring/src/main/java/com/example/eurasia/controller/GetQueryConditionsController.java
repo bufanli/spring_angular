@@ -52,4 +52,29 @@ public class GetQueryConditionsController {
         log.info("取得查询条件结束");
         return responseResult;
     }
+
+    /**
+     * @author
+     * @date 2018-12-09
+     * @description 数据中最近的月份
+     */
+    @RequestMapping(value="/getDateDefaultValue", method = RequestMethod.GET)
+    public @ResponseBody
+    ResponseResult getDateDefaultValue(HttpServletRequest request) {
+        ResponseResult responseResult;
+        try {
+            log.info("取得数据中最近的月份开始");
+            String userID = userInfoServiceImpl.getUserID(request);
+            if (StringUtils.isEmpty(userID) == true) {
+                responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
+            } else {
+                responseResult = getQueryConditionsService.getDateDefaultValue(userID);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            responseResult = new ResponseResultUtil().error();
+        }
+        log.info("取得数据中最近的月份结束");
+        return responseResult;
+    }
 }

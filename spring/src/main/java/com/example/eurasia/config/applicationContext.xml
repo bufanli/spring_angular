@@ -181,21 +181,21 @@
     <bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource"
         destroy-method="close">
         <!-- 无需指定，除非系统无法自动识别 -->
-        <property name="driverClassName" value="${spring.datasource.driverClassName}" />
+        <property name="driverClassName" value="${spring.datasource.driver-class-name}" />
         <property name="jdbcUrl" value="${spring.datasource.url}" />
         <property name="username" value="${spring.datasource.username}" />
         <property name="password" value="${spring.datasource.password}" />
         <!-- 连接只读数据库时配置为true， 保证安全 -->
-        <property name="readOnly" value="${spring.datasource.readOnly}" />
+        <property name="readOnly" value="${spring.datasource.hikari.read-only}" />
         <!-- 等待连接池分配连接的最大时长（毫秒），超过这个时长还没可用的连接则发生SQLException， 缺省:30秒 -->
-        <property name="connectionTimeout" value="${spring.datasource.connectionTimeout}" />
+        <property name="connectionTimeout" value="${spring.datasource.hikari.connection-timeout}" />
         <!-- 一个连接idle状态的最大时长（毫秒），超时则被释放（retired），缺省:10分钟 -->
-        <property name="idleTimeout" value="${spring.datasource.idleTimeout}" />
+        <property name="idleTimeout" value="${spring.datasource.hikari.idle-timeout}" />
         <!-- 一个连接的生命时长（毫秒），超时而且没被使用则被释放（retired），缺省:30分钟， 建议设置比数据库超时时长少30秒 -->
-        <property name="maxLifetime" value="${spring.datasource.maxLifetime}" />
+        <property name="maxLifetime" value="${spring.datasource.hikari.max-lifetime}" />
         <!-- 连接池中允许的最大连接数。缺省值：10；推荐的公式：((core_count * 2) + effective_spindle_count) -->
-        <property name="maximumPoolSize" value="${spring.datasource.maximumPoolSize}" />
-        <property name="minimumIdle" value="${spring.datasource.minimumIdle}" />
+        <property name="maximumPoolSize" value="${spring.datasource.hikari.maximum-pool-size}" />
+        <property name="minimumIdle" value="${spring.datasource.hikari.minimum-idle}" />
     </bean>
 
     <!-- 配置jdbcTemplate数据源 -->
