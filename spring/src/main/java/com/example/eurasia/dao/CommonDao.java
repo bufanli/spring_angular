@@ -173,7 +173,7 @@ CREATE TABLE SPRING_SESSION_ATTRIBUTES (
                 StringBuffer sql = new StringBuffer();
                 sql.append("CREATE TABLE `SPRING_SESSION` (");
                 sql.append("`PRIMARY_ID` char(36) NOT NULL,");
-                sql.append("`SESSION_ID` char(36) NOT NULL DEFAULT '',");
+                sql.append("`SESSION_ID` char(36) NOT NULL,");
                 sql.append("`CREATION_TIME` BIGINT NOT NULL,");
                 sql.append("`LAST_ACCESS_TIME` BIGINT NOT NULL,");
                 sql.append("`MAX_INACTIVE_INTERVAL` INT NOT NULL,");

@@ -10,7 +10,11 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
+/*
+一个@SpringbootApplication相当于@Configuration,@EnableAutoConfiguration和 @ComponentScan 并具有他们的默认属性值
+ */
 @SpringBootApplication
+//@EnableJdbcHttpSession // 加上这个Enable后，启动出现"WARN: Establishing SSL connection without server's identity verification is not recommended."
 public class StartEurasiaApplication {
 /* 手动配置DataSource数据源
 	@Autowired
