@@ -479,7 +479,7 @@ public class UserService {
         user.put("手机号码", "134534096847");
         user.put("电子邮件", "zhangli@163.com");
         Data data = new Data(user);
-        user.put("userId", "webchat0002");
+        user.put("userID", "webchat0002");
         Data data2 = new Data(user);
         userBasicInfosList.add(data);
         userBasicInfosList.add(data2);

@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { HttpResponse } from 'src/app/common/entities/http-response';
 import { Observable } from 'rxjs';
+import { createOfflineCompileUrlResolver } from '@angular/compiler';
+import { Router} from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -11,7 +13,7 @@ import { Observable } from 'rxjs';
 export class LoginComponent implements OnInit {
 
   private loginURL = 'dummyLogin';  // URL to login(dummy)
-  constructor(private http: HttpClient) { }
+  constructor(private router: Router , private http: HttpClient) { }
 
   ngOnInit() {
   }
@@ -26,6 +28,6 @@ export class LoginComponent implements OnInit {
     return this.http.get<HttpResponse>(this.loginURL);
   }
   private dummyLoginNotification(httpResponse: HttpResponse) {
-
+    this.router.navigate(['/web/main']);
   }
 }

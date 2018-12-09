@@ -72,7 +72,7 @@ export class UserListComponent implements OnInit, AfterViewChecked {
       const currentPageData = $('#table').bootstrapTable('getData');
       // bind user edit event, this.modalService is passed as target.data
       for (let i = 0; i < currentPageData.length; i++) {
-        const buttonId = '#' + currentPageData[i]['userId'];
+        const buttonId = '#' + currentPageData[i]['userID'];
         $(buttonId).on('click', this, this.showUserSettingModal);
       }
     } else {
@@ -82,7 +82,7 @@ export class UserListComponent implements OnInit, AfterViewChecked {
       const currentPageData = $('#table').bootstrapTable('getData');
       // bind user edit event, this.modalService is passed as target.data
       for (let i = 0; i < currentPageData.length; i++) {
-        const buttonId = '#' + currentPageData[i]['userId'];
+        const buttonId = '#' + currentPageData[i]['userID'];
         $(buttonId).on('click', component, component.showUserSettingModal);
       }
     }
@@ -91,7 +91,7 @@ export class UserListComponent implements OnInit, AfterViewChecked {
   // add formatter to user list
   addOperationFormatter(operationHeader: Header) {
     operationHeader.formatter = function (value, row, index) {
-      const buttonId = row.userId;
+      const buttonId = row.userID;
       return '<button type=\'button\' id=' + buttonId + ' class=\'btn btn-primary btn-xs \'>\
       <span class=\'glyphicon glyphicon-cog\'></span> 编辑</button>';
     };
