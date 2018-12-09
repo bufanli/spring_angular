@@ -34,6 +34,10 @@ public class SearchDataServiceImpl implements ISearchDataService {
 
         List<Data> dataList;
         try {
+            if (isQueryConditionsNotNULL(queryConditionsArr) == false) {
+                return new ResponseResultUtil().error(ResponseCodeEnum.SEARCH_DATA_QUERY_CONDITION_ERROR);
+            }
+
             this.setUserQueryConditionDefaultValue(userID,queryConditionsArr);
 
             dataList = dataService.searchData(DataService.TABLE_DATA, queryConditionsArr);
@@ -54,11 +58,11 @@ public class SearchDataServiceImpl implements ISearchDataService {
 
     private boolean isQueryConditionsNotNULL(QueryCondition[] queryConditionsArr) {
         for (QueryCondition queryCondition : queryConditionsArr) {
-            if (queryCondition.isValuesNotNULL()) {
-                return true;
+            if (queryCondition.getKey() == null || queryCondition.getValue() == null || queryCondition.getType() == null) {
+                return false;
             }
         }
-        return false;
+        return true;
     }
 
     private void setUserQueryConditionDefaultValue(String userID, QueryCondition[] queryConditionsArr) throws Exception {
