@@ -22,7 +22,6 @@ export class LoginComponent implements OnInit {
   public dummyLogin(): void {
     this.dummyLoginImpl().subscribe(
       httpResponse => this.dummyLoginNotification(httpResponse));
-
   }
   private dummyLoginImpl(): Observable<HttpResponse> {
     return this.http.get<HttpResponse>(this.loginURL);
