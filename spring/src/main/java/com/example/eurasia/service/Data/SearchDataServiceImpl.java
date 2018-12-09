@@ -85,7 +85,6 @@ public class SearchDataServiceImpl implements ISearchDataService {
                     }
                     break;
                 default:
-                    queryConditionValue = QueryCondition.QUERY_CONDITION_SPLIT;
                     break;
             }
             queryCondition.setValue(queryConditionValue);

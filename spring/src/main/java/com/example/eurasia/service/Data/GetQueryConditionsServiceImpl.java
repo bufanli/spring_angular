@@ -147,7 +147,7 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
                         UserService.MUST_PRODUCT_NUMBER);
                 break;
             default:
-                queryConditionValue = QueryCondition.QUERY_CONDITION_SPLIT;
+                queryConditionValue = "";
                 break;
         }
         return queryConditionValue;
