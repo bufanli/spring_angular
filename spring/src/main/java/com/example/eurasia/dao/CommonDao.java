@@ -86,7 +86,7 @@ SELECT information_schema.SCHEMATA.SCHEMA_NAME FROM information_schema.SCHEMATA 
         try {
             // 判断数据库是否已经存在这个名称的表，如果有某表，直接返回；否则动态创建表之后再返回
             if (isExistTableName(tableName)) {
-                return true;
+                return false;
             } else {
                 ApplicationContext context = new ClassPathXmlApplicationContext("com/example/eurasia/config/applicationContext.xml");
                 DataXMLReader dataXMLReader = (DataXMLReader) context.getBean(beanName);
@@ -103,7 +103,7 @@ SELECT information_schema.SCHEMATA.SCHEMA_NAME FROM information_schema.SCHEMATA 
 //MyISAM适合：(1)做很多count 的计算；(2)插入不频繁，查询非常频繁；(3)没有事务。
 //InnoDB适合：(1)可靠性要求比较高，或者要求事务；(2)表更新和查询都相当的频繁，并且行锁定的机会比较大的情况
 
-                getJdbcTemplate().update(sql.toString());
+                int count = getJdbcTemplate().update(sql.toString());
                 return true;
             }
         } catch (Exception e) {

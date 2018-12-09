@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mapping>
+    <column key="userID" value="sinoshuju_default" />
     <column key="日期" value="TRUE" />
     <column key="进口" value="FALSE" />
     <column key="进口关区" value="FALSE" />

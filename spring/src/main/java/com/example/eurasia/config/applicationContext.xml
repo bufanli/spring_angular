@@ -15,6 +15,14 @@
           init-method="init">
         <property name="filePath" value="com/example/eurasia/config/columnDefaultName.xml" />
     </bean>
+    <bean id="basicInfoDefault" class="com.example.eurasia.entity.DataXMLReader"
+          init-method="init">
+        <property name="filePath" value="com/example/eurasia/config/basicInfoDefault.xml" />
+    </bean>
+    <bean id="basicInfoAdmin" class="com.example.eurasia.entity.DataXMLReader"
+          init-method="init">
+        <property name="filePath" value="com/example/eurasia/config/basicInfoAdmin.xml" />
+    </bean>
     <bean id="queryConditionTypeName" class="com.example.eurasia.entity.DataXMLReader"
           init-method="init">
         <property name="filePath" value="com/example/eurasia/config/queryConditionTypeName.xml" />

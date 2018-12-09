@@ -87,24 +87,38 @@ public class UserService {
     public void userServiceInit() throws Exception {
         try {
             //创建用户用表
-            this.createTable(UserService.TABLE_USER_BASIC_INFO,BEAN_NAME_USER_BASIC_INFO);
-            this.createTable(UserService.TABLE_USER_ACCESS_AUTHORITY,BEAN_NAME_USER_ACCESS_AUTHORITY);
-            this.createTable(UserService.TABLE_USER_QUERY_CONDITION_DISPLAY,BEAN_NAME_USER_QUERY_CONDITION_DISPLAY);
-            //this.createTable(UserService.TABLE_USER_HEADER_WIDTH,BEAN_NAME_USER_HEADER_WIDTH);
-            this.createTable(UserService.TABLE_USER_HEADER_DISPLAY,BEAN_NAME_USER_HEADER_DISPLAY);
+            if (this.createTable(UserService.TABLE_USER_BASIC_INFO,BEAN_NAME_USER_BASIC_INFO) == true) {
+                //给以下字段添加唯一属性
+                this.addUnique(UserService.TABLE_USER_BASIC_INFO, UserService.MUST_USER_ID);
+                this.addUnique(UserService.TABLE_USER_BASIC_INFO, UserService.MUST_USER_PHONE);
+
+                //添加默认用户，管理员，临时客户以及其相关数据
+                this.addUserForBasicInfo(UserService.USER_ADMINISTRATOR,null);
+                this.addUserForBasicInfo(UserService.USER_DEFAULT,null);
+
+            }
+            if (this.createTable(UserService.TABLE_USER_ACCESS_AUTHORITY,BEAN_NAME_USER_ACCESS_AUTHORITY) == true) {
+                //添加默认用户，管理员，临时客户以及其相关数据
+                this.addUserForAccessAuthority(UserService.USER_ADMINISTRATOR,null);
+                this.addUserForAccessAuthority(UserService.USER_DEFAULT,null);
+            }
+            if (this.createTable(UserService.TABLE_USER_QUERY_CONDITION_DISPLAY,BEAN_NAME_USER_QUERY_CONDITION_DISPLAY) == true) {
+                //添加默认用户，管理员，临时客户以及其相关数据
+                this.addUserForQueryConditionDisplay(UserService.USER_ADMINISTRATOR,null);
+                this.addUserForQueryConditionDisplay(UserService.USER_DEFAULT,null);
+            }
+            //if (this.createTable(UserService.TABLE_USER_HEADER_WIDTH,BEAN_NAME_USER_HEADER_WIDTH) == true) {
+                //添加默认用户，管理员，临时客户以及其相关数据
+            //}
+            if (this.createTable(UserService.TABLE_USER_HEADER_DISPLAY,BEAN_NAME_USER_HEADER_DISPLAY) == true) {
+                //添加默认用户，管理员，临时客户以及其相关数据
+                this.addUserForHeaderDisplay(UserService.USER_ADMINISTRATOR,null);
+                this.addUserForHeaderDisplay(UserService.USER_DEFAULT,null);
+            }
 
             //创建session用表
             getUserDao().createSpringSessionTable();
             getUserDao().createSpringSessionAttributesTable();
-
-            //给以下字段添加唯一属性
-            this.addUnique(UserService.TABLE_USER_BASIC_INFO, UserService.MUST_USER_ID);
-            this.addUnique(UserService.TABLE_USER_BASIC_INFO, UserService.MUST_USER_PHONE);
-
-            //添加默认用户，管理员，临时客户以及其相关数据
-            this.addDefaultUser(UserService.USER_DEFAULT);
-            this.addDefaultUser(UserService.USER_ADMINISTRATOR);
-            this.addDefaultUser(UserService.USER_GUEST);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -212,17 +226,26 @@ public class UserService {
      * @Time 2018-11-17 00:00:00
      */
     private int addUserForBasicInfo(String userID, Data value) throws Exception {
-        if (StringUtils.isEmpty(userID) || value == null) {
+        if (StringUtils.isEmpty(userID)) {
             return -1;
         }
 
+        ApplicationContext context;
+        DataXMLReader dataXMLReader;
+        Data data;
         switch (userID) {
             case UserService.USER_DEFAULT:
-                return -1;
+                context = new ClassPathXmlApplicationContext("com/example/eurasia/config/applicationContext.xml");
+                dataXMLReader = (DataXMLReader) context.getBean(UserService.BEAN_NAME_BASIC_INFO_DEFAULT);
+                data = new Data(dataXMLReader.getKeyValue());
+                return getUserDao().addUser(UserService.TABLE_USER_BASIC_INFO,data);
             case UserService.USER_ADMINISTRATOR:
-                return -1;
+                context = new ClassPathXmlApplicationContext("com/example/eurasia/config/applicationContext.xml");
+                dataXMLReader = (DataXMLReader) context.getBean(UserService.BEAN_NAME_BASIC_INFO_ADMIN);
+                data = new Data(dataXMLReader.getKeyValue());
+                return getUserDao().addUser(UserService.TABLE_USER_BASIC_INFO,data);
             case UserService.USER_GUEST:
-                return -1;
+                return getUserDao().addUser(UserService.TABLE_USER_BASIC_INFO,null);
             default:
                 return getUserDao().addUser(UserService.TABLE_USER_BASIC_INFO,value);
         }
@@ -237,7 +260,7 @@ public class UserService {
      * @Time 2018-11-17 00:00:00
      */
     private int addUserForAccessAuthority(String userID, Data value) throws Exception {
-        if (StringUtils.isEmpty(userID) || value == null) {
+        if (StringUtils.isEmpty(userID)) {
             return -1;
         }
 
@@ -249,14 +272,14 @@ public class UserService {
                 context = new ClassPathXmlApplicationContext("com/example/eurasia/config/applicationContext.xml");
                 dataXMLReader = (DataXMLReader) context.getBean(UserService.BEAN_NAME_ACCESS_AUTHORITY_DEFAULT);
                 data = new Data(dataXMLReader.getKeyValue());
-                return getUserDao().addUser(UserService.TABLE_USER_ACCESS_AUTHORITY,userID,data);
+                return getUserDao().addUser(UserService.TABLE_USER_ACCESS_AUTHORITY,data);
             case UserService.USER_ADMINISTRATOR:
                 context = new ClassPathXmlApplicationContext("com/example/eurasia/config/applicationContext.xml");
                 dataXMLReader = (DataXMLReader) context.getBean(UserService.BEAN_NAME_ACCESS_AUTHORITY_ADMIN);
                 data = new Data(dataXMLReader.getKeyValue());
-                return getUserDao().addUser(UserService.TABLE_USER_ACCESS_AUTHORITY,userID,data);
+                return getUserDao().addUser(UserService.TABLE_USER_ACCESS_AUTHORITY,data);
             case UserService.USER_GUEST:
-                return getUserDao().addUser(UserService.TABLE_USER_ACCESS_AUTHORITY,userID,null);
+                return getUserDao().addUser(UserService.TABLE_USER_ACCESS_AUTHORITY,null);
             default:
                 return getUserDao().addUser(UserService.TABLE_USER_ACCESS_AUTHORITY,value);
         }
@@ -271,7 +294,7 @@ public class UserService {
      * @Time 2018-11-17 00:00:00
      */
     private int addUserForQueryConditionDisplay(String userID, Data value) throws Exception {
-        if (StringUtils.isEmpty(userID) || value == null) {
+        if (StringUtils.isEmpty(userID)) {
             return -1;
         }
 
@@ -283,14 +306,14 @@ public class UserService {
                 context = new ClassPathXmlApplicationContext("com/example/eurasia/config/applicationContext.xml");
                 dataXMLReader = (DataXMLReader) context.getBean(UserService.BEAN_NAME_QUERY_CONDITION_DISPLAY_DEFAULT);
                 data = new Data(dataXMLReader.getKeyValue());
-                return getUserDao().addUser(UserService.TABLE_USER_QUERY_CONDITION_DISPLAY,userID,data);
+                return getUserDao().addUser(UserService.TABLE_USER_QUERY_CONDITION_DISPLAY,data);
             case UserService.USER_ADMINISTRATOR:
                 context = new ClassPathXmlApplicationContext("com/example/eurasia/config/applicationContext.xml");
                 dataXMLReader = (DataXMLReader) context.getBean(UserService.BEAN_NAME_QUERY_CONDITION_DISPLAY_ADMIN);
                 data = new Data(dataXMLReader.getKeyValue());
-                return getUserDao().addUser(UserService.TABLE_USER_QUERY_CONDITION_DISPLAY,userID,data);
+                return getUserDao().addUser(UserService.TABLE_USER_QUERY_CONDITION_DISPLAY,data);
             case UserService.USER_GUEST:
-                return getUserDao().addUser(UserService.TABLE_USER_QUERY_CONDITION_DISPLAY,userID,null);
+                return getUserDao().addUser(UserService.TABLE_USER_QUERY_CONDITION_DISPLAY,null);
             default:
                 return getUserDao().addUser(UserService.TABLE_USER_QUERY_CONDITION_DISPLAY,value);
         }
@@ -305,7 +328,7 @@ public class UserService {
      * @Time 2018-11-17 00:00:00
      */
     private int addUserForHeaderWidth(String userID, Data value) throws Exception {
-        if (StringUtils.isEmpty(userID) || value == null) {
+        if (StringUtils.isEmpty(userID)) {
             return -1;
         }
 
@@ -330,7 +353,7 @@ public class UserService {
      * @Time 2018-11-17 00:00:00
      */
     private int addUserForHeaderDisplay(String userID, Data value) throws Exception {
-        if (StringUtils.isEmpty(userID) || value == null) {
+        if (StringUtils.isEmpty(userID)) {
             return -1;
         }
 
@@ -342,14 +365,14 @@ public class UserService {
                 context = new ClassPathXmlApplicationContext("com/example/eurasia/config/applicationContext.xml");
                 dataXMLReader = (DataXMLReader) context.getBean(UserService.BEAN_NAME_HEADER_DISPLAY_DEFAULT);
                 data = new Data(dataXMLReader.getKeyValue());
-                return getUserDao().addUser(UserService.TABLE_USER_HEADER_DISPLAY,userID,data);
+                return getUserDao().addUser(UserService.TABLE_USER_HEADER_DISPLAY,data);
             case UserService.USER_ADMINISTRATOR:
                 context = new ClassPathXmlApplicationContext("com/example/eurasia/config/applicationContext.xml");
                 dataXMLReader = (DataXMLReader) context.getBean(UserService.BEAN_NAME_HEADER_DISPLAY_ADMIN);
                 data = new Data(dataXMLReader.getKeyValue());
-                return getUserDao().addUser(UserService.TABLE_USER_HEADER_DISPLAY,userID,data);
+                return getUserDao().addUser(UserService.TABLE_USER_HEADER_DISPLAY,data);
             case UserService.USER_GUEST:
-                return getUserDao().addUser(UserService.TABLE_USER_HEADER_DISPLAY,userID,null);
+                return getUserDao().addUser(UserService.TABLE_USER_HEADER_DISPLAY,null);
             default:
                 return getUserDao().addUser(UserService.TABLE_USER_HEADER_DISPLAY,value);
         }

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mapping>
+    <column key="userID" value="sinoshuju_admin" />
+    <column key="昵称" value="" />
+    <column key="性别" value="" />
+    <column key="名字" value="管理员" />
+    <column key="密码" value="" />
+    <column key="年龄" value="" />
+    <column key="国家" value="" />
+    <column key="城市" value="" />
+    <column key="省份" value="" />
+    <column key="地址" value="" />
+    <column key="手机号码" value="adminPhone" />
+    <column key="电子邮价" value="" />
+</mapping>

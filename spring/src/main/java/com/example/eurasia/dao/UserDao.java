@@ -16,31 +16,6 @@ public class UserDao extends CommonDao {
      * @return
      * @exception
      * @author FuJia
-     * @Time 2018-11-17 00:00:00
-     */
-    public int addUser(String tableName, String userID, Data data) throws Exception {
-        StringBuffer sql = new StringBuffer();
-        int size = data.getKeyValue().size();
-        String columnsNames = data.getKeys();
-        String[] columnsValuesArr = data.getValuesToArray();
-
-        sql.append("insert into " + tableName + " (userID," + columnsNames + ") values (");
-        sql.append(userID + CommonDao.COMMA);
-        for (int i=0; i<size; i++) {
-            sql.append("?,");
-        }
-        sql.deleteCharAt(sql.length() - CommonDao.COMMA.length());
-        sql.append(")");
-        int num = getJdbcTemplate().update(sql.toString(),(Object[])columnsValuesArr);
-        return num;//大于0，插入成功。
-    }
-
-    /**
-     * 添加用户以及其相关数据
-     * @param
-     * @return
-     * @exception
-     * @author FuJia
      * @Time 2018-12-08 00:00:00
      */
     public int addUser(String tableName, Data data) throws Exception {
