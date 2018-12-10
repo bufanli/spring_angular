@@ -40,11 +40,11 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
   searchParam = [
     { key: '进口关区', value: '', type: 'List' },
     { key: '起始日期', value: '', type: 'Date' },
-    { key: '结束日期', value: '' , type: 'Date' },
-    { key: '产品名称', value: '' , type: 'String'},
-    { key: '装货港', value: '' , type: 'String'},
-    { key: '商品编码', value: '' , type: 'String'},
-    { key: '规格型号', value: '' , type: 'String'}
+    { key: '结束日期', value: '', type: 'Date' },
+    { key: '产品名称', value: '', type: 'String' },
+    { key: '装货港', value: '', type: 'String' },
+    { key: '商品编码', value: '', type: 'String' },
+    { key: '规格型号', value: '', type: 'String' }
   ];
   public importCustoms: string[] = [];
 
@@ -59,7 +59,7 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
     let result = '';
     for (const custom of this.importCustoms) {
       result = result + custom;
-      result = result + '||';
+      result = result + '~~';
     }
     // get rid of last two chars
     result = result.substr(0, result.lastIndexOf('||'));
@@ -171,6 +171,12 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
     } else {
       this.searchParam[2].value = '';
     }
+    // date query parameter
+    const queryTimeValue = this.searchParam[1].value + '~~' + this.searchParam[2].value;
+    const queryTime = { key: '日期', value: queryTimeValue, type: 'Date' };
+    this.searchParam.slice(1, 1); // from index=1, delete 1 element
+    this.searchParam.slice(2, 1); // from index=1, delete 1 element
+    this.searchParam.push(queryTime);
   }
   // tell whether the font color is gray or not
   isFontGray(id: string): boolean {

@@ -38,9 +38,9 @@ const rootRoutes: Routes = [
     OurCommonModule,
     HttpModule,
     HttpClientModule,
-    HttpClientInMemoryWebApiModule.forRoot(
-      InMemoryDataService, { dataEncapsulation: false }
-    ),
+    // HttpClientInMemoryWebApiModule.forRoot(
+    //   InMemoryDataService, { dataEncapsulation: false }
+    // ),
   ],
   bootstrap: [RootComponent]
 })
