@@ -296,7 +296,7 @@ public class UserInfoController {
      */
     @RequestMapping(value="/getUserDetailedInfos/{editUserID}", method = RequestMethod.GET)
     public @ResponseBody
-    ResponseResult getUserDetailedInfos(HttpServletRequest request, @PathVariable String editUserID) {
+    ResponseResult getUserDetailedInfos(HttpServletRequest request, @PathVariable(value="editUserID") String editUserID) {
         ResponseResult responseResult;
         try {
             log.info("取得用户的详细信息开始");

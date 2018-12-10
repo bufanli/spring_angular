@@ -66,9 +66,11 @@
     </div>
   </div>
   <div class="col-md-4">
+    <div class="form-group">
       <select class="form-control selectpicker" title="请选择省份" id="province" name="province" [(ngModel)]="currentUser['省份']">
         <option *ngFor="let province of this.CHINA_PROVINCES" value="{{province}}">{{province}}</option>
       </select>
+    </div>
   </div>
   <div class="col-md-4">
     <div class="form-group">
@@ -81,22 +83,22 @@
   </div>
 </div>
 <div class="row" *ngIf="currentUser">
-<div class="col-md-4">
-  <div class="form-group">
-    <div class="input-group">
-      <span class="input-group-addon" id="email">电子邮件</span>
-      <input type="email" [(ngModel)]="currentUser['电子邮件']" name="email" class="form-control" placeholder="请输入电子邮件"
-        aria-describedby="email">
+  <div class="col-md-4">
+    <div class="form-group">
+      <div class="input-group">
+        <span class="input-group-addon" id="email">电子邮件</span>
+        <input type="email" [(ngModel)]="currentUser['电子邮件']" name="email" class="form-control" placeholder="请输入电子邮件"
+          aria-describedby="email">
+      </div>
     </div>
   </div>
-</div>
-<div class="col-md-8">
-  <div class="form-group">
-    <div class="input-group">
-      <span class="input-group-addon" id="address">地址</span>
-      <input type="text" [(ngModel)]="currentUser['地址']" name="address" class="form-control" placeholder="请输入地址"
-        aria-describedby="address">
+  <div class="col-md-8">
+    <div class="form-group">
+      <div class="input-group">
+        <span class="input-group-addon" id="address">地址</span>
+        <input type="text" [(ngModel)]="currentUser['地址']" name="address" class="form-control" placeholder="请输入地址"
+          aria-describedby="address">
+      </div>
     </div>
   </div>
-</div>
 </div>
