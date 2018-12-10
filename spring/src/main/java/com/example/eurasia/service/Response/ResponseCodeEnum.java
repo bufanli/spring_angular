@@ -5,7 +5,7 @@ public enum ResponseCodeEnum {
     SYSTEM_OPERATE_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "操作成功"),
     SYSTEM_OPERATE_FAILED(ResponseCode.RESPONSE_CODE_NG, "操作失败"),
     SYSTEM_LOGIN_FAILED(ResponseCode.RESPONSE_CODE_NG, "登录失败"),
-    SYSTEM_LOGIN_SUCCESS(ResponseCode.RESPONSE_CODE_NG, "登录成功"),
+    SYSTEM_LOGIN_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "登录成功"),
     SYSTEM_LOGIN_ING(ResponseCode.RESPONSE_CODE_OK, "用户登陆中"),
     SYSTEM_LOGIN_NOT_ING(ResponseCode.RESPONSE_CODE_NG, "用户没有登陆中"),
 

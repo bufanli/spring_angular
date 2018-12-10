@@ -1,5 +1,6 @@
 package com.example.eurasia.controller;
 
+import com.example.eurasia.entity.UserCustom;
 import com.example.eurasia.entity.UserInfo;
 import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Response.ResponseResult;
@@ -44,18 +45,31 @@ public class UserInfoController {
      * @date 2018-11-18
      * @description 设定登陆用户ID
      */
-    @RequestMapping(value="/login", method = RequestMethod.GET)
+    @RequestMapping(value="/loginAdmin", method = RequestMethod.POST)
     public @ResponseBody
-    ResponseResult login(@RequestBody String loginUserID, HttpServletRequest request) {
+    ResponseResult loginAdmin(@RequestBody UserCustom[] userCustoms, HttpServletRequest request) {
         ResponseResult responseResult;
         try {
             log.info("设定登陆用户ID开始");
-            if (userInfoServiceImpl.isUserIDExist(loginUserID) == false) {
-                responseResult = new ResponseResultUtil().error(ResponseCodeEnum.USER_WECHAT_VALID_FAILED);
+            String userName = null;
+            String userPassword = null;
+            for (UserCustom userCustom:userCustoms) {
+                switch (userCustom.getKey()) {
+                    case UserService.LOGIN_USER_ID:
+                        userName = userCustom.getValue();
+                        break;
+                    case UserService.LOGIN_USER_PW:
+                        userPassword = userCustom.getValue();
+                        break;
+                    default:
+                        return new ResponseResultUtil().error(ResponseCodeEnum.USER_LOGIN_FAILED);
+                }
+            }
+
+            if (userInfoServiceImpl.checkUserPassWord(userName,userPassword) == false) {
+                responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
             } else {
-                HttpSession session = request.getSession();
-                session.setAttribute("userID", loginUserID);
-                responseResult = new ResponseResultUtil().success(ResponseCodeEnum.USER_WECHAT_VALID_SUCCESS);
+                responseResult = new ResponseResultUtil().success(ResponseCodeEnum.SYSTEM_LOGIN_SUCCESS);
             }
         } catch (Exception e) {
             e.printStackTrace();

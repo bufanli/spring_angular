@@ -35,17 +35,17 @@ public class UserDao extends CommonDao {
     }
 
     /**
-     * 查询UserID
+     * 查询某表某字段指定值的个数
      * @param
      * @return
      * @exception
      * @author FuJia
      * @Time 2018-11-29 23:11:00
      */
-    public int queryUserID(String tableName, String userID)
+    public int queryUserID(String tableName, String columnName, String value)
     {
         //String sql = "select 1 from " + tableName +" where userID = '" + userID + "' limit 1";
-        String sql = "select count(*) from " + tableName +" where userID = '" + userID + "'";
+        String sql = "select count(*) from " + tableName +" where " + columnName + " = '" + value + "'";
         int count = getJdbcTemplate().queryForObject(sql,Integer.class);
         return count;
     }
@@ -87,7 +87,7 @@ public class UserDao extends CommonDao {
      * @author FuJia
      * @Time 2018-12-07 00:00:00
      */
-    public List<Data> queryOneForUserCustom(String tableName, String userID, String columnName) throws Exception {
+    public List<Data> queryOneForUserCustom(String tableName, String columnName, String userID) throws Exception {
         StringBuffer sql = new StringBuffer();
         sql.append("select " + columnName + "from " + tableName + " where userID = '" + userID + "'");
         List<Data> dataList = getJdbcTemplate().query(sql.toString(), new DataMapper());

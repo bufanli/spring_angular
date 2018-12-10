@@ -404,12 +404,35 @@ public class UserInfoServiceImpl implements IUserInfoService {
         try {
             for (UserCustom userCustom:userInfo.getUserBasicInfos()) {
                 if (userCustom.getKey().equals(userService.MUST_USER_PHONE)) {
-                    return userService.isUserPhoneExist(userCustom.getValue());
+                    if (userService.getUserPhoneNumber(userCustom.getValue()) == 0) {
+                        return true;
+                    }
+                    break;
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
             return false;
+        }
+        return false;
+    }
+
+    /**
+     * 判断用户名和密码
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-12-10 00:00:00
+     */
+    public boolean checkUserPassWord(String userID, String password) throws Exception {
+
+        if (StringUtils.isEmpty(userID) || StringUtils.isEmpty(password)) {
+            return false;
+        }
+
+        if (userService.getUserPassWord(userID).equals(password)) {
+            return true;
         }
         return false;
     }

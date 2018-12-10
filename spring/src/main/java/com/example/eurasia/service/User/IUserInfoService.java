@@ -17,4 +17,5 @@ public interface IUserInfoService {
     ResponseResult getUserDetailedInfos(String editUserID) throws Exception;
     ResponseResult getUserAccessAuthority(String userID) throws Exception;
     boolean checkUserPhone(UserInfo userInfo) throws Exception;
+    boolean checkUserPassWord(String userID, String password) throws Exception;
 }

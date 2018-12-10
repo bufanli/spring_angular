@@ -63,10 +63,15 @@ public class UserService {
 
     // 必要的字段名称
     public static final String MUST_USER_ID = "userID";
+    public static final String MUST_USER_PW = "密码";
     public static final String MUST_USER_NAME = "名字";
     public static final String MUST_USER_PHONE = "手机号码";
     public static final String MUST_PRODUCT_DATE = "日期";
     public static final String MUST_PRODUCT_NUMBER = "商品编码";
+
+    //登陆用字段
+    public static final String LOGIN_USER_ID = "用户名";
+    public static final String LOGIN_USER_PW = "密码";
 
     public static final String PERMITION_TRUE = "TRUE";//有权限
     public static final String PERMITION_TRUE_ANY = "TRUE_ANY";//有权限,所有数据无限制
@@ -390,7 +395,7 @@ public class UserService {
         if (StringUtils.isEmpty(userID) == true) {
             return -1;
         }
-        return getUserDao().queryUserID(UserService.TABLE_USER_BASIC_INFO,userID);
+        return getUserDao().queryUserID(UserService.TABLE_USER_BASIC_INFO,UserService.MUST_USER_ID,userID);
     }
 
     /**
@@ -401,14 +406,27 @@ public class UserService {
      * @author FuJia
      * @Time 2018-11-29 00:00:00
      */
-    public boolean isUserPhoneExist(String phone) throws Exception {
+    public int getUserPhoneNumber(String phone) throws Exception {
         if (StringUtils.isEmpty(phone) == true) {
-            return true;
+            return -1;
         }
-        if (getUserDao().queryUserID(UserService.TABLE_USER_BASIC_INFO,phone) == 0) {
-            return false;
+        return getUserDao().queryUserID(UserService.TABLE_USER_BASIC_INFO,UserService.MUST_USER_PHONE,phone);
+    }
+
+    /**
+     * 判断用户名和密码对不对。
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-12-10 00:00:00
+     */
+    public String getUserPassWord(String userID) throws Exception {
+        if (StringUtils.isEmpty(userID) == true) {
+            return "";
         }
-        return true;
+
+        return this.getOneUserCustom(UserService.TABLE_USER_BASIC_INFO,UserService.MUST_USER_PW,userID);
     }
 
     /**
@@ -795,12 +813,12 @@ public class UserService {
      * @author FuJia
      * @Time 2018-12-07 00:00:00
      */
-    public String getOneUserCustom(String tableName, String userID, String columnName) throws Exception {
-        if (StringUtils.isEmpty(tableName) || StringUtils.isEmpty(userID) || StringUtils.isEmpty(columnName)) {
+    public String getOneUserCustom(String tableName, String columnName, String userID) throws Exception {
+        if (StringUtils.isEmpty(tableName) || StringUtils.isEmpty(columnName) || StringUtils.isEmpty(userID)) {
             return null;
         }
 
-        List<Data> dataList = getUserDao().queryOneForUserCustom(tableName,userID,columnName);
+        List<Data> dataList = getUserDao().queryOneForUserCustom(tableName,columnName,userID);
         if (dataList.size() != 1) {
             return null;
         }
