@@ -502,26 +502,6 @@ public class UserService {
 
         List<Data> userBasicInfosList = this.getUserCustom(UserService.TABLE_USER_BASIC_INFO, UserService.USER_ALL);
 
-        //Dummy T.B.D
-        Map<String, String> user = new HashMap<String, String>();
-        user.put("userID", "webchat0001");
-        user.put("昵称", "常海啸");
-        user.put("性别", "男");
-        user.put("名字", "张力");
-        user.put("密码", "123456");
-        user.put("年龄", "23");
-        user.put("国家", "中国");
-        user.put("城市", "南京");
-        user.put("省份", "江苏");
-        user.put("地址", "江苏省南京市**路");
-        user.put("手机号码", "134534096847");
-        user.put("电子邮件", "zhangli@163.com");
-        Data data = new Data(user);
-        user.put("userID", "webchat0002");
-        Data data2 = new Data(user);
-        userBasicInfosList.add(data);
-        userBasicInfosList.add(data2);
-
         return userBasicInfosList;
     }
 
