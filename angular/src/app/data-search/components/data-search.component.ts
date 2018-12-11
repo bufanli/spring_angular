@@ -49,9 +49,9 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
   public importCustoms: string[] = [];
 
   onSearch(): void {
-    this.getQueryTime();
+    const queryConditions = this.getQueryTime();
     this.convertSelection();
-    this.searchData().subscribe(result =>
+    this.searchData(queryConditions).subscribe(result =>
       this.searchDataNotification(result));
   }
 
@@ -62,7 +62,7 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
       result = result + '~~';
     }
     // get rid of last two chars
-    result = result.substr(0, result.lastIndexOf('||'));
+    result = result.substr(0, result.lastIndexOf('~~'));
     this.searchParam[0].value = result;
   }
 
@@ -87,8 +87,8 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
   }
 
   /** search products from the server */
-  searchData(): Observable<HttpResponse> {
-    return this.http.post<HttpResponse>(this.searchUrl, this.searchParam, httpOptions);
+  searchData(queryConditions: any): Observable<HttpResponse> {
+    return this.http.post<HttpResponse>(this.searchUrl, queryConditions, httpOptions);
   }
   constructor(private http: HttpClient,
     private downloadHttp: Http,
@@ -111,7 +111,9 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
     const allHeaders: Header[] = this.addFormatterToHeaders(httpResponse.data);
     $('#table').bootstrapTable({ columns: allHeaders });
     // show all products after headers are shown
-    this.searchData().subscribe(products =>
+    const searchConditions = this.getQueryTime();
+    this.convertSelection();
+    this.searchData(searchConditions).subscribe(products =>
       this.searchDataNotification(products));
   }
   addFormatterToHeaders(headers: Header[]) {
@@ -171,12 +173,15 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
     } else {
       this.searchParam[2].value = '';
     }
+    // copy searchParam to another
+    const queryContiditons: any = this.searchParam.slice();
     // date query parameter
-    const queryTimeValue = this.searchParam[1].value + '~~' + this.searchParam[2].value;
+    const queryTimeValue = queryContiditons[1].value + '~~' + queryContiditons[2].value;
     const queryTime = { key: '日期', value: queryTimeValue, type: 'Date' };
-    this.searchParam.slice(1, 1); // from index=1, delete 1 element
-    this.searchParam.slice(2, 1); // from index=1, delete 1 element
-    this.searchParam.push(queryTime);
+    queryContiditons.splice(1, 1); // from index=1, delete 1 element
+    queryContiditons.splice(1, 1); // from index=1, delete 1 element
+    queryContiditons.push(queryTime);
+    return queryContiditons;
   }
   // tell whether the font color is gray or not
   isFontGray(id: string): boolean {
