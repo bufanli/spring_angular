@@ -34,7 +34,7 @@ public class SearchDataServiceImpl implements ISearchDataService {
 
         List<Data> dataList;
         try {
-            if (isQueryConditionsNotNULL(queryConditionsArr) == false) {
+            if (this.isQueryConditionsNotNULL(queryConditionsArr) == false) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.SEARCH_DATA_QUERY_CONDITION_ERROR);
             }
 
@@ -71,20 +71,25 @@ public class SearchDataServiceImpl implements ISearchDataService {
             String queryConditionValue = null;
             switch (queryCondition.getKey()) {
                 case UserService.MUST_PRODUCT_DATE://"日期"为空，从用户权限表里获得。
-                    if (queryCondition.getValue().equals(QueryCondition.QUERY_CONDITION_SPLIT)) {
+                    if (queryCondition.getValue().equals(QueryCondition.QUERY_CONDITION_SPLIT) || queryCondition.getValue().equals("")) {
                         queryConditionValue = userService.getOneUserCustom(userService.TABLE_USER_ACCESS_AUTHORITY,
-                                userID,
-                                UserService.MUST_PRODUCT_DATE);
+                                UserService.MUST_PRODUCT_DATE,
+                                userID);
+                    } else {
+                        queryConditionValue = queryCondition.getValue();
                     }
                     break;
                 case UserService.MUST_PRODUCT_NUMBER://"商品编码"为空，从用户权限表里获得。
-                    if (queryCondition.getValue().equals(QueryCondition.QUERY_CONDITION_SPLIT)) {
+                    if (queryCondition.getValue().equals(QueryCondition.QUERY_CONDITION_SPLIT) || queryCondition.getValue().equals("")) {
                         queryConditionValue = userService.getOneUserCustom(userService.TABLE_USER_ACCESS_AUTHORITY,
-                                userID,
-                                UserService.MUST_PRODUCT_NUMBER);
+                                UserService.MUST_PRODUCT_NUMBER,
+                                userID);
+                    } else {
+                        queryConditionValue = queryCondition.getValue();
                     }
                     break;
                 default:
+                    queryConditionValue = "";
                     break;
             }
             queryCondition.setValue(queryConditionValue);

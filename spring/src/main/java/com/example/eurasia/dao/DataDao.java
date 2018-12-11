@@ -2,6 +2,7 @@ package com.example.eurasia.dao;
 
 import com.example.eurasia.entity.Data;
 import com.example.eurasia.entity.QueryCondition;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+@Slf4j
 @Repository
 public class DataDao extends CommonDao {
 
@@ -259,6 +261,10 @@ StringUtils.isEmpty(" bob ") = false
                     break;
                 case QueryCondition.QUERY_CONDITION_TYPE_DATE:
                     String dateArr[] = queryCondition.getQueryConditionToArr();
+                    if (dateArr.length != 2) {
+                        log.error("日期格式不对");
+                        return null;
+                    }
                     String dateStart = dateArr[0];
                     String dateEnd = dateArr[1];
                     if (dateStart.equals("") == true && dateEnd.equals("") == false) {
@@ -300,6 +306,10 @@ StringUtils.isEmpty(" bob ") = false
                 case QueryCondition.QUERY_CONDITION_TYPE_MONEY:
                 case QueryCondition.QUERY_CONDITION_TYPE_AMOUNT:
                     String arr[] = queryCondition.getQueryConditionToArr();
+                    if (arr.length != 2) {
+                        log.error("金额/总额格式不对");
+                        return null;
+                    }
                     String conditionStart = arr[0];
                     String conditionEnd = arr[1];
                     if (conditionStart.equals("") == true && conditionEnd.equals("") == false) {

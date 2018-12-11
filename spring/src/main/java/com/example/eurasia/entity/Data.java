@@ -230,6 +230,7 @@ LinkedHashMap保证了元素迭代的顺序。该迭代顺序可以是插入顺�
         while (it.hasNext()) {
             Map.Entry<String,String> entry = it.next();
             userCustoms[i] = new UserCustom(entry.getKey(),entry.getValue());
+            i++;
         }
 
         return userCustoms;

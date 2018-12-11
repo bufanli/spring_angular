@@ -138,13 +138,13 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
         switch (key) {
             case UserService.MUST_PRODUCT_DATE://"日期"。从用户权限表里获得。
                 queryConditionValue = userService.getOneUserCustom(userService.TABLE_USER_ACCESS_AUTHORITY,
-                        userID,
-                        UserService.MUST_PRODUCT_DATE);
+                        UserService.MUST_PRODUCT_DATE,
+                        userID);
                 break;
             case UserService.MUST_PRODUCT_NUMBER://"商品编码"。从用户权限表里获得。
                 queryConditionValue = userService.getOneUserCustom(userService.TABLE_USER_ACCESS_AUTHORITY,
-                        userID,
-                        UserService.MUST_PRODUCT_NUMBER);
+                        UserService.MUST_PRODUCT_NUMBER,
+                        userID);
                 break;
             default:
                 queryConditionValue = "";

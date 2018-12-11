@@ -89,7 +89,7 @@ public class UserDao extends CommonDao {
      */
     public List<Data> queryOneForUserCustom(String tableName, String columnName, String userID) throws Exception {
         StringBuffer sql = new StringBuffer();
-        sql.append("select " + columnName + "from " + tableName + " where userID = '" + userID + "'");
+        sql.append("select " + columnName + " from " + tableName + " where userID = '" + userID + "'");
         List<Data> dataList = getJdbcTemplate().query(sql.toString(), new DataMapper());
         return dataList;
     }

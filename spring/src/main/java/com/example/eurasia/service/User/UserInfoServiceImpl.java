@@ -208,24 +208,24 @@ public class UserInfoServiceImpl implements IUserInfoService {
             if (userAccessAuthoritiesList == null) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.USER_GET_ACCESS_AUTHORITY_FROM_SQL_NULL);
             }
-            if (userAccessAuthoritiesList.size() == 0) {
-                return new ResponseResultUtil().error(ResponseCodeEnum.USER_GET_ACCESS_AUTHORITY_FROM_SQL_ZERO);
+            if (userAccessAuthoritiesList.size() != 1) {
+                return new ResponseResultUtil().error(ResponseCodeEnum.USER_GET_ACCESS_AUTHORITY_FROM_SQL_FAILED);
             }
 
             userQueryConditionDisplaysList = userService.getUserQueryConditionDisplay(editUserID);
             if (userQueryConditionDisplaysList == null) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.USER_GET_QUERY_CONDITION_DISPLAY_FROM_SQL_NULL);
             }
-            if (userQueryConditionDisplaysList.size() == 0) {
-                return new ResponseResultUtil().error(ResponseCodeEnum.USER_GET_QUERY_CONDITION_DISPLAY_FROM_SQL_ZERO);
+            if (userQueryConditionDisplaysList.size() != 1) {
+                return new ResponseResultUtil().error(ResponseCodeEnum.USER_GET_QUERY_CONDITION_DISPLAY_FROM_SQL_FAILED);
             }
 
             userHeaderDisplaysList = userService.getUserHeaderDisplay(editUserID);
             if (userHeaderDisplaysList == null) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.USER_GET_HEADER_DISPLAY_FROM_SQL_NULL);
             }
-            if (userHeaderDisplaysList.size() == 0) {
-                return new ResponseResultUtil().error(ResponseCodeEnum.USER_GET_HEADER_DISPLAY_FROM_SQL_ZERO);
+            if (userHeaderDisplaysList.size() != 1) {
+                return new ResponseResultUtil().error(ResponseCodeEnum.USER_GET_HEADER_DISPLAY_FROM_SQL_FAILED);
             }
         } catch (Exception e) {
             e.printStackTrace();
