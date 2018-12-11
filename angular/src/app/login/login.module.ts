@@ -1,12 +1,22 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { LoginComponent } from './components/login.component';
+import { LoginComponent } from './components/login/login.component';
 import { HttpClientModule } from '@angular/common/http';
+import { AdminLoginComponent } from './components/admin-login/admin-login.component';
 
 export const loginRoutes: Routes = [
   {
     path: '',
+    redirectTo: 'user',
+    pathMatch: 'full',
+  },
+  {
+    path: 'user',
     component: LoginComponent
+  },
+  {
+    path: 'admin',
+    component: AdminLoginComponent,
   }
 ];
 @NgModule({
@@ -17,6 +27,7 @@ export const loginRoutes: Routes = [
   exports: [RouterModule],
   declarations: [
     LoginComponent,
+    AdminLoginComponent,
   ]
 })
 export class LoginModule { }
