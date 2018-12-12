@@ -1,10 +1,7 @@
 package com.example.eurasia.service.User;
 
 import com.example.eurasia.dao.UserDao;
-import com.example.eurasia.entity.Data;
-import com.example.eurasia.entity.DataXMLReader;
-import com.example.eurasia.entity.UserCustom;
-import com.example.eurasia.entity.UserInfo;
+import com.example.eurasia.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -76,8 +73,6 @@ public class UserService {
     public static final String PERMITION_TRUE = "TRUE";//有权限
     public static final String PERMITION_TRUE_ANY = "TRUE_ANY";//有权限,所有数据无限制
     public static final String PERMITION_FALSE = "FALSE";//没有权限
-
-    public static final String VALUE_CONDITION_SPLIT = "～～";//字段数据中的的分隔符号
 
     public static final String COLUMN_SHOW_MORE = "更多";//在显示数据的表格最后增加的列
 
@@ -482,7 +477,7 @@ public class UserService {
                         }
                     }
 
-                    return strDate.split(UserService.VALUE_CONDITION_SPLIT);
+                    return strDate.split(QueryCondition.QUERY_CONDITION_SPLIT);
                 } else {
                     return null;
                 }

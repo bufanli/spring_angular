@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mapping>
     <column key="userID" value="sinoshuju_admin" />
-    <column key="日期范围" value="~~" />
-    <column key="商品编码" value="~~" />
+    <column key="日期" value="~~" />
+    <column key="商品编码" value="" />
     <column key="账号有效期" value="~~" />
     <column key="上传可否" value="TRUE" />
-    <column key="看的页数" value="~~" />
-    <column key="看的条数" value="~~" />
+    <column key="看的页数" value="" />
+    <column key="看的条数" value="" />
     <column key="复制数据可否" value="TRUE" />
     <column key="导出数据可否" value="TRUE" />
     <column key="查看详细可否" value="TRUE" />

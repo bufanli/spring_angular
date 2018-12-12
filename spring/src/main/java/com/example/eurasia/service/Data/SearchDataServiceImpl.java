@@ -45,9 +45,6 @@ public class SearchDataServiceImpl implements ISearchDataService {
             if (dataList == null) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.SEARCH_DATA_INFO_FROM_SQL_NULL);
             }
-            if (dataList.size() == 0) {
-                return new ResponseResultUtil().error(ResponseCodeEnum.SEARCH_DATA_INFO_FROM_SQL_ZERO);
-            }
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseResultUtil().error(ResponseCodeEnum.SEARCH_DATA_INFO_FROM_SQL_FAILED);
@@ -89,7 +86,7 @@ public class SearchDataServiceImpl implements ISearchDataService {
                     }
                     break;
                 default:
-                    queryConditionValue = "";
+                    queryConditionValue = queryCondition.getValue();
                     break;
             }
             queryCondition.setValue(queryConditionValue);

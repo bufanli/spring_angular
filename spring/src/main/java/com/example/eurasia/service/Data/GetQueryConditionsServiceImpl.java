@@ -61,7 +61,7 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
             while (it.hasNext()) {
                 Map.Entry<String,String> entry = it.next();
                 queryConditions[i].setKey(entry.getKey());
-                queryConditions[i].setValue(QueryCondition.QUERY_CONDITION_SPLIT);
+                queryConditions[i].setValue(getQueryConditionDisplayValue(UserService.USER_DEFAULT,entry.getKey()));
                 queryConditions[i].setType(entry.getValue());
                 i++;
             }

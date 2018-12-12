@@ -10,7 +10,7 @@ public class QueryCondition implements Cloneable {
     public static final String QUERY_CONDITION_TYPE_MONEY = "Money";
     public static final String QUERY_CONDITION_TYPE_AMOUNT = "Amount";
 
-    public static final String QUERY_CONDITION_SPLIT = "～～";//一个查询条件中的分隔符号
+    public static final String QUERY_CONDITION_SPLIT = "~~";//一个查询条件中的分隔符号
 
     private String key;
     private String value;
