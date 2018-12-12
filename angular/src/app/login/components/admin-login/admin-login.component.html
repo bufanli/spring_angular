@@ -20,16 +20,34 @@
         </div>
       </div>
       <div class="login-wrap">
-        <form class="form-horizontal">
-          <span class="heading">用户微信登录</span>
-          <div class="form-group">
-            <label class="col-md-3 control-label">用户名</label>
-            <div class="col-md-9">
-              <input class="form-control" id="focusedInput" type="text" placeholder="请输入用户名">
-            </div>
+        <div class="panel panel-primary admin-login">
+          <div class="panel-heading">
+            <h4 class="panel-title">管理员登录</h4>
           </div>
-        </form>
+          <div class="panel-body">
+            <form class="form-horizontal">
+              <div class="form-group">
+                <label class="col-md-3 control-label">用户名</label>
+                <div class="col-md-9">
+                  <input class="form-control" id="admin_name" type="text" placeholder="请输入用户名">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-md-3 control-label">密码</label>
+                <div class="col-md-9">
+                  <input class="form-control" id="admin_password" type="password" placeholder="请输入密码">
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-md-6">
+                  <button type="submit" class="btn btn-primary btn-block">
+                    <span class="glyphicon glyphicon-log-in"></span> &nbsp;登录
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
       </div>
     </div>
   </div>
-</div>
