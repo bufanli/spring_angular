@@ -1,5 +1,5 @@
 export class HttpResponse {
-  code: string;
+  code: number;
   message: string;
   data: any;
 }

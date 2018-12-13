@@ -29,21 +29,24 @@
               <div class="form-group">
                 <label class="col-md-3 control-label">用户名</label>
                 <div class="col-md-9">
-                  <input class="form-control" id="admin_name" type="text" placeholder="请输入用户名">
+                  <input class="form-control" id="admin_name" [(ngModel)]="name" type="text"
+                  placeholder="请输入用户名" name="admin_name" (focus)="onChangeInput()>
                 </div>
               </div>
               <div class="form-group">
                 <label class="col-md-3 control-label">密码</label>
                 <div class="col-md-9">
-                  <input class="form-control" id="admin_password" type="password" placeholder="请输入密码">
+                  <input class="form-control" id="admin_password" [(ngModel)]="password" type="password" placeholder="请输入密码"
+                    name="admin_password" (focus)="onChangeInput()">
                 </div>
               </div>
               <div class="form-group">
                 <div class="col-md-6">
-                  <button type="submit" class="btn btn-primary btn-block">
+                  <button type="submit" class="btn btn-primary btn-block" (click)="adminLogin()">
                     <span class="glyphicon glyphicon-log-in"></span> &nbsp;登录
                   </button>
                 </div>
+                <span class="alert-danger" *ngIf="error">用户名或者密码有误</span>
               </div>
             </form>
           </div>
