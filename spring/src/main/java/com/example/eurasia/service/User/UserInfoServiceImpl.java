@@ -431,8 +431,11 @@ public class UserInfoServiceImpl implements IUserInfoService {
             return false;
         }
 
-        if (userService.getUserPassWord(userID).equals(password)) {
-            return true;
+        String pw = userService.getUserPassWord(userID);
+        if (!StringUtils.isEmpty(pw)) {
+            if (pw.equals(password)) {
+                return true;
+            }
         }
         return false;
     }
