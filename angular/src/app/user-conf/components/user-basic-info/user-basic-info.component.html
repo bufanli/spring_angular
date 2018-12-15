@@ -68,7 +68,7 @@
   <div class="col-md-4">
     <div class="form-group">
       <select class="form-control selectpicker" title="请选择省份" id="province" name="province" [(ngModel)]="currentUser['省份']">
-        <option *ngFor="let province of this.CHINA_PROVINCES" value="{{province}}">{{province}}</option>
+        <option *ngFor="let province of this.commonUtilitiesService.CHINA_PROVINCES" value="{{province}}">{{province}}</option>
       </select>
     </div>
   </div>

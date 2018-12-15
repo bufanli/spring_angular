@@ -4,6 +4,8 @@ import { UserEditComponent } from '../components/user-edit/user-edit.component';
 import { HttpResponse } from '../../common/entities/http-response';
 import { HttpClient } from '@angular/common/http';
 import { CommonUtilitiesService } from 'src/app/common/services/common-utilities.service';
+import { User } from '../entities/user';
+import { UserAccessAuthorities } from '../entities/user-access-authorities';
 
 const userAccessAuthoritiesDictionary = [
   'userID',
@@ -27,16 +29,17 @@ const userAccessAuthoritiesDictionary = [
 @Injectable({
   providedIn: 'root'
 })
-export class UserPermissionService {
+export class UserInfoService {
 
   private getUserDetailedInfosUrl = 'getUserDetailedInfos';  // URL to get user's permission
-  private userDetailedInfoComponent: UserEditComponent = null;
+  private updateUserInfoUrl = 'updateUser';  // URL to get user's permission
+  private userEditComponent: UserEditComponent = null;
 
   constructor(private http: HttpClient,
     private commonUtilityService: CommonUtilitiesService) { }
 
   public getUserDetailedInfo(sourceComponent: UserEditComponent, userID: string): void {
-    this.userDetailedInfoComponent = sourceComponent;
+    this.userEditComponent = sourceComponent;
     this.getUserDetailedInfoImpl(userID).subscribe(
       httpResponse => this.getUserDetailedInfoNotification(httpResponse));
   }
@@ -59,6 +62,34 @@ export class UserPermissionService {
     const userAccessAuthoritiesData = data.userAccessAuthorities;
     const userAccessAuthorities = this.commonUtilityService.deserializeDataFromHttpResponse(
       userAccessAuthoritiesDictionary, userAccessAuthoritiesData);
-      this.userDetailedInfoComponent.setUserAccessAuthorities(userAccessAuthorities);
+    this.userEditComponent.setUserAccessAuthorities(userAccessAuthorities);
+  }
+
+  public updateUserInfo(
+    userEditComponent: UserEditComponent,
+    basicInfo: User,
+    userAccessAuthorities: UserAccessAuthorities,
+    userHeaderDisplay: any,
+    userQueryConditionDisplay: any): void {
+    this.updateUserInfoImpl(
+      userEditComponent,
+      basicInfo,
+      userAccessAuthorities,
+      userHeaderDisplay,
+      userQueryConditionDisplay).subscribe(
+        httpResponse => this.updateUserInfoNotification(userEditComponent, httpResponse));
+  }
+  private updateUserInfoImpl(
+    userEditComponent: UserEditComponent,
+    basicInfo: User,
+    userAccessAuthorities: UserAccessAuthorities,
+    userHeaderDisplay: any,
+    userQueryConditionDisplay: any): Observable<HttpResponse> {
+    return this.http.get<HttpResponse>(this.updateUserInfoUrl);
+  }
+  private updateUserInfoNotification(
+    userEditComponent: UserEditComponent,
+    httpResponse: HttpResponse) {
+    userEditComponent.updateUserInfoCallback(httpResponse);
   }
 }

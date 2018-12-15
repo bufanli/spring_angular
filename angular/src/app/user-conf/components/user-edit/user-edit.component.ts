@@ -1,10 +1,11 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { User } from '../../entities/user';
-import { UserAccessAuthorities} from '../../entities/user-access-authorities';
-import { UserAccessAuthoritiesComponent} from '../user-access-authorities/user-access-authorities.component';
+import { UserAccessAuthorities } from '../../entities/user-access-authorities';
+import { UserAccessAuthoritiesComponent } from '../user-access-authorities/user-access-authorities.component';
 import { UserBasicInfoComponent } from '../user-basic-info/user-basic-info.component';
-import { UserPermissionService } from '../../services/user-permission.service';
+import { UserInfoService } from '../../services/user-info.service';
+import { HttpResponse } from 'src/app/common/entities/http-response';
 
 @Component({
   selector: 'app-user-edit',
@@ -13,7 +14,15 @@ import { UserPermissionService } from '../../services/user-permission.service';
 })
 export class UserEditComponent implements OnInit {
 
+  // user access authorities
   public currentUserAccessAuthorities: UserAccessAuthorities = null;
+  // user header display
+  // TODO this will be replace to entity class in future from any type
+  public currentUserHeaderDisplay: any = null;
+  // user query condition display
+  // TODO this will be replace to entity class in future from any type
+  public currentUserQueryConditionDisplay: any = null;
+  // user basic info
   public currentUser: User = null;
 
   @ViewChild('userPermission')
@@ -23,11 +32,11 @@ export class UserEditComponent implements OnInit {
   private userBasicInfoComponent: UserBasicInfoComponent;
 
   constructor(private activeModal: NgbActiveModal,
-    private permissionService: UserPermissionService) {
+    private userInfoService: UserInfoService) {
   }
 
   ngOnInit() {
-    this.permissionService.getUserDetailedInfo(this, this.currentUser['userID']);
+    this.userInfoService.getUserDetailedInfo(this, this.currentUser['userID']);
   }
 
   close() {
@@ -39,8 +48,28 @@ export class UserEditComponent implements OnInit {
     this.currentUserAccessAuthorities = userAccessAuthorities;
     this.userAccessAuthoritiesComponent.setCurrentUserAccessAuthorities(userAccessAuthorities);
   }
-  // update user info(basic info, permissions, attributes)
-  public updateUserInfo() {
 
+  public setUserHeaderDisplay(headerDisplay: any) {
+    this.currentUserHeaderDisplay = headerDisplay;
+  }
+  public setUserQueryConditionDisplay(queryConditionDisplay: any) {
+    this.currentUserQueryConditionDisplay = queryConditionDisplay;
+  }
+  // update user info(basic info, permissions, query contiditons, headers)
+  public updateUserInfo() {
+    const basicInfo: User = this.userBasicInfoComponent.
+      getCurrentUserBasicInfo();
+    const accessAuthorities = this.userAccessAuthoritiesComponent.
+      getCurrentUserAccessAuthorities();
+    // call service
+    this.userInfoService.updateUserInfo(
+      this,
+      this.currentUser,
+      this.currentUserAccessAuthorities,
+      this.currentUserHeaderDisplay,
+      this.currentUserQueryConditionDisplay);
+  }
+  public updateUserInfoCallback(httpResponse: HttpResponse): void {
+    // TODO
   }
 }
