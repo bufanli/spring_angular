@@ -8,6 +8,7 @@ public enum ResponseCodeEnum {
     SYSTEM_LOGIN_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "登录成功"),
     SYSTEM_LOGIN_ING(ResponseCode.RESPONSE_CODE_OK, "用户登陆中"),
     SYSTEM_LOGIN_NOT_ING(ResponseCode.RESPONSE_CODE_NG, "用户没有登陆中"),
+    SYSTEM_LOGIN_USER_INVALID(ResponseCode.RESPONSE_CODE_NG, "用户有效期已过"),
 
     /* 用户 */
     USER_UPDATE_BASIC_INFO_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "更新用户基本信息成功"),

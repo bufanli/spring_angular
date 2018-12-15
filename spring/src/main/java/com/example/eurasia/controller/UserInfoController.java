@@ -71,6 +71,9 @@ public class UserInfoController {
             } else {
                 responseResult = new ResponseResultUtil().success(ResponseCodeEnum.SYSTEM_LOGIN_SUCCESS);
             }
+            if (userInfoServiceImpl.checkUserValid(userName) == false) {
+                responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_USER_INVALID);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             responseResult = new ResponseResultUtil().error(ResponseCodeEnum.USER_LOGIN_FAILED);
@@ -95,6 +98,9 @@ public class UserInfoController {
                 responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_NOT_ING);
             } else {
                 responseResult = new ResponseResultUtil().success(ResponseCodeEnum.SYSTEM_LOGIN_ING);
+            }
+            if (userInfoServiceImpl.checkUserValid(userID) == false) {
+                responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_USER_INVALID);
             }
         } catch (Exception e) {
             e.printStackTrace();

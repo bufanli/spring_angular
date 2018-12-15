@@ -63,6 +63,7 @@ public class UserService {
     public static final String MUST_USER_PW = "密码";
     public static final String MUST_USER_NAME = "名字";
     public static final String MUST_USER_PHONE = "手机号码";
+    public static final String MUST_USER_VALID = "有效期";
     public static final String MUST_PRODUCT_DATE = "日期";
     public static final String MUST_PRODUCT_NUMBER = "商品编码";
 
@@ -422,6 +423,22 @@ public class UserService {
         }
 
         return this.getOneUserCustom(UserService.TABLE_USER_BASIC_INFO,UserService.MUST_USER_PW,userID);
+    }
+
+    /**
+     * 取得用户有效期。
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-12-10 00:00:00
+     */
+    public String getUserValid(String userID) throws Exception {
+        if (StringUtils.isEmpty(userID) == true) {
+            return "";
+        }
+
+        return this.getOneUserCustom(UserService.TABLE_USER_ACCESS_AUTHORITY,UserService.MUST_USER_VALID,userID);
     }
 
     /**

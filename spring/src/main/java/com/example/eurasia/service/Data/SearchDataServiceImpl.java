@@ -34,7 +34,7 @@ public class SearchDataServiceImpl implements ISearchDataService {
 
         List<Data> dataList;
         try {
-            if (this.isQueryConditionsNotNULL(queryConditionsArr) == false) {
+            if (this.checkQueryConditions(queryConditionsArr) == false) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.SEARCH_DATA_QUERY_CONDITION_ERROR);
             }
 
@@ -53,9 +53,9 @@ public class SearchDataServiceImpl implements ISearchDataService {
         return new ResponseResultUtil().success(ResponseCodeEnum.SEARCH_DATA_INFO_FROM_SQL_SUCCESS, dataList);
     }
 
-    private boolean isQueryConditionsNotNULL(QueryCondition[] queryConditionsArr) {
+    private boolean checkQueryConditions(QueryCondition[] queryConditionsArr) {
         for (QueryCondition queryCondition : queryConditionsArr) {
-            if (queryCondition.getKey() == null || queryCondition.getValue() == null || queryCondition.getType() == null) {
+            if (queryCondition.checkValue() == false) {
                 return false;
             }
         }
@@ -66,27 +66,34 @@ public class SearchDataServiceImpl implements ISearchDataService {
 
         for (QueryCondition queryCondition : queryConditionsArr) {
             String queryConditionValue = null;
-            switch (queryCondition.getKey()) {
-                case UserService.MUST_PRODUCT_DATE://"日期"为空，从用户权限表里获得。
-                    if (queryCondition.getValue().equals(QueryCondition.QUERY_CONDITION_SPLIT) || queryCondition.getValue().equals("")) {
+            switch (queryCondition.getType()) {
+                case QueryCondition.QUERY_CONDITION_TYPE_STRING:
+                    queryConditionValue = "";
+                    break;
+                case QueryCondition.QUERY_CONDITION_TYPE_DATE:
+                    if (queryCondition.getKey().equals(UserService.MUST_PRODUCT_DATE)) {
                         queryConditionValue = userService.getOneUserCustom(userService.TABLE_USER_ACCESS_AUTHORITY,
                                 UserService.MUST_PRODUCT_DATE,
                                 userID);
                     } else {
-                        queryConditionValue = queryCondition.getValue();
+                        queryConditionValue = QueryCondition.QUERY_CONDITION_SPLIT;
                     }
                     break;
-                case UserService.MUST_PRODUCT_NUMBER://"商品编码"为空，从用户权限表里获得。
-                    if (queryCondition.getValue().equals(QueryCondition.QUERY_CONDITION_SPLIT) || queryCondition.getValue().equals("")) {
+                case QueryCondition.QUERY_CONDITION_TYPE_MONEY:
+                case QueryCondition.QUERY_CONDITION_TYPE_AMOUNT:
+                    queryConditionValue = QueryCondition.QUERY_CONDITION_SPLIT;
+                    break;
+                case QueryCondition.QUERY_CONDITION_TYPE_LIST:
+                    if (queryCondition.getKey().equals(UserService.MUST_PRODUCT_NUMBER)) {
                         queryConditionValue = userService.getOneUserCustom(userService.TABLE_USER_ACCESS_AUTHORITY,
                                 UserService.MUST_PRODUCT_NUMBER,
                                 userID);
                     } else {
-                        queryConditionValue = queryCondition.getValue();
+                        queryConditionValue = QueryCondition.QUERY_CONDITION_SPLIT;
                     }
                     break;
                 default:
-                    queryConditionValue = queryCondition.getValue();
+                    queryConditionValue = "";
                     break;
             }
             queryCondition.setValue(queryConditionValue);

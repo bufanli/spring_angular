@@ -1,8 +1,10 @@
 package com.example.eurasia.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 
+@Slf4j
 public class QueryCondition implements Cloneable {
     public static final String QUERY_CONDITION_TYPE_STRING = "String";
     public static final String QUERY_CONDITION_TYPE_DATE = "Date";
@@ -50,6 +52,25 @@ public class QueryCondition implements Cloneable {
     public String[] getQueryConditionToArr() {
         String queryConditionArr[] = this.getValue().split(QueryCondition.QUERY_CONDITION_SPLIT,-1);
         return queryConditionArr;
+/*
+        String s1 = "";
+        String[] sArr1 = s1.split("~~");//{""}
+        String s2 = "~~";
+        String[] sArr2 = s2.split("~~");//{}
+        String s3 = "3~~";
+        String[] sArr3 = s3.split("~~");//{"3"}
+        String s4 = "~~4";
+        String[] sArr4 = s4.split("~~");//{"","4"}
+
+        String s5 = "";
+        String[] sArr5 = s5.split("~~",-1);//{""}
+        String s6 = "~~";
+        String[] sArr6 = s6.split("~~",-1);//{"",""}
+        String s7 = "3~~";
+        String[] sArr7 = s7.split("~~",-1);//{"3",""}
+        String s8 = "~~4";
+        String[] sArr8 = s8.split("~~",-1);//{"","4"}
+*/
     }
 
     /**
@@ -66,25 +87,70 @@ public class QueryCondition implements Cloneable {
         /* 在java的1.7之后的jdk版本，java中的switch里面表达式的类型可以是string类型。*/
         switch (this.getType()) {
             case QueryCondition.QUERY_CONDITION_TYPE_STRING:
-                if (!StringUtils.isEmpty(this.getValue())) {
-                    return true;
+                if (StringUtils.isEmpty(this.getValue())) {
+                    return false;
                 }
                 break;
             case QueryCondition.QUERY_CONDITION_TYPE_DATE:
-            case QueryCondition.QUERY_CONDITION_TYPE_LIST:
             case QueryCondition.QUERY_CONDITION_TYPE_MONEY:
             case QueryCondition.QUERY_CONDITION_TYPE_AMOUNT:
-                String queryConditionArr[] = this.getQueryConditionToArr();
-                for (String queryCondition : queryConditionArr) {
-                    if (!StringUtils.isEmpty(queryCondition)) {
-                        return true;
-                    }
+                break;
+            case QueryCondition.QUERY_CONDITION_TYPE_LIST:
+                if (this.getValue().equals(QueryCondition.QUERY_CONDITION_SPLIT) == true) {
+                    return false;
                 }
                 break;
             default:
                 break;
         }
 
-        return false;
+        return true;
     }
+
+    /**
+     * 检查Value。
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-12-15 00:00:00
+     */
+    @JsonIgnore
+    public Boolean checkValue() {
+
+        if (this.getKey() == null || this.getValue() == null || this.getType() == null) {
+            log.error("条件中有null值");
+            return false;
+        }
+
+        /* 在java的1.7之后的jdk版本，java中的switch里面表达式的类型可以是string类型。*/
+        switch (this.getType()) {
+            case QueryCondition.QUERY_CONDITION_TYPE_STRING:
+                break;
+            case QueryCondition.QUERY_CONDITION_TYPE_DATE:
+            case QueryCondition.QUERY_CONDITION_TYPE_MONEY:
+            case QueryCondition.QUERY_CONDITION_TYPE_AMOUNT:
+                if (this.getValue().contains(QueryCondition.QUERY_CONDITION_SPLIT) == false) {
+                    log.error(this.getValue() + "中没有~~");
+                    return false;
+                }
+                String queryConditionArr[] = this.getValue().split(QueryCondition.QUERY_CONDITION_SPLIT,-1);
+                if (queryConditionArr.length !=2 ) {
+                    log.error(this.getValue() + "中开始条件和结束条件不足");
+                    return false;
+                }
+                break;
+            case QueryCondition.QUERY_CONDITION_TYPE_LIST:
+                if (this.getValue().contains(QueryCondition.QUERY_CONDITION_SPLIT) == false) {
+                    log.error(this.getValue() + "中没有~~");
+                    return false;
+                }
+                break;
+            default:
+                break;
+        }
+
+        return true;
+    }
+
 }

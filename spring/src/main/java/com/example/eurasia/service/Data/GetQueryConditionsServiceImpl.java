@@ -61,7 +61,7 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
             while (it.hasNext()) {
                 Map.Entry<String,String> entry = it.next();
                 queryConditions[i].setKey(entry.getKey());
-                queryConditions[i].setValue(getQueryConditionDisplayValue(UserService.USER_DEFAULT,entry.getKey()));
+                queryConditions[i].setValue(getQueryConditionDisplayValue(UserService.USER_DEFAULT,entry.getKey(),entry.getValue()));
                 queryConditions[i].setType(entry.getValue());
                 i++;
             }
@@ -116,7 +116,7 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
                 for (String userQueryConditionDisplay:userQueryConditionDisplayList) {
                     if (entry.getKey().equals(userQueryConditionDisplay)) {
                         queryConditions[i].setKey(entry.getKey());
-                        queryConditions[i].setValue(getQueryConditionDisplayValue(userID,entry.getKey()));
+                        queryConditions[i].setValue(getQueryConditionDisplayValue(userID,entry.getKey(),entry.getValue()));
                         queryConditions[i].setType(entry.getValue());
                         break;
                     }
@@ -132,19 +132,32 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
         return new ResponseResultUtil().success(ResponseCodeEnum.QUERY_CONDITION_DISPLAY_FROM_SQL_SUCCESS, queryConditions);
     }
 
-    private String getQueryConditionDisplayValue(String userID, String key) throws Exception {
+    private String getQueryConditionDisplayValue(String userID, String key, String type) throws Exception {
 
         String queryConditionValue = null;
-        switch (key) {
-            case UserService.MUST_PRODUCT_DATE://"日期"。从用户权限表里获得。
-                queryConditionValue = userService.getOneUserCustom(userService.TABLE_USER_ACCESS_AUTHORITY,
-                        UserService.MUST_PRODUCT_DATE,
-                        userID);
+        switch (type) {
+            case QueryCondition.QUERY_CONDITION_TYPE_STRING:
+                queryConditionValue = "";
                 break;
-            case UserService.MUST_PRODUCT_NUMBER://"商品编码"。从用户权限表里获得。
-                queryConditionValue = userService.getOneUserCustom(userService.TABLE_USER_ACCESS_AUTHORITY,
-                        UserService.MUST_PRODUCT_NUMBER,
-                        userID);
+            case QueryCondition.QUERY_CONDITION_TYPE_DATE:
+                if (key.equals(UserService.MUST_PRODUCT_DATE)) {
+                    queryConditionValue = this.getDateDefaultValue(userID);
+                } else {
+                    queryConditionValue = QueryCondition.QUERY_CONDITION_SPLIT;
+                }
+                break;
+            case QueryCondition.QUERY_CONDITION_TYPE_MONEY:
+            case QueryCondition.QUERY_CONDITION_TYPE_AMOUNT:
+                queryConditionValue = QueryCondition.QUERY_CONDITION_SPLIT;
+                break;
+            case QueryCondition.QUERY_CONDITION_TYPE_LIST:
+                if (key.equals(UserService.MUST_PRODUCT_NUMBER)) {
+                    queryConditionValue = userService.getOneUserCustom(userService.TABLE_USER_ACCESS_AUTHORITY,
+                            UserService.MUST_PRODUCT_NUMBER,
+                            userID);
+                } else {
+                    queryConditionValue = QueryCondition.QUERY_CONDITION_SPLIT;
+                }
                 break;
             default:
                 queryConditionValue = "";
@@ -161,23 +174,23 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
      * @author FuJia
      * @Time 2018-11-22 00:00:00
      */
-    public ResponseResult getDateDefaultValue(String userID) throws Exception {
+    private String getDateDefaultValue(String userID) throws Exception {
 
         String[] dateArr = null;
         try {
             dateArr = userService.getUserTheLastMonth(DataService.TABLE_DATA,userID);
             if (dateArr == null) {
-                return new ResponseResultUtil().error(ResponseCodeEnum.QUERY_CONDITION_DATE_DEFAULT_VALUE_NULL);
+                throw new Exception(ResponseCodeEnum.QUERY_CONDITION_DATE_DEFAULT_VALUE_NULL.getMessage());
             }
             if (dateArr.length != 2) {
-                return new ResponseResultUtil().error(ResponseCodeEnum.QUERY_CONDITION_DATE_DEFAULT_VALUE_WRONG);
+                throw new Exception(ResponseCodeEnum.QUERY_CONDITION_DATE_DEFAULT_VALUE_WRONG.getMessage());
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return new ResponseResultUtil().error(ResponseCodeEnum.QUERY_CONDITION_DATE_DEFAULT_VALUE_FAILED);
+            throw new Exception(ResponseCodeEnum.QUERY_CONDITION_DATE_DEFAULT_VALUE_FAILED.getMessage());
         }
 
         String defaultValue = dateArr[0] + QueryCondition.QUERY_CONDITION_SPLIT + dateArr[1] ;
-        return new ResponseResultUtil().success(ResponseCodeEnum.QUERY_CONDITION_DATE_DEFAULT_VALUE_SUCCESS, defaultValue);
+        return defaultValue;
     }
 }

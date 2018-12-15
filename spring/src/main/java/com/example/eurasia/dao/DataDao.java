@@ -2,7 +2,6 @@ package com.example.eurasia.dao;
 
 import com.example.eurasia.entity.Data;
 import com.example.eurasia.entity.QueryCondition;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
@@ -11,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-@Slf4j
 @Repository
 public class DataDao extends CommonDao {
 
@@ -263,28 +261,42 @@ StringUtils.isEmpty(" bob ") = false
                     break;
                 case QueryCondition.QUERY_CONDITION_TYPE_DATE:
                     String dateArr[] = queryCondition.getQueryConditionToArr();
-                    if (dateArr.length != 2) {
-                        log.error("日期格式不对");
-                        return null;
-                    } else {
-                        String dateStart = dateArr[0];
-                        String dateEnd = dateArr[1];
-                        if (dateStart.equals("") == true && dateEnd.equals("") == false) {
-                            dateStart = "(select min(" + key + ")";
-                            dateEnd = convertDateToNewFormat(dateEnd);
-                            sql.append(" (" + key + " between " + dateStart + " and '" + dateEnd + "')");
-                        } else if (dateStart.equals("") == false && dateEnd.equals("") == true) {
-                            dateEnd = "(select max(" + key + "))";
-                            dateStart = convertDateToNewFormat(dateStart);
-                            sql.append(" (" + key + " between '" + dateStart + "' and " + dateEnd + ")");
-                        } else if (dateStart.equals("") == false && dateEnd.equals("") == false) {
-                            dateStart = convertDateToNewFormat(dateStart);
-                            dateEnd = convertDateToNewFormat(dateEnd);
-                            sql.append(" (" + key + " between '" + dateStart + "' and '" + dateEnd + "')");
-                        } else if (dateStart.equals("") == true && dateEnd.equals("") == true) {
-                            if (sql.indexOf(sqlAnd) >= 0) {
-                                sql.delete((sql.length() - sqlAnd.length()),sql.length());
-                            }
+                    String dateStart = dateArr[0];
+                    String dateEnd = dateArr[1];
+                    if (dateStart.equals("") == true && dateEnd.equals("") == false) {
+                        dateStart = "(select min(" + key + ")";
+                        dateEnd = convertDateToNewFormat(dateEnd);
+                        sql.append(" (" + key + " between " + dateStart + " and '" + dateEnd + "')");
+                    } else if (dateStart.equals("") == false && dateEnd.equals("") == true) {
+                        dateEnd = "(select max(" + key + "))";
+                        dateStart = convertDateToNewFormat(dateStart);
+                        sql.append(" (" + key + " between '" + dateStart + "' and " + dateEnd + ")");
+                    } else if (dateStart.equals("") == false && dateEnd.equals("") == false) {
+                        dateStart = convertDateToNewFormat(dateStart);
+                        dateEnd = convertDateToNewFormat(dateEnd);
+                        sql.append(" (" + key + " between '" + dateStart + "' and '" + dateEnd + "')");
+                    } else if (dateStart.equals("") == true && dateEnd.equals("") == true) {
+                        if (sql.indexOf(sqlAnd) >= 0) {
+                            sql.delete((sql.length() - sqlAnd.length()),sql.length());
+                        }
+                    }
+                    break;
+                case QueryCondition.QUERY_CONDITION_TYPE_MONEY:
+                case QueryCondition.QUERY_CONDITION_TYPE_AMOUNT:
+                    String arr[] = queryCondition.getQueryConditionToArr();
+                    String conditionStart = arr[0];
+                    String conditionEnd = arr[1];
+                    if (conditionStart.equals("") == true && conditionEnd.equals("") == false) {
+                        conditionStart = "(select min(" + key + ")";
+                        sql.append(" (" + key + " between " + conditionStart + " and '" + conditionEnd + "')");
+                    } else if (conditionStart.equals("") == false && conditionEnd.equals("") == true) {
+                        conditionEnd = "(select max(" + key + "))";
+                        sql.append(" (" + key + " between '" + conditionStart + "' and " + conditionEnd + ")");
+                    } else if (conditionStart.equals("") == false && conditionEnd.equals("") == false) {
+                        sql.append(" (" + key + " between '" + conditionStart + "' and '" + conditionEnd + "')");
+                    } else if (conditionStart.equals("") == true && conditionEnd.equals("") == true) {
+                        if (sql.indexOf(sqlAnd) >= 0) {
+                            sql.delete((sql.length() - sqlAnd.length()),sql.length());
                         }
                     }
                     break;
@@ -307,30 +319,6 @@ StringUtils.isEmpty(" bob ") = false
                         sql.append(sqlList);
                         sql.append(" )");
                         sql.append(sqlAnd);
-                    }
-                    break;
-                case QueryCondition.QUERY_CONDITION_TYPE_MONEY:
-                case QueryCondition.QUERY_CONDITION_TYPE_AMOUNT:
-                    String arr[] = queryCondition.getQueryConditionToArr();
-                    if (arr.length != 2) {
-                        log.error("金额/总额格式不对");
-                        return null;
-                    } else {
-                        String conditionStart = arr[0];
-                        String conditionEnd = arr[1];
-                        if (conditionStart.equals("") == true && conditionEnd.equals("") == false) {
-                            conditionStart = "(select min(" + key + ")";
-                            sql.append(" (" + key + " between " + conditionStart + " and '" + conditionEnd + "')");
-                        } else if (conditionStart.equals("") == false && conditionEnd.equals("") == true) {
-                            conditionEnd = "(select max(" + key + "))";
-                            sql.append(" (" + key + " between '" + conditionStart + "' and " + conditionEnd + ")");
-                        } else if (conditionStart.equals("") == false && conditionEnd.equals("") == false) {
-                            sql.append(" (" + key + " between '" + conditionStart + "' and '" + conditionEnd + "')");
-                        } else if (conditionStart.equals("") == true && conditionEnd.equals("") == true) {
-                            if (sql.indexOf(sqlAnd) >= 0) {
-                                sql.delete((sql.length() - sqlAnd.length()),sql.length());
-                            }
-                        }
                     }
                     break;
                 default:

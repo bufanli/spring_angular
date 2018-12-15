@@ -13,6 +13,8 @@ import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 @Slf4j
@@ -409,6 +411,32 @@ public class UserInfoServiceImpl implements IUserInfoService {
                     }
                     break;
                 }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        return false;
+    }
+
+    /**
+     * 用户登陆时，检查账号的有效期
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-12-15 00:00:00
+     */
+    public boolean checkUserValid(String userID) throws Exception {
+
+        try {
+            String[] valid = userService.getUserValid(userID).split(QueryCondition.QUERY_CONDITION_SPLIT,-1);
+
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+            String nowDate = sdf.format(new Date());
+
+            if (valid[1].compareTo(nowDate) <= 0) {//相等返回0，小于返回-1，大于返回1
+                return true;
             }
         } catch (Exception e) {
             e.printStackTrace();
