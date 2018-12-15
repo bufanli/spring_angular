@@ -1,10 +1,15 @@
 import { Injectable } from '@angular/core';
 import { Header } from '../entities/header';
+import { HttpResponse } from '../entities/http-response';
+import { forEach } from '@angular/router/src/utils/collection';
+import { element } from '@angular/core/src/render3/instructions';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CommonUtilitiesService {
+
+  public COMMON_SEPERATOR = '~~';
 
   constructor() { }
 
@@ -49,5 +54,31 @@ export class CommonUtilitiesService {
         }
       };
     }
+  }
+  // deserialize data from httpResponse
+  public deserializeDataFromHttpResponse(dictionary: Array<string>, data: any): any {
+    // return dictionary variable
+    const result = {};
+    // lookup all element of input dictionary
+    dictionary.forEach(dicElement => {
+      data.forEach(dataElement => {
+        if (dataElement.key === dicElement) {
+          result[dicElement] = dataElement.value;
+        }
+      });
+    });
+    return result;
+  }
+  // serialize data to httpResponse
+  public serializeDataToHttpResponse(dictionary: Array<string>, data: any) {
+    const result: Array<any> = new Array();
+    dictionary.forEach(dicElement => {
+      if (data[dicElement] !== undefined) {
+        const elementRet: any = {};
+        elementRet.key = dicElement;
+        elementRet.value = data[dicElement];
+        result.push(elementRet);
+      }
+    });
   }
 }

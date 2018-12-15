@@ -9,7 +9,7 @@ import { UserEditComponent } from './components/user-edit/user-edit.component';
 import { NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule } from '@angular/forms';
 import { UserBasicInfoComponent } from './components/user-basic-info/user-basic-info.component';
-import { UserPermissionComponent } from './components/user-permission/user-permission.component';
+import { UserAccessAuthoritiesComponent } from './components/user-access-authorities/user-access-authorities.component';
 
 const userConfRoutes: Routes = [
   {
@@ -31,7 +31,7 @@ const userConfRoutes: Routes = [
     UserConfComponent,
     UserEditComponent,
     UserBasicInfoComponent,
-    UserPermissionComponent],
+    UserAccessAuthoritiesComponent],
   entryComponents: [UserEditComponent],
 })
 export class UserConfModule { }

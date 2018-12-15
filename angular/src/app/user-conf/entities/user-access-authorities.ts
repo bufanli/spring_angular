@@ -1,10 +1,9 @@
-export class Permission {
+export class UserAccessAuthorities {
   public userID: string;
-  public 日期范围: string;
+  public 日期: string;
   public 商品编码: string;
-  public 账号有效期: string;
+  public 有效期: string;
   public 上传可否: string;
-  public 看的页数: string;
   public 看的条数: string;
   public 复制数据可否: string;
   public 导出数据可否: string;

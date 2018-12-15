@@ -1,8 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { User } from '../../entities/user';
-import { Permission } from '../../entities/permission';
-import { UserPermissionComponent } from '../user-permission/user-permission.component';
+import { UserAccessAuthorities} from '../../entities/user-access-authorities';
+import { UserAccessAuthoritiesComponent} from '../user-access-authorities/user-access-authorities.component';
 import { UserBasicInfoComponent } from '../user-basic-info/user-basic-info.component';
 import { UserPermissionService } from '../../services/user-permission.service';
 
@@ -13,14 +13,14 @@ import { UserPermissionService } from '../../services/user-permission.service';
 })
 export class UserEditComponent implements OnInit {
 
-  public currentUserPermission: Permission = null;
+  public currentUserAccessAuthorities: UserAccessAuthorities = null;
   public currentUser: User = null;
 
   @ViewChild('userPermission')
-  private userPermission: UserPermissionComponent;
+  private userAccessAuthoritiesComponent: UserAccessAuthoritiesComponent;
 
   @ViewChild('userBasicInfo')
-  private userBasicInfo: UserBasicInfoComponent;
+  private userBasicInfoComponent: UserBasicInfoComponent;
 
   constructor(private activeModal: NgbActiveModal,
     private permissionService: UserPermissionService) {
@@ -34,7 +34,13 @@ export class UserEditComponent implements OnInit {
     this.activeModal.close();
   }
 
-  setUserPermission(userPermission: Permission) {
-    this.currentUserPermission = userPermission;
+  // set user permission after user edit component getting user permission
+  public setUserAccessAuthorities(userAccessAuthorities: UserAccessAuthorities) {
+    this.currentUserAccessAuthorities = userAccessAuthorities;
+    this.userAccessAuthoritiesComponent.setCurrentUserAccessAuthorities(userAccessAuthorities);
+  }
+  // update user info(basic info, permissions, attributes)
+  public updateUserInfo() {
+
   }
 }

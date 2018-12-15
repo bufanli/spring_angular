@@ -1,0 +1,151 @@
+<div class="row" *ngIf="currentUserAccessAuthorities">
+  <div class="col-md-8">
+    <div class="form-group">
+      <div class="input-group input-daterange">
+        <span class="input-group-addon" id="date">日期</span>
+        <input type="text" class="form-control" aria-describedby="date" id="start-time">
+        <div class="input-group-addon">到</div>
+        <input type="text" class="form-control" id="end-time">
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="form-group">
+      <div class="input-group input-daterange">
+        <span class="input-group-addon" id="expired-time-label">有效期</span>
+        <input type="text" class="form-control" aria-describedby="expired-time" name="expired-time">
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row" *ngIf="currentUserAccessAuthorities">
+  <div class="col-md-12">
+    <div class="form-group">
+      <div class="input-group">
+        <span class="input-group-addon" id="product-code">商品编码</span>
+        <input type="text" [(ngModel)]="currentUserAccessAuthorities['商品编码']" name="product-code" class="form-control"
+          placeholder="请输入商品编码" aria-describedby="product-code">
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row" *ngIf="currentUserAccessAuthorities">
+
+  <div class="col-md-8">
+    <div class="form-group">
+      <div class="input-group">
+        <span class="input-group-addon" id="lookup-times-label">查看详细频度(每分钟)</span>
+        <input type="number" [(ngModel)]="currentUserAccessAuthorities['查看详细频度']" name="lookup-times" class="form-control"
+          aria-describedby="lookup-times-label">
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="form-group">
+      <div class="input-group">
+        <span class="input-group-addon" id="data-limit-rows-label">看的条数</span>
+        <input type="number" [(ngModel)]="currentUserAccessAuthorities['看的条数']" name="data-limit-rows" class="form-control"
+          aria-describedby="data-limit-rows-label">
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row" *ngIf="currentUserAccessAuthorities">
+  <div class="col-md-4">
+    <div class="form-group">
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" [(ngModel)]="currentUserAccessAuthorities['复制数据可否']">复制数据可否
+        </label>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="form-group">
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" [(ngModel)]="currentUserAccessAuthorities['导出数据可否']">导出数据可否
+        </label>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="form-group">
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" [(ngModel)]="currentUserAccessAuthorities['查看详细可否']">查看详细可否
+        </label>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row" *ngIf="currentUserAccessAuthorities">
+  <div class="col-md-4">
+    <div class="form-group">
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" [(ngModel)]="currentUserAccessAuthorities['复制详细可否']">复制详细可否
+        </label>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="form-group">
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" [(ngModel)]="currentUserAccessAuthorities['下载详细可否']">下载详细可否
+        </label>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="form-group">
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" [(ngModel)]="currentUserAccessAuthorities['上传可否']">上传可否
+        </label>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row" *ngIf="currentUserAccessAuthorities">
+  <div class="col-md-4">
+    <div class="form-group">
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" [(ngModel)]="currentUserAccessAuthorities['查看透视图可否']">查看透视图可否
+        </label>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="form-group">
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" [(ngModel)]="currentUserAccessAuthorities['导出透视图可否']">导出透视图可否
+        </label>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="form-group">
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" [(ngModel)]="currentUserAccessAuthorities['查看数据图可否']">导出透视图可否
+        </label>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row" *ngIf="currentUserAccessAuthorities">
+  <div class="col-md-4">
+    <div class="form-group">
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" [(ngModel)]="currentUserAccessAuthorities['导出数据图可否']">导出数据图可否
+        </label>
+      </div>
+    </div>
+  </div>
+
+</div>
