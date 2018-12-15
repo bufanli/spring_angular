@@ -3,9 +3,9 @@
     <div class="form-group">
       <div class="input-group input-daterange">
         <span class="input-group-addon" id="date">日期</span>
-        <input type="text" class="form-control" aria-describedby="date" id="start-time">
+        <input type="text" class="form-control" aria-describedby="date" id="start-time" autocomplete="off">
         <div class="input-group-addon">到</div>
-        <input type="text" class="form-control" id="end-time">
+        <input type="text" class="form-control" id="end-time" autocomplete="off">
       </div>
     </div>
   </div>
@@ -23,7 +23,7 @@
     <div class="form-group">
       <div class="input-group">
         <span class="input-group-addon" id="product-code">商品编码</span>
-        <input type="text" [(ngModel)]="currentUserAccessAuthorities['商品编码']" name="product-code" class="form-control"
+        <input type="text" [(ngModel)]="productCodes" name="product-code" class="form-control"
           placeholder="请输入商品编码" aria-describedby="product-code">
       </div>
     </div>

@@ -9,7 +9,8 @@ import { element } from '@angular/core/src/render3/instructions';
 })
 export class CommonUtilitiesService {
 
-  public COMMON_SEPERATOR = '~~';
+  public DATA_COMMON_SEPERATOR = '~~';
+  public VIEW_COMMON_SEPERATOR = ',';
 
   constructor() { }
 
