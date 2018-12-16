@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, AfterViewInit, AfterContentInit } from '@angular/core';
-import { User } from '../../entities/user';
+import { UserBasicInfo } from '../../entities/user-basic-info';
 import 'jquery';
 import 'bootstrap';
 import 'bootstrap-datepicker';
@@ -15,7 +15,7 @@ import { CommonUtilitiesService } from 'src/app/common/services/common-utilities
 })
 export class UserBasicInfoComponent implements OnInit, AfterViewInit {
   // editing user
-  @Input() currentUser: User;
+  @Input() currentUser: UserBasicInfo;
   constructor(public commonUtilitiesService: CommonUtilitiesService) {
   }
 
@@ -34,7 +34,7 @@ export class UserBasicInfoComponent implements OnInit, AfterViewInit {
   }
 
   // get current user basic info
-  getCurrentUserBasicInfo(): User {
+  getCurrentUserBasicInfo(): UserBasicInfo {
     this.currentUser['性别'] = $('#gender').val();
     this.currentUser['省份'] = $('#province').val();
     return this.currentUser;

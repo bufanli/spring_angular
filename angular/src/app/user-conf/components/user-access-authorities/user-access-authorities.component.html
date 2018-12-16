@@ -1,19 +1,19 @@
 <div class="row" *ngIf="currentUserAccessAuthorities">
   <div class="col-md-8">
     <div class="form-group">
-      <div class="input-group input-daterange">
+      <div class="input-group">
         <span class="input-group-addon" id="date">日期</span>
-        <input type="text" class="form-control" aria-describedby="date" id="start-time" autocomplete="off">
+        <input type="text" class="form-control datepicker" aria-describedby="date" id="start-time" autocomplete="off">
         <div class="input-group-addon">到</div>
-        <input type="text" class="form-control" id="end-time" autocomplete="off">
+        <input type="text" class="form-control datepicker" id="to-time" autocomplete="off">
       </div>
     </div>
   </div>
   <div class="col-md-4">
     <div class="form-group">
-      <div class="input-group input-daterange">
+      <div class="input-group">
         <span class="input-group-addon" id="expired-time-label">有效期</span>
-        <input type="text" class="form-control" aria-describedby="expired-time" name="expired-time" autocomplete="off">
+        <input type="text" class="form-control datepicker" aria-describedby="expired-time" name="expired-time" id="expired-time" autocomplete="off">
       </div>
     </div>
   </div>

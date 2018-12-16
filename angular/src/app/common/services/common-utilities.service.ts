@@ -107,7 +107,7 @@ export class CommonUtilitiesService {
     return result;
   }
   // serialize data to httpResponse
-  public serializeDataToHttpResponse(dictionary: Array<string>, data: any) {
+  public serializeDataToHttpResponse(dictionary: Array<string>, data: any): Array<any> {
     const result: Array<any> = new Array();
     dictionary.forEach(dicElement => {
       if (data[dicElement] !== undefined) {
@@ -117,5 +117,15 @@ export class CommonUtilitiesService {
         result.push(elementRet);
       }
     });
+    return result;
+  }
+  // convert date to local string 2018/12/12
+  convertDateToLocalString(date: any): string {
+    if (date == null) {
+      return '';
+    } else {
+      const timeStr = date.toLocaleString();
+      return timeStr.slice(0, 10).trim();
+    }
   }
 }

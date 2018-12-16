@@ -1,17 +1,23 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Query } from '@angular/core';
 import { Observable } from 'rxjs';
 import { UserEditComponent } from '../components/user-edit/user-edit.component';
 import { HttpResponse } from '../../common/entities/http-response';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { CommonUtilitiesService } from 'src/app/common/services/common-utilities.service';
-import { User } from '../entities/user';
+import { UserBasicInfo } from '../entities/user-basic-info';
 import { UserAccessAuthorities } from '../entities/user-access-authorities';
+import { UserQueryConditionHeader } from '../entities/user-query-condition-header';
+
+// json header for post
+const httpOptions = {
+  headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+};
 
 const userAccessAuthoritiesDictionary = [
   'userID',
   '日期',
   '商品编码',
-  '账号有效期',
+  '有效期',
   '上传可否',
   '看的条数',
   '复制数据可否',
@@ -24,6 +30,69 @@ const userAccessAuthoritiesDictionary = [
   '导出透视图可否',
   '查看数据图可否',
   '导出数据图可否',
+];
+const userBaiscInfosDictionary = [
+  'userID',
+  '昵称',
+  '性别',
+  '名字',
+  '密码',
+  '年龄',
+  '国家',
+  '省份',
+  '城市',
+  '地址',
+  '手机号码',
+  '电子邮件',
+];
+const QueryConditionHeaderDictionary = [
+  'userID',
+  '日期',
+  '进口',
+  '进口关区',
+  '主管关区',
+  '装货港',
+  '中转国',
+  '原产国',
+  '商品编码',
+  '产品名称',
+  '厂号',
+  '生产工厂',
+  '牛种',
+  '级别',
+  '饲料',
+  '规格型号',
+  '成交方式',
+  '申报单价',
+  '申报总价',
+  '申报币制',
+  '美元单价',
+  '美元总价',
+  '美元币制',
+  '申报数量',
+  '申报数量单位',
+  '法定重量',
+  '法定单位',
+  '毛重（整个报关单）',
+  '净重（整个报关单）',
+  '重量单位',
+  '贸易方式',
+  '运输方式',
+  '目的地',
+  '包装种类',
+  '申报单位',
+  '货主单位',
+  '经营单位',
+  '企业代码',
+  '企业性质',
+  '地址',
+  '电话',
+  '传真',
+  '手机',
+  '网站',
+  '邮编',
+  'Email',
+  '联系人',
 ];
 // user permission info except basic info
 @Injectable({
@@ -63,16 +132,30 @@ export class UserInfoService {
     const userAccessAuthorities = this.commonUtilityService.deserializeDataFromHttpResponse(
       userAccessAuthoritiesDictionary, userAccessAuthoritiesData);
     this.userEditComponent.setUserAccessAuthorities(userAccessAuthorities);
+
+    // get header display
+    const userHeaderDisplays = data.userHeaderDisplays;
+    const headerDisplays = this.commonUtilityService.deserializeDataFromHttpResponse(
+      QueryConditionHeaderDictionary,
+      userHeaderDisplays);
+    this.userEditComponent.setUserHeaderDisplay(headerDisplays);
+
+    // get query condition display
+    const userQueryConditionDisplays = data.userQueryConditionDisplays;
+    const queryConditionDisplays = this.commonUtilityService.deserializeDataFromHttpResponse(
+      QueryConditionHeaderDictionary,
+      userQueryConditionDisplays
+    );
+    this.userEditComponent.setUserQueryConditionDisplay(queryConditionDisplays);
   }
 
   public updateUserInfo(
     userEditComponent: UserEditComponent,
-    basicInfo: User,
+    basicInfo: UserBasicInfo,
     userAccessAuthorities: UserAccessAuthorities,
     userHeaderDisplay: any,
     userQueryConditionDisplay: any): void {
     this.updateUserInfoImpl(
-      userEditComponent,
       basicInfo,
       userAccessAuthorities,
       userHeaderDisplay,
@@ -80,12 +163,43 @@ export class UserInfoService {
         httpResponse => this.updateUserInfoNotification(userEditComponent, httpResponse));
   }
   private updateUserInfoImpl(
-    userEditComponent: UserEditComponent,
-    basicInfo: User,
+    userBasicInfo: UserBasicInfo,
     userAccessAuthorities: UserAccessAuthorities,
-    userHeaderDisplay: any,
-    userQueryConditionDisplay: any): Observable<HttpResponse> {
-    return this.http.get<HttpResponse>(this.updateUserInfoUrl);
+    userHeaderDisplay: UserQueryConditionHeader,
+    userQueryConditionDisplay: UserQueryConditionHeader): Observable<HttpResponse> {
+    // combine four parts into one parameter
+    // user basic info
+    const userBasicInfos = this.commonUtilityService.serializeDataToHttpResponse(
+      userBaiscInfosDictionary,
+      userBasicInfo);
+    // user detail info
+    const accessAuthorities = this.commonUtilityService.serializeDataToHttpResponse(
+      userAccessAuthoritiesDictionary,
+      userAccessAuthorities
+    );
+    // header display
+    const headerDisplay = this.commonUtilityService.serializeDataToHttpResponse(
+      QueryConditionHeaderDictionary,
+      userHeaderDisplay
+    );
+    // query condition display
+    const queryConditionDisplay = this.commonUtilityService.serializeDataToHttpResponse(
+      QueryConditionHeaderDictionary,
+      userQueryConditionDisplay
+    );
+    const userDetailInfo = {
+      userAccessAuthorities: accessAuthorities,
+      userQueryConditionDisplays: queryConditionDisplay,
+      userHeaderDisplays: headerDisplay,
+    };
+    const updateUserInfoParam = {
+      userBasicInfos: userBasicInfos,
+      userDetailedInfos: userDetailInfo,
+    };
+    return this.http.post<HttpResponse>(
+      this.updateUserInfoUrl,
+      updateUserInfoParam,
+      httpOptions);
   }
   private updateUserInfoNotification(
     userEditComponent: UserEditComponent,

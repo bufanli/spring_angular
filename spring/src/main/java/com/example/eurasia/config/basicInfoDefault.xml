@@ -11,5 +11,5 @@
     <column key="省份" value="" />
     <column key="地址" value="" />
     <column key="手机号码" value="defaultPhone" />
-    <column key="电子邮价" value="" />
+    <column key="电子邮件" value="" />
 </mapping>

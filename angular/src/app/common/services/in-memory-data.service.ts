@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { InMemoryDbService } from 'angular-in-memory-web-api';
 import { Product } from '../../data-search/entities/product';
 import { Header } from '../entities/header';
-import { User } from '../../user-conf/entities/user';
+import { UserBasicInfo } from '../../user-conf/entities/user-basic-info';
 @Injectable({
   providedIn: 'root'
 })
@@ -175,7 +175,7 @@ export class InMemoryDataService implements InMemoryDbService {
       data: headers,
     };
     // setup users list
-    let users: User[];
+    let users: UserBasicInfo[];
     users = [
       {'userID': 'wechat0001', '昵称': '沧海笑', '名字': '李大宝', '国家': '中国',
       '地址': '江苏南京', '城市': '南京', '密码': '123456', '年龄': '23', '性别': '男',

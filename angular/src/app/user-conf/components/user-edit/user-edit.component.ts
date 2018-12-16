@@ -1,11 +1,12 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { User } from '../../entities/user';
 import { UserAccessAuthorities } from '../../entities/user-access-authorities';
 import { UserAccessAuthoritiesComponent } from '../user-access-authorities/user-access-authorities.component';
 import { UserBasicInfoComponent } from '../user-basic-info/user-basic-info.component';
 import { UserInfoService } from '../../services/user-info.service';
 import { HttpResponse } from 'src/app/common/entities/http-response';
+import { UserBasicInfo } from '../../entities/user-basic-info';
+import { UserQueryConditionHeader } from '../../entities/user-query-condition-header';
 
 @Component({
   selector: 'app-user-edit',
@@ -18,12 +19,12 @@ export class UserEditComponent implements OnInit {
   public currentUserAccessAuthorities: UserAccessAuthorities = null;
   // user header display
   // TODO this will be replace to entity class in future from any type
-  public currentUserHeaderDisplay: any = null;
+  public currentUserHeaderDisplay: UserQueryConditionHeader = null;
   // user query condition display
   // TODO this will be replace to entity class in future from any type
-  public currentUserQueryConditionDisplay: any = null;
+  public currentUserQueryConditionDisplay: UserQueryConditionHeader = null;
   // user basic info
-  public currentUser: User = null;
+  public currentUser: UserBasicInfo = null;
 
   @ViewChild('userPermission')
   private userAccessAuthoritiesComponent: UserAccessAuthoritiesComponent;
@@ -36,7 +37,9 @@ export class UserEditComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.userInfoService.getUserDetailedInfo(this, this.currentUser['userID']);
+    this.userInfoService.getUserDetailedInfo(
+      this,
+      this.currentUser['userID']);
   }
 
   close() {
@@ -57,19 +60,24 @@ export class UserEditComponent implements OnInit {
   }
   // update user info(basic info, permissions, query contiditons, headers)
   public updateUserInfo() {
-    const basicInfo: User = this.userBasicInfoComponent.
+    const basicInfo: UserBasicInfo = this.userBasicInfoComponent.
       getCurrentUserBasicInfo();
     const accessAuthorities = this.userAccessAuthoritiesComponent.
       getCurrentUserAccessAuthorities();
     // call service
     this.userInfoService.updateUserInfo(
       this,
-      this.currentUser,
-      this.currentUserAccessAuthorities,
+      basicInfo,
+      accessAuthorities,
       this.currentUserHeaderDisplay,
       this.currentUserQueryConditionDisplay);
   }
   public updateUserInfoCallback(httpResponse: HttpResponse): void {
-    // TODO
+    if (httpResponse.code === 200) {
+      // update ok
+      this.activeModal.close();
+    } else {
+      // TODO update ng
+    }
   }
 }

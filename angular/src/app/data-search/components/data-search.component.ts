@@ -141,6 +141,7 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
         autoclose: true,
         todayBtn: 'linked',
         language: 'zh-CN',
+        enableOnReadonly: false,
       });
       // hook the event handler for gray to black font color
       $(this).datepicker().on('changeDate', function (this) {

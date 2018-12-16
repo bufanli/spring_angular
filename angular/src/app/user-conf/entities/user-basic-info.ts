@@ -1,4 +1,4 @@
-export class User {
+export class UserBasicInfo {
   userID: string;
   昵称: string;
   性别: any;

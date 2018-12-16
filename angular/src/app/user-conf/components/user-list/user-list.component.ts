@@ -6,8 +6,7 @@ import { HttpResponse } from '../../../common/entities/http-response';
 import { CommonUtilitiesService } from '../../../common/services/common-utilities.service';
 import { NgbModal, NgbModalOptions, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
 import { UserEditComponent } from '../user-edit/user-edit.component';
-import { User } from '../../entities/user';
-
+import { UserBasicInfo } from '../../entities/user-basic-info';
 const OPERATION_HEADER_INDEX = 11;
 
 @Component({
@@ -113,7 +112,7 @@ export class UserListComponent implements OnInit, AfterViewChecked {
   // show modal for user setting
   showUserSettingModal(target): void {
     const service: NgbModal = target.data.modalService;
-    const user: User = target.data.getCurrentUser(this.id);
+    const user: UserBasicInfo = target.data.getCurrentUser(this.id);
     // you can not call this.adjustModalOptions,
     // because showUserSettingModal called in html context
     const modalRef = service.open(UserEditComponent, target.data.adjustModalOptions());
@@ -121,7 +120,7 @@ export class UserListComponent implements OnInit, AfterViewChecked {
   }
 
   // get current user according to button's id(user's id)
-  getCurrentUser(userId: string): User {
+  getCurrentUser(userId: string): UserBasicInfo {
     const user: any = $('#table').bootstrapTable('getRowByUniqueId', userId);
     return user;
   }

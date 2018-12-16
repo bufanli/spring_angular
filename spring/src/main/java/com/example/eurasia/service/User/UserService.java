@@ -100,11 +100,13 @@ public class UserService {
             }
             if (this.createTable(UserService.TABLE_USER_ACCESS_AUTHORITY,BEAN_NAME_USER_ACCESS_AUTHORITY) == true) {
                 //添加默认用户，管理员，临时客户以及其相关数据
+                this.addUnique(UserService.TABLE_USER_ACCESS_AUTHORITY, UserService.MUST_USER_ID);
                 this.addUserForAccessAuthority(UserService.USER_ADMINISTRATOR,null);
                 this.addUserForAccessAuthority(UserService.USER_DEFAULT,null);
             }
             if (this.createTable(UserService.TABLE_USER_QUERY_CONDITION_DISPLAY,BEAN_NAME_USER_QUERY_CONDITION_DISPLAY) == true) {
                 //添加默认用户，管理员，临时客户以及其相关数据
+                this.addUnique(UserService.TABLE_USER_QUERY_CONDITION_DISPLAY, UserService.MUST_USER_ID);
                 this.addUserForQueryConditionDisplay(UserService.USER_ADMINISTRATOR,null);
                 this.addUserForQueryConditionDisplay(UserService.USER_DEFAULT,null);
             }
@@ -113,6 +115,7 @@ public class UserService {
             //}
             if (this.createTable(UserService.TABLE_USER_HEADER_DISPLAY,BEAN_NAME_USER_HEADER_DISPLAY) == true) {
                 //添加默认用户，管理员，临时客户以及其相关数据
+                this.addUnique(UserService.TABLE_USER_HEADER_DISPLAY, UserService.MUST_USER_ID);
                 this.addUserForHeaderDisplay(UserService.USER_ADMINISTRATOR,null);
                 this.addUserForHeaderDisplay(UserService.USER_DEFAULT,null);
             }
@@ -768,7 +771,7 @@ public class UserService {
             return false;
         }
 
-        int num = getUserDao().updateUserCustom(UserService.TABLE_USER_BASIC_INFO, userCustoms);
+        int num = getUserDao().updateUserCustom(tableName, userCustoms);
         if (num > 0) {
             return true;
         } else {

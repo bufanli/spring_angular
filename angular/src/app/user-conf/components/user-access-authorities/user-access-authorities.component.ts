@@ -21,23 +21,10 @@ export class UserAccessAuthoritiesComponent implements AfterViewInit, AfterViewC
     this.initQueryProducts();
   }
   ngAfterViewInit() {
-    this.initDatePickerValue();
     this.initQueryProducts();
   }
   ngAfterViewChecked() {
-    this.initDatePickerFormat();
-  }
-  // init date picker
-  initDatePickerFormat() {
-    // set date picker's formatter
-    $('.input-daterange input').each(function () {
-      $(this).datepicker({
-        format: 'yyyy/mm/dd',
-        autoclose: true,
-        todayBtn: 'linked',
-        language: 'zh-CN',
-      });
-    });
+    this.initDatePickerValue();
   }
   // init date picker
   initDatePickerValue() {
@@ -50,8 +37,27 @@ export class UserAccessAuthoritiesComponent implements AfterViewInit, AfterViewC
     const startDate = dateArray[0];
     const toDate = dateArray[1];
     // set query start date and to date
-    $('#start-time').datepicker('update', startDate);
+    this.setDatePickerFormat('#start-time');
+    $('#start-time').datepicker('setDate', new Date());
+    this.setDatePickerFormat('#to-time');
     $('#to-time').datepicker('update', toDate);
+    // set expired time
+    this.setDatePickerFormat('#expired-time');
+    $('#expired-time').datepicker('setDate', new Date());
+  }
+  // set date picker format
+  setDatePickerFormat(controlID: string): void {
+    $(controlID).datepicker({
+      format: 'yyyy/mm/dd',
+      autoclose: true,
+      todayBtn: 'linked',
+      language: 'zh-CN',
+      enableOnReadonly: false,
+    });
+    $(controlID).datepicker()
+    .on('changeDate', function(e) {
+      $(e.target).datepicker('setDate', e.date);
+    });
   }
   // set initial product codes
   initQueryProducts() {
@@ -75,13 +81,17 @@ export class UserAccessAuthoritiesComponent implements AfterViewInit, AfterViewC
     }
   }
   // get current user access authorities
-  getCurrentUserAccessAuthorities() {
+  getCurrentUserAccessAuthorities(): UserAccessAuthorities {
+    // start time
+    const startDate = $('#start-time').datepicker('getDate');
+    const startDateStr = this.commonUtilitiesService.convertDateToLocalString(startDate);
+    // to time
+    const toDate = $('#to-time').datepicker('getDate');
+    const toDateStr = this.commonUtilitiesService.convertDateToLocalString(toDate);
     // convert limit date
-    const startDate = $('#start-time').datepicker('val');
-    const toDate = $('#to-time').datepicker('val');
     const dateArray = new Array();
-    dateArray.push(startDate);
-    dateArray.push(toDate);
+    dateArray.push(startDateStr);
+    dateArray.push(toDateStr);
     this.currentUserAccessAuthorities['日期'] = dateArray.join(
       this.commonUtilitiesService.DATA_COMMON_SEPERATOR);
     // convert product codes
@@ -97,5 +107,6 @@ export class UserAccessAuthoritiesComponent implements AfterViewInit, AfterViewC
       // no product limit
       this.currentUserAccessAuthorities['商品编码'] = this.commonUtilitiesService.DATA_COMMON_SEPERATOR;
     }
+    return this.currentUserAccessAuthorities;
   }
 }
