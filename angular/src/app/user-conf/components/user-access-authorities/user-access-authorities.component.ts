@@ -7,7 +7,7 @@ import { CommonUtilitiesService } from 'src/app/common/services/common-utilities
   templateUrl: './user-access-authorities.component.html',
   styleUrls: ['./user-access-authorities.component.css']
 })
-export class UserAccessAuthoritiesComponent implements AfterViewInit, AfterViewChecked {
+export class UserAccessAuthoritiesComponent implements AfterViewInit {
 
   @Input() currentUserAccessAuthorities: UserAccessAuthorities;
   // product codes which is shown as , seperator
@@ -17,33 +17,26 @@ export class UserAccessAuthoritiesComponent implements AfterViewInit, AfterViewC
 
   public setCurrentUserAccessAuthorities(userAccessAuthorities: UserAccessAuthorities) {
     this.currentUserAccessAuthorities = userAccessAuthorities;
-    this.initDatePickerValue();
-    this.initQueryProducts();
+    this.setQueryProducts();
   }
   ngAfterViewInit() {
-    this.initQueryProducts();
-  }
-  ngAfterViewChecked() {
-    this.initDatePickerValue();
+    this.setDatePickerFormat('#start-time');
+    this.setDatePickerFormat('#to-time');
+    this.setDatePickerFormat('#expired-time');
+    this.setDatePickerValue();
   }
   // init date picker
-  initDatePickerValue() {
+  setDatePickerValue() {
     // set initial date to datepicker
-    if (this.currentUserAccessAuthorities == null) {
-      return;
-    }
     const dateArray = this.currentUserAccessAuthorities['日期'].split(
       this.commonUtilitiesService.DATA_COMMON_SEPERATOR);
     const startDate = dateArray[0];
     const toDate = dateArray[1];
     // set query start date and to date
-    this.setDatePickerFormat('#start-time');
-    $('#start-time').datepicker('setDate', new Date());
-    this.setDatePickerFormat('#to-time');
+    $('#start-time').datepicker('update', startDate);
     $('#to-time').datepicker('update', toDate);
     // set expired time
-    this.setDatePickerFormat('#expired-time');
-    $('#expired-time').datepicker('setDate', new Date());
+    $('#expired-time').datepicker('update', this.currentUserAccessAuthorities['有效期']);
   }
   // set date picker format
   setDatePickerFormat(controlID: string): void {
@@ -54,16 +47,9 @@ export class UserAccessAuthoritiesComponent implements AfterViewInit, AfterViewC
       language: 'zh-CN',
       enableOnReadonly: false,
     });
-    $(controlID).datepicker()
-    .on('changeDate', function(e) {
-      $(e.target).datepicker('setDate', e.date);
-    });
   }
   // set initial product codes
-  initQueryProducts() {
-    if (this.currentUserAccessAuthorities == null) {
-      return;
-    }
+  setQueryProducts() {
     const products = this.currentUserAccessAuthorities['商品编码'].split(
       this.commonUtilitiesService.DATA_COMMON_SEPERATOR);
     if (products.length > 1) {

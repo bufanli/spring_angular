@@ -32,6 +32,9 @@ const userConfRoutes: Routes = [
     UserEditComponent,
     UserBasicInfoComponent,
     UserAccessAuthoritiesComponent],
-  entryComponents: [UserEditComponent],
+  entryComponents: [
+    UserEditComponent,
+    UserBasicInfoComponent,
+    UserAccessAuthoritiesComponent],
 })
 export class UserConfModule { }
