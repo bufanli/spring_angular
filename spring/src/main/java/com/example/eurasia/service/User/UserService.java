@@ -99,14 +99,18 @@ public class UserService {
 
             }
             if (this.createTable(UserService.TABLE_USER_ACCESS_AUTHORITY,BEAN_NAME_USER_ACCESS_AUTHORITY) == true) {
-                //添加默认用户，管理员，临时客户以及其相关数据
+                //给以下字段添加唯一属性
                 this.addUnique(UserService.TABLE_USER_ACCESS_AUTHORITY, UserService.MUST_USER_ID);
+
+                //添加默认用户，管理员，临时客户以及其相关数据
                 this.addUserForAccessAuthority(UserService.USER_ADMINISTRATOR,null);
                 this.addUserForAccessAuthority(UserService.USER_DEFAULT,null);
             }
             if (this.createTable(UserService.TABLE_USER_QUERY_CONDITION_DISPLAY,BEAN_NAME_USER_QUERY_CONDITION_DISPLAY) == true) {
-                //添加默认用户，管理员，临时客户以及其相关数据
+                //给以下字段添加唯一属性
                 this.addUnique(UserService.TABLE_USER_QUERY_CONDITION_DISPLAY, UserService.MUST_USER_ID);
+
+                //添加默认用户，管理员，临时客户以及其相关数据
                 this.addUserForQueryConditionDisplay(UserService.USER_ADMINISTRATOR,null);
                 this.addUserForQueryConditionDisplay(UserService.USER_DEFAULT,null);
             }
@@ -114,8 +118,10 @@ public class UserService {
                 //添加默认用户，管理员，临时客户以及其相关数据
             //}
             if (this.createTable(UserService.TABLE_USER_HEADER_DISPLAY,BEAN_NAME_USER_HEADER_DISPLAY) == true) {
-                //添加默认用户，管理员，临时客户以及其相关数据
+                //给以下字段添加唯一属性
                 this.addUnique(UserService.TABLE_USER_HEADER_DISPLAY, UserService.MUST_USER_ID);
+
+                //添加默认用户，管理员，临时客户以及其相关数据
                 this.addUserForHeaderDisplay(UserService.USER_ADMINISTRATOR,null);
                 this.addUserForHeaderDisplay(UserService.USER_DEFAULT,null);
             }

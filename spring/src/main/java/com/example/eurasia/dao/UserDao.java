@@ -130,6 +130,11 @@ public class UserDao extends CommonDao {
     public int updateUserCustom(String tableName, UserCustom[] userCustoms) throws Exception {
 
 /*
+replace into 跟 insert 功能类似，不同点在于：replace into 首先尝试插入数据到表中，
+1. 如果发现表中已经有此行数据（根据主键或者唯一索引判断）则先删除此行数据，然后插入新的数据。
+2. 否则，直接插入新数据。
+要注意的是：插入数据的表必须有主键或者是唯一索引！否则的话，replace into 会直接插入数据，这将导致表中出现重复的数据。
+
 在使用REPLACE时，表中必须有唯一索引，而且这个索引所在的字段不能允许空值，否则REPLACE就和INSERT完全一样的。
 在执行REPLACE后，系统返回了所影响的行数，如果返回1，说明没有重复的记录，
 如果返回2，说明有重复记录，系统先DELETE这条记录，然后再INSERT这条记录。
