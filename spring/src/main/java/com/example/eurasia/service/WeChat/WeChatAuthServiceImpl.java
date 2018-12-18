@@ -53,7 +53,7 @@ public class WeChatAuthServiceImpl implements IWeChatAuthService  {
             "https://api.weixin.qq.com/sns/userinfo?access_token=%s&openid=%s&lang=zh_CN";
 
     private static final String APP_ID="wx84fe1c3116fb46fa";
-    private static final String APP_SECRET="9155791266381e14c670ea7fa1abb90b";
+    private static final String APP_SECRET="a096a522f9e27cfdb666faa0a404ff3a";
     private static final String SCOPE = "snsapi_login";//公众平台:snsapi_userinfo(静默获取，用户无感知),snsapi_base(需要用户确认同意) 开放平台:snsapi_login
 
     private static final String CALL_BACK_URL = "https://7dc6440a.ngrok.io//wechat/pcAuth"; //回调域名
