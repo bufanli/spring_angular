@@ -1,5 +1,6 @@
 package com.example.eurasia.entity;
 
+import com.example.eurasia.entity.Data.Data1Impl;
 import org.junit.Test;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionReader;

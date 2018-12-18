@@ -1,6 +1,10 @@
 package com.example.eurasia.service.User;
 
-import com.example.eurasia.entity.*;
+import com.example.eurasia.entity.Data.Data;
+import com.example.eurasia.entity.Data.QueryCondition;
+import com.example.eurasia.entity.User.UserCustom;
+import com.example.eurasia.entity.User.UserDetailedInfos;
+import com.example.eurasia.entity.User.UserInfo;
 import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;

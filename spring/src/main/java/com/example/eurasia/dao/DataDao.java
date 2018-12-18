@@ -1,7 +1,7 @@
 package com.example.eurasia.dao;
 
-import com.example.eurasia.entity.Data;
-import com.example.eurasia.entity.QueryCondition;
+import com.example.eurasia.entity.Data.Data;
+import com.example.eurasia.entity.Data.QueryCondition;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 

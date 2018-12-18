@@ -1,6 +1,6 @@
 package com.example.eurasia.dao;
 
-import com.example.eurasia.entity.DataXMLReader;
+import com.example.eurasia.entity.Data.DataXMLReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;

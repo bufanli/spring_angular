@@ -1,5 +1,6 @@
-package com.example.eurasia.entity;
+package com.example.eurasia.entity.Data;
 
+import com.example.eurasia.entity.User.UserCustom;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.*;

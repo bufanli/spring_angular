@@ -1,6 +1,6 @@
 package com.example.eurasia.service.Data;
 
-import com.example.eurasia.entity.Header;
+import com.example.eurasia.entity.Data.Header;
 import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;

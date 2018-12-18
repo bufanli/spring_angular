@@ -1,7 +1,7 @@
 package com.example.eurasia.dao;
 
-import com.example.eurasia.entity.Data;
-import com.example.eurasia.entity.UserCustom;
+import com.example.eurasia.entity.Data.Data;
+import com.example.eurasia.entity.User.UserCustom;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;

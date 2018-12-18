@@ -1,6 +1,6 @@
 package com.example.eurasia.service.User;
 
-import com.example.eurasia.entity.*;
+import com.example.eurasia.entity.User.UserInfo;
 import com.example.eurasia.service.Response.ResponseResult;
 
 import javax.servlet.http.HttpServletRequest;

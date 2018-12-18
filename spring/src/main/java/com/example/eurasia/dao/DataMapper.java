@@ -1,6 +1,6 @@
 package com.example.eurasia.dao;
 
-import com.example.eurasia.entity.Data;
+import com.example.eurasia.entity.Data.Data;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;

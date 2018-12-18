@@ -1,4 +1,4 @@
-package com.example.eurasia.entity;
+package com.example.eurasia.entity.User;
 
 /**
  * 用户类

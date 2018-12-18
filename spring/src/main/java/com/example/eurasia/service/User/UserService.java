@@ -1,7 +1,11 @@
 package com.example.eurasia.service.User;
 
 import com.example.eurasia.dao.UserDao;
-import com.example.eurasia.entity.*;
+import com.example.eurasia.entity.Data.Data;
+import com.example.eurasia.entity.Data.DataXMLReader;
+import com.example.eurasia.entity.Data.QueryCondition;
+import com.example.eurasia.entity.User.UserCustom;
+import com.example.eurasia.entity.User.UserInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;

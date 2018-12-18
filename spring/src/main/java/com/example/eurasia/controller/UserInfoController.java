@@ -1,7 +1,7 @@
 package com.example.eurasia.controller;
 
-import com.example.eurasia.entity.UserCustom;
-import com.example.eurasia.entity.UserInfo;
+import com.example.eurasia.entity.User.UserCustom;
+import com.example.eurasia.entity.User.UserInfo;
 import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;

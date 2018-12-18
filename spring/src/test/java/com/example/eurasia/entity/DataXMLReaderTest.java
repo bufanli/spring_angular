@@ -1,5 +1,6 @@
 package com.example.eurasia.entity;
 
+import com.example.eurasia.entity.Data.DataXMLReader;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;

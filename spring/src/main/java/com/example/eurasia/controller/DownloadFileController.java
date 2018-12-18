@@ -1,6 +1,6 @@
 package com.example.eurasia.controller;
 
-import com.example.eurasia.entity.QueryCondition;
+import com.example.eurasia.entity.Data.QueryCondition;
 import com.example.eurasia.service.Data.IDownloadFileService;
 import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Response.ResponseResult;

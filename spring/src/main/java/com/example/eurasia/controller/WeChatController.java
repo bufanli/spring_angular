@@ -1,7 +1,8 @@
 package com.example.eurasia.controller;
 
-import com.alibaba.fastjson.JSONObject;
-import com.example.eurasia.service.User.IWeChatAuthService;
+import com.example.eurasia.entity.WeChat.AccessToken;
+import com.example.eurasia.entity.WeChat.WechatUserUnionID;
+import com.example.eurasia.service.WeChat.IWeChatAuthService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -36,7 +37,7 @@ public class WeChatController {
     public Map<String,String> wxLoginPage(HttpServletRequest request) throws Exception {
         String sessionId = request.getSession().getId();
         log.info("sessionId:"+sessionId);
-        String uri = weChatAuthServiceImpl.getAuthorizationUrl("pc",sessionId);//设置redirect_uri和state=sessionId以及测试号信息，返回授权url
+        String uri = weChatAuthServiceImpl.getAuthorizationUrl(sessionId);//设置redirect_uri和state=sessionId以及测试号信息，返回授权url
         log.info(uri);
         Map<String,String> map = new HashMap<String,String>();
         map.put("sessionId", sessionId);
@@ -48,23 +49,19 @@ public class WeChatController {
     @RequestMapping(value = "/pcAuth")
     @ResponseBody
     public String pcCallback(String code, String state, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        String result = weChatAuthServiceImpl.getAccessToken(code);//根据code获取access_token和openId
-        JSONObject jsonObject = JSONObject.parseObject(result);
+        if (code != null && state != null) {
+            AccessToken access = weChatAuthServiceImpl.getAccessToken(code);//根据code获取access_token和openId
+            if (access != null) {
+                // 存在则把当前账号信息授权给扫码用户
+                // 拿到openid获取微信用户的基本信息
+                String access_token = access.getAccessToken();
+                String openId = access.getOpenID();
 
-        //String refresh_token = jsonObject.getString("refresh_token");
-        String access_token = jsonObject.getString("access_token");
-        String openId = jsonObject.getString("openId");
-
-        log.info("------------授权成功----------------");
-        JSONObject infoJson = weChatAuthServiceImpl.getUserInfo(access_token, openId);//根据token和openId获取微信用户信息
-        if (infoJson != null) {
-            String nickname = infoJson.getString("nickName");
-            log.info("-----nickname-----" + nickname);
-            log.info("-----sessionId-----" + state);
-            infoJson.put("openId", openId);
-            //redisTemplate.opsForValue().set(state, infoJson, 10 * 60, TimeUnit.SECONDS);
-            return "登录成功！";
+                WechatUserUnionID userUnionID = weChatAuthServiceImpl.getUserUnionID(access_token, openId);
+                return "redirect:/wechat/xxxx";
+            }
         }
-        return "登录失败！";
+
+        return null;
     }
 }

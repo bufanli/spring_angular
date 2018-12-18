@@ -1,4 +1,4 @@
-package com.example.eurasia.entity;
+package com.example.eurasia.entity.Data;
 
 public class Header implements Cloneable {
     private String field;//COLUMN_NAME

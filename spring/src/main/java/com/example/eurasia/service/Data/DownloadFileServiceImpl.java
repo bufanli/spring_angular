@@ -1,7 +1,7 @@
 package com.example.eurasia.service.Data;
 
-import com.example.eurasia.entity.Data;
-import com.example.eurasia.entity.QueryCondition;
+import com.example.eurasia.entity.Data.Data;
+import com.example.eurasia.entity.Data.QueryCondition;
 import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;

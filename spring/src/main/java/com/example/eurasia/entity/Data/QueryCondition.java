@@ -1,4 +1,4 @@
-package com.example.eurasia.entity;
+package com.example.eurasia.entity.Data;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.extern.slf4j.Slf4j;

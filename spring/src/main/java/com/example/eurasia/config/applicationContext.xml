@@ -11,67 +11,67 @@
                         http://www.springframework.org/schema/context/spring-context.xsd">
 
     <!-- 各种xml -->
-    <bean id="columnDefaultName" class="com.example.eurasia.entity.DataXMLReader"
+    <bean id="columnDefaultName" class="com.example.eurasia.entity.Data.DataXMLReader"
           init-method="init">
         <property name="filePath" value="com/example/eurasia/config/columnDefaultName.xml" />
     </bean>
-    <bean id="basicInfoDefault" class="com.example.eurasia.entity.DataXMLReader"
+    <bean id="basicInfoDefault" class="com.example.eurasia.entity.Data.DataXMLReader"
           init-method="init">
         <property name="filePath" value="com/example/eurasia/config/basicInfoDefault.xml" />
     </bean>
-    <bean id="basicInfoAdmin" class="com.example.eurasia.entity.DataXMLReader"
+    <bean id="basicInfoAdmin" class="com.example.eurasia.entity.Data.DataXMLReader"
           init-method="init">
         <property name="filePath" value="com/example/eurasia/config/basicInfoAdmin.xml" />
     </bean>
-    <bean id="queryConditionTypeName" class="com.example.eurasia.entity.DataXMLReader"
+    <bean id="queryConditionTypeName" class="com.example.eurasia.entity.Data.DataXMLReader"
           init-method="init">
         <property name="filePath" value="com/example/eurasia/config/queryConditionTypeName.xml" />
     </bean>
-    <bean id="queryConditionTypeValue" class="com.example.eurasia.entity.DataXMLReader"
+    <bean id="queryConditionTypeValue" class="com.example.eurasia.entity.Data.DataXMLReader"
           init-method="init">
         <property name="filePath" value="com/example/eurasia/config/queryConditionTypeValue.xml" />
     </bean>
-    <bean id="queryConditionDisplayDefault" class="com.example.eurasia.entity.DataXMLReader"
+    <bean id="queryConditionDisplayDefault" class="com.example.eurasia.entity.Data.DataXMLReader"
           init-method="init">
         <property name="filePath" value="com/example/eurasia/config/queryConditionDisplayDefault.xml" />
     </bean>
-    <bean id="queryConditionDisplayAdmin" class="com.example.eurasia.entity.DataXMLReader"
+    <bean id="queryConditionDisplayAdmin" class="com.example.eurasia.entity.Data.DataXMLReader"
           init-method="init">
         <property name="filePath" value="com/example/eurasia/config/queryConditionDisplayAdmin.xml" />
     </bean>
-    <bean id="headerDisplayDefault" class="com.example.eurasia.entity.DataXMLReader"
+    <bean id="headerDisplayDefault" class="com.example.eurasia.entity.Data.DataXMLReader"
           init-method="init">
         <property name="filePath" value="com/example/eurasia/config/headerDisplayDefault.xml" />
     </bean>
-    <bean id="headerDisplayAdmin" class="com.example.eurasia.entity.DataXMLReader"
+    <bean id="headerDisplayAdmin" class="com.example.eurasia.entity.Data.DataXMLReader"
           init-method="init">
         <property name="filePath" value="com/example/eurasia/config/headerDisplayAdmin.xml" />
     </bean>
-    <bean id="accessAuthorityDefault" class="com.example.eurasia.entity.DataXMLReader"
+    <bean id="accessAuthorityDefault" class="com.example.eurasia.entity.Data.DataXMLReader"
           init-method="init">
         <property name="filePath" value="com/example/eurasia/config/accessAuthorityDefault.xml" />
     </bean>
-    <bean id="accessAuthorityAdmin" class="com.example.eurasia.entity.DataXMLReader"
+    <bean id="accessAuthorityAdmin" class="com.example.eurasia.entity.Data.DataXMLReader"
           init-method="init">
         <property name="filePath" value="com/example/eurasia/config/accessAuthorityAdmin.xml" />
     </bean>
-    <bean id="userBasicInfo" class="com.example.eurasia.entity.DataXMLReader"
+    <bean id="userBasicInfo" class="com.example.eurasia.entity.Data.DataXMLReader"
           init-method="init">
         <property name="filePath" value="com/example/eurasia/config/userBasicInfo.xml" />
     </bean>
-    <bean id="userAccessAuthority" class="com.example.eurasia.entity.DataXMLReader"
+    <bean id="userAccessAuthority" class="com.example.eurasia.entity.Data.DataXMLReader"
           init-method="init">
         <property name="filePath" value="com/example/eurasia/config/userAccessAuthority.xml" />
     </bean>
-    <bean id="userHeaderDisplay" class="com.example.eurasia.entity.DataXMLReader"
+    <bean id="userHeaderDisplay" class="com.example.eurasia.entity.Data.DataXMLReader"
           init-method="init">
         <property name="filePath" value="com/example/eurasia/config/userHeaderDisplay.xml" />
     </bean>
-    <bean id="userHeaderWidth" class="com.example.eurasia.entity.DataXMLReader"
+    <bean id="userHeaderWidth" class="com.example.eurasia.entity.Data.DataXMLReader"
           init-method="init">
         <property name="filePath" value="com/example/eurasia/config/userHeaderWidth.xml" />
     </bean>
-    <bean id="userQueryConditionDisplay" class="com.example.eurasia.entity.DataXMLReader"
+    <bean id="userQueryConditionDisplay" class="com.example.eurasia.entity.Data.DataXMLReader"
           init-method="init">
         <property name="filePath" value="com/example/eurasia/config/userQueryConditionDisplay.xml" />
     </bean>
@@ -81,7 +81,7 @@
     即：一个类中的属性（其他对象）不再需要手动new或者通过工厂方法进行创建，而是Spring容器在属性被使用的时候给予注入。
     -->
     <!-- 构造注入：通过有参的构造函数注入。 -->
-    <bean class="com.example.eurasia.entity.Data1Impl" id="data1">
+    <bean class="com.example.eurasia.entity.Data.Data1Impl" id="data1">
         <constructor-arg name="id" value="1"></constructor-arg>
         <constructor-arg name="keyValue">
             <map>
@@ -115,7 +115,7 @@
         </constructor-arg>
     </bean>
     <!-- 属性注入：通过无参构造函数+setter方法注入。 -->
-    <bean class="com.example.eurasia.entity.Data2Impl" id="data2">
+    <bean class="com.example.eurasia.entity.Data.Data2Impl" id="data2">
         <property name="id" value="2"></property>
         <property name="keyValue">
             <map>

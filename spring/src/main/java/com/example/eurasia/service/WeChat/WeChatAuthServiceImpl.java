@@ -1,6 +1,8 @@
-package com.example.eurasia.service.User;
+package com.example.eurasia.service.WeChat;
 
 import com.alibaba.fastjson.JSONObject;
+import com.example.eurasia.entity.WeChat.AccessToken;
+import com.example.eurasia.entity.WeChat.WechatUserUnionID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
@@ -50,44 +52,41 @@ public class WeChatAuthServiceImpl implements IWeChatAuthService  {
     private static final String USER_INFO_URL =
             "https://api.weixin.qq.com/sns/userinfo?access_token=%s&openid=%s&lang=zh_CN";
 
-    private static final String APP_ID="wx957421889a04804d";
+    private static final String APP_ID="wx84fe1c3116fb46fa";
     private static final String APP_SECRET="9155791266381e14c670ea7fa1abb90b";
-    private static final String SCOPE = "snsapi_userinfo";//公众平台:snsapi_userinfo(静默获取，用户无感知),snsapi_base(需要用户确认同意) 开放平台:snsapi_login
+    private static final String SCOPE = "snsapi_login";//公众平台:snsapi_userinfo(静默获取，用户无感知),snsapi_base(需要用户确认同意) 开放平台:snsapi_login
 
-    private String pcCallbackUrl = "https://7dc6440a.ngrok.io//wechat/pcAuth"; //pc回调域名
-    private String mobileCallbackUrl = "https://7dc6440a.ngrok.io//wechat/mobileAuth"; //mobile回调域名
+    private static final String CALL_BACK_URL = "https://7dc6440a.ngrok.io//wechat/pcAuth"; //回调域名
 
     /**
-     * 第一步，带着参数
+     * 第一步，获取网页授权回调地址处理。
      * appid：公众号的唯一标识
      * redirect_uri：授权后重定向的回调链接地址
      * response_type：返回类型，填写code
-     * scope：应用授权作用域，snsapi_base / snsapi_userinfo
+     * scope：应用授权作用域，snsapi_base / snsapi_userinfo / snsapi_login
      * state：非必传，重定向后会带上state参数，开发者可以填写a-zA-Z0-9的参数值，最多128字节
      * wechat_redirect：无论直接打开还是做页面302重定向时候，必须带此参数
      * */
     @Override
-    public String getAuthorizationUrl(String type,String state) throws UnsupportedEncodingException {
-        String callbackUrl = "";
-        Object urlState = "";
-        if("pc".equals(type)){//移动端,pc端的回调方法不一样
-            callbackUrl = URLEncoder.encode(pcCallbackUrl,"utf-8");
-            urlState = state;
-        }else if("mobile".equals(type)){
-            callbackUrl = URLEncoder.encode(mobileCallbackUrl,"utf-8");
-            urlState = System.currentTimeMillis();
-        }
+    public String getAuthorizationUrl(String state) throws UnsupportedEncodingException {
+        String callbackUrl = URLEncoder.encode(CALL_BACK_URL,"utf-8");
+        Object urlState = state;
+
         String url = String.format(AUTHORIZATION_URL,APP_ID,callbackUrl,SCOPE,urlState);
         return url;
     }
 
     /**
-     * 第二步
-     * 传appid  secret code grant_type=authorization_code
-     * 获得 access_token openId等
-     * */
+     * 第二步,获取用户授权后获取用户唯一标识。
+     * 传appid  secret code grant_type=authorization_code 获得 access_token openId等
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-12-18 00:00:00
+     */
     @Override
-    public String getAccessToken(String code) {
+    public AccessToken getAccessToken(String code) {
         String url = String.format(ACCESS_TOKE_OPENID_URL,APP_ID,APP_SECRET,code);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
@@ -96,17 +95,9 @@ public class WeChatAuthServiceImpl implements IWeChatAuthService  {
         String resp = getRestTemplate().getForObject(uri, String.class);
         log.error("getAccessToken resp = "+resp);
         if(resp.contains("openid")){
-            JSONObject jsonObject = JSONObject.parseObject(resp);
-            String access_token = jsonObject.getString("access_token");
-            String openId = jsonObject.getString("openid");
-            String refresh_token = jsonObject.getString("refresh_token");
-
-            JSONObject res = new JSONObject();
-            res.put("access_token",access_token);
-            res.put("openId",openId);
-            res.put("refresh_token",refresh_token);
-
-            return res.toJSONString();
+            JSONObject parseObject = JSONObject.parseObject(resp);
+            AccessToken accessToken = JSONObject.toJavaObject(parseObject, AccessToken.class);
+            return accessToken;
         }else{
             log.error("获取用户信息错误，msg = "+resp);
             return null;
@@ -119,9 +110,20 @@ public class WeChatAuthServiceImpl implements IWeChatAuthService  {
         return null;
     }
 
+    /**
+     * 获取用户统一标识。针对一个微信开放平台帐号下的应用，同一用户的unionid在多个应用中是唯一的。
+     * 此方法不牵扯到多个应用时候可以不用。
+     * 此处用到只是为了获取微信扫码用户的省份城市(此信息获取的只是微信用户所填的城市省份，
+     * 并不是用户的实时位置信息，如果用户未填写是获取不到的。)
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-12-18 00:00:00
+     */
     @Override
-    public JSONObject getUserInfo(String accessToken, String openId){
-        String url = String.format(USER_INFO_URL, accessToken, openId);
+    public WechatUserUnionID getUserUnionID(String accessToken, String openid){
+        String url = String.format(USER_INFO_URL, accessToken, openid);
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
         URI uri = builder.build().encode().toUri();
 
@@ -131,19 +133,9 @@ public class WeChatAuthServiceImpl implements IWeChatAuthService  {
             log.error("获取用户信息错误，msg = "+resp);
             return null;
         }else{
-            JSONObject data =JSONObject.parseObject(resp);
-            String id = data.getString("unionid");
-            String sex = data.getString("sex");
-            String nickName = data.getString("nickname");
-            String avatar = data.getString("headimgurl");
-
-            JSONObject result = new JSONObject();
-            result.put("id",id);
-            result.put("sex",sex);
-            result.put("nickName",nickName);
-            result.put("avatar",avatar);
-
-            return result;
+            JSONObject parseObject = JSONObject.parseObject(resp);
+            WechatUserUnionID userUnionID = JSONObject.toJavaObject(parseObject, WechatUserUnionID.class);
+            return userUnionID;
         }
     }
 

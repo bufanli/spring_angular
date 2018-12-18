@@ -1,4 +1,4 @@
-package com.example.eurasia.entity;
+package com.example.eurasia.entity.Data;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -8,10 +8,10 @@ import org.dom4j.io.SAXReader;
 import java.io.InputStream;
 import java.util.*;
 
-public class IdentityDataXMLReader {
+public class DataXMLReader {
 
     private String filePath;
-    private IdentityHashMap<String, String> keyValue;
+    private LinkedHashMap<String, String> keyValue;
 
     public void init() {
         parseXml();
@@ -28,7 +28,7 @@ public class IdentityDataXMLReader {
             URL url4 = DataXMLReader.class.getResource("/com/example/eurasia");
             */
 
-            ClassLoader loader = IdentityDataXMLReader.class.getClassLoader();
+            ClassLoader loader = DataXMLReader.class.getClassLoader();
             InputStream inputStream = loader.getResourceAsStream(this.getFilePath());
             doc = reader.read(inputStream);
 /* e.g.
@@ -40,7 +40,7 @@ public class IdentityDataXMLReader {
             //System.out.println("加载xml初始化文件出错" + e);
             e.printStackTrace();
         }
-        this.keyValue = new IdentityHashMap<>();
+        this.keyValue = new LinkedHashMap<>();//有序的。但，跟listOrderMap的区别？T.B.D
         Element root = doc.getRootElement();
         List eleList = root.selectNodes("/mapping/column");
         Iterator it = eleList.iterator();
@@ -61,7 +61,7 @@ public class IdentityDataXMLReader {
         return this.filePath;
     }
 
-    public IdentityHashMap<String, String> getKeyValue() {
+    public LinkedHashMap<String, String> getKeyValue() {
         return this.keyValue;
     }
 
@@ -72,8 +72,8 @@ public class IdentityDataXMLReader {
      * @param paramsMap 被拷⻉贝对象
      * @param resultMap 拷⻉贝后的对象
      */
-    public static void mapCopy(IdentityHashMap<String, String> paramsMap, IdentityHashMap<String, String> resultMap) {
-        if (resultMap == null) resultMap = new IdentityHashMap<String, String>();
+    public static void mapCopy(LinkedHashMap<String, String> paramsMap, LinkedHashMap<String, String> resultMap) {
+        if (resultMap == null) resultMap = new LinkedHashMap<String, String>();
         if (paramsMap == null) return;
         Iterator it = paramsMap.entrySet().iterator();
         while (it.hasNext()) {

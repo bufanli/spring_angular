@@ -1,9 +1,9 @@
 package com.example.eurasia.service.Data;
 
 import com.example.eurasia.dao.DataDao;
-import com.example.eurasia.entity.Data;
-import com.example.eurasia.entity.DataXMLReader;
-import com.example.eurasia.entity.QueryCondition;
+import com.example.eurasia.entity.Data.Data;
+import com.example.eurasia.entity.Data.DataXMLReader;
+import com.example.eurasia.entity.Data.QueryCondition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
