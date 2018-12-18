@@ -10,7 +10,7 @@
   </div>
   <div class="col-md-4">
     <div class="form-group">
-      <select class="form-control selectpicker" title="请选择性别" id="gender" name="gender" [(ngModel)]="currentUser['性别']">
+      <select class="form-control selectpicker" title="请选择性别" id="gender" name="gender">
         <option value="男">男</option>
         <option value="女">女</option>
       </select>
@@ -67,7 +67,7 @@
   </div>
   <div class="col-md-4">
     <div class="form-group">
-      <select class="form-control selectpicker" title="请选择省份" id="province" name="province" [(ngModel)]="currentUser['省份']">
+      <select class="form-control selectpicker" title="请选择省份" id="province" name="province">
         <option *ngFor="let province of this.commonUtilitiesService.CHINA_PROVINCES" value="{{province}}">{{province}}</option>
       </select>
     </div>

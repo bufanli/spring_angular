@@ -74,10 +74,21 @@ export class UserEditComponent implements OnInit, OnDestroy {
   }
   // update user info(basic info, permissions, query contiditons, headers)
   public updateUserInfo() {
-    const basicInfo: UserBasicInfo = this.componentRefBasicInfo.instance.
-      getCurrentUserBasicInfo();
-    const accessAuthorities = this.componentRefAccessAuthorities.instance.
-      getCurrentUserAccessAuthorities();
+    // basic info
+    let basicInfo: UserBasicInfo = null;
+    if (this.componentRefBasicInfo !== undefined) {
+      basicInfo = this.componentRefBasicInfo.instance.getCurrentUserBasicInfo();
+    } else {
+      basicInfo = this.currentUser;
+    }
+    // access authorities
+    let accessAuthorities: UserAccessAuthorities = null;
+    if (this.componentRefAccessAuthorities !== undefined) {
+      accessAuthorities = this.componentRefAccessAuthorities.instance.
+        getCurrentUserAccessAuthorities();
+    } else {
+      accessAuthorities = this.currentUserAccessAuthorities;
+    }
     // call service
     this.userInfoService.updateUserInfo(
       this,
