@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ViewContainerRef, ComponentRef, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewChild, ViewContainerRef, ComponentRef, OnDestroy, Output } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { UserAccessAuthorities } from '../../entities/user-access-authorities';
 import { UserAccessAuthoritiesComponent } from '../user-access-authorities/user-access-authorities.component';
@@ -8,6 +8,7 @@ import { HttpResponse } from 'src/app/common/entities/http-response';
 import { UserBasicInfo } from '../../entities/user-basic-info';
 import { UserQueryConditionHeader } from '../../entities/user-query-condition-header';
 import { ComponentFactoryResolver, ComponentFactory } from '@angular/core';
+import { EventEmitter } from '@angular/core';
 
 @Component({
   selector: 'app-user-edit',
@@ -30,6 +31,8 @@ export class UserEditComponent implements OnInit, OnDestroy {
   @ViewChild('userEditContainer', { read: ViewContainerRef }) container: ViewContainerRef;
   componentRefBasicInfo: ComponentRef<UserBasicInfoComponent>;
   componentRefAccessAuthorities: ComponentRef<UserAccessAuthoritiesComponent>;
+
+  @Output() notifyClose: EventEmitter<string> = new EventEmitter<string>();
 
   constructor(private activeModal: NgbActiveModal,
     private userInfoService: UserInfoService,
@@ -99,6 +102,7 @@ export class UserEditComponent implements OnInit, OnDestroy {
   }
   public updateUserInfoCallback(httpResponse: HttpResponse): void {
     if (httpResponse.code === 200) {
+      this.notifyClose.emit('closed');
       // update ok
       this.activeModal.close();
     } else {

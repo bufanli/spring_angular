@@ -117,6 +117,11 @@ export class UserListComponent implements OnInit, AfterViewChecked {
     // because showUserSettingModal called in html context
     const modalRef = service.open(UserEditComponent, target.data.adjustModalOptions());
     modalRef.componentInstance.currentUser = user;
+    modalRef.componentInstance.notifyClose.subscribe(response => target.data.callbackOfUserEditEnd(response));
+  }
+
+  callbackOfUserEditEnd() {
+    alert('user edit end');
   }
 
   // get current user according to button's id(user's id)
