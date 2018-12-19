@@ -35,8 +35,6 @@ export class UserBasicInfoComponent implements OnInit, AfterViewInit {
 
   // get current user basic info
   getCurrentUserBasicInfo(): UserBasicInfo {
-    this.currentUser['性别'] = $('#gender').val();
-    this.currentUser['省份'] = $('#province').val();
     return this.currentUser;
   }
 }

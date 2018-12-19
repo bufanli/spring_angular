@@ -10,6 +10,9 @@ public class UserInfo implements Cloneable {
     private UserCustom[] userBasicInfos;
     private UserDetailedInfos userDetailedInfos;
 
+    // add for controller
+    public UserInfo(){
+    }
     public UserInfo (UserCustom[] userBasicInfos, UserDetailedInfos userDetailedInfos) {
         this.userBasicInfos = new UserCustom[userBasicInfos.length];
         System.arraycopy(userBasicInfos, 0, this.userBasicInfos, 0, userBasicInfos.length);

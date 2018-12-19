@@ -124,7 +124,10 @@ export class CommonUtilitiesService {
     if (date == null) {
       return '';
     } else {
-      const timeStr = date.toLocaleString();
+      let timeStr: string = date.toLocaleString();
+      // get rid of all chars until last space
+      const lastSpacePosition = timeStr.indexOf(' ');
+      timeStr = timeStr.substring(0, lastSpacePosition);
       return timeStr.slice(0, 10).trim();
     }
   }

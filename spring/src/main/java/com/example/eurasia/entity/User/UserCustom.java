@@ -10,6 +10,9 @@ public class UserCustom implements Cloneable {
     private String key;
     private String value;
 
+    // add for controller which needs a default constructor
+    public UserCustom(){
+    }
     public UserCustom (String key, String value) {
         this.key = key;
         this.value = value;

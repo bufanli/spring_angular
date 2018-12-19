@@ -10,6 +10,9 @@ public class UserDetailedInfos implements Cloneable {
     private UserCustom[] userAccessAuthorities;
     private UserCustom[] userQueryConditionDisplays;
     private UserCustom[] userHeaderDisplays;
+    // add for controller which needs a default constructor
+    public UserDetailedInfos(){
+    }
 
     public UserDetailedInfos(UserCustom[] userAccessAuthorities,
                              UserCustom[] userQueryConditionDisplays,

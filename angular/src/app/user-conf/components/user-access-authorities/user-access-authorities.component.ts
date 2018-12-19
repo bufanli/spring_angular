@@ -18,15 +18,16 @@ export class UserAccessAuthoritiesComponent implements AfterViewInit {
   public setCurrentUserAccessAuthorities(userAccessAuthorities: UserAccessAuthorities) {
     this.currentUserAccessAuthorities = userAccessAuthorities;
     this.setQueryProducts();
+    this.setDatePickerValue();
   }
   ngAfterViewInit() {
-    this.setDatePickerFormat('#start-time');
-    this.setDatePickerFormat('#to-time');
-    this.setDatePickerFormat('#expired-time');
     this.setDatePickerValue();
   }
   // init date picker
   setDatePickerValue() {
+    this.setDatePickerFormat('#start-time');
+    this.setDatePickerFormat('#to-time');
+    this.setDatePickerFormat('#expired-time');
     // set initial date to datepicker
     const dateArray = this.currentUserAccessAuthorities['日期'].split(
       this.commonUtilitiesService.DATA_COMMON_SEPERATOR);
@@ -80,6 +81,9 @@ export class UserAccessAuthoritiesComponent implements AfterViewInit {
     dateArray.push(toDateStr);
     this.currentUserAccessAuthorities['日期'] = dateArray.join(
       this.commonUtilitiesService.DATA_COMMON_SEPERATOR);
+    // expired time
+    const expiredTime = $('#expired-time').datepicker('getDate');
+    this.currentUserAccessAuthorities['有效期'] = this.commonUtilitiesService.convertDateToLocalString(expiredTime);
     // convert product codes
     const productsArray = this.productCodes.split(this.commonUtilitiesService.VIEW_COMMON_SEPERATOR);
     if (productsArray.length > 1) {
