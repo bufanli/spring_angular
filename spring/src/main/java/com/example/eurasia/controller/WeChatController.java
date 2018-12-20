@@ -57,7 +57,22 @@ public class WeChatController {
                 String access_token = access.getAccessToken();
                 String openId = access.getOpenID();
 
+/*
+                // 保存 access_token和openid 到 cookie，两小时过期
+                Cookie accessTokencookie = new Cookie("accessToken", access_token);
+                accessTokencookie.setMaxAge(60 *2);
+                response.addCookie(accessTokencookie);
+
+                Cookie openIdCookie = new Cookie("openId", openId);
+                openIdCookie.setMaxAge(60 *2);
+                response.addCookie(openIdCookie);
+*/
+
                 WechatUserUnionID userUnionID = weChatAuthServiceImpl.getUserUnionID(access_token, openId);
+                request.getRequestDispatcher("/wechat/xxxx").forward(request,response);
+                return "redirect:/wechat/xxxx";
+            } else {
+                request.getRequestDispatcher("/wechat/xxxx").forward(request,response);
                 return "redirect:/wechat/xxxx";
             }
         }
