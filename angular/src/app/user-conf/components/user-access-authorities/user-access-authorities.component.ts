@@ -48,6 +48,33 @@ export class UserAccessAuthoritiesComponent implements AfterViewInit {
       language: 'zh-CN',
       enableOnReadonly: false,
     });
+    $(controlID).on('changeDate', this, this.changeDateHandler);
+  }
+
+  // handler of date change
+  changeDateHandler(target: any): void {
+    // get component
+    const component = target.data;
+    // put date to component
+    if (target.id === '#start-time' || target.id === '#to-time') {
+      // start time
+      const startDate = $('#start-time').datepicker('getDate');
+      const startDateStr = component.commonUtilitiesService.convertDateToLocalString(startDate);
+      // to time
+      const toDate = $('#to-time').datepicker('getDate');
+      const toDateStr = component.commonUtilitiesService.convertDateToLocalString(toDate);
+      // convert limit date
+      const dateArray = new Array();
+      dateArray.push(startDateStr);
+      dateArray.push(toDateStr);
+      component.currentUserAccessAuthorities['日期'] = dateArray.join(
+        component.commonUtilitiesService.DATA_COMMON_SEPERATOR);
+    } else {
+      // expired time
+      const expiredTime = $('#expired-time').datepicker('getDate');
+      component.currentUserAccessAuthorities['有效期'] = component.commonUtilitiesService.convertDateToLocalString(expiredTime);
+    }
+
   }
   // set initial product codes
   setQueryProducts() {
@@ -69,21 +96,6 @@ export class UserAccessAuthoritiesComponent implements AfterViewInit {
   }
   // get current user access authorities
   getCurrentUserAccessAuthorities(): UserAccessAuthorities {
-    // start time
-    const startDate = $('#start-time').datepicker('getDate');
-    const startDateStr = this.commonUtilitiesService.convertDateToLocalString(startDate);
-    // to time
-    const toDate = $('#to-time').datepicker('getDate');
-    const toDateStr = this.commonUtilitiesService.convertDateToLocalString(toDate);
-    // convert limit date
-    const dateArray = new Array();
-    dateArray.push(startDateStr);
-    dateArray.push(toDateStr);
-    this.currentUserAccessAuthorities['日期'] = dateArray.join(
-      this.commonUtilitiesService.DATA_COMMON_SEPERATOR);
-    // expired time
-    const expiredTime = $('#expired-time').datepicker('getDate');
-    this.currentUserAccessAuthorities['有效期'] = this.commonUtilitiesService.convertDateToLocalString(expiredTime);
     // convert product codes
     const productsArray = this.productCodes.split(this.commonUtilitiesService.VIEW_COMMON_SEPERATOR);
     if (productsArray.length > 1) {

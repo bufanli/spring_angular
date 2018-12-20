@@ -19,6 +19,7 @@ export class UserListComponent implements OnInit, AfterViewChecked {
   private getUsersUrl = 'getAllUserBasicInfo';  // URL to get user list
   // this id is just for compiling pass
   private id: string = null;
+  private currentPageNumber = 1;
 
   private userListHeaders: Header[] = [
     new Header('userID', 'userID', false),
@@ -60,6 +61,7 @@ export class UserListComponent implements OnInit, AfterViewChecked {
   getUsersNotification(httpResponse: HttpResponse) {
     // show user list
     $('#table').bootstrapTable('load', this.commonUtilitiesService.reshapeData(httpResponse.data));
+    $('#table').bootstrapTable({'pageNumber': this.currentPageNumber});
     $('#table').on('page-change.bs.table', this, this.bindUserEditEventHandler);
     this.bindUserEditEventHandler(null);
   }
@@ -121,7 +123,11 @@ export class UserListComponent implements OnInit, AfterViewChecked {
   }
 
   callbackOfUserEditEnd() {
-    alert('user edit end');
+    const options: any = $('#table').bootstrapTable('getOptions');
+    this.currentPageNumber = options.pageNumber;
+    // get users from server
+    this.getUsers().subscribe(httpResponse =>
+      this.getUsersNotification(httpResponse));
   }
 
   // get current user according to button's id(user's id)
