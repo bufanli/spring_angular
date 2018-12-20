@@ -18,6 +18,9 @@ public class QueryCondition implements Cloneable {
     private String value;
     private String type;
 
+    public QueryCondition () {
+    }
+
     public QueryCondition (String key, String value, String type) {
         this.key = key;
         this.value = value;

@@ -4,6 +4,9 @@ public class Header implements Cloneable {
     private String field;//COLUMN_NAME
     private String title;//COLUMN_NAME
 
+    public Header () {
+    }
+
     public Header (String field, String title) {
         this.field = field;
         this.title = title;
