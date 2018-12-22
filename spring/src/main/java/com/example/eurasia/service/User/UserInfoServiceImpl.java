@@ -35,7 +35,7 @@ public class UserInfoServiceImpl implements IUserInfoService {
     @Override
     public String getUserID(HttpServletRequest request) throws Exception {
         HttpSession session = request.getSession();
-        String userID = (String)session.getAttribute("userID");
+        String userID = (String)session.getAttribute("openid");
 
         if (!StringUtils.isEmpty(userID) && userService.getUserIDNumber(userID) == 1) {
             return userID;

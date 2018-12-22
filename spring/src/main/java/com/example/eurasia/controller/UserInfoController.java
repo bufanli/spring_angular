@@ -2,6 +2,7 @@ package com.example.eurasia.controller;
 
 import com.example.eurasia.entity.User.UserCustom;
 import com.example.eurasia.entity.User.UserInfo;
+import com.example.eurasia.service.HttpUtil.HttpSessionEnum;
 import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;
@@ -85,34 +86,6 @@ public class UserInfoController {
     /**
      * @author
      * @date 2018-12-08
-     * @description 判读用户session是否过期或者userID不存在
-     */
-    @RequestMapping(value="/getUserID", method = RequestMethod.GET)
-    public @ResponseBody
-    ResponseResult getUserID(HttpServletRequest request) {
-        ResponseResult responseResult;
-        try {
-            log.info("判断用户session过期开始");
-            String userID = userInfoServiceImpl.getUserID(request);
-            if (StringUtils.isEmpty(userID) == true) {
-                responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_NOT_ING);
-            } else {
-                responseResult = new ResponseResultUtil().success(ResponseCodeEnum.SYSTEM_LOGIN_ING);
-            }
-            if (userInfoServiceImpl.checkUserValid(userID) == false) {
-                responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_USER_INVALID);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
-        }
-        log.info("判断用户session过期结束");
-        return responseResult;
-    }
-
-    /**
-     * @author
-     * @date 2018-12-08
      * @description 判读添加的用户ID是否已存在
      */
     @RequestMapping(value="/isUserIDExist", method = RequestMethod.GET)
@@ -123,14 +96,55 @@ public class UserInfoController {
         try {
             log.info("判断添加用户是否已存在开始");
             HttpSession session = request.getSession();
-            String userID = (String)session.getAttribute("userID");
-            isExist = userInfoServiceImpl.isUserIDExist(userID);
-            responseResult = new ResponseResultUtil().success(ResponseCodeEnum.USER_ADD_IS_EXIST,isExist);
+            String userID = (String)session.getAttribute(HttpSessionEnum.ADD_USER_ID.getAttribute());
+            if (userInfoServiceImpl.isUserIDExist(userID)) {
+                responseResult = new ResponseResultUtil().error(ResponseCodeEnum.USER_ADD_IS_EXIST);
+            } else {
+                responseResult = new ResponseResultUtil().success(ResponseCodeEnum.USER_ADD_IS_NOT_EXIST);
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
             responseResult = new ResponseResultUtil().error(ResponseCodeEnum.USER_ADD_FAILED);
         }
         log.info("判断添加用户是否已存在结束");
+        return responseResult;
+    }
+
+    /**
+     * @author
+     * @date 2018-12-22
+     * @description 判读登陆用户的状态
+     */
+    @RequestMapping(value="/loginUser", method = RequestMethod.GET)
+    public @ResponseBody
+    ResponseResult loginUser(HttpServletRequest request) {
+        ResponseResult responseResult;
+        try {
+            log.info("用户登陆开始");
+            HttpSession session = request.getSession();
+            String userID = (String)session.getAttribute(HttpSessionEnum.LOGIN_ID.getAttribute());
+            if (userID != null) {
+                // 扫描登陆的时候，才会有id
+                String loginStatus = (String)session.getAttribute(HttpSessionEnum.LOGIN_STATUS.getAttribute());
+                if (loginStatus.equals(HttpSessionEnum.LOGIN_STATUS_SUCCESS)) {
+                    responseResult = new ResponseResultUtil().success(ResponseCodeEnum.SYSTEM_LOGIN_SUCCESS);
+                } else if (loginStatus.equals(HttpSessionEnum.LOGIN_STATUS_FAILED)) {
+                    responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
+                } else {
+                    responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
+                }
+            } else {
+                // unlogin
+                session.setAttribute(HttpSessionEnum.LOGIN_STATUS.getAttribute(),HttpSessionEnum.LOGIN_STATUS_UNLOGIN);
+                responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_NOT_ING);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
+        }
+        log.info("用户登陆结束");
         return responseResult;
     }
 

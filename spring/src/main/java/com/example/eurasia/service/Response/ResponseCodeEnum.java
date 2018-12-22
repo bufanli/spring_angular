@@ -6,9 +6,9 @@ public enum ResponseCodeEnum {
     SYSTEM_OPERATE_FAILED(ResponseCode.RESPONSE_CODE_NG, "操作失败"),
     SYSTEM_LOGIN_FAILED(ResponseCode.RESPONSE_CODE_NG, "登录失败"),
     SYSTEM_LOGIN_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "登录成功"),
-    SYSTEM_LOGIN_ING(ResponseCode.RESPONSE_CODE_OK, "用户登陆中"),
-    SYSTEM_LOGIN_NOT_ING(ResponseCode.RESPONSE_CODE_NG, "用户没有登陆中"),
-    SYSTEM_LOGIN_USER_INVALID(ResponseCode.RESPONSE_CODE_NG, "用户有效期已过"),
+    SYSTEM_LOGIN_ING(ResponseCode.RESPONSE_CODE_ING, "用户登陆中"),
+    SYSTEM_LOGIN_NOT_ING(ResponseCode.RESPONSE_CODE_NOT_ING, "用户没有登陆中"),
+    SYSTEM_LOGIN_USER_INVALID(ResponseCode.RESPONSE_CODE_INVALID, "用户有效期已过"),
 
     /* 用户 */
     USER_UPDATE_BASIC_INFO_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "更新用户基本信息成功"),
@@ -80,6 +80,7 @@ public enum ResponseCodeEnum {
     USER_UPDATE_HEADER_WIDTH_FAILED(ResponseCode.RESPONSE_CODE_NG, "更新用户可显示的表头宽度失败"),
     USER_ADD_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "添加用户成功"),
     USER_ADD_FAILED(ResponseCode.RESPONSE_CODE_NG, "添加用户失败"),
+    USER_ADD_IS_NOT_EXIST(ResponseCode.RESPONSE_CODE_OK, "添加用户ID不存在"),
     USER_ADD_IS_EXIST(ResponseCode.RESPONSE_CODE_NG, "添加用户ID已存在"),
     USER_UPDATE_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "更新用户成功"),
     USER_UPDATE_FAILED(ResponseCode.RESPONSE_CODE_NG, "更新用户失败"),
@@ -172,5 +173,8 @@ public enum ResponseCodeEnum {
         private static final Integer RESPONSE_CODE_OK = 200;
         private static final Integer RESPONSE_CODE_NG = 201;
         private static final Integer RESPONSE_CODE_NULL = 202;
+        private static final Integer RESPONSE_CODE_ING = 300;
+        private static final Integer RESPONSE_CODE_NOT_ING = 301;
+        private static final Integer RESPONSE_CODE_INVALID = 302;
     }
 }
