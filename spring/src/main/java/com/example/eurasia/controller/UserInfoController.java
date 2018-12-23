@@ -264,7 +264,7 @@ public class UserInfoController {
      * @date 2018-11-18
      * @description 取得用户的基本信息
      */
-    @RequestMapping(value="/getUserBasicInfo{editUserID}", method = RequestMethod.GET)
+    @RequestMapping(value="/getUserBasicInfo/{editUserID}", method = RequestMethod.GET)
     public @ResponseBody
     ResponseResult getUserBasicInfo(HttpServletRequest request, @PathVariable(value="editUserID") String editUserID) {
         ResponseResult responseResult;
