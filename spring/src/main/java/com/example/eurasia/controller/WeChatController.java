@@ -82,25 +82,28 @@ public class WeChatController {
 
                 // 判断openid在数据库中是否存在
                 if (userInfoServiceImpl.isUserIDExist(openId)) {
-                    // openid保存到session
+                    // 存在，openid保存到session
                     session.setAttribute(HttpSessionEnum.LOGIN_ID.getAttribute(), openId);
                     session.setAttribute(HttpSessionEnum.LOGIN_STATUS.getAttribute(), HttpSessionEnum.LOGIN_STATUS_SUCCESS);
 
+                    String url = String.format(HttpSessionEnum.LOGIN_SUCCESS_REDIRECT_URI,openId);
                     request.setAttribute("routes", "路由跳转");
-                    request.getRequestDispatcher(HttpSessionEnum.LOGIN_SUCCESS_REDIRECT_URI).forward(request, response);
+                    request.getRequestDispatcher(url).forward(request, response);
                 } else {
+                    // 不存在
                     session.setAttribute(HttpSessionEnum.LOGIN_ID.getAttribute(), openId);
-                    session.setAttribute(HttpSessionEnum.LOGIN_STATUS.getAttribute(),HttpSessionEnum.LOGIN_STATUS_FAILED);
+                    session.setAttribute(HttpSessionEnum.LOGIN_STATUS.getAttribute(),HttpSessionEnum.LOGIN_STATUS_NO_USER);
 
                     request.setAttribute("routes","路由跳转");
-                    request.getRequestDispatcher(HttpSessionEnum.LOGIN_FAILED_REDIRECT_URI).forward(request,response);
+                    request.getRequestDispatcher(HttpSessionEnum.LOGIN_NO_USER_REDIRECT_URI).forward(request,response);
                 }
             } else {
+                // 直接打开网址的场合，没有openid
                 session.setAttribute(HttpSessionEnum.LOGIN_ID.getAttribute(), "");
-                session.setAttribute(HttpSessionEnum.LOGIN_STATUS.getAttribute(),HttpSessionEnum.LOGIN_STATUS_FAILED);
+                session.setAttribute(HttpSessionEnum.LOGIN_STATUS.getAttribute(),HttpSessionEnum.LOGIN_STATUS_GO_URL);
 
                 request.setAttribute("routes","路由跳转");
-                request.getRequestDispatcher(HttpSessionEnum.LOGIN_FAILED_REDIRECT_URI).forward(request,response);
+                request.getRequestDispatcher(HttpSessionEnum.LOGIN_GO_URL).forward(request,response);
             }
 
         } else {
@@ -126,8 +129,9 @@ public class WeChatController {
                 request.getRequestDispatcher(HttpSessionEnum.ADD_USER_REDIRECT_URI).forward(request,response);
 
             } else {
+                // 直接打开网址的场合，没有openid
                 request.setAttribute("routes","路由跳转");
-                request.getRequestDispatcher(HttpSessionEnum.ADD_USER_FAILED_REDIRECT_URI).forward(request,response);
+                request.getRequestDispatcher(HttpSessionEnum.ADD_USER_NO_USER_REDIRECT_URI).forward(request,response);
             }
 
         } else {
