@@ -24,6 +24,9 @@
           <div id="bar-code">
           </div>
         </form>
+        <div style="text-align: center">
+          <a class="btn btn-primary glyphicon glyphicon-leaf" (click)="dummyLogin()" role="button">&nbsp;登录（微信未对应）</a>
+        </div>
         <div class="alert alert-danger login-error" *ngIf="isUserNotInDB">该用户尚未注册</div>
         <div class="alert alert-danger login-error" *ngIf="isUserRefused">该用户拒绝登陆</div>
       </div>

@@ -61,9 +61,6 @@ export class LoginComponent implements OnInit, AfterViewChecked {
 
   // if wechat is ok, this dummy method will be deleted
   public dummyLogin(): void {
-    this.dummyLoginImpl();
-  }
-  public dummyLoginImpl() {
     window.location.href = this.loginURL;
   }
   // call back to finish getting user basic info and detail info
