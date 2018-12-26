@@ -87,32 +87,24 @@ public class WeChatController {
                     session.setAttribute(HttpSessionEnum.LOGIN_STATUS.getAttribute(), HttpSessionEnum.LOGIN_STATUS_SUCCESS);
 
                     String url = String.format(HttpSessionEnum.LOGIN_SUCCESS_REDIRECT_URI,openId);
-                    request.setAttribute("routes", "路由跳转");
-                    request.getRequestDispatcher(url).forward(request, response);
+                    response.sendRedirect(url);
                 } else {
                     // 不存在
                     session.setAttribute(HttpSessionEnum.LOGIN_ID.getAttribute(), openId);
                     session.setAttribute(HttpSessionEnum.LOGIN_STATUS.getAttribute(),HttpSessionEnum.LOGIN_STATUS_NO_USER);
-
-                    request.setAttribute("routes","路由跳转");
-                    request.getRequestDispatcher(HttpSessionEnum.LOGIN_NO_USER_REDIRECT_URI).forward(request,response);
+                    response.sendRedirect(HttpSessionEnum.LOGIN_NO_USER_REDIRECT_URI);
                 }
             } else {
                 // 直接打开网址的场合，没有openid
                 session.setAttribute(HttpSessionEnum.LOGIN_ID.getAttribute(), "");
                 session.setAttribute(HttpSessionEnum.LOGIN_STATUS.getAttribute(),HttpSessionEnum.LOGIN_STATUS_GO_URL);
-
-                request.setAttribute("routes","路由跳转");
-                request.getRequestDispatcher(HttpSessionEnum.LOGIN_GO_URL).forward(request,response);
+                response.sendRedirect(HttpSessionEnum.LOGIN_GO_URL);
             }
-
         } else {
             // 用户禁止授权
             session.setAttribute(HttpSessionEnum.LOGIN_ID.getAttribute(), "");
             session.setAttribute(HttpSessionEnum.LOGIN_STATUS.getAttribute(),HttpSessionEnum.LOGIN_STATUS_REFUSE);
-
-            request.setAttribute("routes","路由跳转");
-            request.getRequestDispatcher(HttpSessionEnum.LOGIN_REFUSE_REDIRECT_URI).forward(request,response);
+            response.sendRedirect(HttpSessionEnum.LOGIN_REFUSE_REDIRECT_URI);
         }
     }
 

@@ -1,0 +1,14 @@
+<div>
+  <div id="bar-code">
+    <img src="./assets/img/bar-code.png" style="width: 80%; height: 80%">
+  </div>
+  <div class="row" style="text-align: center">
+    <a class="btn btn-primary glyphicon glyphicon-leaf" (click)="dummyScanBarCode()" role="button">&nbsp;΢��ɨ�裨΢��δ��Ӧ��</a>
+  </div>
+  <div class="row user-not-exist-in-db" *ngIf="isUserExisted">
+    <span class="alert alert-danger">该用户已经注册过了</span>
+  </div>
+  <div class="row user-not-exist-in-db" *ngIf="isUserRefused">
+    <span class="alert alert-danger">用户拒绝登陆</span>
+  </div>
+</div>

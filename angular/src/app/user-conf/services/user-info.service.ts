@@ -7,13 +7,14 @@ import { CommonUtilitiesService } from 'src/app/common/services/common-utilities
 import { UserBasicInfo } from '../entities/user-basic-info';
 import { UserAccessAuthorities } from '../entities/user-access-authorities';
 import { UserQueryConditionHeader } from '../entities/user-query-condition-header';
+import { UserAddInputComponent } from '../components/user-add-input/user-add-input.component';
 
 // json header for post
 const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' })
 };
 
-const userAccessAuthoritiesDictionary = [
+export const UserAccessAuthoritiesDictionary = [
   'userID',
   '日期',
   '商品编码',
@@ -31,7 +32,7 @@ const userAccessAuthoritiesDictionary = [
   '查看数据图可否',
   '导出数据图可否',
 ];
-const userBaiscInfosDictionary = [
+export const UserBaiscInfosDictionary = [
   'userID',
   '昵称',
   '性别',
@@ -45,7 +46,7 @@ const userBaiscInfosDictionary = [
   '手机号码',
   '电子邮件',
 ];
-const QueryConditionHeaderDictionary = [
+export const QueryConditionHeaderDictionary = [
   'userID',
   '日期',
   '进口',
@@ -101,8 +102,12 @@ const QueryConditionHeaderDictionary = [
 export class UserInfoService {
 
   private getUserDetailedInfosUrl = 'getUserDetailedInfos';  // URL to get user's permission
-  private updateUserInfoUrl = 'updateUser';  // URL to get user's permission
+  private getDefaultUserBasicInfoUrl = 'getUserDefaultBasicInfo';  // URL to get user's basic info
+  private getDefaultUserDetailedInfoUrl = 'getUserDefaultDetailedInfos';  // URL to get user's detailed info
+  private updateUserInfoUrl = 'updateUser';  // URL to update user
+  private addUserInfoUrl = 'addUser';  // URL to add user
   private userEditComponent: UserEditComponent = null;
+  private userAddInputComponent: UserAddInputComponent = null;
 
   constructor(private http: HttpClient,
     private commonUtilityService: CommonUtilitiesService) { }
@@ -130,7 +135,7 @@ export class UserInfoService {
     // get user access authroties
     const userAccessAuthoritiesData = data.userAccessAuthorities;
     const userAccessAuthorities = this.commonUtilityService.deserializeDataFromHttpResponse(
-      userAccessAuthoritiesDictionary, userAccessAuthoritiesData);
+      UserAccessAuthoritiesDictionary, userAccessAuthoritiesData);
     this.userEditComponent.setUserAccessAuthorities(userAccessAuthorities);
 
     // get header display
@@ -170,11 +175,11 @@ export class UserInfoService {
     // combine four parts into one parameter
     // user basic info
     const userBasicInfos = this.commonUtilityService.serializeDataToHttpResponse(
-      userBaiscInfosDictionary,
+      UserBaiscInfosDictionary,
       userBasicInfo);
     // user detail info
     const accessAuthorities = this.commonUtilityService.serializeDataToHttpResponse(
-      userAccessAuthoritiesDictionary,
+      UserAccessAuthoritiesDictionary,
       userAccessAuthorities
     );
     // header display
@@ -205,5 +210,110 @@ export class UserInfoService {
     userEditComponent: UserEditComponent,
     httpResponse: HttpResponse) {
     userEditComponent.updateUserInfoCallback(httpResponse);
+  }
+  // get user default basic info
+  public getDefaultBasicInfo(userAddInputComponent: UserAddInputComponent): void {
+    this.userAddInputComponent = userAddInputComponent;
+    this.getDefaultBasicInfoImpl().subscribe(httpResponse =>
+      this.getDefaultBasicInfoNotification(httpResponse));
+  }
+  // get user default basic info implementation
+  private getDefaultBasicInfoImpl(): Observable<HttpResponse> {
+    return this.http.get<HttpResponse>(this.getDefaultUserBasicInfoUrl);
+  }
+  // get user default basic info notification
+  private getDefaultBasicInfoNotification(httpResponse: HttpResponse): void {
+    // get default basic info
+    const userBasicInfo = this.commonUtilityService.deserializeDataFromHttpResponse(
+      UserBaiscInfosDictionary, httpResponse.data);
+    this.userAddInputComponent.setUserBasicInfo(userBasicInfo);
+    // get user default detailed info continously
+    this.getDefaultDetailedInfo();
+  }
+  // get default user detailed info
+  private getDefaultDetailedInfo(): void {
+    this.getDefaultDetailedInfoImpl().subscribe(httpResponse =>
+      this.getDefaultDetailedInfoNotification(httpResponse));
+  }
+  // get default user detailed info implementation
+  private getDefaultDetailedInfoImpl(): Observable<HttpResponse> {
+    return this.http.get<HttpResponse>(this.getDefaultUserDetailedInfoUrl);
+  }
+  // get default user detailed info notification
+  private getDefaultDetailedInfoNotification(httpResponse: HttpResponse): void {
+    // get access authorities
+    const userAccessAuthorities = this.commonUtilityService.deserializeDataFromHttpResponse(
+      UserAccessAuthoritiesDictionary, httpResponse.data.userAccessAuthoritiesList);
+    this.userAddInputComponent.setUserAccessAuthorites(userAccessAuthorities);
+    // get query condition displays
+    const queryConditionDisplays = this.commonUtilityService.deserializeDataFromHttpResponse(
+      QueryConditionHeaderDictionary, httpResponse.data.userQueryConditionDisplaysList);
+    this.userAddInputComponent.setUserQueryConditionDisplays(queryConditionDisplays);
+    // get header displays
+    const headerDisplay = this.commonUtilityService.deserializeDataFromHttpResponse(
+      QueryConditionHeaderDictionary, httpResponse.data.userHeaderDisplaysList);
+    this.userAddInputComponent.setUserHeaderDisplays(headerDisplay);
+    // call back to finish get user detailed info
+    this.userAddInputComponent.callbackToFinsihGetUserDetaildInfo();
+  }
+
+  // add user info to spring
+  public addUserInfo(userAddInputComponent: UserAddInputComponent,
+    userBasicInfo: UserBasicInfo,
+    userAccessAuthorities: UserAccessAuthorities,
+    userQueryConditionDisplay: UserQueryConditionHeader,
+    userHeaderDisplay: UserQueryConditionHeader): void {
+    this.addUserInfoImpl(
+      userBasicInfo,
+      userAccessAuthorities,
+      userHeaderDisplay,
+      userQueryConditionDisplay).subscribe(
+        httpResponse => this.addUserInfoNotification(userAddInputComponent, httpResponse));
+
+  }
+  // add user info implemetation
+  private addUserInfoImpl(
+    userBasicInfo: UserBasicInfo,
+    userAccessAuthorities: UserAccessAuthorities,
+    userHeaderDisplay: UserQueryConditionHeader,
+    userQueryConditionDisplay: UserQueryConditionHeader): Observable<HttpResponse> {
+    // combine four parts into one parameter
+    // user basic info
+    const userBasicInfos = this.commonUtilityService.serializeDataToHttpResponse(
+      UserBaiscInfosDictionary,
+      userBasicInfo);
+    // user detail info
+    const accessAuthorities = this.commonUtilityService.serializeDataToHttpResponse(
+      UserAccessAuthoritiesDictionary,
+      userAccessAuthorities
+    );
+    // header display
+    const headerDisplay = this.commonUtilityService.serializeDataToHttpResponse(
+      QueryConditionHeaderDictionary,
+      userHeaderDisplay
+    );
+    // query condition display
+    const queryConditionDisplay = this.commonUtilityService.serializeDataToHttpResponse(
+      QueryConditionHeaderDictionary,
+      userQueryConditionDisplay
+    );
+    const userDetailInfo = {
+      userAccessAuthorities: accessAuthorities,
+      userQueryConditionDisplays: queryConditionDisplay,
+      userHeaderDisplays: headerDisplay,
+    };
+    const addUserInfoParam = {
+      userBasicInfos: userBasicInfos,
+      userDetailedInfos: userDetailInfo,
+    };
+    return this.http.post<HttpResponse>(
+      this.addUserInfoUrl,
+      addUserInfoParam,
+      httpOptions);
+  }
+  private addUserInfoNotification(
+    userAddInputComponent: UserAddInputComponent,
+    httpResponse: HttpResponse) {
+    userAddInputComponent.addUserInfoCallback(httpResponse);
   }
 }

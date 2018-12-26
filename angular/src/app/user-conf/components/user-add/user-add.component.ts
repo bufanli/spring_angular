@@ -1,4 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ViewContainerRef, ComponentRef, ComponentFactoryResolver } from '@angular/core';
+import { UserAccessAuthorities } from '../../entities/user-access-authorities';
+import { UserQueryConditionHeader } from '../../entities/user-query-condition-header';
+import { UserBasicInfo } from '../../entities/user-basic-info';
+import { UserAddInputComponent } from '../user-add-input/user-add-input.component';
+import { UserAddBarcodeComponent } from '../user-add-barcode/user-add-barcode.component';
+import { UserInfoService } from '../../services/user-info.service';
 
 @Component({
   selector: 'app-user-add',
@@ -7,9 +13,51 @@ import { Component, OnInit } from '@angular/core';
 })
 export class UserAddComponent implements OnInit {
 
-  constructor() { }
+  // user access authorities
+  public currentUserAccessAuthorities: UserAccessAuthorities = null;
+  // user header display
+  // TODO this will be replace to entity class in future from any type
+  public currentUserHeaderDisplay: UserQueryConditionHeader = null;
+  // user query condition display
+  // TODO this will be replace to entity class in future from any type
+  public currentUserQueryConditionDisplay: UserQueryConditionHeader = null;
+  // user basic info
+  public currentUser: UserBasicInfo = null;
+
+  @ViewChild('userEditContainer', { read: ViewContainerRef }) container: ViewContainerRef;
+
+  componentRefUserAddInput: ComponentRef<UserAddInputComponent>;
+  componentRefUserAddBarcode: ComponentRef<UserAddBarcodeComponent>;
+
+  constructor(private userInfoService: UserInfoService,
+    private resolver: ComponentFactoryResolver) {
+  }
+  // create user add input component or user add barcode component
+  createComponent(type: string) {
+    this.container.clear();
+    if (type === 'bar-code') {
+      const factory = this.resolver.resolveComponentFactory(UserAddBarcodeComponent);
+      this.componentRefUserAddBarcode = this.container.createComponent(factory);
+    } else if (type === 'input') {
+      const factory = this.resolver.resolveComponentFactory(UserAddInputComponent);
+      this.componentRefUserAddInput = this.container.createComponent(factory);
+    }
+  }
 
   ngOnInit() {
+    // show bar code component at first
+    this.createComponent('bar-code');
+  }
+
+  // wechat result ok
+  public wechatOK(openID: string): void {
+    this.createComponent('input');
+    this.componentRefUserAddInput.instance.setOpenID(openID);
+  }
+  // wechat result ng
+  public wechatNG(reason: string): void {
+    this.createComponent('bar-code');
+    this.componentRefUserAddBarcode.instance.setReason(reason);
   }
 
 }

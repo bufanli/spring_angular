@@ -222,3 +222,12 @@ body {
   line-height: 1em;
   color: #666;
 }
+
+.login-error {
+  margin-top: 1em;
+  padding: 8px;
+  text-align: center;
+}
+#bar-code {
+ margin-top: 2em;
+}

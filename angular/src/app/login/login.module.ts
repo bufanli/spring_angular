@@ -5,7 +5,6 @@ import { HttpClientModule } from '@angular/common/http';
 import { AdminLoginComponent } from './components/admin-login/admin-login.component';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { LoginService } from './services/login-service';
 
 export const loginRoutes: Routes = [
   {

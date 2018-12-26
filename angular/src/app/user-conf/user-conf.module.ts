@@ -10,6 +10,8 @@ import { NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule } from '@angular/forms';
 import { UserBasicInfoComponent } from './components/user-basic-info/user-basic-info.component';
 import { UserAccessAuthoritiesComponent } from './components/user-access-authorities/user-access-authorities.component';
+import { UserAddInputComponent } from './components/user-add-input/user-add-input.component';
+import { UserAddBarcodeComponent } from './components/user-add-barcode/user-add-barcode.component';
 
 const userConfRoutes: Routes = [
   {
@@ -31,10 +33,16 @@ const userConfRoutes: Routes = [
     UserConfComponent,
     UserEditComponent,
     UserBasicInfoComponent,
-    UserAccessAuthoritiesComponent],
+    UserAccessAuthoritiesComponent,
+    UserAddInputComponent,
+    UserAddBarcodeComponent,
+  ],
   entryComponents: [
     UserEditComponent,
     UserBasicInfoComponent,
-    UserAccessAuthoritiesComponent],
+    UserAccessAuthoritiesComponent,
+    UserAddBarcodeComponent,
+    UserAddInputComponent,
+  ],
 })
 export class UserConfModule { }

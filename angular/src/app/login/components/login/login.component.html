@@ -1,36 +1,32 @@
 <!-- Fixed navbar -->
 <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
-    <div class="container">
-      <div class="navbar-header">
-        <a class="navbar-brand" href="index.html">欧亚信息咨询网</a>
-      </div>
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="index.html">欧亚信息咨询网</a>
     </div>
-  </nav>
-  <div class="content">
-    <div class="container">
-      <div class="login-client-page">
-        <div class="slides" id="slides">
-          <div class="viewport" id="viewport">
-            <div class="page-view">
-              <div class="view-container"><img src="../../assets/img/slide2.png">
-                <div class="title">欧亚信息咨询网</div>
-                <div class="content">坚持做信息咨询的高效管理</div>
-              </div>
+  </div>
+</nav>
+<div class="content">
+  <div class="container">
+    <div class="login-client-page">
+      <div class="slides" id="slides">
+        <div class="viewport" id="viewport">
+          <div class="page-view">
+            <div class="view-container"><img src="../../assets/img/slide2.png">
+              <div class="title">欧亚信息咨询网</div>
+              <div class="content">坚持做信息咨询的高效管理</div>
             </div>
           </div>
         </div>
-        <div class="login-wrap">
-          <form class="form-horizontal">
-            <span class="heading">用户微信登录</span>
-            <div>
-              <img src="./assets/img/bar-code.png" style="width: 80%; height: 80%">
-              <!-- <a class="btn btn-primary glyphicon glyphicon-leaf" href="/web/main" role="button">登录（微信未对应）</a> -->
-            </div>
-          </form>
-          <div style="text-align: center">
-            <a class="btn btn-primary glyphicon glyphicon-leaf" (click)="dummyLogin()" role="button">&nbsp;登录（微信未对应）</a>
+      </div>
+      <div class="login-wrap">
+        <form class="form-horizontal">
+          <div id="bar-code">
           </div>
-        </div>
+        </form>
+        <div class="alert alert-danger login-error" *ngIf="isUserNotInDB">该用户尚未注册</div>
+        <div class="alert alert-danger login-error" *ngIf="isUserRefused">该用户拒绝登陆</div>
       </div>
     </div>
   </div>
+</div>
