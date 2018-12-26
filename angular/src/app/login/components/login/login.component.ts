@@ -20,8 +20,6 @@ export class LoginComponent implements OnInit, AfterViewChecked {
   public isUserNotInDB = false;
   public isUserRefused = false;
   constructor(private router: Router,
-    private http: HttpClient,
-    private otherHttp: Http,
     private activatedRoute: ActivatedRoute,
     private currentUserContainerService: CurrentUserContainerService) {
     this.isUserNotInDB = false;
