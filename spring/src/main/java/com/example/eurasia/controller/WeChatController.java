@@ -117,21 +117,18 @@ public class WeChatController {
             // 用户允许授权
             AccessToken access = weChatAuthServiceImpl.getAccessToken(code);//根据code获取access_token和openId
             if (access != null) {
-                request.setAttribute("routes","路由跳转");
-                request.getRequestDispatcher(HttpSessionEnum.ADD_USER_REDIRECT_URI).forward(request,response);
-
+                response.sendRedirect(HttpSessionEnum.ADD_USER_REDIRECT_URI);
             } else {
                 // 直接打开网址的场合，没有openid
-                request.setAttribute("routes","路由跳转");
                 request.getRequestDispatcher(HttpSessionEnum.ADD_USER_NO_USER_REDIRECT_URI).forward(request,response);
+                response.sendRedirect(HttpSessionEnum.ADD_USER_NO_USER_REDIRECT_URI);
             }
 
         } else {
             // 用户禁止授权
             session.setAttribute(HttpSessionEnum.LOGIN_STATUS.getAttribute(),HttpSessionEnum.LOGIN_STATUS_REFUSE);
-
-            request.setAttribute("routes","路由跳转");
             request.getRequestDispatcher(HttpSessionEnum.ADD_USER_REFUSE_REDIRECT_URI).forward(request,response);
+            response.sendRedirect(HttpSessionEnum.ADD_USER_REFUSE_REDIRECT_URI);
         }
     }
 }
