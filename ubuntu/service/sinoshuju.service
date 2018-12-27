@@ -1,0 +1,7 @@
+[Unit]
+Description=sinoshuju.service
+After=syslog.target
+[Service]
+ExecStart=/usr/bin/java -jar /home/bufanli/sinoshuju_webapp/demo.war
+[Install]
+WantedBy=multi-user.target
