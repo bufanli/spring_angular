@@ -71,11 +71,11 @@ export class LoginComponent implements OnInit, AfterViewChecked {
   }
   private showBarCode() {
     const obj = new WxLogin({
-      self_redirect: true,
+      self_redirect: false,
       id: 'bar-code',
       appid: 'wx84fe1c3116fb46fa',
       scope: 'snsapi_login',
-      redirect_uri: 'http://www.sinoshuju.com/weChatCallbackForLogin',
+      redirect_uri: 'http://www.sinoshuju.com:9090/weChatCallbackForLogin',
       state: '20181226',
       style: '',
       href: '',
