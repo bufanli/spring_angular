@@ -24,16 +24,16 @@ export class UserAddBarcodeComponent implements OnInit {
   }
   // show bar code to add user todo
   private showWechatBarCode() {
-    // const obj = new WxLogin({
-    //   self_redirect: true,
-    //   id: 'bar-code',
-    //   appid: 'wx84fe1c3116fb46fa',
-    //   scope: 'snsapi_login',
-    //   redirect_uri: 'www.sinoshuju.com:9090/weChatCallbackForAddUser',
-    //   state: '123456',
-    //   style: '',
-    //   href: '',
-    // });
+    const obj = new WxLogin({
+      self_redirect: false,
+      id: 'bar-code',
+      appid: 'wx84fe1c3116fb46fa',
+      scope: 'snsapi_login',
+      redirect_uri: 'http://www.sinoshuju.com:9090/weChatCallbackForAddUser',
+      state: '20181226',
+      style: '',
+      href: '',
+    });
   }
   // dummy scan bar code
   public dummyScanBarCode() {

@@ -21,23 +21,24 @@ export class UserConfComponent implements OnInit {
   userAddComponent: UserAddComponent;
 
   ngOnInit() {
-    this.activatedRoute.params.subscribe((params: Params) => {
+    const that: any = this;
+    this.activatedRoute.queryParams.subscribe((params: Params) => {
       const auth = params['auth'];
       if (auth === 'ok') {
         // show user add component
-        this.isUserAddActive = true;
+        that.isUserAddActive = true;
         // pass params to user add component
         const openID = params['openid'];
-        this.userAddComponent.wechatOK(openID);
+        that.userAddComponent.wechatOK(openID);
       } else if (auth === 'ng') {
         // show user add component
-        this.isUserAddActive = true;
+        that.isUserAddActive = true;
         // pass params to user add component
         const reason = params['reason'];
-        this.userAddComponent.wechatNG(reason);
+        that.userAddComponent.wechatNG(reason);
       } else {
         // show user list component
-        this.isUserAddActive = false;
+        that.isUserAddActive = false;
       }
     });
     // show user list compnent at first

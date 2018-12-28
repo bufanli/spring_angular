@@ -53,6 +53,7 @@ export class CurrentUserContainerService {
     // save open id
     this.openID = openID;
     // get user basic info
+    this.getUserBasicInfo();
     return true;
   }
   public saveAdminOpenID(adminLoginComponent: AdminLoginComponent, openID: string): void {

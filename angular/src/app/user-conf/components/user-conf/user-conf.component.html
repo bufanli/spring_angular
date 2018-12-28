@@ -12,11 +12,11 @@
     </li>
   </ul>
   <div id="user-container" class="tab-content">
-    <div class="tab-pane fade in active" id="user-list" [ngClass]="!isUserAddActive">
+    <div class="tab-pane fade in" id="user-list" [ngClass]="{'active': !isUserAddActive}">
       <div class="clearfix" style="margin-bottom: 1em;"></div>
       <app-user-list #userList></app-user-list>
     </div>
-    <div class="tab-pane fade in" id="user-add" [ngClass]="isUserAddActive">
+    <div class="tab-pane fade in" id="user-add" [ngClass]="{'active': isUserAddActive}">
       <div class="clearfix" style="margin-bottom: 1em;"></div>
       <app-user-add #userAdd></app-user-add>
     </div>

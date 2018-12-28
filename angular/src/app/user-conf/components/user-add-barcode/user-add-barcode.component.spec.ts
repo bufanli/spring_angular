@@ -1,5 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { UserAddBarcodeComponent } from './user-add-bar-code.component';
+import { UserAddBarcodeComponent } from './user-add-barcode.component';
 
 
 describe('UserAddBarcodeComponent', () => {
