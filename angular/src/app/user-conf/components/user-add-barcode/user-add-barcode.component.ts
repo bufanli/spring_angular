@@ -37,10 +37,7 @@ export class UserAddBarcodeComponent implements OnInit {
   }
   // dummy scan bar code
   public dummyScanBarCode() {
-    this.dummyScanBarCodeImpl();
-  }
-  private dummyScanBarCodeImpl(): Observable<HttpResponse> {
-    return this.http.get<HttpResponse>(this.userAddURL);
+    window.location.href = this.userAddURL;
   }
   // set wechat failed reason
   public setReason(reason: string) {

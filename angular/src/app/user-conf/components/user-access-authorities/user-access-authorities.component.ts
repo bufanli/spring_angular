@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, AfterViewInit, AfterViewChecked } from '@angular/core';
 import { UserAccessAuthorities } from '../../entities/user-access-authorities';
 import { CommonUtilitiesService } from 'src/app/common/services/common-utilities.service';
+import { UUID } from 'angular2-uuid';
 
 @Component({
   selector: 'app-user-access-authorities',
@@ -9,11 +10,19 @@ import { CommonUtilitiesService } from 'src/app/common/services/common-utilities
 })
 export class UserAccessAuthoritiesComponent implements AfterViewInit {
 
+  // because user add input component and
+  // user edit component share the user basic info component and
+  // user access authorities component, but jquery can not distinguish them by same id name
+  // so we have to define a uuid as component's unique id.
+  public componentID: string = null;
+
   @Input() currentUserAccessAuthorities: UserAccessAuthorities;
   // product codes which is shown as , seperator
   public productCodes: string = null;
   public limitDate: string = null;
-  constructor(private commonUtilitiesService: CommonUtilitiesService) { }
+  constructor(private commonUtilitiesService: CommonUtilitiesService) {
+    this.componentID = UUID.UUID();
+   }
 
   public setCurrentUserAccessAuthorities(userAccessAuthorities: UserAccessAuthorities) {
     this.currentUserAccessAuthorities = userAccessAuthorities;
@@ -25,19 +34,19 @@ export class UserAccessAuthoritiesComponent implements AfterViewInit {
   }
   // init date picker
   setDatePickerValue() {
-    this.setDatePickerFormat('#start-time');
-    this.setDatePickerFormat('#to-time');
-    this.setDatePickerFormat('#expired-time');
+    this.setDatePickerFormat('#start-time' + this.componentID);
+    this.setDatePickerFormat('#to-time' + this.componentID);
+    this.setDatePickerFormat('#expired-time' + this.componentID);
     // set initial date to datepicker
     const dateArray = this.currentUserAccessAuthorities['日期'].split(
       this.commonUtilitiesService.DATA_COMMON_SEPERATOR);
     const startDate = dateArray[0];
     const toDate = dateArray[1];
     // set query start date and to date
-    $('#start-time').datepicker('update', startDate);
-    $('#to-time').datepicker('update', toDate);
+    $('#start-time' + this.componentID).datepicker('update', startDate);
+    $('#to-time' + this.componentID).datepicker('update', toDate);
     // set expired time
-    $('#expired-time').datepicker('update', this.currentUserAccessAuthorities['有效期']);
+    $('#expired-time' + this.componentID).datepicker('update', this.currentUserAccessAuthorities['有效期']);
   }
   // set date picker format
   setDatePickerFormat(controlID: string): void {
@@ -56,12 +65,12 @@ export class UserAccessAuthoritiesComponent implements AfterViewInit {
     // get component
     const component = target.data;
     // put date to component
-    if (target.id === '#start-time' || target.id === '#to-time') {
+    if (target.id === '#start-time' + this.componentID || target.id === '#to-time' + this.componentID) {
       // start time
-      const startDate = $('#start-time').datepicker('getDate');
+      const startDate = $('#start-time' + this.componentID).datepicker('getDate');
       const startDateStr = component.commonUtilitiesService.convertDateToLocalString(startDate);
       // to time
-      const toDate = $('#to-time').datepicker('getDate');
+      const toDate = $('#to-time' + this.componentID).datepicker('getDate');
       const toDateStr = component.commonUtilitiesService.convertDateToLocalString(toDate);
       // convert limit date
       const dateArray = new Array();
@@ -71,7 +80,7 @@ export class UserAccessAuthoritiesComponent implements AfterViewInit {
         component.commonUtilitiesService.DATA_COMMON_SEPERATOR);
     } else {
       // expired time
-      const expiredTime = $('#expired-time').datepicker('getDate');
+      const expiredTime = $('#expired-time' + this.componentID).datepicker('getDate');
       component.currentUserAccessAuthorities['有效期'] = component.commonUtilitiesService.convertDateToLocalString(expiredTime);
     }
 

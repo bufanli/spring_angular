@@ -13,7 +13,7 @@ export class UserConfComponent implements OnInit {
   constructor(private activatedRoute: ActivatedRoute) { }
 
   // user add active
-  public isUserAddActive = false;
+  public isUserAddActive = true;
 
   @ViewChild('userList')
   userListComponent: UserListComponent;
@@ -41,7 +41,7 @@ export class UserConfComponent implements OnInit {
         that.isUserAddActive = false;
       }
     });
-    // show user list compnent at first
-    this.isUserAddActive = false;
+    // show user add compnent at first
+    this.isUserAddActive = true;
   }
 }

@@ -1,8 +1,10 @@
-<div>
+<div class="row">
   <div id="bar-code">
   </div>
   <div class="row">
-    <a class="btn btn-primary glyphicon glyphicon-leaf" (click)="dummyScanBarCode()" role="button">&nbsp;扫描微信</a>
+    <div class="col-md-3">
+      <a class="btn btn-primary glyphicon glyphicon-leaf" (click)="dummyScanBarCode()" role="button">&nbsp;扫描微信</a>
+    </div>
   </div>
   <div class="row user-not-exist-in-db" *ngIf="isUserExisted">
     <span class="alert alert-danger">该用户已经注册过了</span>

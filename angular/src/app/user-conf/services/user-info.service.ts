@@ -224,9 +224,9 @@ export class UserInfoService {
   // get user default basic info notification
   private getDefaultBasicInfoNotification(httpResponse: HttpResponse): void {
     // get default basic info
-    const userBasicInfo = this.commonUtilityService.deserializeDataFromHttpResponse(
-      UserBaiscInfosDictionary, httpResponse.data);
-    this.userAddInputComponent.setUserBasicInfo(userBasicInfo);
+    // reshape user basic info
+    const reshapedResult = this.commonUtilityService.reshapeData(httpResponse.data);
+    this.userAddInputComponent.setUserBasicInfo(reshapedResult[0]);
     // get user default detailed info continously
     this.getDefaultDetailedInfo();
   }
@@ -243,15 +243,15 @@ export class UserInfoService {
   private getDefaultDetailedInfoNotification(httpResponse: HttpResponse): void {
     // get access authorities
     const userAccessAuthorities = this.commonUtilityService.deserializeDataFromHttpResponse(
-      UserAccessAuthoritiesDictionary, httpResponse.data.userAccessAuthoritiesList);
+      UserAccessAuthoritiesDictionary, httpResponse.data.userAccessAuthorities);
     this.userAddInputComponent.setUserAccessAuthorites(userAccessAuthorities);
     // get query condition displays
     const queryConditionDisplays = this.commonUtilityService.deserializeDataFromHttpResponse(
-      QueryConditionHeaderDictionary, httpResponse.data.userQueryConditionDisplaysList);
+      QueryConditionHeaderDictionary, httpResponse.data.userQueryConditionDisplays);
     this.userAddInputComponent.setUserQueryConditionDisplays(queryConditionDisplays);
     // get header displays
     const headerDisplay = this.commonUtilityService.deserializeDataFromHttpResponse(
-      QueryConditionHeaderDictionary, httpResponse.data.userHeaderDisplaysList);
+      QueryConditionHeaderDictionary, httpResponse.data.userHeaderDisplays);
     this.userAddInputComponent.setUserHeaderDisplays(headerDisplay);
     // call back to finish get user detailed info
     this.userAddInputComponent.callbackToFinsihGetUserDetaildInfo();

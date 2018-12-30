@@ -2,18 +2,20 @@
   <div class="col-md-8">
     <div class="form-group">
       <div class="input-group">
-        <span class="input-group-addon" id="date">日期</span>
-        <input type="text" class="form-control datepicker" aria-describedby="date" id="start-time" autocomplete="off">
+        <span class="input-group-addon" id="date{{this.componentID}}">日期</span>
+        <input type="text" class="form-control datepicker" aria-describedby="date" id="start-time{{this.componentID}}"
+          autocomplete="off">
         <div class="input-group-addon">到</div>
-        <input type="text" class="form-control datepicker" id="to-time" autocomplete="off">
+        <input type="text" class="form-control datepicker" id="to-time{{this.componentID}}" autocomplete="off">
       </div>
     </div>
   </div>
   <div class="col-md-4">
     <div class="form-group">
       <div class="input-group">
-        <span class="input-group-addon" id="expired-time-label">有效期</span>
-        <input type="text" class="form-control datepicker" aria-describedby="expired-time" name="expired-time" id="expired-time" autocomplete="off">
+        <span class="input-group-addon" id="expired-time-label{{this.componentID}}">有效期</span>
+        <input type="text" class="form-control datepicker" aria-describedby="expired-time" name="expired-time{{this.componentID}}"
+          id="expired-time{{this.componentID}}" autocomplete="off">
       </div>
     </div>
   </div>
@@ -22,8 +24,8 @@
   <div class="col-md-12">
     <div class="form-group">
       <div class="input-group">
-        <span class="input-group-addon" id="product-code">商品编码</span>
-        <input type="text" [(ngModel)]="productCodes" name="product-code" class="form-control"
+        <span class="input-group-addon" id="product-code{{this.componentID}}">商品编码</span>
+        <input type="text" [(ngModel)]="productCodes" name="product-code{{this.componentID}}" class="form-control"
           placeholder="请输入商品编码" aria-describedby="product-code">
       </div>
     </div>
@@ -34,17 +36,17 @@
   <div class="col-md-8">
     <div class="form-group">
       <div class="input-group">
-        <span class="input-group-addon" id="lookup-times-label">查看详细频度(每分钟)</span>
-        <input type="number" [(ngModel)]="currentUserAccessAuthorities['查看详细频度']" name="lookup-times" class="form-control"
-          aria-describedby="lookup-times-label">
+        <span class="input-group-addon" id="lookup-times-label{{this.componentID}}">查看详细频度(每分钟)</span>
+        <input type="number" [(ngModel)]="currentUserAccessAuthorities['查看详细频度']" name="lookup-times{{this.componentID}}"
+          class="form-control" aria-describedby="lookup-times-label">
       </div>
     </div>
   </div>
   <div class="col-md-4">
     <div class="form-group">
       <div class="input-group">
-        <span class="input-group-addon" id="data-limit-rows-label">看的条数</span>
-        <input type="number" [(ngModel)]="currentUserAccessAuthorities['看的条数']" name="data-limit-rows" class="form-control"
+        <span class="input-group-addon" id="data-limit-rows-label{{this.componentID}}">看的条数</span>
+        <input type="number" [(ngModel)]="currentUserAccessAuthorities['看的条数']" name="data-limit-rows{{this.componentID}}" class="form-control"
           aria-describedby="data-limit-rows-label">
       </div>
     </div>
@@ -147,5 +149,4 @@
       </div>
     </div>
   </div>
-
 </div>

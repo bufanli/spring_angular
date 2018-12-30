@@ -23,6 +23,12 @@ export class UserAddComponent implements OnInit {
   public currentUserQueryConditionDisplay: UserQueryConditionHeader = null;
   // user basic info
   public currentUser: UserBasicInfo = null;
+  // show whether it has passed wechat authentication
+  public isPassedWechatAuthentication = false;
+  // open id for adding user
+  private openID: string = null;
+  // failed reason for adding user
+  private reason: string = null;
 
   @ViewChild('userEditContainer', { read: ViewContainerRef }) container: ViewContainerRef;
 
@@ -46,18 +52,26 @@ export class UserAddComponent implements OnInit {
 
   ngOnInit() {
     // show bar code component at first
-    this.createComponent('bar-code');
+    if (this.isPassedWechatAuthentication === false) {
+      this.createComponent('bar-code');
+      this.componentRefUserAddBarcode.instance.setReason(this.reason);
+    } else {
+      this.createComponent('input');
+      this.componentRefUserAddInput.instance.setOpenID(this.openID);
+    }
   }
 
   // wechat result ok
   public wechatOK(openID: string): void {
-    this.createComponent('input');
-    this.componentRefUserAddInput.instance.setOpenID(openID);
+    // this.createComponent('input');
+    this.isPassedWechatAuthentication = true;
+    this.openID = openID;
   }
   // wechat result ng
   public wechatNG(reason: string): void {
-    this.createComponent('bar-code');
-    this.componentRefUserAddBarcode.instance.setReason(reason);
+    // this.createComponent('bar-code');
+    this.isPassedWechatAuthentication = false;
+    this.reason = reason;
   }
 
 }

@@ -2,15 +2,15 @@
   <div class="col-md-4">
     <div class="form-group">
       <div class="input-group">
-        <span class="input-group-addon" id="nickname">昵称</span>
-        <input type="text" [(ngModel)]="currentUser['昵称']" name="nickname" class="form-control" placeholder="请输入昵称"
+        <span class="input-group-addon" id="nickname{{this.componentID}}">昵称</span>
+        <input type="text" [(ngModel)]="currentUser['昵称']" name="nickname{{this.componentID}}" class="form-control" placeholder="请输入昵称"
           aria-describedby="nickname">
       </div>
     </div>
   </div>
   <div class="col-md-4">
     <div class="form-group">
-      <select class="form-control selectpicker" title="请选择性别" id="gender" name="gender" [(ngModel)]="currentUser['性别']">
+      <select class="form-control selectpicker" title="请选择性别" id="gender{{this.componentID}}" name="gender{{this.componentID}}" [(ngModel)]="currentUser['性别']">
         <option value="男">男</option>
         <option value="女">女</option>
       </select>
@@ -19,8 +19,8 @@
   <div class="col-md-4">
     <div class="form-group">
       <div class="input-group">
-        <span class="input-group-addon" id="realname">名字</span>
-        <input type="text" [(ngModel)]="currentUser['名字']" name="realname" class="form-control" placeholder="请输入名字"
+        <span class="input-group-addon" id="realname{{this.componentID}}">名字</span>
+        <input type="text" [(ngModel)]="currentUser['名字']" name="realname{{this.componentID}}" class="form-control" placeholder="请输入名字"
           aria-describedby="realname">
       </div>
     </div>
@@ -30,8 +30,8 @@
   <div class="col-md-4">
     <div class="form-group">
       <div class="input-group">
-        <span class="input-group-addon" id="password">密码</span>
-        <input type="password" [(ngModel)]="currentUser['密码']" name="password" class="form-control" placeholder="请输入密码"
+        <span class="input-group-addon" id="password{{this.componentID}}">密码</span>
+        <input type="password" [(ngModel)]="currentUser['密码']" name="password{{this.componentID}}" class="form-control" placeholder="请输入密码"
           aria-describedby="password">
       </div>
     </div>
@@ -39,8 +39,8 @@
   <div class="col-md-4">
     <div class="form-group">
       <div class="input-group">
-        <span class="input-group-addon" id="age">年龄</span>
-        <input type="number" [(ngModel)]="currentUser['年龄']" name="age" class="form-control" placeholder="请输入年龄"
+        <span class="input-group-addon" id="age{{this.componentID}}">年龄</span>
+        <input type="number" [(ngModel)]="currentUser['年龄']" name="age{{this.componentID}}" class="form-control" placeholder="请输入年龄"
           aria-describedby="age">
       </div>
     </div>
@@ -48,8 +48,8 @@
   <div class="col-md-4">
     <div class="form-group">
       <div class="input-group">
-        <span class="input-group-addon" id="phone_number">手机</span>
-        <input type="text" [(ngModel)]="currentUser['手机号码']" name="phone_name" class="form-control" placeholder="请输入手机号码"
+        <span class="input-group-addon" id="phone_number{{this.componentID}}">手机</span>
+        <input type="text" [(ngModel)]="currentUser['手机号码']" name="phone_name{{this.componentID}}" class="form-control" placeholder="请输入手机号码"
           aria-describedby="phone_number">
       </div>
     </div>
@@ -59,15 +59,15 @@
   <div class="col-md-4">
     <div class="form-group">
       <div class="input-group">
-        <span class="input-group-addon" id="country">国家</span>
-        <input type="text" [(ngModel)]="currentUser['国家']" name="country" class="form-control" placeholder="请输入国家"
+        <span class="input-group-addon" id="country{{this.componentID}}">国家</span>
+        <input type="text" [(ngModel)]="currentUser['国家']" name="country{{this.componentID}}" class="form-control" placeholder="请输入国家"
           aria-describedby="country">
       </div>
     </div>
   </div>
   <div class="col-md-4">
     <div class="form-group">
-      <select class="form-control selectpicker" title="请选择省份" id="province" name="province" [(ngModel)]="this.currentUser['省份']">
+      <select class="form-control selectpicker" title="请选择省份" id="province{{this.componentID}}" name="province{{this.componentID}}" [(ngModel)]="this.currentUser['省份']">
         <option *ngFor="let province of this.commonUtilitiesService.CHINA_PROVINCES" value="{{province}}">{{province}}</option>
       </select>
     </div>
@@ -75,8 +75,8 @@
   <div class="col-md-4">
     <div class="form-group">
       <div class="input-group">
-        <span class="input-group-addon" id="city">城市</span>
-        <input type="text" [(ngModel)]="currentUser['城市']" name="city" class="form-control" placeholder="请输入城市"
+        <span class="input-group-addon" id="city{{this.componentID}}">城市</span>
+        <input type="text" [(ngModel)]="currentUser['城市']" name="city{{this.componentID}}" class="form-control" placeholder="请输入城市"
           aria-describedby="city">
       </div>
     </div>
@@ -86,8 +86,8 @@
   <div class="col-md-4">
     <div class="form-group">
       <div class="input-group">
-        <span class="input-group-addon" id="email">电子邮件</span>
-        <input type="email" [(ngModel)]="currentUser['电子邮件']" name="email" class="form-control" placeholder="请输入电子邮件"
+        <span class="input-group-addon" id="email{{this.componentID}}">电子邮件</span>
+        <input type="email" [(ngModel)]="currentUser['电子邮件']" name="email{{this.componentID}}" class="form-control" placeholder="请输入电子邮件"
           aria-describedby="email">
       </div>
     </div>
@@ -95,8 +95,8 @@
   <div class="col-md-8">
     <div class="form-group">
       <div class="input-group">
-        <span class="input-group-addon" id="address">地址</span>
-        <input type="text" [(ngModel)]="currentUser['地址']" name="address" class="form-control" placeholder="请输入地址"
+        <span class="input-group-addon" id="address{{this.componentID}}">地址</span>
+        <input type="text" [(ngModel)]="currentUser['地址']" name="address{{this.componentID}}" class="form-control" placeholder="请输入地址"
           aria-describedby="address">
       </div>
     </div>

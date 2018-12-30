@@ -70,7 +70,6 @@ export class UserAddInputComponent implements OnInit, OnDestroy {
       this.componentRefBasicInfo = this.container.createComponent(factory);
       this.currentUserBasicInfo.userID = this.openID;
       this.componentRefBasicInfo.instance.currentUser = this.currentUserBasicInfo;
-
     } else if (type === 'access-authorities') {
       const factory = this.resolver.resolveComponentFactory(UserAccessAuthoritiesComponent);
       this.componentRefAccessAuthorities = this.container.createComponent(factory);

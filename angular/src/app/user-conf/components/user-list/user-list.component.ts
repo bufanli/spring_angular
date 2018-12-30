@@ -42,7 +42,6 @@ export class UserListComponent implements OnInit, AfterViewChecked {
 
   ngOnInit() {
     // set headers for user list
-    $('#table').bootstrapTable({ toggle: 'table' });
     $('#table').bootstrapTable('destroy');
     this.commonUtilitiesService.addTooltipFormatter(this.userListHeaders, 50);
     // add operation formatter to header

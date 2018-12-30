@@ -1,22 +1,22 @@
 <div class="container">
   <ul class="nav nav-tabs">
-    <li class="active">
+    <li [ngClass]="{active:(this.isUserAddActive === false)}">
       <a href="#user-list" data-toggle="tab">
         用户编辑
       </a>
     </li>
-    <li>
+    <li [ngClass]="{active:(this.isUserAddActive === true)}">
       <a href="#user-add" data-toggle="tab">
         添加用户
       </a>
     </li>
   </ul>
   <div id="user-container" class="tab-content">
-    <div class="tab-pane fade in" id="user-list" [ngClass]="{'active': !isUserAddActive}">
+    <div class="tab-pane fade in" id="user-list" [ngClass]="{active: (this.isUserAddActive === false)}">
       <div class="clearfix" style="margin-bottom: 1em;"></div>
       <app-user-list #userList></app-user-list>
     </div>
-    <div class="tab-pane fade in" id="user-add" [ngClass]="{'active': isUserAddActive}">
+    <div class="tab-pane fade in" id="user-add" [ngClass]="{active: (this.isUserAddActive === true)}">
       <div class="clearfix" style="margin-bottom: 1em;"></div>
       <app-user-add #userAdd></app-user-add>
     </div>
