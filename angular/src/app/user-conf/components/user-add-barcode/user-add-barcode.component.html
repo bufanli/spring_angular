@@ -1,15 +1,21 @@
-<div class="row">
-  <div id="bar-code">
+<div class="container">
+  <div class="row">
+    <div class="col-md-4" id="bar-code">
+    </div>
   </div>
   <div class="row">
-    <div class="col-md-3">
+    <div class="col-md-4">
       <a class="btn btn-primary glyphicon glyphicon-leaf" (click)="dummyScanBarCode()" role="button">&nbsp;扫描微信</a>
     </div>
   </div>
-  <div class="row user-not-exist-in-db" *ngIf="isUserExisted">
-    <span class="alert alert-danger">该用户已经注册过了</span>
+  <div class="row" *ngIf="isUserExisted">
+    <div class="col-md-4">
+      <span class="alert alert-danger user-add-error">该用户已经注册过了</span>
+    </div>
   </div>
-  <div class="row user-not-exist-in-db" *ngIf="isUserRefused">
-    <span class="alert alert-danger">用户拒绝登陆</span>
+  <div class="row" *ngIf="isUserRefused">
+    <div class="col-md-4">
+      <span class="alert alert-danger user-add-error">用户拒绝登陆</span>
+    </div>
   </div>
 </div>

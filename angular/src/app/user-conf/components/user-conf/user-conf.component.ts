@@ -23,6 +23,7 @@ export class UserConfComponent implements OnInit {
   ngOnInit() {
     const that: any = this;
     this.activatedRoute.queryParams.subscribe((params: Params) => {
+      // for authentication
       const auth = params['auth'];
       if (auth === 'ok') {
         // show user add component
@@ -40,8 +41,8 @@ export class UserConfComponent implements OnInit {
         // show user list component
         that.isUserAddActive = false;
       }
+      // for update
+      const action = params['action'];
     });
-    // show user add compnent at first
-    this.isUserAddActive = true;
   }
 }

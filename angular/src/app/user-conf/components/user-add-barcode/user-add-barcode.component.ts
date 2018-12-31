@@ -19,8 +19,6 @@ export class UserAddBarcodeComponent implements OnInit {
   ngOnInit() {
     // show bar code to add user, now it is dummy
     this.showWechatBarCode();
-    this.isUserExisted = false;
-    this.isUserRefused = false;
   }
   // show bar code to add user todo
   private showWechatBarCode() {
@@ -44,9 +42,11 @@ export class UserAddBarcodeComponent implements OnInit {
     if (reason === 'user_exist') {
       this.isUserExisted = true;
       this.isUserRefused = false;
-    } else {
+    } else if (reason === 'user_refused') {
       this.isUserExisted = false;
       this.isUserRefused = true;
+    } else {
+      // nothing to do
     }
   }
 

@@ -14,7 +14,7 @@ const httpOptions = {
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent implements OnInit, AfterViewChecked {
+export class LoginComponent implements OnInit {
 
   private loginURL = 'weChatCallbackForLogin?code=123456&state=20181224';  // URL to login(dummy)
   public isUserNotInDB = false;
@@ -26,12 +26,6 @@ export class LoginComponent implements OnInit, AfterViewChecked {
     this.isUserRefused = false;
   }
 
-  ngAfterViewChecked() {
-    this.activatedRoute.queryParams.subscribe((params: Params) => {
-      const auth = params['auth'];
-      console.log('auth is ' + auth);
-    });
-  }
   ngOnInit() {
     // show bar code
     this.showBarCode();

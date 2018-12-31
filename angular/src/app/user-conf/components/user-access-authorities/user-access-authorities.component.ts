@@ -22,7 +22,7 @@ export class UserAccessAuthoritiesComponent implements AfterViewInit {
   public limitDate: string = null;
   constructor(private commonUtilitiesService: CommonUtilitiesService) {
     this.componentID = UUID.UUID();
-   }
+  }
 
   public setCurrentUserAccessAuthorities(userAccessAuthorities: UserAccessAuthorities) {
     this.currentUserAccessAuthorities = userAccessAuthorities;
@@ -65,12 +65,13 @@ export class UserAccessAuthoritiesComponent implements AfterViewInit {
     // get component
     const component = target.data;
     // put date to component
-    if (target.id === '#start-time' + this.componentID || target.id === '#to-time' + this.componentID) {
+    if (target.target.id === ('start-time' + component.componentID) ||
+      target.target.id === ('to-time' + component.componentID)) {
       // start time
-      const startDate = $('#start-time' + this.componentID).datepicker('getDate');
+      const startDate = $('#start-time' + component.componentID).datepicker('getDate');
       const startDateStr = component.commonUtilitiesService.convertDateToLocalString(startDate);
       // to time
-      const toDate = $('#to-time' + this.componentID).datepicker('getDate');
+      const toDate = $('#to-time' + component.componentID).datepicker('getDate');
       const toDateStr = component.commonUtilitiesService.convertDateToLocalString(toDate);
       // convert limit date
       const dateArray = new Array();
@@ -80,7 +81,7 @@ export class UserAccessAuthoritiesComponent implements AfterViewInit {
         component.commonUtilitiesService.DATA_COMMON_SEPERATOR);
     } else {
       // expired time
-      const expiredTime = $('#expired-time' + this.componentID).datepicker('getDate');
+      const expiredTime = $('#expired-time' + component.componentID).datepicker('getDate');
       component.currentUserAccessAuthorities['有效期'] = component.commonUtilitiesService.convertDateToLocalString(expiredTime);
     }
 

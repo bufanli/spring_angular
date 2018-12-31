@@ -6,6 +6,7 @@ import { UserBasicInfoComponent } from '../user-basic-info/user-basic-info.compo
 import { UserAccessAuthoritiesComponent } from '../user-access-authorities/user-access-authorities.component';
 import { UserInfoService } from '../../services/user-info.service';
 import { HttpResponse } from 'src/app/common/entities/http-response';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-user-add-input',
@@ -31,7 +32,8 @@ export class UserAddInputComponent implements OnInit, OnDestroy {
 
   private openID: string = null;
   constructor(private userInfoService: UserInfoService,
-    private resolver: ComponentFactoryResolver) {
+    private resolver: ComponentFactoryResolver,
+    private router: Router) {
   }
   // set userBasicInfo
   public setUserBasicInfo(userBasicInfo: UserBasicInfo) {
@@ -108,7 +110,8 @@ export class UserAddInputComponent implements OnInit, OnDestroy {
   public addUserInfoCallback(httpResponse: HttpResponse): void {
     if (httpResponse.code === 200) {
       // update ok
-      alert('注册用户成功');
+      this.router.navigateByUrl('/web/main/user-conf?action=update');
+
     } else {
       // TODO update ng
     }

@@ -263,6 +263,10 @@ export class UserInfoService {
     userAccessAuthorities: UserAccessAuthorities,
     userQueryConditionDisplay: UserQueryConditionHeader,
     userHeaderDisplay: UserQueryConditionHeader): void {
+    // unify all user id as basic info's user id
+    userAccessAuthorities['userID'] = userBasicInfo['userID'];
+    userQueryConditionDisplay['userID'] = userBasicInfo['userID'];
+    userHeaderDisplay['userID'] = userBasicInfo['userID'];
     this.addUserInfoImpl(
       userBasicInfo,
       userAccessAuthorities,
