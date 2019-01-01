@@ -20,6 +20,7 @@ export class UserListComponent implements OnInit, AfterViewChecked {
   // this id is just for compiling pass
   private id: string = null;
   private currentPageNumber = 1;
+  private isShowLastPage = false;
 
   private userListHeaders: Header[] = [
     new Header('userID', 'userID', false),
@@ -39,6 +40,9 @@ export class UserListComponent implements OnInit, AfterViewChecked {
     private commonUtilitiesService: CommonUtilitiesService,
     public modalService: NgbModal) {
   }
+  public showLastPage(): void {
+    this.isShowLastPage = true;
+  }
 
   ngOnInit() {
     // set headers for user list
@@ -46,7 +50,14 @@ export class UserListComponent implements OnInit, AfterViewChecked {
     this.commonUtilitiesService.addTooltipFormatter(this.userListHeaders, 50);
     // add operation formatter to header
     this.addOperationFormatter(this.userListHeaders[OPERATION_HEADER_INDEX]);
-    $('#table').bootstrapTable({ columns: this.userListHeaders });
+    $('#table').bootstrapTable({
+      columns: this.userListHeaders,
+      pagination: true,
+      pageSize: 8,
+      pageList: [],
+    });
+    // bind user edit handler for every page
+    $('#table').on('page-change.bs.table', this, this.bindUserEditEventHandler);
     // get users from server
     this.getUsers().subscribe(httpResponse =>
       this.getUsersNotification(httpResponse));
@@ -60,9 +71,16 @@ export class UserListComponent implements OnInit, AfterViewChecked {
   getUsersNotification(httpResponse: HttpResponse) {
     // show user list
     $('#table').bootstrapTable('load', this.commonUtilitiesService.reshapeData(httpResponse.data));
-    $('#table').bootstrapTable({'pageNumber': this.currentPageNumber});
-    $('#table').on('page-change.bs.table', this, this.bindUserEditEventHandler);
-    this.bindUserEditEventHandler(null);
+    if (this.isShowLastPage) {
+      const options: any = $('#table').bootstrapTable('getOptions');
+      this.currentPageNumber = options.totalPages;
+      this.isShowLastPage = false;
+      $('#table').bootstrapTable('selectPage', this.currentPageNumber);
+      this.isShowLastPage = true;
+    } else {
+      $('#table').bootstrapTable('selectPage', this.currentPageNumber);
+      this.bindUserEditEventHandler(null);
+    }
   }
 
   bindUserEditEventHandler(target): void {

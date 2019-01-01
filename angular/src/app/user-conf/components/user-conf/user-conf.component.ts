@@ -41,8 +41,11 @@ export class UserConfComponent implements OnInit {
         // show user list component
         that.isUserAddActive = false;
       }
-      // for update
-      const action = params['action'];
     });
+    // for user add end
+    const action = this.activatedRoute.snapshot.params['action'];
+    if (action === 'user_add_end') {
+      this.userListComponent.showLastPage();
+    }
   }
 }

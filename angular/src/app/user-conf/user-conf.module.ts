@@ -18,6 +18,10 @@ const userConfRoutes: Routes = [
     path: '',
     component: UserConfComponent,
   },
+  {
+    path: ':action',
+    component: UserConfComponent,
+  },
 ];
 @NgModule({
   imports: [

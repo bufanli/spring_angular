@@ -110,8 +110,7 @@ export class UserAddInputComponent implements OnInit, OnDestroy {
   public addUserInfoCallback(httpResponse: HttpResponse): void {
     if (httpResponse.code === 200) {
       // update ok
-      this.router.navigateByUrl('/web/main/user-conf?action=update');
-
+      this.router.navigate(['/web/main/user-conf', 'user_add_end']);
     } else {
       // TODO update ng
     }
