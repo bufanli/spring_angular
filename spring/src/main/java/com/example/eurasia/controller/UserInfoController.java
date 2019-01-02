@@ -189,6 +189,10 @@ public class UserInfoController {
                 responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
             } else {
 
+                if (userInfoServiceImpl.isUserIDExist(userInfo.getUserIDFromBasicInfos())) {
+                    return new ResponseResultUtil().error(ResponseCodeEnum.USER_ADD_IS_EXIST);
+                }
+
                 if (userInfoServiceImpl.checkUserPhone(userInfo) == false) {
                     return new ResponseResultUtil().error(ResponseCodeEnum.USER_ADD_PHONE_FAILED);
                 }
