@@ -1,4 +1,5 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-modal-dialog',
@@ -10,10 +11,16 @@ export class ModalDialogComponent implements OnInit {
   public dialogTitle: string = null;
   public dialogBody: string = null;
   // event notifier
-  @Output() notifyClose: EventEmitter<string> = new EventEmitter<string>();
-  constructor() { }
+  @Output() notifier: EventEmitter<string> = new EventEmitter<string>();
+  constructor(private activeModal: NgbActiveModal) { }
 
   ngOnInit() {
+  }
+
+  // close modal dialog
+  public close(): void {
+    this.activeModal.close();
+    this.notifier.emit('close');
   }
 
 }

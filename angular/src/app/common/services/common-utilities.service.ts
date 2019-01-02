@@ -3,6 +3,9 @@ import { Header } from '../entities/header';
 import { HttpResponse } from '../entities/http-response';
 import { forEach } from '@angular/router/src/utils/collection';
 import { element } from '@angular/core/src/render3/instructions';
+import { NgbModal, NgbModalOptions, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
+import { CommonDialogCallback } from '../interfaces/common-dialog-callback.service';
+import { ModalDialogComponent } from '../components/modal-dialog/modal-dialog.component';
 
 @Injectable({
   providedIn: 'root'
@@ -48,7 +51,7 @@ export class CommonUtilitiesService {
     '澳门',
   ];
 
-  constructor() { }
+  constructor(public modalService: NgbModal) { }
 
   // reshape data result
   // input
@@ -130,5 +133,29 @@ export class CommonUtilitiesService {
       timeStr = timeStr.substring(0, lastSpacePosition);
       return timeStr.slice(0, 10).trim();
     }
+  }
+  // show common dialog
+  showCommonDialog(dialogTitle: string,
+    dialogBody: string,
+    callback: CommonDialogCallback): void {
+    // you can not call this.adjustModalOptions,
+    // because showUserSettingModal called in html context
+    const modalRef = this.modalService.open(ModalDialogComponent, this.adjustModalOptions());
+    modalRef.componentInstance.setTitle(dialogTitle);
+    modalRef.componentInstance.setBody(dialogBody);
+    modalRef.componentInstance.notifier.subscribe(response => this.callbackOfModalDialog(response, callback));
+  }
+
+  // callback of modal dialog
+  private callbackOfModalDialog(response: any, callback: CommonDialogCallback) {
+    callback.callbackOnConfirm(response);
+  }
+
+  // adjust show dialog options
+  private adjustModalOptions(): NgbModalOptions {
+    const options: NgbModalOptions = new NgbModalConfig();
+    options.backdrop = false;
+    options.windowClass = 'modal fade in';
+    return options;
   }
 }
