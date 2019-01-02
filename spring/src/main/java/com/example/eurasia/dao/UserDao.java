@@ -184,11 +184,11 @@ REPLACE INTO `table` (`unique_column`,`num`) VALUES ('$unique_value',$num);
 
         sql.append("update " + tableName + " set ");
         for (int i=0; i<userCustoms.length; i++) {
-            sql.append(userCustoms[i].getKey() + " = " + userCustoms[i].getValue());
+            sql.append(userCustoms[i].getKey() + " = " + "'" + userCustoms[i].getValue() + "'");
             sql.append(CommonDao.COMMA);
         }
         sql.deleteCharAt(sql.length() - CommonDao.COMMA.length());
-        sql.append(" where userID = " + userID);
+        sql.append(" where userID = " + "'" + userID + "'");
 
         int num = getJdbcTemplate().update(sql.toString());
         return num;
