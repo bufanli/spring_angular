@@ -76,10 +76,9 @@ export class UserListComponent implements OnInit, AfterViewChecked {
       this.currentPageNumber = options.totalPages;
       this.isShowLastPage = false;
       $('#table').bootstrapTable('selectPage', this.currentPageNumber);
-      this.isShowLastPage = true;
+      this.isShowLastPage = false;
     } else {
       $('#table').bootstrapTable('selectPage', this.currentPageNumber);
-      this.bindUserEditEventHandler(null);
     }
   }
 
