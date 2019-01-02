@@ -34,14 +34,15 @@ public class UserInfoServiceImpl implements IUserInfoService {
 
     @Override
     public String getUserID(HttpServletRequest request) throws Exception {
-        HttpSession session = request.getSession();
-        String userID = (String)session.getAttribute("openid");
-
-        if (!StringUtils.isEmpty(userID) && userService.getUserIDNumber(userID) == 1) {
-            return userID;
-        } else {
-            return null;
-        }
+//        HttpSession session = request.getSession();
+//        String userID = (String)session.getAttribute("openid");
+//
+//        if (!StringUtils.isEmpty(userID) && userService.getUserIDNumber(userID) == 1) {
+//            return userID;
+//        } else {
+//            return null;
+//        }
+        return "sinoshuju_admin";
     }
 
     public boolean isUserIDExist(String userID) throws Exception {

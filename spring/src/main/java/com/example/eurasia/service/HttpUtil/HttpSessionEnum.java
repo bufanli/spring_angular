@@ -10,17 +10,19 @@ public enum HttpSessionEnum {
 
     public static final String LOGIN_STATUS_SUCCESS = "loginSuccess";
     public static final String LOGIN_STATUS_NO_USER = "loginNoUser";
-    public static final String LOGIN_STATUS_GO_URL = "loginGoURL";
+    public static final String LOGIN_STATUS_NO_OPENID = "loginNoOpenid";
     public static final String LOGIN_STATUS_UN_LOGIN = "unLogin";
     public static final String LOGIN_STATUS_REFUSE = "loginRefuse";
 
     public static final String LOGIN_SUCCESS_REDIRECT_URI = "/web/login/user?auth=ok&openid=%s";
     public static final String LOGIN_NO_USER_REDIRECT_URI = "/web/login/user?auth=ng&reason=no_user";
-    public static final String LOGIN_GO_URL = "/web/login";
+    public static final String LOGIN_NO_OPENID_URL = "/web/login";
     public static final String LOGIN_REFUSE_REDIRECT_URI = "/web/login/user?auth=ng&reason=user_refused";
-    public static final String ADD_USER_REDIRECT_URI = "/web/main/user-conf";
-    public static final String ADD_USER_NO_USER_REDIRECT_URI = "/web/main/user-conf";
-    public static final String ADD_USER_REFUSE_REDIRECT_URI = "/web/main/user-conf";
+
+    public static final String ADD_USER_REDIRECT_URI = "/web/main/user-conf?auth=ok&openid=%s";
+    public static final String ADD_USER_EXIST_REDIRECT_URI = "/web/main/user-conf?auth=ng&reason=user_exist";
+    public static final String ADD_USER_NO_OPENID_URI = "/web/main/user-conf";
+    public static final String ADD_USER_REFUSE_REDIRECT_URI = "/web/main/user-conf?auth=ng&reason=user_refused";
 
     private String attribute;
 
