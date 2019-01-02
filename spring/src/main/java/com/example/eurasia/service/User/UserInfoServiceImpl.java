@@ -63,21 +63,21 @@ public class UserInfoServiceImpl implements IUserInfoService {
         }
 
         log.info("保存用户的基本信息开始");
-        boolean isupdateSuccessful = userService.updateUserBasicInfo(userInfo.getUserBasicInfos());
+        boolean isupdateSuccessful = userService.updateUserBasicInfo(userInfo.getUserIDFromBasicInfos(),userInfo.getUserBasicInfos());
         if (isupdateSuccessful == false) {
             return new ResponseResultUtil().error(ResponseCodeEnum.USER_UPDATE_BASIC_INFO_FAILED);
         }
         log.info("保存用户的基本信息结束");
 
         log.info("保存用户的访问权限开始");
-        isupdateSuccessful = userService.updateUserAccessAuthority(userInfo.getUserDetailedInfos().getUserAccessAuthorities());
+        isupdateSuccessful = userService.updateUserAccessAuthority(userInfo.getUserIDFromBasicInfos(),userInfo.getUserDetailedInfos().getUserAccessAuthorities());
         if (isupdateSuccessful == false) {
             return new ResponseResultUtil().error(ResponseCodeEnum.USER_UPDATE_ACCESS_AUTHORITY_INFO_FAILED);
         }
         log.info("保存用户的访问权限结束");
 
         log.info("保存用户的可见查询条件开始");
-        isupdateSuccessful = userService.updateUserQueryConditionDisplay(userInfo.getUserDetailedInfos().getUserQueryConditionDisplays());
+        isupdateSuccessful = userService.updateUserQueryConditionDisplay(userInfo.getUserIDFromBasicInfos(),userInfo.getUserDetailedInfos().getUserQueryConditionDisplays());
         isupdateSuccessful = true;//T.B.D
         if (isupdateSuccessful == false) {
             return new ResponseResultUtil().error(ResponseCodeEnum.USER_UPDATE_QUERY_CONDITION_DISPLAY_FAILED);
@@ -85,7 +85,7 @@ public class UserInfoServiceImpl implements IUserInfoService {
         log.info("保存用户的可见查询条件结束");
 
         log.info("保存用户的可见表头开始");
-        isupdateSuccessful = userService.updateUserHeaderDisplay(userInfo.getUserDetailedInfos().getUserHeaderDisplays());
+        isupdateSuccessful = userService.updateUserHeaderDisplay(userInfo.getUserIDFromBasicInfos(),userInfo.getUserDetailedInfos().getUserHeaderDisplays());
         isupdateSuccessful = true;//T.B.D
         if (isupdateSuccessful == false) {
             return new ResponseResultUtil().error(ResponseCodeEnum.USER_UPDATE_HEADER_DISPLAY_FAILED);

@@ -127,7 +127,7 @@ public class UserDao extends CommonDao {
      * @author FuJia
      * @Time 2018-12-02 00:00:00
      */
-    public int updateUserCustom(String tableName, UserCustom[] userCustoms) throws Exception {
+    public int replaceUserCustom(String tableName, UserCustom[] userCustoms) throws Exception {
 
 /*
 replace into 跟 insert 功能类似，不同点在于：replace into 首先尝试插入数据到表中，
@@ -138,6 +138,13 @@ replace into 跟 insert 功能类似，不同点在于：replace into 首先尝�
 在使用REPLACE时，表中必须有唯一索引，而且这个索引所在的字段不能允许空值，否则REPLACE就和INSERT完全一样的。
 在执行REPLACE后，系统返回了所影响的行数，如果返回1，说明没有重复的记录，
 如果返回2，说明有重复记录，系统先DELETE这条记录，然后再INSERT这条记录。
+
+REPLACE INTO `table` (`unique_column`,`num`) VALUES ('$unique_value',$num);
+跟INSERT INTO `table` (`unique_column`,`num`) VALUES('$unique_value',$num) ON DUPLICATE UPDATE num=$num;还是有些区别的.
+区别就是replace into的时候会删除老记录。如果表中有一个自增的主键，那么就要出问题了。
+首先，因为新纪录与老记录的主键值不同，所以其他表中所有与本表老数据主键id建立的关联全部会被破坏。
+其次，就是，频繁的REPLACE INTO 会造成新纪录的主键的值迅速增大。
+总有一天。达到最大值后就会因为数据太大溢出了。就没法再插入新纪录了。数据表满了，不是因为空间不够了，而是因为主键的值没法再增加了。
  */
         StringBuffer sql = new StringBuffer();
         StringBuffer sqlKey = new StringBuffer();
@@ -159,6 +166,31 @@ replace into 跟 insert 功能类似，不同点在于：replace into 首先尝�
         sql.append(sqlValue + ")");
 
         int num = getJdbcTemplate().update(sql.toString(),(Object[])valueArray);
+        return num;
+
+    }
+
+    /**
+     * 更新某个数据库表里的用户属性
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-12-02 00:00:00
+     */
+    public int updateUserCustom(String tableName, String userID, UserCustom[] userCustoms) throws Exception {
+
+        StringBuffer sql = new StringBuffer();
+
+        sql.append("update " + tableName + " ");
+        for (int i=0; i<userCustoms.length; i++) {
+            sql.append("set " + userCustoms[i].getKey() + " = " + userCustoms[i].getValue());
+            sql.append(CommonDao.COMMA);
+        }
+        sql.deleteCharAt(sql.length() - CommonDao.COMMA.length());
+        sql.append(" where userID = " + userID);
+
+        int num = getJdbcTemplate().update(sql.toString());
         return num;
 
     }

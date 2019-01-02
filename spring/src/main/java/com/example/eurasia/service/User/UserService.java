@@ -556,12 +556,12 @@ public class UserService {
      * @author FuJia
      * @Time 2018-11-18 00:00:00
      */
-    public boolean updateUserBasicInfo(UserCustom[] userCustoms) throws Exception {
-        if (userCustoms == null) {
+    public boolean updateUserBasicInfo(String userID, UserCustom[] userCustoms) throws Exception {
+        if (StringUtils.isEmpty(userID) || userCustoms == null) {
             return false;
         }
 
-        return this.updateUserCustom(UserService.TABLE_USER_BASIC_INFO, userCustoms);
+        return this.updateUserCustom(userID,UserService.TABLE_USER_BASIC_INFO, userCustoms);
     }
 
     /**
@@ -590,12 +590,12 @@ public class UserService {
      * @author FuJia
      * @Time 2018-11-18 00:00:00
      */
-    public boolean updateUserAccessAuthority(UserCustom[] userCustoms) throws Exception {
-        if (userCustoms == null) {
+    public boolean updateUserAccessAuthority(String userID, UserCustom[] userCustoms) throws Exception {
+        if (StringUtils.isEmpty(userID) || userCustoms == null) {
             return false;
         }
 
-        return this.updateUserCustom(UserService.TABLE_USER_ACCESS_AUTHORITY, userCustoms);
+        return this.updateUserCustom(userID,UserService.TABLE_USER_ACCESS_AUTHORITY, userCustoms);
     }
 
     /**
@@ -642,12 +642,12 @@ public class UserService {
      * @author FuJia
      * @Time 2018-11-18 00:00:00
      */
-    public boolean updateUserQueryConditionDisplay(UserCustom[] userCustoms) throws Exception {
-        if (userCustoms == null) {
+    public boolean updateUserQueryConditionDisplay(String userID, UserCustom[] userCustoms) throws Exception {
+        if (StringUtils.isEmpty(userID) || userCustoms == null) {
             return false;
         }
 
-        return this.updateUserCustom(UserService.TABLE_USER_QUERY_CONDITION_DISPLAY, userCustoms);
+        return this.updateUserCustom(userID,UserService.TABLE_USER_QUERY_CONDITION_DISPLAY, userCustoms);
     }
 
     /**
@@ -677,12 +677,12 @@ public class UserService {
      * @author FuJia
      * @Time 2018-11-18 00:00:00
      */
-    public boolean updateUserHeaderWidth(UserCustom[] userCustoms) throws Exception {
-        if (userCustoms == null) {
+    public boolean updateUserHeaderWidth(String userID, UserCustom[] userCustoms) throws Exception {
+        if (StringUtils.isEmpty(userID) || userCustoms == null) {
             return false;
         }
 
-        return this.updateUserCustom(UserService.TABLE_USER_HEADER_WIDTH, userCustoms);
+        return this.updateUserCustom(userID,UserService.TABLE_USER_HEADER_WIDTH, userCustoms);
     }
 
     /**
@@ -729,12 +729,12 @@ public class UserService {
      * @author FuJia
      * @Time 2018-11-18 00:00:00
      */
-    public boolean updateUserHeaderDisplay(UserCustom[] userCustoms) throws Exception {
-        if (userCustoms == null) {
+    public boolean updateUserHeaderDisplay(String userID, UserCustom[] userCustoms) throws Exception {
+        if (StringUtils.isEmpty(userID) || userCustoms == null) {
             return false;
         }
 
-        return this.updateUserCustom(UserService.TABLE_USER_HEADER_DISPLAY,userCustoms);
+        return this.updateUserCustom(userID,UserService.TABLE_USER_HEADER_DISPLAY,userCustoms);
     }
 
     /**
@@ -776,12 +776,12 @@ public class UserService {
      * @author FuJia
      * @Time 2018-12-02 00:00:00
      */
-    private boolean updateUserCustom(String tableName, UserCustom[] userCustoms) throws Exception {
-        if (StringUtils.isEmpty(tableName) || userCustoms == null) {
+    private boolean updateUserCustom(String tableName, String userID, UserCustom[] userCustoms) throws Exception {
+        if (StringUtils.isEmpty(tableName) || StringUtils.isEmpty(userID) ||userCustoms == null) {
             return false;
         }
 
-        int num = getUserDao().updateUserCustom(tableName, userCustoms);
+        int num = getUserDao().updateUserCustom(tableName,userID,userCustoms);
         if (num > 0) {
             return true;
         } else {
