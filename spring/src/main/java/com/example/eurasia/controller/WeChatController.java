@@ -128,7 +128,8 @@ public class WeChatController {
                     response.sendRedirect(HttpSessionEnum.ADD_USER_EXIST_REDIRECT_URI);
                 } else {
                     // 不存在
-                    response.sendRedirect(HttpSessionEnum.ADD_USER_REDIRECT_URI);
+                    String url = String.format(HttpSessionEnum.ADD_USER_REDIRECT_URI,openId);
+                    response.sendRedirect(url);
                 }
             } else {
                 // 没有openid
