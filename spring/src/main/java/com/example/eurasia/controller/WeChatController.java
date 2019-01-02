@@ -97,8 +97,8 @@ public class WeChatController {
             } else {
                 // 直接打开网址的场合，没有openid
                 session.setAttribute(HttpSessionEnum.LOGIN_ID.getAttribute(), "");
-                session.setAttribute(HttpSessionEnum.LOGIN_STATUS.getAttribute(),HttpSessionEnum.LOGIN_STATUS_GO_URL);
-                response.sendRedirect(HttpSessionEnum.LOGIN_GO_URL);
+                session.setAttribute(HttpSessionEnum.LOGIN_STATUS.getAttribute(),HttpSessionEnum.LOGIN_STATUS_NO_OPENID);
+                response.sendRedirect(HttpSessionEnum.LOGIN_NO_OPENID_URL);
             }
         } else {
             // 用户禁止授权
@@ -117,17 +117,26 @@ public class WeChatController {
             // 用户允许授权
             AccessToken access = weChatAuthServiceImpl.getAccessToken(code);//根据code获取access_token和openId
             if (access != null) {
-                response.sendRedirect(HttpSessionEnum.ADD_USER_REDIRECT_URI);
+                // 存在则把当前账号信息授权给扫码用户
+                // 拿到openid获取微信用户的基本信息
+                String access_token = access.getAccessToken();
+                String openId = access.getOpenID();
+
+                // 判断openid在数据库中是否存在
+                if (userInfoServiceImpl.isUserIDExist(openId)) {
+                    // 存在
+                    response.sendRedirect(HttpSessionEnum.ADD_USER_EXIST_REDIRECT_URI);
+                } else {
+                    // 不存在
+                    response.sendRedirect(HttpSessionEnum.ADD_USER_REDIRECT_URI);
+                }
             } else {
-                // 直接打开网址的场合，没有openid
-                request.getRequestDispatcher(HttpSessionEnum.ADD_USER_NO_USER_REDIRECT_URI).forward(request,response);
-                response.sendRedirect(HttpSessionEnum.ADD_USER_NO_USER_REDIRECT_URI);
+                // 没有openid
+                response.sendRedirect(HttpSessionEnum.ADD_USER_NO_OPENID_URI);
             }
 
         } else {
             // 用户禁止授权
-            session.setAttribute(HttpSessionEnum.LOGIN_STATUS.getAttribute(),HttpSessionEnum.LOGIN_STATUS_REFUSE);
-            request.getRequestDispatcher(HttpSessionEnum.ADD_USER_REFUSE_REDIRECT_URI).forward(request,response);
             response.sendRedirect(HttpSessionEnum.ADD_USER_REFUSE_REDIRECT_URI);
         }
     }

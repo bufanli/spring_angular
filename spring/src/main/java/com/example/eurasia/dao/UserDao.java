@@ -182,9 +182,9 @@ REPLACE INTO `table` (`unique_column`,`num`) VALUES ('$unique_value',$num);
 
         StringBuffer sql = new StringBuffer();
 
-        sql.append("update " + tableName + " ");
+        sql.append("update " + tableName + " set ");
         for (int i=0; i<userCustoms.length; i++) {
-            sql.append("set " + userCustoms[i].getKey() + " = " + userCustoms[i].getValue());
+            sql.append(userCustoms[i].getKey() + " = " + userCustoms[i].getValue());
             sql.append(CommonDao.COMMA);
         }
         sql.deleteCharAt(sql.length() - CommonDao.COMMA.length());

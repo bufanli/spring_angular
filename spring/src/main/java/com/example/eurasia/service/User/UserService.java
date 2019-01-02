@@ -561,7 +561,7 @@ public class UserService {
             return false;
         }
 
-        return this.updateUserCustom(userID,UserService.TABLE_USER_BASIC_INFO, userCustoms);
+        return this.updateUserCustom(UserService.TABLE_USER_BASIC_INFO,userID,userCustoms);
     }
 
     /**
@@ -595,7 +595,7 @@ public class UserService {
             return false;
         }
 
-        return this.updateUserCustom(userID,UserService.TABLE_USER_ACCESS_AUTHORITY, userCustoms);
+        return this.updateUserCustom(UserService.TABLE_USER_ACCESS_AUTHORITY,userID,userCustoms);
     }
 
     /**
@@ -647,7 +647,7 @@ public class UserService {
             return false;
         }
 
-        return this.updateUserCustom(userID,UserService.TABLE_USER_QUERY_CONDITION_DISPLAY, userCustoms);
+        return this.updateUserCustom(UserService.TABLE_USER_QUERY_CONDITION_DISPLAY,userID,userCustoms);
     }
 
     /**
@@ -682,7 +682,7 @@ public class UserService {
             return false;
         }
 
-        return this.updateUserCustom(userID,UserService.TABLE_USER_HEADER_WIDTH, userCustoms);
+        return this.updateUserCustom(UserService.TABLE_USER_HEADER_WIDTH,userID,userCustoms);
     }
 
     /**
@@ -734,7 +734,7 @@ public class UserService {
             return false;
         }
 
-        return this.updateUserCustom(userID,UserService.TABLE_USER_HEADER_DISPLAY,userCustoms);
+        return this.updateUserCustom(UserService.TABLE_USER_HEADER_DISPLAY,userID,userCustoms);
     }
 
     /**
