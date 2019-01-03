@@ -1,4 +1,4 @@
-<div class="modal-header">
+<div class="modal-header" [ngClass]="{'bg-success':dialogType==='success'}">
   <button type="button" class="close" data-dismiss="modal" aria-hidden="true" (click)="close()">
     &times;
   </button>
@@ -7,10 +7,10 @@
   </h4>
 </div>
 <div class="modal-body">
-  {{dialogBody}}}
+  {{dialogBody}}
 </div>
 <div class="modal-footer">
-  <button type="button" class="btn btn-default" data-dismiss="modal">
-    <span class="glyphicon glyphicon-remove"></span>确定
+  <button type="button" class="btn btn-default" data-dismiss="modal" (click)="close()">
+    <span class="glyphicon glyphicon-ok"></span>确定
   </button>
 </div>
