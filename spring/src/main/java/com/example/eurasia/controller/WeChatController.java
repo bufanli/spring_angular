@@ -5,7 +5,8 @@ import com.example.eurasia.entity.WeChat.WechatUserUnionID;
 import com.example.eurasia.service.HttpUtil.HttpSessionEnum;
 import com.example.eurasia.service.User.IUserInfoService;
 import com.example.eurasia.service.WeChat.IWeChatAuthService;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
@@ -27,9 +28,12 @@ import java.util.Map;
  * @Date 2018-12-17 22:33
  * @Version 1.0
  */
-@Slf4j
+//@Slf4j
 @Controller
 public class WeChatController {
+
+    private final static Logger log = LoggerFactory.getLogger(WeChatController.class);
+
     //注入Service服务对象
     @Qualifier("WeChatAuthServiceImpl")
     @Autowired
@@ -56,10 +60,12 @@ public class WeChatController {
     //扫描二维码授权成功，取到code，回调方法
     @RequestMapping(value = "/weChatCallbackForLogin", method = RequestMethod.GET)
     public void weChatCallbackForLogin(@RequestParam("code") String code, @RequestParam("state") String state, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        log.info("weChatCallbackForLogin");
         HttpSession session = request.getSession();
 
         if (code != null) {
             // 用户允许授权
+            log.info("weChatCallbackForLogin:用户允许");
             AccessToken access = weChatAuthServiceImpl.getAccessToken(code);//根据code获取access_token和openId
             if (access != null) {
                 // 存在则把当前账号信息授权给扫码用户
@@ -82,6 +88,7 @@ public class WeChatController {
                 // 判断openid在数据库中是否存在
                 if (userInfoServiceImpl.isUserIDExist(openId)) {
                     // 存在，openid保存到session
+                    log.info("weChatCallbackForLogin:用户存在");
                     session.setAttribute(HttpSessionEnum.LOGIN_ID.getAttribute(), openId);
                     session.setAttribute(HttpSessionEnum.LOGIN_STATUS.getAttribute(), HttpSessionEnum.LOGIN_STATUS_SUCCESS);
 
@@ -89,6 +96,7 @@ public class WeChatController {
                     response.sendRedirect(url);
                 } else {
                     // 不存在
+                    log.info("weChatCallbackForLogin:用户不存在");
                     session.setAttribute(HttpSessionEnum.LOGIN_ID.getAttribute(), openId);
                     session.setAttribute(HttpSessionEnum.LOGIN_STATUS.getAttribute(),HttpSessionEnum.LOGIN_STATUS_NO_USER);
                     response.sendRedirect(HttpSessionEnum.LOGIN_NO_USER_REDIRECT_URI);
@@ -101,6 +109,7 @@ public class WeChatController {
             }
         } else {
             // 用户禁止授权
+            log.info("weChatCallbackForLogin:用户不允许");
             session.setAttribute(HttpSessionEnum.LOGIN_ID.getAttribute(), "");
             session.setAttribute(HttpSessionEnum.LOGIN_STATUS.getAttribute(),HttpSessionEnum.LOGIN_STATUS_REFUSE);
             response.sendRedirect(HttpSessionEnum.LOGIN_REFUSE_REDIRECT_URI);
@@ -110,10 +119,12 @@ public class WeChatController {
     //扫描二维码授权成功，取到code，回调方法
     @RequestMapping(value = "/weChatCallbackForAddUser", method = RequestMethod.GET)
     public void weChatCallbackForAddUser(@RequestParam("code") String code, @RequestParam("state") String state, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        log.info("weChatCallbackForAddUser");
         HttpSession session = request.getSession();
 
         if (code != null) {
             // 用户允许授权
+            log.info("weChatCallbackForAddUser:用户允许");
             AccessToken access = weChatAuthServiceImpl.getAccessToken(code);//根据code获取access_token和openId
             if (access != null) {
                 // 存在则把当前账号信息授权给扫码用户
@@ -124,9 +135,11 @@ public class WeChatController {
                 // 判断openid在数据库中是否存在
                 if (userInfoServiceImpl.isUserIDExist(openId)) {
                     // 存在
+                    log.info("weChatCallbackForLogin:用户存在");
                     response.sendRedirect(HttpSessionEnum.ADD_USER_EXIST_REDIRECT_URI);
                 } else {
                     // 不存在
+                    log.info("weChatCallbackForLogin:用户不存在");
                     String url = String.format(HttpSessionEnum.ADD_USER_REDIRECT_URI,openId);
                     response.sendRedirect(url);
                 }
@@ -137,6 +150,7 @@ public class WeChatController {
 
         } else {
             // 用户禁止授权
+            log.info("weChatCallbackForAddUser:用户不允许");
             response.sendRedirect(HttpSessionEnum.ADD_USER_REFUSE_REDIRECT_URI);
         }
     }

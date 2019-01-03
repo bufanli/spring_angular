@@ -73,6 +73,7 @@ public class WeChatAuthServiceImpl implements IWeChatAuthService  {
         Object urlState = state;
 
         String url = String.format(AUTHORIZATION_URL,APP_ID,callbackUrl,SCOPE,urlState);
+        log.info("getAuthorizationUrl:" + url);
         return url;
     }
 
@@ -88,18 +89,20 @@ public class WeChatAuthServiceImpl implements IWeChatAuthService  {
     @Override
     public AccessToken getAccessToken(String code) {
         String url = String.format(ACCESS_TOKE_OPENID_URL,APP_ID,APP_SECRET,code);
+        log.info("getAccessToken url = " + url);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
         URI uri = builder.build().encode().toUri();
 
         String resp = getRestTemplate().getForObject(uri, String.class);
-        log.error("getAccessToken resp = "+resp);
+        log.error("getAccessToken resp = " + resp);
         if(resp.contains("openid")){
+            log.info("getAccessToken 获取用户信息包括openid");
             JSONObject parseObject = JSONObject.parseObject(resp);
             AccessToken accessToken = JSONObject.toJavaObject(parseObject, AccessToken.class);
             return accessToken;
         }else{
-            log.error("获取用户信息错误，msg = "+resp);
+            log.error("getAccessToken 获取用户信息错误，msg = " + resp);
             return null;
         }
     }
@@ -124,15 +127,18 @@ public class WeChatAuthServiceImpl implements IWeChatAuthService  {
     @Override
     public WechatUserUnionID getUserUnionID(String accessToken, String openid){
         String url = String.format(USER_INFO_URL, accessToken, openid);
+        log.info("getUserUnionID url = " + url);
+
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
         URI uri = builder.build().encode().toUri();
 
         String resp = getRestTemplate().getForObject(uri, String.class);
-        log.error("getUserInfo resp = "+resp);
+        log.error("getUserUnionID resp = " + resp);
         if(resp.contains("errcode")){
-            log.error("获取用户信息错误，msg = "+resp);
+            log.error("getUserUnionID 获取用户信息错误，msg = " + resp);
             return null;
         }else{
+            log.info("getUserUnionID 获取用户信息正确");
             JSONObject parseObject = JSONObject.parseObject(resp);
             WechatUserUnionID userUnionID = JSONObject.toJavaObject(parseObject, WechatUserUnionID.class);
             return userUnionID;
@@ -154,6 +160,7 @@ public class WeChatAuthServiceImpl implements IWeChatAuthService  {
         JSONObject jsonObject = resp.getBody();
 
         String access_token = jsonObject.getString("access_token");
+        log.info("refreshToken:" + access_token);
         return access_token;
     }
 
