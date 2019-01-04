@@ -163,6 +163,11 @@ public class UserInfoController {
             if (StringUtils.isEmpty(userID) == true) {
                 responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
             } else {
+
+                if (userInfoServiceImpl.checkUserPhone(userInfo) == false) {
+                    return new ResponseResultUtil().error(ResponseCodeEnum.USER_ADD_PHONE_FAILED);
+                }
+
                 responseResult = userInfoServiceImpl.updateUser(userInfo);
             }
         } catch (Exception e) {
@@ -196,7 +201,6 @@ public class UserInfoController {
                 if (userInfoServiceImpl.checkUserPhone(userInfo) == false) {
                     return new ResponseResultUtil().error(ResponseCodeEnum.USER_ADD_PHONE_FAILED);
                 }
-
 
                 boolean isAddSuccessful = userInfoServiceImpl.addUser(userInfo);
                 if (isAddSuccessful == true) {
