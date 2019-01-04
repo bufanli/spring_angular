@@ -11,6 +11,10 @@ export class ModalDialogComponent implements OnInit {
   public dialogTitle: string = null;
   public dialogBody: string = null;
   public dialogType: string = null;
+  // if same component call multiple show dialog function,
+  // callbac method must know who is the caller , otherwise
+  // it can not behave correctly.
+  private sourceID: string = null;
   // event notifier
   @Output() notifier: EventEmitter<string> = new EventEmitter<string>();
   constructor(private activeModal: NgbActiveModal) { }
@@ -25,6 +29,10 @@ export class ModalDialogComponent implements OnInit {
   public setType(type: string): void {
     this.dialogType = type;
   }
+  // set source id
+  public setSourceID(sourceID: string): void {
+    this.sourceID = sourceID;
+  }
 
   ngOnInit() {
   }
@@ -32,7 +40,7 @@ export class ModalDialogComponent implements OnInit {
   // close modal dialog
   public close(): void {
     this.activeModal.close();
-    this.notifier.emit('close');
+    this.notifier.emit(this.sourceID);
   }
 
 }

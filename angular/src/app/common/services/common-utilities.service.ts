@@ -137,12 +137,16 @@ export class CommonUtilitiesService {
   // show common dialog
   showCommonDialog(dialogTitle: string,
     dialogBody: string,
-    callback: CommonDialogCallback): void {
+    dialogType: string,
+    callback: CommonDialogCallback,
+    sourceID: string): void {
     // you can not call this.adjustModalOptions,
     // because showUserSettingModal called in html context
     const modalRef = this.modalService.open(ModalDialogComponent, this.adjustModalOptions());
     modalRef.componentInstance.setTitle(dialogTitle);
     modalRef.componentInstance.setBody(dialogBody);
+    modalRef.componentInstance.setSourceID(sourceID);
+    modalRef.componentInstance.setType(dialogType);
     modalRef.componentInstance.notifier.subscribe(response => this.callbackOfModalDialog(response, callback));
   }
 

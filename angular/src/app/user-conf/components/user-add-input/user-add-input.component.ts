@@ -7,14 +7,19 @@ import { UserAccessAuthoritiesComponent } from '../user-access-authorities/user-
 import { UserInfoService } from '../../services/user-info.service';
 import { HttpResponse } from 'src/app/common/entities/http-response';
 import { Router } from '@angular/router';
+import { CommonDialogCallback } from 'src/app/common/interfaces/common-dialog-callback.service';
+import { CommonUtilitiesService } from 'src/app/common/services/common-utilities.service';
 
 @Component({
   selector: 'app-user-add-input',
   templateUrl: './user-add-input.component.html',
   styleUrls: ['./user-add-input.component.css']
 })
-export class UserAddInputComponent implements OnInit, OnDestroy {
+export class UserAddInputComponent implements OnInit, OnDestroy, CommonDialogCallback {
 
+  private static readonly USER_ADD_ERROR_TITLE = '用户创建失败';
+  private static readonly USER_ADD_ERROR_SOURCE_ID = 'SOURCE_ID_ERROR';
+  private static readonly USER_ADD_ERROR_TYPE = 'danger';
   // user access authorities
   public currentUserAccessAuthorities: UserAccessAuthorities = null;
   // user header display
@@ -33,7 +38,8 @@ export class UserAddInputComponent implements OnInit, OnDestroy {
   private openID: string = null;
   constructor(private userInfoService: UserInfoService,
     private resolver: ComponentFactoryResolver,
-    private router: Router) {
+    private router: Router,
+    private commonUtilitiesService: CommonUtilitiesService) {
   }
   // set userBasicInfo
   public setUserBasicInfo(userBasicInfo: UserBasicInfo) {
@@ -109,13 +115,22 @@ export class UserAddInputComponent implements OnInit, OnDestroy {
   // callback to add user
   public addUserInfoCallback(httpResponse: HttpResponse): void {
     if (httpResponse.code === 200) {
-      // update ok
+      // if ok modal dialog is closed, then navigate to user conf component
+      // with parameter of user_add_end
       this.router.navigate(['/web/main/user-conf', 'user_add_end']);
     } else {
-      // TODO update ng
+      // get message from response when add user failed
+      const failedReason = httpResponse.message;
+      // show modal dialog of error
+      this.commonUtilitiesService.showCommonDialog(
+        UserAddInputComponent.USER_ADD_ERROR_TITLE,
+        failedReason,
+        UserAddInputComponent.USER_ADD_ERROR_TYPE,
+        this,
+        UserAddInputComponent.USER_ADD_ERROR_SOURCE_ID);
     }
   }
-
+  // destroy sub component when destroyed
   ngOnDestroy() {
     if (this.componentRefBasicInfo != null) {
       this.componentRefBasicInfo.destroy();
@@ -124,5 +139,13 @@ export class UserAddInputComponent implements OnInit, OnDestroy {
       this.componentRefAccessAuthorities.destroy();
     }
   }
-
+  // callback on modal dialog closed
+  callbackOnConfirm(sourceID: string): void {
+    // if error modal dialog is closed, then do nothing
+    if (sourceID === UserAddInputComponent.USER_ADD_ERROR_SOURCE_ID) {
+      // nothing to do
+    } else {
+      // it is impossible, so do nothing
+    }
+  }
 }

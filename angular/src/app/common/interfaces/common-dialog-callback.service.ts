@@ -1,3 +1,3 @@
 export interface CommonDialogCallback {
-  callbackOnConfirm(response: any): void;
+  callbackOnConfirm(sourceID: any): void;
 }
