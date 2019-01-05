@@ -3,7 +3,8 @@ package com.example.eurasia.service.WeChat;
 import com.alibaba.fastjson.JSONObject;
 import com.example.eurasia.entity.WeChat.AccessToken;
 import com.example.eurasia.entity.WeChat.WechatUserUnionID;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
@@ -33,11 +34,12 @@ import java.util.List;
  * @Date 2018-12-17 22:07
  * @Version 1.0
  */
-@Slf4j
+//@Slf4j
 /*@Transactional(readOnly = true)事物注解*/
 @Service("WeChatAuthServiceImpl")
 @Component
 public class WeChatAuthServiceImpl implements IWeChatAuthService  {
+
     //请求此地址即跳转到二维码登录界面
     private static final String AUTHORIZATION_URL =
             "https://open.weixin.qq.com/connect/oauth2/authorize?appid=%s&redirect_uri=%s&response_type=code&scope=%s&state=%s#wechat_redirect";

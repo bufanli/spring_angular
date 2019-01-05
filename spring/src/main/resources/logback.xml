@@ -24,7 +24,7 @@ logback初始化时，默认会去classpath下依次加载如下配置文件(log
 
     <!--定义日志文件的存储地址 勿在 LogBack 的配置中使用相对路径-->
     <!--在开发测试模式时-->
-    <property name="LOG_HOME" value="${project.basedir}/target/static/log" />
+    <property name="LOG_HOME" value="./target/static/log" />
     <!--在打包成jar正式发布时-->
     <!--<property name="LOG_HOME" value="/var/www/html/sinoshuju_log" />-->
 
@@ -125,10 +125,9 @@ logback初始化时，默认会去classpath下依次加载如下配置文件(log
     </root>
 
     <!--日志异步到数据库 -->
+    <!--
     <appender name="DB" class="ch.qos.logback.classic.db.DBAppender">
-        <!--日志异步到数据库 -->
         <connectionSource class="ch.qos.logback.core.db.DriverManagerConnectionSource">
-            <!--连接池 -->
             <dataSource class="com.zaxxer.hikari.HikariDataSource">
                 <driverClass>${spring.datasource.driver-class-name}</driverClass>
                 <url>${spring.datasource.url}</url>
@@ -137,4 +136,6 @@ logback初始化时，默认会去classpath下依次加载如下配置文件(log
             </dataSource>
         </connectionSource>
     </appender>
+    -->
+
 </configuration>

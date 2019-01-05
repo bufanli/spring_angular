@@ -9,7 +9,7 @@ import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;
 import com.example.eurasia.service.Util.PhoneValidatorUtil;
-import lombok.extern.slf4j.Slf4j;
+import com.example.eurasia.service.Util.Slf4jLogUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -21,7 +21,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-@Slf4j
+//@Slf4j
 /*@Transactional(readOnly = true)事物注解*/
 @Service("UserInfoServiceImpl")
 @Component
@@ -50,7 +50,7 @@ public class UserInfoServiceImpl implements IUserInfoService {
             return true;
         }
 
-        log.info("用户ID已存在");
+        Slf4jLogUtil.get().info("用户ID已存在");
         return false;
     }
 
@@ -64,35 +64,35 @@ public class UserInfoServiceImpl implements IUserInfoService {
             return new ResponseResultUtil().error(ResponseCodeEnum.USER_CHECK_INFO_FAILED);
         }
 
-        log.info("更新用户的基本信息开始");
+        Slf4jLogUtil.get().info("更新用户的基本信息开始");
         boolean isUpdateSuccessful = userService.updateUserBasicInfo(userInfo.getUserIDFromBasicInfos(),userInfo.getUserBasicInfos());
         if (isUpdateSuccessful == false) {
             return new ResponseResultUtil().error(ResponseCodeEnum.USER_UPDATE_BASIC_INFO_FAILED);
         }
-        log.info("更新用户的基本信息结束");
+        Slf4jLogUtil.get().info("更新用户的基本信息结束");
 
-        log.info("更新用户的访问权限开始");
+        Slf4jLogUtil.get().info("更新用户的访问权限开始");
         isUpdateSuccessful = userService.updateUserAccessAuthority(userInfo.getUserIDFromBasicInfos(),userInfo.getUserDetailedInfos().getUserAccessAuthorities());
         if (isUpdateSuccessful == false) {
             return new ResponseResultUtil().error(ResponseCodeEnum.USER_UPDATE_ACCESS_AUTHORITY_INFO_FAILED);
         }
-        log.info("更新用户的访问权限结束");
+        Slf4jLogUtil.get().info("更新用户的访问权限结束");
 
-        log.info("更新用户的可见查询条件开始");
+        Slf4jLogUtil.get().info("更新用户的可见查询条件开始");
         isUpdateSuccessful = userService.updateUserQueryConditionDisplay(userInfo.getUserIDFromBasicInfos(),userInfo.getUserDetailedInfos().getUserQueryConditionDisplays());
         isUpdateSuccessful = true;//T.B.D
         if (isUpdateSuccessful == false) {
             return new ResponseResultUtil().error(ResponseCodeEnum.USER_UPDATE_QUERY_CONDITION_DISPLAY_FAILED);
         }
-        log.info("更新用户的可见查询条件结束");
+        Slf4jLogUtil.get().info("更新用户的可见查询条件结束");
 
-        log.info("更新用户的可见表头开始");
+        Slf4jLogUtil.get().info("更新用户的可见表头开始");
         isUpdateSuccessful = userService.updateUserHeaderDisplay(userInfo.getUserIDFromBasicInfos(),userInfo.getUserDetailedInfos().getUserHeaderDisplays());
         isUpdateSuccessful = true;//T.B.D
         if (isUpdateSuccessful == false) {
             return new ResponseResultUtil().error(ResponseCodeEnum.USER_UPDATE_HEADER_DISPLAY_FAILED);
         }
-        log.info("更新用户的可见表头结束");
+        Slf4jLogUtil.get().info("更新用户的可见表头结束");
 
         return new ResponseResultUtil().success(ResponseCodeEnum.USER_UPDATE_SUCCESS);
     }
@@ -107,37 +107,37 @@ public class UserInfoServiceImpl implements IUserInfoService {
             return new ResponseResultUtil().error(ResponseCodeEnum.USER_CHECK_INFO_FAILED);
         }
 
-        log.info("添加用户的基本信息开始");
+        Slf4jLogUtil.get().info("添加用户的基本信息开始");
         int addUserNum = userService.addUserForBasicInfo(userInfo.getUserIDFromBasicInfos(),
                 userService.userCustomsArrToData(userInfo.getUserBasicInfos()));
         if (addUserNum <= 0) {
             return new ResponseResultUtil().error(ResponseCodeEnum.USER_ADD_BASIC_INFO_FAILED);
         }
-        log.info("添加用户的基本信息结束");
+        Slf4jLogUtil.get().info("添加用户的基本信息结束");
 
-        log.info("添加用户的访问权限开始");
+        Slf4jLogUtil.get().info("添加用户的访问权限开始");
         addUserNum = userService.addUserForAccessAuthority(userInfo.getUserIDFromBasicInfos(),
                 userService.userCustomsArrToData(userInfo.getUserDetailedInfos().getUserAccessAuthorities()));
         if (addUserNum <= 0) {
             return new ResponseResultUtil().error(ResponseCodeEnum.USER_ADD_ACCESS_AUTHORITY_INFO_FAILED);
         }
-        log.info("添加用户的访问权限结束");
+        Slf4jLogUtil.get().info("添加用户的访问权限结束");
 
-        log.info("添加用户的可见查询条件开始");
+        Slf4jLogUtil.get().info("添加用户的可见查询条件开始");
         addUserNum = userService.addUserForQueryConditionDisplay(userInfo.getUserIDFromBasicInfos(),
                 userService.userCustomsArrToData(userInfo.getUserDetailedInfos().getUserQueryConditionDisplays()));
         if (addUserNum <= 0) {
             return new ResponseResultUtil().error(ResponseCodeEnum.USER_ADD_QUERY_CONDITION_DISPLAY_FAILED);
         }
-        log.info("添加用户的可见查询条件结束");
+        Slf4jLogUtil.get().info("添加用户的可见查询条件结束");
 
-        log.info("添加用户的可见表头开始");
+        Slf4jLogUtil.get().info("添加用户的可见表头开始");
         addUserNum = userService.addUserForHeaderDisplay(userInfo.getUserIDFromBasicInfos(),
                 userService.userCustomsArrToData(userInfo.getUserDetailedInfos().getUserHeaderDisplays()));
         if (addUserNum <= 0) {
             return new ResponseResultUtil().error(ResponseCodeEnum.USER_ADD_HEADER_DISPLAY_FAILED);
         }
-        log.info("添加用户的可见表头结束");
+        Slf4jLogUtil.get().info("添加用户的可见表头结束");
 
         return new ResponseResultUtil().success(ResponseCodeEnum.USER_ADD_SUCCESS);
     }
@@ -469,7 +469,7 @@ public class UserInfoServiceImpl implements IUserInfoService {
             e.printStackTrace();
             return false;
         }
-        log.info("用户的电话号码已存在");
+        Slf4jLogUtil.get().info("用户的电话号码已存在");
         return false;
     }
 
@@ -486,7 +486,7 @@ public class UserInfoServiceImpl implements IUserInfoService {
         if (userService.getUserPhoneNumber(phone) == 0) {
             return true;
         }
-        log.info("用户的电话号码已存在");
+        Slf4jLogUtil.get().info("用户的电话号码已存在");
         return false;
     }
 

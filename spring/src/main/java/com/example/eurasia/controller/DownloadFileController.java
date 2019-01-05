@@ -6,7 +6,7 @@ import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;
 import com.example.eurasia.service.User.IUserInfoService;
-import lombok.extern.slf4j.Slf4j;
+import com.example.eurasia.service.Util.Slf4jLogUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
@@ -19,7 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@Slf4j
+//@Slf4j
 @Controller
 public class DownloadFileController {
 
@@ -41,7 +41,7 @@ public class DownloadFileController {
         ResponseResult responseResult;
         //导出excel
         try {
-            log.info("进行excel文件导出开始");
+            Slf4jLogUtil.get().info("进行excel文件导出开始");
             String userID = userInfoServiceImpl.getUserID(request);
             if (StringUtils.isEmpty(userID) == true) {
                 responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
@@ -56,11 +56,11 @@ public class DownloadFileController {
                  */
                 responseResult = downloadFileService.exportExcel(response,queryConditionsArr);
             }
+            Slf4jLogUtil.get().info("进行excel文件导出结束");
         } catch (Exception e) {
             e.printStackTrace();
             responseResult = new ResponseResultUtil().error();
         }
-        log.info("进行excel文件导出结束");
-    }
 
+    }
 }

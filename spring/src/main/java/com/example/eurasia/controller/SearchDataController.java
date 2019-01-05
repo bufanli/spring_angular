@@ -6,7 +6,7 @@ import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;
 import com.example.eurasia.service.User.IUserInfoService;
-import lombok.extern.slf4j.Slf4j;
+import com.example.eurasia.service.Util.Slf4jLogUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 
-@Slf4j
+//@Slf4j
 @Controller
 public class SearchDataController {
 
@@ -40,7 +40,7 @@ public class SearchDataController {
     ResponseResult searchData(@RequestBody QueryCondition[] queryConditionsArr, HttpServletRequest request) {
         ResponseResult responseResult;
         try {
-            log.info("数据查询开始");
+            Slf4jLogUtil.get().info("数据查询开始");
             String userID = userInfoServiceImpl.getUserID(request);
             if (StringUtils.isEmpty(userID) == true) {
                 responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
@@ -51,7 +51,7 @@ public class SearchDataController {
             e.printStackTrace();
             responseResult = new ResponseResultUtil().error();
         }
-        log.info("查询数据结束");
+        Slf4jLogUtil.get().info("查询数据结束");
         return responseResult;
     }
 
