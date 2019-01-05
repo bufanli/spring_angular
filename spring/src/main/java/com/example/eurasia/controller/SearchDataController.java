@@ -41,8 +41,8 @@ public class SearchDataController {
         ResponseResult responseResult;
         try {
             Slf4jLogUtil.get().info("数据查询开始");
-            String userID = userInfoServiceImpl.getUserID(request);
-            if (StringUtils.isEmpty(userID) == true) {
+            String userID = userInfoServiceImpl.getLoginUserID(request);
+            if (StringUtils.isEmpty(userID)) {
                 responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
             } else {
                 responseResult = searchDataService.searchData(userID,queryConditionsArr);

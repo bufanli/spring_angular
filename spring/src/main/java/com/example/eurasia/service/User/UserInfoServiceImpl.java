@@ -8,6 +8,7 @@ import com.example.eurasia.entity.User.UserInfo;
 import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;
+import com.example.eurasia.service.Util.HttpSessionEnum;
 import com.example.eurasia.service.Util.PhoneValidatorUtil;
 import com.example.eurasia.service.Util.Slf4jLogUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -33,25 +35,19 @@ public class UserInfoServiceImpl implements IUserInfoService {
     private UserService userService;
 
     @Override
-    public String getUserID(HttpServletRequest request) throws Exception {
-//        HttpSession session = request.getSession();
-//        String userID = (String)session.getAttribute("openid");
-//        Slf4jLogUtil.get().info("openid=(" + userID + ")");
-//
-//        if (!StringUtils.isEmpty(userID) && userService.getUserIDNumber(userID) == 1) {
-//            return userID;
-//        } else {
-//            return null;
-//        }
-        return "sinoshuju_admin";
+    public String getLoginUserID(HttpServletRequest request) throws Exception {
+        HttpSession session = request.getSession();
+        String loginUserID = (String)session.getAttribute(HttpSessionEnum.LOGIN_ID.getAttribute());
+        Slf4jLogUtil.get().info("openid=(" + loginUserID + ")");
+        return loginUserID;
     }
 
     public boolean isUserIDExist(String userID) throws Exception {
         if (!StringUtils.isEmpty(userID) && userService.getUserIDNumber(userID) == 1) {
+            Slf4jLogUtil.get().info("用户ID(" + userID + ")已存在");
             return true;
         }
 
-        Slf4jLogUtil.get().info("用户ID(" + userID + ")已存在");
         return false;
     }
 
@@ -503,7 +499,13 @@ public class UserInfoServiceImpl implements IUserInfoService {
     public boolean checkUserValid(String userID) throws Exception {
 
         try {
-            String[] valid = userService.getUserValid(userID).split(QueryCondition.QUERY_CONDITION_SPLIT,-1);
+            String userValid = userService.getUserValid(userID);
+            if (StringUtils.isEmpty(userValid)) {
+                Slf4jLogUtil.get().info("没有检索到用户(" + userID + ")的有效期");
+                return false;
+            }
+
+            String[] valid = userValid.split(QueryCondition.QUERY_CONDITION_SPLIT,-1);
 
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
             String nowDate = sdf.format(new Date());

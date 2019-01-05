@@ -39,8 +39,8 @@ public class GetHeadersController {
         ResponseResult responseResult;
         try {
             Slf4jLogUtil.get().info("取得用户列显示开始");
-            String userID = userInfoServiceImpl.getUserID(request);
-            if (StringUtils.isEmpty(userID) == true) {
+            String userID = userInfoServiceImpl.getLoginUserID(request);
+            if (StringUtils.isEmpty(userID)) {
                 responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
             } else {
                 responseResult = getHeadersService.getHeaderDisplay(userID);

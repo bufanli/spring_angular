@@ -59,8 +59,8 @@ public class UploadFileController {
     ResponseResult uploadFiles(@RequestParam("file") MultipartFile[] files, HttpServletRequest request) throws IOException {
         ResponseResult responseResult;
         try {
-            String userID = userInfoServiceImpl.getUserID(request);
-            if (StringUtils.isEmpty(userID) == true) {
+            String userID = userInfoServiceImpl.getLoginUserID(request);
+            if (StringUtils.isEmpty(userID)) {
                 responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
             } else {
                 Date date = new Date(System.currentTimeMillis());

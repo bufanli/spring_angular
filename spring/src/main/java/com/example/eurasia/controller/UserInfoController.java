@@ -44,14 +44,14 @@ public class UserInfoController {
     /**
      * @author
      * @date 2018-11-18
-     * @description 设定登陆用户ID
+     * @description 用户通过用户名密码登陆
      */
-    @RequestMapping(value="/loginAdmin", method = RequestMethod.POST)
+    @RequestMapping(value="/loginUserByUsernamePassword", method = RequestMethod.POST)
     public @ResponseBody
-    ResponseResult loginAdmin(@RequestBody UserCustom[] userCustoms, HttpServletRequest request) {
-        ResponseResult responseResult;
+    ResponseResult loginUserByUsernamePassword(@RequestBody UserCustom[] userCustoms, HttpServletRequest request) {
+        ResponseResult responseResult = null;
         try {
-            Slf4jLogUtil.get().info("管理员登陆开始");
+            Slf4jLogUtil.get().info("用户登陆开始");
             String userName = null;
             String userPassword = null;
             for (UserCustom userCustom:userCustoms) {
@@ -67,15 +67,23 @@ public class UserInfoController {
                 }
             }
 
+            // 判断openid在数据库中是否存在
+            if (userInfoServiceImpl.isUserIDExist(userName) == false) {
+                return new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_NO_USER);
+            }
             if (userInfoServiceImpl.checkUserPassWord(userName,userPassword) == false) {
-                responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
-            } else {
-                responseResult = new ResponseResultUtil().success(ResponseCodeEnum.SYSTEM_LOGIN_SUCCESS);
+                return new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_USERNAME_PASSWORD_ERROR);
             }
             if (userInfoServiceImpl.checkUserValid(userName) == false) {
-                responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_USER_INVALID);
+                return new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_USER_INVALID);
             }
-            Slf4jLogUtil.get().info("管理员登陆结束");
+
+            HttpSession session = request.getSession();
+            session.setAttribute(HttpSessionEnum.LOGIN_ID.getAttribute(), userName);
+            session.setAttribute(HttpSessionEnum.LOGIN_STATUS.getAttribute(), HttpSessionEnum.LOGIN_STATUS_SUCCESS);
+
+            responseResult = new ResponseResultUtil().success(ResponseCodeEnum.SYSTEM_LOGIN_SUCCESS);
+            Slf4jLogUtil.get().info("用户登陆结束");
         } catch (Exception e) {
             e.printStackTrace();
             responseResult = new ResponseResultUtil().error(ResponseCodeEnum.USER_LOGIN_FAILED);
@@ -113,23 +121,23 @@ public class UserInfoController {
     /**
      * @author
      * @date 2018-12-22
-     * @description 判读登陆用户的状态
+     * @description 用户通过微信登陆
      */
-    @RequestMapping(value="/loginUser", method = RequestMethod.GET)
+    @RequestMapping(value="/loginUserByWeChat", method = RequestMethod.GET)
     public @ResponseBody
-    ResponseResult loginUser(HttpServletRequest request) {
+    ResponseResult loginUserByWeChat(HttpServletRequest request) {
         ResponseResult responseResult;
         try {
             Slf4jLogUtil.get().info("用户登陆开始");
             HttpSession session = request.getSession();
             String userID = (String)session.getAttribute(HttpSessionEnum.LOGIN_ID.getAttribute());
-            if (userID != null) {
+            if (!StringUtils.isEmpty(userID)) {
                 // 扫描登陆的时候，才会有id
                 String loginStatus = (String)session.getAttribute(HttpSessionEnum.LOGIN_STATUS.getAttribute());
                 if (loginStatus.equals(HttpSessionEnum.LOGIN_STATUS_SUCCESS)) {
                     responseResult = new ResponseResultUtil().success(ResponseCodeEnum.SYSTEM_LOGIN_SUCCESS);
                 } else if (loginStatus.equals(HttpSessionEnum.LOGIN_STATUS_NO_USER)) {
-                    responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
+                    responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_NO_USER);
                 } else {
                     responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
                 }
@@ -157,8 +165,8 @@ public class UserInfoController {
         ResponseResult responseResult;
         try {
             Slf4jLogUtil.get().info("更新用户开始");
-            String userID = userInfoServiceImpl.getUserID(request);
-            if (StringUtils.isEmpty(userID) == true) {
+            String userID = userInfoServiceImpl.getLoginUserID(request);
+            if (StringUtils.isEmpty(userID)) {
                 responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
             } else {
 
@@ -187,8 +195,8 @@ public class UserInfoController {
         ResponseResult responseResult;
         try {
             Slf4jLogUtil.get().info("添加用户开始");
-            String userID = userInfoServiceImpl.getUserID(request);
-            if (StringUtils.isEmpty(userID) == true) {
+            String userID = userInfoServiceImpl.getLoginUserID(request);
+            if (StringUtils.isEmpty(userID)) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
             } else {
 
@@ -217,8 +225,8 @@ public class UserInfoController {
         ResponseResult responseResult;
         try {
             Slf4jLogUtil.get().info("取得所有用户的基本信息开始");
-            String userID = userInfoServiceImpl.getUserID(request);
-            if (StringUtils.isEmpty(userID) == true) {
+            String userID = userInfoServiceImpl.getLoginUserID(request);
+            if (StringUtils.isEmpty(userID)) {
                 responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
             } else {
                 responseResult = userInfoServiceImpl.getAllUserBasicInfo();
@@ -242,8 +250,8 @@ public class UserInfoController {
         ResponseResult responseResult;
         try {
             Slf4jLogUtil.get().info("取得用户默认的基本信息开始");
-            String userID = userInfoServiceImpl.getUserID(request);
-            if (StringUtils.isEmpty(userID) == true) {
+            String userID = userInfoServiceImpl.getLoginUserID(request);
+            if (StringUtils.isEmpty(userID)) {
                 responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
             } else {
                 responseResult = userInfoServiceImpl.getUserDefaultBasicInfo();
@@ -267,13 +275,34 @@ public class UserInfoController {
         ResponseResult responseResult;
         try {
             Slf4jLogUtil.get().info("取得用户的基本信息开始");
-            String userID = userInfoServiceImpl.getUserID(request);
-            if (StringUtils.isEmpty(userID) == true) {
+            String userID = userInfoServiceImpl.getLoginUserID(request);
+            if (StringUtils.isEmpty(userID)) {
                 responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
             } else {
                 responseResult = userInfoServiceImpl.getUserBasicInfo(editUserID);
             }
             Slf4jLogUtil.get().info("取得用户的基本信息结束");
+        } catch (Exception e) {
+            e.printStackTrace();
+            responseResult = new ResponseResultUtil().error();
+        }
+        return responseResult;
+    }
+
+    /**
+     * @author
+     * @date 2018-11-18
+     * @description 用户名密码登陆后取得用户的基本信息
+     */
+    @RequestMapping(value="/getUserBasicInfoByLogin/{loginUserID}", method = RequestMethod.GET)
+    public @ResponseBody
+    ResponseResult getUserBasicInfoByLogin(HttpServletRequest request, @PathVariable(value="loginUserID") String loginUserID) {
+        ResponseResult responseResult;
+        try {
+            Slf4jLogUtil.get().info("用户名密码登陆后取得用户的基本信息开始");
+            // 此处没有检查用户名是否存在，是因为在登陆时loginUserByUsernamePassword检查过了。
+            responseResult = userInfoServiceImpl.getUserBasicInfo(loginUserID);
+            Slf4jLogUtil.get().info("用户名密码登陆后取得用户的基本信息结束");
         } catch (Exception e) {
             e.printStackTrace();
             responseResult = new ResponseResultUtil().error();
@@ -292,8 +321,8 @@ public class UserInfoController {
         ResponseResult responseResult;
         try {
             Slf4jLogUtil.get().info("取得用户默认的详细信息开始");
-            String userID = userInfoServiceImpl.getUserID(request);
-            if (StringUtils.isEmpty(userID) == true) {
+            String userID = userInfoServiceImpl.getLoginUserID(request);
+            if (StringUtils.isEmpty(userID)) {
                 responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
             } else {
                 responseResult = userInfoServiceImpl.getUserDefaultDetailedInfos();
@@ -317,8 +346,8 @@ public class UserInfoController {
         ResponseResult responseResult;
         try {
             Slf4jLogUtil.get().info("取得用户的详细信息开始");
-            String userID = userInfoServiceImpl.getUserID(request);
-            if (StringUtils.isEmpty(userID) == true) {
+            String userID = userInfoServiceImpl.getLoginUserID(request);
+            if (StringUtils.isEmpty(userID)) {
                 responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
             } else {
                 responseResult = userInfoServiceImpl.getUserDetailedInfos(editUserID);
@@ -333,22 +362,18 @@ public class UserInfoController {
 
     /**
      * @author
-     * @date 2018-12-08
-     * @description 取得用户的可以访问的访问权限
+     * @date 2018-12-07
+     * @description 用户名密码登陆后取得用户的详细信息(访问权限，可显示列等)
      */
-    @RequestMapping(value="/getUserAccessAuthority", method = RequestMethod.GET)
+    @RequestMapping(value="/getUserDetailedInfosByLogin/{loginUserID}", method = RequestMethod.GET)
     public @ResponseBody
-    ResponseResult getUserAccessAuthority(HttpServletRequest request) {
+    ResponseResult getUserDetailedInfosByLogin(HttpServletRequest request, @PathVariable(value="loginUserID") String loginUserID) {
         ResponseResult responseResult;
         try {
-            Slf4jLogUtil.get().info("取得用户的详细信息开始");
-            String userID = userInfoServiceImpl.getUserID(request);
-            if (StringUtils.isEmpty(userID) == true) {
-                responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
-            } else {
-                responseResult = userInfoServiceImpl.getUserAccessAuthority(userID);
-            }
-            Slf4jLogUtil.get().info("取得用户的详细信息结束");
+            Slf4jLogUtil.get().info("用户名密码登陆后取得用户的详细信息开始");
+            // 此处没有检查用户名是否存在，是因为在登陆时loginUserByUsernamePassword检查过了。
+            responseResult = userInfoServiceImpl.getUserDetailedInfos(loginUserID);
+            Slf4jLogUtil.get().info("用户名密码登陆后取得用户的详细信息结束");
         } catch (Exception e) {
             e.printStackTrace();
             responseResult = new ResponseResultUtil().error();
