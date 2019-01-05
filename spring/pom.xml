@@ -233,7 +233,14 @@ spring.datasource.continueOnError＝true|false 有了错误是否继续运行
 
 		</plugins>
 
-		<!--解决Intellij构建项目时，target/classes目录下不存在mapper.xml文件-->
+		<!--
+		解决Intellij构建项目时，target/classes目录下不存在*.xml文件的问题。
+		对于MAVEN项目，Eclipse会自动把项目src\main\java\目录下的配置文件（.xml）和资源文件(.properties)搬运到target目录下，
+		而intellij idea默认是不会帮我们做这件事的。
+
+		${basedir}表示项目根目录，即包含pom.xml文件的目录;${version}表示项目版本。
+
+		-->
 		<resources>
 			<resource>
 				<directory>${basedir}/src/main/resources</directory>

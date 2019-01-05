@@ -11,10 +11,26 @@ logback初始化时，默认会去classpath下依次加载如下配置文件(log
 当找不到配置文件时logback将为rootLogger 添加一个 ConsoleAppender ，用于将日志输出到控制台。
 
 -->
+<!--debug="true" : 打印logback内部状态（默认当logback运行出错时才会打印内部状态 ），配置该属性后打印条件如下（同时满足）：
+    1、找到配置文件 2、配置文件是一个格式正确的xml文件 也可编程实现打印内部状态，
+    例如： LoggerContext lc = (LoggerContext)LoggerFactory.getILoggerFactory(); StatusPrinter.print(lc); -->
+<!-- scan="true" ： 自动扫描该配置文件，若有修改则重新加载该配置文件 -->
+<!-- scanPeriod="30 seconds" : 配置自动扫面时间间隔（单位可以是：milliseconds, seconds, minutes
+    or hours，默认为：milliseconds）， 默认为1分钟，scan="true"时该配置才会生效 -->
 
-<configuration debug="false">
+<configuration debug="false" scan="true" scanPeriod="30 second">
+    <!-- 设置 logger context 名称,一旦设置不可改变，默认为default -->
+    <contextName>sinoshujuLogback</contextName>
+
     <!--定义日志文件的存储地址 勿在 LogBack 的配置中使用相对路径-->
-    <property name="LOG_HOME" value="${project.basedir}/log" />
+    <!--在开发测试模式时-->
+    <property name="LOG_HOME" value="${project.basedir}/target/static/log" />
+    <!--在打包成jar正式发布时-->
+    <!--<property name="LOG_HOME" value="/var/www/html/sinoshuju_log" />-->
+
+    <property name="FILE_SIZE" value="50MB" />
+    <property name="MAX_HISTORY" value="100" />
+
     <!-- 控制台输出 -->
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
@@ -26,9 +42,9 @@ logback初始化时，默认会去classpath下依次加载如下配置文件(log
     <appender name="FILE"  class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!--日志文件输出的文件名-->
-            <FileNamePattern>${LOG_HOME}/TestWeb.log.%d{yyyy-MM-dd}.log</FileNamePattern>
+            <FileNamePattern>${LOG_HOME}/sinoshuju.log.%d{yyyy-MM-dd}.log</FileNamePattern>
             <!--日志文件保留天数-->
-            <MaxHistory>30</MaxHistory>
+            <MaxHistory>${MAX_HISTORY}</MaxHistory>
         </rollingPolicy>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
@@ -36,9 +52,35 @@ logback初始化时，默认会去classpath下依次加载如下配置文件(log
         </encoder>
         <!--日志文件最大的大小-->
         <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
-            <MaxFileSize>10MB</MaxFileSize>
+            <MaxFileSize>${FILE_SIZE}</MaxFileSize>
         </triggeringPolicy>
     </appender>
+    <!-- ERROR 输入到文件，按日期和文件大小 -->
+    <appender name="ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <encoder charset="utf-8">
+            <pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss} [%thread] %logger{36} - %m%n
+            </pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_HOME}/%d/error.%i.log</fileNamePattern>
+            <maxHistory>${MAX_HISTORY}</maxHistory>
+            <timeBasedFileNamingAndTriggeringPolicy
+                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>${FILE_SIZE}</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+    </appender>
+
+    <!-- 日志级别若没显示定义，则继承最近的父logger（该logger需显示定义level,直到rootLogger）的日志级别
+    logger的父子关系，由logger的名称决定，例如有三个logger，分别为：java.lang.util 、 java.lang  、java
+    则，java是java.lang的父logger， 是java.lang.util的祖先logger. 而同时java.lang是java.lang.util的父logger-->
+    <!-- logger的appender默认具有累加性（默认日志输出到当前logger的appender和所有祖先logger的appender中），
+    可通过配置 “additivity”属性修改默认行为-->
 
     <!-- show parameters for hibernate sql 专为 Hibernate 定制 -->
     <logger name="org.hibernate.type.descriptor.sql.BasicBinder"  level="TRACE" />
@@ -75,11 +117,11 @@ logback初始化时，默认会去classpath下依次加载如下配置文件(log
     <logger name="java.sql.PreparedStatement" level="DEBUG"/>
     -->
 
-    <!-- 日志输出级别 -->
+    <!-- 日志输出级别(至多只能配置一个root)-->
     <root level="INFO">
         <appender-ref ref="STDOUT" />
         <appender-ref ref="FILE" />
-        <appender-ref ref="DB" />
+        <!--<appender-ref ref="DB" />-->
     </root>
 
     <!--日志异步到数据库 -->
