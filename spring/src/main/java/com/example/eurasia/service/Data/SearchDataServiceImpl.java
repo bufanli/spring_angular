@@ -72,7 +72,7 @@ public class SearchDataServiceImpl implements ISearchDataService {
                     break;
                 case QueryCondition.QUERY_CONDITION_TYPE_DATE:
                     if (queryCondition.getKey().equals(UserService.MUST_PRODUCT_DATE)) {
-                        queryConditionValue = userService.getOneUserCustom(userService.TABLE_USER_ACCESS_AUTHORITY,
+                        queryConditionValue = userService.getOneUserCustom(UserService.TABLE_USER_ACCESS_AUTHORITY,
                                 UserService.MUST_PRODUCT_DATE,
                                 userID);
                     } else {
@@ -85,7 +85,7 @@ public class SearchDataServiceImpl implements ISearchDataService {
                     break;
                 case QueryCondition.QUERY_CONDITION_TYPE_LIST:
                     if (queryCondition.getKey().equals(UserService.MUST_PRODUCT_NUMBER)) {
-                        queryConditionValue = userService.getOneUserCustom(userService.TABLE_USER_ACCESS_AUTHORITY,
+                        queryConditionValue = userService.getOneUserCustom(UserService.TABLE_USER_ACCESS_AUTHORITY,
                                 UserService.MUST_PRODUCT_NUMBER,
                                 userID);
                     } else {

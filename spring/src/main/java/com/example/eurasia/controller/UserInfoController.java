@@ -2,7 +2,7 @@ package com.example.eurasia.controller;
 
 import com.example.eurasia.entity.User.UserCustom;
 import com.example.eurasia.entity.User.UserInfo;
-import com.example.eurasia.service.HttpUtil.HttpSessionEnum;
+import com.example.eurasia.service.Util.HttpSessionEnum;
 import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;
@@ -151,30 +151,30 @@ public class UserInfoController {
     /**
      * @author
      * @date 2018-11-18
-     * @description 保存(更新)用户
+     * @description 更新用户
      */
     @RequestMapping(value="/updateUser", method = RequestMethod.POST)
     public @ResponseBody
     ResponseResult updateUser(@RequestBody UserInfo userInfo, HttpServletRequest request) {
         ResponseResult responseResult;
         try {
-            log.info("保存用户开始");
+            log.info("更新用户开始");
             String userID = userInfoServiceImpl.getUserID(request);
             if (StringUtils.isEmpty(userID) == true) {
                 responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
             } else {
 
-                if (userInfoServiceImpl.checkUserPhone(userInfo) == false) {
-                    return new ResponseResultUtil().error(ResponseCodeEnum.USER_ADD_PHONE_FAILED);
+                if (null == userInfo) {
+                    new ResponseResultUtil().error(ResponseCodeEnum.USER_UPDATE_FAILED);
                 }
 
                 responseResult = userInfoServiceImpl.updateUser(userInfo);
             }
+            log.info("更新用户结束");
         } catch (Exception e) {
             e.printStackTrace();
             responseResult = new ResponseResultUtil().error(ResponseCodeEnum.USER_UPDATE_FAILED);
         }
-        log.info("保存用户结束");
         return responseResult;
     }
 
@@ -191,29 +191,20 @@ public class UserInfoController {
             log.info("添加用户开始");
             String userID = userInfoServiceImpl.getUserID(request);
             if (StringUtils.isEmpty(userID) == true) {
-                responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
+                return new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
             } else {
 
-                if (userInfoServiceImpl.isUserIDExist(userInfo.getUserIDFromBasicInfos())) {
-                    return new ResponseResultUtil().error(ResponseCodeEnum.USER_ADD_IS_EXIST);
+                if (null == userInfo) {
+                    new ResponseResultUtil().error(ResponseCodeEnum.USER_ADD_FAILED);
                 }
 
-                if (userInfoServiceImpl.checkUserPhone(userInfo) == false) {
-                    return new ResponseResultUtil().error(ResponseCodeEnum.USER_ADD_PHONE_FAILED);
-                }
-
-                boolean isAddSuccessful = userInfoServiceImpl.addUser(userInfo);
-                if (isAddSuccessful == true) {
-                    responseResult = new ResponseResultUtil().success(ResponseCodeEnum.USER_ADD_SUCCESS);
-                } else {
-                    responseResult = new ResponseResultUtil().error(ResponseCodeEnum.USER_ADD_FAILED);
-                }
+                responseResult = userInfoServiceImpl.addUser(userInfo);
             }
+            log.info("添加用户结束");
         } catch (Exception e) {
             e.printStackTrace();
             responseResult = new ResponseResultUtil().error();
         }
-        log.info("添加用户结束");
         return responseResult;
     }
 

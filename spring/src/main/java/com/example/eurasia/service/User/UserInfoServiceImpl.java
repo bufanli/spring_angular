@@ -8,6 +8,7 @@ import com.example.eurasia.entity.User.UserInfo;
 import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;
+import com.example.eurasia.service.Util.PhoneValidatorUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -16,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -50,6 +50,7 @@ public class UserInfoServiceImpl implements IUserInfoService {
             return true;
         }
 
+        log.info("用户ID已存在");
         return false;
     }
 
@@ -59,54 +60,86 @@ public class UserInfoServiceImpl implements IUserInfoService {
             new ResponseResultUtil().error(ResponseCodeEnum.USER_UPDATE_FAILED);
         }
 
-        if (this.checkUserInfo(userInfo) == false) {
+        if (this.checkUserInfo(userInfo) != UserService.CHECK_USER_INFO_FLAG) {
             return new ResponseResultUtil().error(ResponseCodeEnum.USER_CHECK_INFO_FAILED);
         }
 
-        log.info("保存用户的基本信息开始");
-        boolean isupdateSuccessful = userService.updateUserBasicInfo(userInfo.getUserIDFromBasicInfos(),userInfo.getUserBasicInfos());
-        if (isupdateSuccessful == false) {
+        log.info("更新用户的基本信息开始");
+        boolean isUpdateSuccessful = userService.updateUserBasicInfo(userInfo.getUserIDFromBasicInfos(),userInfo.getUserBasicInfos());
+        if (isUpdateSuccessful == false) {
             return new ResponseResultUtil().error(ResponseCodeEnum.USER_UPDATE_BASIC_INFO_FAILED);
         }
-        log.info("保存用户的基本信息结束");
+        log.info("更新用户的基本信息结束");
 
-        log.info("保存用户的访问权限开始");
-        isupdateSuccessful = userService.updateUserAccessAuthority(userInfo.getUserIDFromBasicInfos(),userInfo.getUserDetailedInfos().getUserAccessAuthorities());
-        if (isupdateSuccessful == false) {
+        log.info("更新用户的访问权限开始");
+        isUpdateSuccessful = userService.updateUserAccessAuthority(userInfo.getUserIDFromBasicInfos(),userInfo.getUserDetailedInfos().getUserAccessAuthorities());
+        if (isUpdateSuccessful == false) {
             return new ResponseResultUtil().error(ResponseCodeEnum.USER_UPDATE_ACCESS_AUTHORITY_INFO_FAILED);
         }
-        log.info("保存用户的访问权限结束");
+        log.info("更新用户的访问权限结束");
 
-        log.info("保存用户的可见查询条件开始");
-        isupdateSuccessful = userService.updateUserQueryConditionDisplay(userInfo.getUserIDFromBasicInfos(),userInfo.getUserDetailedInfos().getUserQueryConditionDisplays());
-        isupdateSuccessful = true;//T.B.D
-        if (isupdateSuccessful == false) {
+        log.info("更新用户的可见查询条件开始");
+        isUpdateSuccessful = userService.updateUserQueryConditionDisplay(userInfo.getUserIDFromBasicInfos(),userInfo.getUserDetailedInfos().getUserQueryConditionDisplays());
+        isUpdateSuccessful = true;//T.B.D
+        if (isUpdateSuccessful == false) {
             return new ResponseResultUtil().error(ResponseCodeEnum.USER_UPDATE_QUERY_CONDITION_DISPLAY_FAILED);
         }
-        log.info("保存用户的可见查询条件结束");
+        log.info("更新用户的可见查询条件结束");
 
-        log.info("保存用户的可见表头开始");
-        isupdateSuccessful = userService.updateUserHeaderDisplay(userInfo.getUserIDFromBasicInfos(),userInfo.getUserDetailedInfos().getUserHeaderDisplays());
-        isupdateSuccessful = true;//T.B.D
-        if (isupdateSuccessful == false) {
+        log.info("更新用户的可见表头开始");
+        isUpdateSuccessful = userService.updateUserHeaderDisplay(userInfo.getUserIDFromBasicInfos(),userInfo.getUserDetailedInfos().getUserHeaderDisplays());
+        isUpdateSuccessful = true;//T.B.D
+        if (isUpdateSuccessful == false) {
             return new ResponseResultUtil().error(ResponseCodeEnum.USER_UPDATE_HEADER_DISPLAY_FAILED);
         }
-        log.info("保存用户的可见表头结束");
+        log.info("更新用户的可见表头结束");
 
         return new ResponseResultUtil().success(ResponseCodeEnum.USER_UPDATE_SUCCESS);
     }
 
     @Override
-    public boolean addUser(UserInfo userInfo) throws Exception {
+    public ResponseResult addUser(UserInfo userInfo) throws Exception {
         if (null == userInfo) {
-            return false;
+            new ResponseResultUtil().error(ResponseCodeEnum.USER_ADD_FAILED);
         }
 
-        if (this.checkUserInfo(userInfo) == false) {
-            return false;
+        if (this.checkUserInfo(userInfo) != UserService.CHECK_USER_INFO_FLAG) {
+            return new ResponseResultUtil().error(ResponseCodeEnum.USER_CHECK_INFO_FAILED);
         }
 
-        return userService.addUser(userInfo);
+        log.info("添加用户的基本信息开始");
+        int addUserNum = userService.addUserForBasicInfo(userInfo.getUserIDFromBasicInfos(),
+                userService.userCustomsArrToData(userInfo.getUserBasicInfos()));
+        if (addUserNum <= 0) {
+            return new ResponseResultUtil().error(ResponseCodeEnum.USER_ADD_BASIC_INFO_FAILED);
+        }
+        log.info("添加用户的基本信息结束");
+
+        log.info("添加用户的访问权限开始");
+        addUserNum = userService.addUserForAccessAuthority(userInfo.getUserIDFromBasicInfos(),
+                userService.userCustomsArrToData(userInfo.getUserDetailedInfos().getUserAccessAuthorities()));
+        if (addUserNum <= 0) {
+            return new ResponseResultUtil().error(ResponseCodeEnum.USER_ADD_ACCESS_AUTHORITY_INFO_FAILED);
+        }
+        log.info("添加用户的访问权限结束");
+
+        log.info("添加用户的可见查询条件开始");
+        addUserNum = userService.addUserForQueryConditionDisplay(userInfo.getUserIDFromBasicInfos(),
+                userService.userCustomsArrToData(userInfo.getUserDetailedInfos().getUserQueryConditionDisplays()));
+        if (addUserNum <= 0) {
+            return new ResponseResultUtil().error(ResponseCodeEnum.USER_ADD_QUERY_CONDITION_DISPLAY_FAILED);
+        }
+        log.info("添加用户的可见查询条件结束");
+
+        log.info("添加用户的可见表头开始");
+        addUserNum = userService.addUserForHeaderDisplay(userInfo.getUserIDFromBasicInfos(),
+                userService.userCustomsArrToData(userInfo.getUserDetailedInfos().getUserHeaderDisplays()));
+        if (addUserNum <= 0) {
+            return new ResponseResultUtil().error(ResponseCodeEnum.USER_ADD_HEADER_DISPLAY_FAILED);
+        }
+        log.info("添加用户的可见表头结束");
+
+        return new ResponseResultUtil().success(ResponseCodeEnum.USER_ADD_SUCCESS);
     }
 
     @Override
@@ -275,142 +308,157 @@ public class UserInfoServiceImpl implements IUserInfoService {
     }
 
     /**
-     * 保存用户访问权限时，检查数据的有效性
+     * 添加/更新用户信息时，检查数据的有效性
      * @param
      * @return
      * @exception
      * @author FuJia
      * @Time 2018-12-08 00:00:00
      */
-    private boolean checkUserInfo(UserInfo userInfo) {
+    private int checkUserInfo(UserInfo userInfo) throws Exception {
 
-        if (this.checkUserBasicInfo(userInfo.getUserBasicInfos()) == false) {
+        int ret = UserService.CHECK_USER_INFO_FLAG;
 
-        }
+        ret &= this.checkUserBasicInfo(userInfo.getUserBasicInfos());
 
-        if (this.checkUserAccessAuthority(userInfo.getUserDetailedInfos().getUserAccessAuthorities()) == false) {
+        ret &= this.checkUserAccessAuthority(userInfo.getUserDetailedInfos().getUserAccessAuthorities());
 
-        }
+        ret &= this.checkUserQueryConditionDisplay(userInfo.getUserDetailedInfos().getUserAccessAuthorities(),
+                userInfo.getUserDetailedInfos().getUserAccessAuthorities());
 
-        if (this.checkUserQueryConditionDisplay(userInfo.getUserDetailedInfos().getUserAccessAuthorities(),
-                userInfo.getUserDetailedInfos().getUserAccessAuthorities()) == false) {
+        ret &= this.checkUserHeaderDisplay(userInfo.getUserDetailedInfos().getUserAccessAuthorities());
 
-        }
-
-        if (this.checkUserHeaderDisplay(userInfo.getUserDetailedInfos().getUserAccessAuthorities()) == false) {
-
-        }
-
-        return true;//T.B.D
+        return ret;
     }
 
     /**
-     * 保存用户基本信息时，检查数据的有效性
+     * 添加/更新用户基本信息时，检查数据的有效性
      * @param
      * @return
      * @exception
      * @author FuJia
      * @Time 2018-12-02 00:00:00
      */
-    private boolean checkUserBasicInfo(UserCustom[] userCustoms) {
-        int isOK = 0xFFFF;
+    private int checkUserBasicInfo(UserCustom[] userCustoms) throws Exception {
+/*
+<<      :     左移运算符，num << 1,相当于num乘以2
+
+>>      :     右移运算符，num >> 1,相当于num除以2
+
+>>>    :     无符号右移，忽略符号位，空位都以0补齐
+*/
+        int ret = UserService.CHECK_USER_INFO_FLAG;
         for (UserCustom userCustom:userCustoms) {
-            if (userCustom.getKey().equals(userService.MUST_USER_NAME) ||
-                    userCustom.getKey().equals(userService.MUST_USER_PHONE)) {
-                if (!StringUtils.isEmpty(userCustom.getValue())) {
-                    isOK = 0xFFFF << 1;
+            switch (userCustom.getKey()) {
+                case UserService.MUST_USER_ID:
+                    if (this.isUserIDExist(userCustom.getValue())) {
+                        ret <<= 1;
+                    }
                     break;
-                }
+                case UserService.MUST_USER_NAME:
+                    if (!StringUtils.isEmpty(userCustom.getValue())) {
+                        ret <<= 1;
+                    }
+
+                    break;
+                case UserService.MUST_USER_PHONE:
+                    if (!StringUtils.isEmpty(userCustom.getValue())) {
+                        ret <<= 1;
+                    }
+                    if (this.isUserPhoneExist(userCustom.getValue()) == false) {
+                        ret <<= 1;
+                    }
+                    if (PhoneValidatorUtil.matchPhone(userCustom.getValue(),1) == false) {
+                        ret <<= 1;
+                    }
+                    break;
+                default:
+                    break;
             }
         }
 
-        if (isOK != 0xFFFF) {
-            return true;
-        } else {
-            return false;
-        }
+        return ret;
     }
 
     /**
-     * 保存用户访问权限时，检查数据的有效性
+     * 添加/更新用户访问权限时，检查数据的有效性
      * @param
      * @return
      * @exception
      * @author FuJia
      * @Time 2018-12-02 00:00:00
      */
-    private boolean checkUserAccessAuthority(UserCustom[] userCustoms) {
+    private int checkUserAccessAuthority(UserCustom[] userCustoms) throws Exception {
         return this.checkProductDateAndProductNumber(userCustoms);
     }
 
     /**
-     * 保存用户可显示的查询条件时，检查数据的有效性
+     * 添加/更新用户可显示的查询条件时，检查数据的有效性
      * @param
      * @return
      * @exception
      * @author FuJia
      * @Time 2018-12-02 00:00:00
      */
-    private boolean checkUserQueryConditionDisplay(UserCustom[] userQueryConditionDisplays, UserCustom[] userHeaderDisplays) {
+    private int checkUserQueryConditionDisplay(UserCustom[] userQueryConditionDisplays,
+                                               UserCustom[] userHeaderDisplays) throws Exception {
         //可显示的查询条件，应是可显示列的子集
-        return true;//T.B.D
+        int ret = UserService.CHECK_USER_INFO_FLAG;
+        return ret;//T.B.D
     }
 
     /**
-     * 保存用户可显示列时，检查数据的有效性
+     * 添加/更新用户可显示列时，检查数据的有效性
      * @param
      * @return
      * @exception
      * @author FuJia
      * @Time 2018-12-02 00:00:00
      */
-    private boolean checkUserHeaderDisplay(UserCustom[] userCustoms) {
+    private int checkUserHeaderDisplay(UserCustom[] userCustoms) throws Exception {
         return this.checkProductDateAndProductNumber(userCustoms);
     }
 
     /**
-     * 保存用户访问权限时，检查数据的有效性
+     * 添加/更新用户信息时，检查日期和商品编码数据的有效性
      * @param
      * @return
      * @exception
      * @author FuJia
      * @Time 2018-12-02 00:00:00
      */
-    private boolean checkProductDateAndProductNumber(UserCustom[] userCustoms) {
-        int isOK = 0xFFFF;
+    private int checkProductDateAndProductNumber(UserCustom[] userCustoms) throws Exception {
+        int ret = UserService.CHECK_USER_INFO_FLAG;
         for (UserCustom userCustom:userCustoms) {
-            if (userCustom.getKey().equals(userService.MUST_PRODUCT_DATE) ||
-                    userCustom.getKey().equals(userService.MUST_PRODUCT_NUMBER)) {
+            if (userCustom.getKey().equals(UserService.MUST_PRODUCT_DATE) ||
+                    userCustom.getKey().equals(UserService.MUST_PRODUCT_NUMBER)) {
                 String queryConditionArr[] = userCustom.getValue().split(QueryCondition.QUERY_CONDITION_SPLIT,-1);
                 for (String queryCondition : queryConditionArr) {
                     if (!StringUtils.isEmpty(queryCondition)) {
-                        isOK = 0xFFFF << 1;
+                        ret <<= 1;
                         break;
                     }
                 }
             }
         }
 
-        if (isOK != 0xFFFF) {
-            return true;
-        } else {
-            return false;
-        }
+        return ret;
     }
 
     /**
-     * 保存用户基本信息时，检查电话号码是否重复
+     * 添加/更新用户基本信息时，检查电话号码是否重复
      * @param
      * @return
      * @exception
      * @author FuJia
      * @Time 2018-12-08 00:00:00
      */
-    public boolean checkUserPhone(UserInfo userInfo) throws Exception {
+    @Override
+    public boolean isUserPhoneExist(UserInfo userInfo) throws Exception {
 
         try {
             for (UserCustom userCustom:userInfo.getUserBasicInfos()) {
-                if (userCustom.getKey().equals(userService.MUST_USER_PHONE)) {
+                if (userCustom.getKey().equals(UserService.MUST_USER_PHONE)) {
                     if (userService.getUserPhoneNumber(userCustom.getValue()) == 0) {
                         return true;
                     }
@@ -421,6 +469,24 @@ public class UserInfoServiceImpl implements IUserInfoService {
             e.printStackTrace();
             return false;
         }
+        log.info("用户的电话号码已存在");
+        return false;
+    }
+
+    /**
+     * 添加/更新用户基本信息时，检查电话号码是否重复
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-12-08 00:00:00
+     */
+    public boolean isUserPhoneExist(String phone) throws Exception {
+
+        if (userService.getUserPhoneNumber(phone) == 0) {
+            return true;
+        }
+        log.info("用户的电话号码已存在");
         return false;
     }
 

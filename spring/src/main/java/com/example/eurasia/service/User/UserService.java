@@ -81,6 +81,8 @@ public class UserService {
 
     public static final String COLUMN_SHOW_MORE = "更多";//在显示数据的表格最后增加的列
 
+    public static final int CHECK_USER_INFO_FLAG = 0xFFFF;
+
     /**
      * 添加数据
      * @param
@@ -239,7 +241,7 @@ public class UserService {
      * @author FuJia
      * @Time 2018-11-17 00:00:00
      */
-    private int addUserForBasicInfo(String userID, Data value) throws Exception {
+    public int addUserForBasicInfo(String userID, Data value) throws Exception {
         if (StringUtils.isEmpty(userID)) {
             return -1;
         }
@@ -273,7 +275,7 @@ public class UserService {
      * @author FuJia
      * @Time 2018-11-17 00:00:00
      */
-    private int addUserForAccessAuthority(String userID, Data value) throws Exception {
+    public int addUserForAccessAuthority(String userID, Data value) throws Exception {
         if (StringUtils.isEmpty(userID)) {
             return -1;
         }
@@ -307,7 +309,7 @@ public class UserService {
      * @author FuJia
      * @Time 2018-11-17 00:00:00
      */
-    private int addUserForQueryConditionDisplay(String userID, Data value) throws Exception {
+    public int addUserForQueryConditionDisplay(String userID, Data value) throws Exception {
         if (StringUtils.isEmpty(userID)) {
             return -1;
         }
@@ -341,7 +343,7 @@ public class UserService {
      * @author FuJia
      * @Time 2018-11-17 00:00:00
      */
-    private int addUserForHeaderWidth(String userID, Data value) throws Exception {
+    public int addUserForHeaderWidth(String userID, Data value) throws Exception {
         if (StringUtils.isEmpty(userID)) {
             return -1;
         }
@@ -366,7 +368,7 @@ public class UserService {
      * @author FuJia
      * @Time 2018-11-17 00:00:00
      */
-    private int addUserForHeaderDisplay(String userID, Data value) throws Exception {
+    public int addUserForHeaderDisplay(String userID, Data value) throws Exception {
         if (StringUtils.isEmpty(userID)) {
             return -1;
         }

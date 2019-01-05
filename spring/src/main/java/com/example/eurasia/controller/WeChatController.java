@@ -2,7 +2,7 @@ package com.example.eurasia.controller;
 
 import com.example.eurasia.entity.WeChat.AccessToken;
 import com.example.eurasia.entity.WeChat.WechatUserUnionID;
-import com.example.eurasia.service.HttpUtil.HttpSessionEnum;
+import com.example.eurasia.service.Util.HttpSessionEnum;
 import com.example.eurasia.service.User.IUserInfoService;
 import com.example.eurasia.service.WeChat.IWeChatAuthService;
 import org.slf4j.Logger;

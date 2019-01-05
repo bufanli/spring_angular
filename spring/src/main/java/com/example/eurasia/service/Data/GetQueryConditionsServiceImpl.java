@@ -152,7 +152,7 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
                 break;
             case QueryCondition.QUERY_CONDITION_TYPE_LIST:
                 if (key.equals(UserService.MUST_PRODUCT_NUMBER)) {
-                    queryConditionValue = userService.getOneUserCustom(userService.TABLE_USER_ACCESS_AUTHORITY,
+                    queryConditionValue = userService.getOneUserCustom(UserService.TABLE_USER_ACCESS_AUTHORITY,
                             UserService.MUST_PRODUCT_NUMBER,
                             userID);
                 } else {
