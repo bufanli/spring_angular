@@ -36,6 +36,7 @@ public class UserInfoServiceImpl implements IUserInfoService {
     public String getUserID(HttpServletRequest request) throws Exception {
 //        HttpSession session = request.getSession();
 //        String userID = (String)session.getAttribute("openid");
+//        Slf4jLogUtil.get().info("openid=(" + userID + ")");
 //
 //        if (!StringUtils.isEmpty(userID) && userService.getUserIDNumber(userID) == 1) {
 //            return userID;
@@ -50,7 +51,7 @@ public class UserInfoServiceImpl implements IUserInfoService {
             return true;
         }
 
-        Slf4jLogUtil.get().info("用户ID已存在");
+        Slf4jLogUtil.get().info("用户ID(" + userID + ")已存在");
         return false;
     }
 
@@ -64,6 +65,7 @@ public class UserInfoServiceImpl implements IUserInfoService {
             return new ResponseResultUtil().error(ResponseCodeEnum.USER_CHECK_INFO_FAILED);
         }
 
+        Slf4jLogUtil.get().info("更新用户ID=(" + userInfo.getUserIDFromBasicInfos() + ")");
         Slf4jLogUtil.get().info("更新用户的基本信息开始");
         boolean isUpdateSuccessful = userService.updateUserBasicInfo(userInfo.getUserIDFromBasicInfos(),userInfo.getUserBasicInfos());
         if (isUpdateSuccessful == false) {
@@ -107,6 +109,7 @@ public class UserInfoServiceImpl implements IUserInfoService {
             return new ResponseResultUtil().error(ResponseCodeEnum.USER_CHECK_INFO_FAILED);
         }
 
+        Slf4jLogUtil.get().info("添加用户ID=(" + userInfo.getUserIDFromBasicInfos() + ")");
         Slf4jLogUtil.get().info("添加用户的基本信息开始");
         int addUserNum = userService.addUserForBasicInfo(userInfo.getUserIDFromBasicInfos(),
                 userService.userCustomsArrToData(userInfo.getUserBasicInfos()));
@@ -467,7 +470,6 @@ public class UserInfoServiceImpl implements IUserInfoService {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
         }
         Slf4jLogUtil.get().info("用户的电话号码已存在");
         return false;
@@ -486,7 +488,7 @@ public class UserInfoServiceImpl implements IUserInfoService {
         if (userService.getUserPhoneNumber(phone) == 0) {
             return true;
         }
-        Slf4jLogUtil.get().info("用户的电话号码已存在");
+        Slf4jLogUtil.get().info("用户的电话号码(" + phone + ")已存在");
         return false;
     }
 
@@ -511,8 +513,8 @@ public class UserInfoServiceImpl implements IUserInfoService {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
         }
+        Slf4jLogUtil.get().info("用户(" + userID + ")的有效期已过");
         return false;
     }
 
@@ -526,6 +528,7 @@ public class UserInfoServiceImpl implements IUserInfoService {
      */
     public boolean checkUserPassWord(String userID, String password) throws Exception {
 
+        Slf4jLogUtil.get().info("用户(" + userID + "),密码(" + password + ")");
         if (StringUtils.isEmpty(userID) || StringUtils.isEmpty(password)) {
             return false;
         }
@@ -536,6 +539,7 @@ public class UserInfoServiceImpl implements IUserInfoService {
                 return true;
             }
         }
+        Slf4jLogUtil.get().info("用户密码不正确");
         return false;
     }
 }

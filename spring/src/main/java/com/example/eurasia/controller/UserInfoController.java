@@ -51,7 +51,7 @@ public class UserInfoController {
     ResponseResult loginAdmin(@RequestBody UserCustom[] userCustoms, HttpServletRequest request) {
         ResponseResult responseResult;
         try {
-            Slf4jLogUtil.get().info("设定登陆用户ID开始");
+            Slf4jLogUtil.get().info("管理员登陆开始");
             String userName = null;
             String userPassword = null;
             for (UserCustom userCustom:userCustoms) {
@@ -75,7 +75,7 @@ public class UserInfoController {
             if (userInfoServiceImpl.checkUserValid(userName) == false) {
                 responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_USER_INVALID);
             }
-            Slf4jLogUtil.get().info("设定登陆用户ID结束");
+            Slf4jLogUtil.get().info("管理员登陆结束");
         } catch (Exception e) {
             e.printStackTrace();
             responseResult = new ResponseResultUtil().error(ResponseCodeEnum.USER_LOGIN_FAILED);
