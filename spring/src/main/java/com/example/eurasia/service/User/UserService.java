@@ -403,7 +403,7 @@ public class UserService {
      * @Time 2018-11-29 00:00:00
      */
     public int getUserIDNumber(String userID) throws Exception {
-        if (StringUtils.isEmpty(userID) == true) {
+        if (StringUtils.isEmpty(userID)) {
             return -1;
         }
         return getUserDao().queryUserID(UserService.TABLE_USER_BASIC_INFO,UserService.MUST_USER_ID,userID);
@@ -418,7 +418,7 @@ public class UserService {
      * @Time 2018-11-29 00:00:00
      */
     public int getUserPhoneNumber(String phone) throws Exception {
-        if (StringUtils.isEmpty(phone) == true) {
+        if (StringUtils.isEmpty(phone)) {
             return -1;
         }
         return getUserDao().queryUserID(UserService.TABLE_USER_BASIC_INFO,UserService.MUST_USER_PHONE,phone);
@@ -433,7 +433,7 @@ public class UserService {
      * @Time 2018-12-10 00:00:00
      */
     public String getUserPassWord(String userID) throws Exception {
-        if (StringUtils.isEmpty(userID) == true) {
+        if (StringUtils.isEmpty(userID)) {
             return "";
         }
 
@@ -449,7 +449,7 @@ public class UserService {
      * @Time 2018-12-10 00:00:00
      */
     public String getUserValid(String userID) throws Exception {
-        if (StringUtils.isEmpty(userID) == true) {
+        if (StringUtils.isEmpty(userID)) {
             return "";
         }
 
@@ -779,7 +779,7 @@ public class UserService {
      * @Time 2018-12-02 00:00:00
      */
     private boolean updateUserCustom(String tableName, String userID, UserCustom[] userCustoms) throws Exception {
-        if (StringUtils.isEmpty(tableName) || StringUtils.isEmpty(userID) ||userCustoms == null) {
+        if (StringUtils.isEmpty(tableName) || StringUtils.isEmpty(userID) || userCustoms == null) {
             return false;
         }
 

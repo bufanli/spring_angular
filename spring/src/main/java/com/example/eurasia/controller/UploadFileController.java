@@ -5,7 +5,7 @@ import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;
 import com.example.eurasia.service.User.IUserInfoService;
-import lombok.extern.slf4j.Slf4j;
+import com.example.eurasia.service.Util.Slf4jLogUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
@@ -22,11 +22,9 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-@Slf4j
+//@Slf4j
 @Controller
 public class UploadFileController {
-
-    //private final static Logger logger = LoggerFactory.getLogger(UploadFileController.class);
 
     @GetMapping("/greeting")
     public String greeting(@RequestParam(name = "name", required = false, defaultValue = "World") String name, Model model) {
@@ -61,8 +59,8 @@ public class UploadFileController {
     ResponseResult uploadFiles(@RequestParam("file") MultipartFile[] files, HttpServletRequest request) throws IOException {
         ResponseResult responseResult;
         try {
-            String userID = userInfoServiceImpl.getUserID(request);
-            if (StringUtils.isEmpty(userID) == true) {
+            String userID = userInfoServiceImpl.getLoginUserID(request);
+            if (StringUtils.isEmpty(userID)) {
                 responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
             } else {
                 Date date = new Date(System.currentTimeMillis());
@@ -89,14 +87,14 @@ public class UploadFileController {
                     uploadDir.mkdirs();
                 }
 
-                log.info("IP:{},进行文件上传开始",request.getRemoteAddr());
+                Slf4jLogUtil.get().info("IP:{},进行文件上传开始",request.getRemoteAddr());
                 //responseResult = uploadFileService.batchUpload(filePath, files);
                 uploadFileService.batchUpload(uploadDir, files);//T.B.D 返回结果暂时不做处理
-                log.info("IP:{},进行文件上传结束",request.getRemoteAddr());
+                Slf4jLogUtil.get().info("IP:{},进行文件上传结束",request.getRemoteAddr());
 
-                log.info("Dir:{},进行文件读取开始",uploadDir);
+                Slf4jLogUtil.get().info("Dir:{},进行文件读取开始",uploadDir);
                 responseResult = uploadFileService.readFile(uploadDir);
-                log.info("Dir:{},进行文件读取结束",uploadDir);
+                Slf4jLogUtil.get().info("Dir:{},进行文件读取结束",uploadDir);
             }
         } catch (Exception e) {
             e.printStackTrace();

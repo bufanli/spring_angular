@@ -3,7 +3,7 @@ package com.example.eurasia.service.WeChat;
 import com.alibaba.fastjson.JSONObject;
 import com.example.eurasia.entity.WeChat.AccessToken;
 import com.example.eurasia.entity.WeChat.WechatUserUnionID;
-import lombok.extern.slf4j.Slf4j;
+import com.example.eurasia.service.Util.Slf4jLogUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
@@ -33,11 +33,12 @@ import java.util.List;
  * @Date 2018-12-17 22:07
  * @Version 1.0
  */
-@Slf4j
+//@Slf4j
 /*@Transactional(readOnly = true)事物注解*/
 @Service("WeChatAuthServiceImpl")
 @Component
 public class WeChatAuthServiceImpl implements IWeChatAuthService  {
+
     //请求此地址即跳转到二维码登录界面
     private static final String AUTHORIZATION_URL =
             "https://open.weixin.qq.com/connect/oauth2/authorize?appid=%s&redirect_uri=%s&response_type=code&scope=%s&state=%s#wechat_redirect";
@@ -73,7 +74,7 @@ public class WeChatAuthServiceImpl implements IWeChatAuthService  {
         Object urlState = state;
 
         String url = String.format(AUTHORIZATION_URL,APP_ID,callbackUrl,SCOPE,urlState);
-        log.info("getAuthorizationUrl:" + url);
+        Slf4jLogUtil.get().info("getAuthorizationUrl:" + url);
         return url;
     }
 
@@ -89,20 +90,20 @@ public class WeChatAuthServiceImpl implements IWeChatAuthService  {
     @Override
     public AccessToken getAccessToken(String code) {
         String url = String.format(ACCESS_TOKE_OPENID_URL,APP_ID,APP_SECRET,code);
-        log.info("getAccessToken url = " + url);
+        Slf4jLogUtil.get().info("getAccessToken url = " + url);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
         URI uri = builder.build().encode().toUri();
 
         String resp = getRestTemplate().getForObject(uri, String.class);
-        log.error("getAccessToken resp = " + resp);
+        Slf4jLogUtil.get().error("getAccessToken resp = " + resp);
         if(resp.contains("openid")){
-            log.info("getAccessToken 获取用户信息包括openid");
+            Slf4jLogUtil.get().info("getAccessToken 获取用户信息包括openid");
             JSONObject parseObject = JSONObject.parseObject(resp);
             AccessToken accessToken = JSONObject.toJavaObject(parseObject, AccessToken.class);
             return accessToken;
         }else{
-            log.error("getAccessToken 获取用户信息错误，msg = " + resp);
+            Slf4jLogUtil.get().error("getAccessToken 获取用户信息错误，msg = " + resp);
             return null;
         }
     }
@@ -127,18 +128,18 @@ public class WeChatAuthServiceImpl implements IWeChatAuthService  {
     @Override
     public WechatUserUnionID getUserUnionID(String accessToken, String openid){
         String url = String.format(USER_INFO_URL, accessToken, openid);
-        log.info("getUserUnionID url = " + url);
+        Slf4jLogUtil.get().info("getUserUnionID url = " + url);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
         URI uri = builder.build().encode().toUri();
 
         String resp = getRestTemplate().getForObject(uri, String.class);
-        log.error("getUserUnionID resp = " + resp);
+        Slf4jLogUtil.get().error("getUserUnionID resp = " + resp);
         if(resp.contains("errcode")){
-            log.error("getUserUnionID 获取用户信息错误，msg = " + resp);
+            Slf4jLogUtil.get().error("getUserUnionID 获取用户信息错误，msg = " + resp);
             return null;
         }else{
-            log.info("getUserUnionID 获取用户信息正确");
+            Slf4jLogUtil.get().info("getUserUnionID 获取用户信息正确");
             JSONObject parseObject = JSONObject.parseObject(resp);
             WechatUserUnionID userUnionID = JSONObject.toJavaObject(parseObject, WechatUserUnionID.class);
             return userUnionID;
@@ -160,7 +161,7 @@ public class WeChatAuthServiceImpl implements IWeChatAuthService  {
         JSONObject jsonObject = resp.getBody();
 
         String access_token = jsonObject.getString("access_token");
-        log.info("refreshToken:" + access_token);
+        Slf4jLogUtil.get().info("refreshToken:" + access_token);
         return access_token;
     }
 

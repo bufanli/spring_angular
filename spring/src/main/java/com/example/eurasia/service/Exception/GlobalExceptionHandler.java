@@ -3,7 +3,7 @@ package com.example.eurasia.service.Exception;
 import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;
-import lombok.extern.slf4j.Slf4j;
+import com.example.eurasia.service.Util.Slf4jLogUtil;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
  * @description 全局异常处理: 使用 @RestControllerAdvice + @ExceptionHandler 注解方式实现全
  * 局异常处理
  */
-@Slf4j
+//@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -25,7 +25,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler({Exception.class})    //申明捕获那个异常类
     public ResponseResult globalExceptionHandler(Exception e) {
-        log.error(e.getMessage(), e);
+        Slf4jLogUtil.get().error(e.getMessage(), e);
         return new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_OPERATE_FAILED);
     }
 
@@ -37,7 +37,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler({BaseBusinessException.class})
     public ResponseResult BusinessExceptionHandler(BaseBusinessException e) {
-        log.error(String.valueOf(e));
+        Slf4jLogUtil.get().error(String.valueOf(e));
         return new ResponseResultUtil().error(e.getCode(), e.getMessage());
     }
 

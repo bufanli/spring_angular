@@ -1,11 +1,12 @@
 package com.example.eurasia.entity.Data;
 
+import com.example.eurasia.service.Util.Slf4jLogUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 
-@Slf4j
+//@Slf4j
 public class QueryCondition implements Cloneable {
+
     public static final String QUERY_CONDITION_TYPE_STRING = "String";
     public static final String QUERY_CONDITION_TYPE_DATE = "Date";
     public static final String QUERY_CONDITION_TYPE_LIST = "List";
@@ -122,7 +123,7 @@ public class QueryCondition implements Cloneable {
     public Boolean checkValue() {
 
         if (this.getKey() == null || this.getValue() == null || this.getType() == null) {
-            log.error("条件中有null值");
+            Slf4jLogUtil.get().error("条件中有null值");
             return false;
         }
 
@@ -134,18 +135,18 @@ public class QueryCondition implements Cloneable {
             case QueryCondition.QUERY_CONDITION_TYPE_MONEY:
             case QueryCondition.QUERY_CONDITION_TYPE_AMOUNT:
                 if (this.getValue().contains(QueryCondition.QUERY_CONDITION_SPLIT) == false) {
-                    log.error(this.getValue() + "中没有~~");
+                    Slf4jLogUtil.get().error(this.getValue() + "中没有~~");
                     return false;
                 }
                 String queryConditionArr[] = this.getValue().split(QueryCondition.QUERY_CONDITION_SPLIT,-1);
                 if (queryConditionArr.length !=2 ) {
-                    log.error(this.getValue() + "中开始条件和结束条件不足");
+                    Slf4jLogUtil.get().error(this.getValue() + "中开始条件和结束条件不足");
                     return false;
                 }
                 break;
             case QueryCondition.QUERY_CONDITION_TYPE_LIST:
                 if (this.getValue().contains(QueryCondition.QUERY_CONDITION_SPLIT) == false) {
-                    log.error(this.getValue() + "中没有~~");
+                    Slf4jLogUtil.get().error(this.getValue() + "中没有~~");
                     return false;
                 }
                 break;

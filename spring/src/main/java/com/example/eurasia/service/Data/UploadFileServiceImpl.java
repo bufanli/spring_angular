@@ -4,7 +4,7 @@ import com.example.eurasia.entity.Data.Data;
 import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;
-import lombok.extern.slf4j.Slf4j;
+import com.example.eurasia.service.Util.Slf4jLogUtil;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
@@ -25,7 +25,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-@Slf4j
+//@Slf4j
 /*@Transactional(readOnly = true)事物注解*/
 @Service("UploadFileServiceImpl")
 @Component
@@ -46,14 +46,14 @@ public class UploadFileServiceImpl implements IUploadFileService {
         StringBuffer responseNG = new StringBuffer();
         int fileOKNum = 0;
         int fileNGNum = 0;
-        log.info("文件上传目录:{}",uploadDir.getPath());
+        Slf4jLogUtil.get().info("文件上传目录:{}",uploadDir.getPath());
 
         //遍历文件数组
         for (int i=0; i<files.length; i++) {
             //上传文件名
             fileName = files[i].getOriginalFilename();
 
-            log.info("第{}/{}个文件开始上传,文件名:{}",(i+1),fileNumber,fileName);
+            Slf4jLogUtil.get().info("第{}/{}个文件开始上传,文件名:{}",(i+1),fileNumber,fileName);
 
             try {
                 //需要自定义文件名的情况
@@ -62,7 +62,7 @@ public class UploadFileServiceImpl implements IUploadFileService {
                 //服务器端保存端文件对象
                 File serverFile = new File(uploadDir.getPath() + "/" + fileName);
                 if (!serverFile.exists()) {
-                    log.info("文件名:{}存在的话，则覆盖。",fileName);
+                    Slf4jLogUtil.get().info("文件名:{}存在的话，则覆盖。",fileName);
                 }
                 //将上传的文件写入到服务器端的文件内
                 files[i].transferTo(serverFile);
@@ -70,18 +70,18 @@ public class UploadFileServiceImpl implements IUploadFileService {
                 e.printStackTrace();
                 fileNGNum++;
                 responseNG.append(fileName +":上传IO异常" + DataService.BR);
-                log.error("第{}/{}个文件上传IO异常,文件名:{}",(i+1),fileNumber,fileName);
+                Slf4jLogUtil.get().error("第{}/{}个文件上传IO异常,文件名:{}",(i+1),fileNumber,fileName);
                 continue;
             } catch (IllegalStateException e) {
                 e.printStackTrace();
                 fileNGNum++;
                 responseNG.append(fileName + ":上传IllegalState异常" + DataService.BR);
-                log.error("第{}/{}个文件上传IllegalState异常,文件名:{}",(i+1),fileNumber,fileName);
+                Slf4jLogUtil.get().error("第{}/{}个文件上传IllegalState异常,文件名:{}",(i+1),fileNumber,fileName);
                 continue;
             }
 
             fileOKNum++;
-            log.info("第{}/{}个文件上传OK结束,文件名:{}",(i+1),fileNumber,fileName);
+            Slf4jLogUtil.get().info("第{}/{}个文件上传OK结束,文件名:{}",(i+1),fileNumber,fileName);
 
             responseOK.append(fileName + DataService.BR);
         }
@@ -118,7 +118,7 @@ public class UploadFileServiceImpl implements IUploadFileService {
         StringBuffer responseNG = new StringBuffer();
         int fileOKNum = 0;
         int fileNGNum = 0;
-        log.info("文件读取目录:{}",fileDir);
+        Slf4jLogUtil.get().info("文件读取目录:{}",fileDir);
 
         //遍历文件数组
         File[] files = fileDir.listFiles();
@@ -126,7 +126,7 @@ public class UploadFileServiceImpl implements IUploadFileService {
         for (int i=0; i<fileNumber; i++) {
             if (files[i].isDirectory()) {
                 //Nothing to do
-                log.info("第{}/{}，是个目录,跳过。",(i+1),fileNumber);
+                Slf4jLogUtil.get().info("第{}/{}，是个目录,跳过。",(i+1),fileNumber);
                 continue;
             }
 
@@ -135,7 +135,7 @@ public class UploadFileServiceImpl implements IUploadFileService {
                 //读取文件名
                 fileName = files[i].getName();
 
-                log.info("第{}/{}个文件开始读取,文件名:{}",(i+1),fileNumber,fileName);
+                Slf4jLogUtil.get().info("第{}/{}个文件开始读取,文件名:{}",(i+1),fileNumber,fileName);
 
                 try {
                     if (ExcelImportUtils.isExcelFileValidata(files[i]) == true) {
@@ -143,27 +143,27 @@ public class UploadFileServiceImpl implements IUploadFileService {
                     } else {
                         fileNGNum++;
                         responseNG.append(fileName +": 文件格式有问题" + DataService.BR);
-                        log.error("第{}/{}个文件格式有问题,文件名:{}",(i+1),fileNumber,fileName);
+                        Slf4jLogUtil.get().error("第{}/{}个文件格式有问题,文件名:{}",(i+1),fileNumber,fileName);
                         continue;
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
                     fileNGNum++;
                     responseNG.append(fileName +": 读取IO异常" + DataService.BR);
-                    log.error("第{}/{}个文件读取IO异常,文件名:{}",(i+1),fileNumber,fileName);
+                    Slf4jLogUtil.get().error("第{}/{}个文件读取IO异常,文件名:{}",(i+1),fileNumber,fileName);
                     continue;
                 } catch (Exception e) {
                     e.printStackTrace();
                     fileNGNum++;
                     responseNG.append(fileName +": 读取或者保存到数据库异常" + DataService.BR);
-                    log.error("第{}/{}个文件读取异常,文件名:{}",(i+1),fileNumber,fileName);
+                    Slf4jLogUtil.get().error("第{}/{}个文件读取异常,文件名:{}",(i+1),fileNumber,fileName);
                     continue;
                 }
 
             }
 
             fileOKNum++;
-            log.info("第{}/{}个文件读取OK结束,文件名:{}",(i+1),fileNumber,fileName);
+            Slf4jLogUtil.get().info("第{}/{}个文件读取OK结束,文件名:{}",(i+1),fileNumber,fileName);
 
             responseOK.append(fileName + ":" + responseRead + DataService.BR);
         }
@@ -231,12 +231,12 @@ public class UploadFileServiceImpl implements IUploadFileService {
         for (int m = 0; m < numSheets; m++) {//循环sheet
             Sheet sheet = workbook.getSheetAt(m);//得到第一个sheet
             if (sheet == null) {
-                log.error("第{}/{}个sheet有问题，请仔细检查。sheet名：{}",(m+1),numSheets,sheet.getSheetName());
+                Slf4jLogUtil.get().error("第{}/{}个sheet有问题，请仔细检查。sheet名：{}",(m+1),numSheets,sheet.getSheetName());
                 continue;
             }
-            log.info("第{}/{}个sheet开始读取,sheet名:{}",(m+1),numSheets,sheet.getSheetName());
+            Slf4jLogUtil.get().info("第{}/{}个sheet开始读取,sheet名:{}",(m+1),numSheets,sheet.getSheetName());
             msg = this.readExcelFileSheet(sheet);//读一个sheet内容
-            log.info("第{}/{}个sheet读取结束,sheet名:{}",(m+1),numSheets,sheet.getSheetName());
+            Slf4jLogUtil.get().info("第{}/{}个sheet读取结束,sheet名:{}",(m+1),numSheets,sheet.getSheetName());
         }
         return msg.toString();
     }
@@ -265,7 +265,7 @@ public class UploadFileServiceImpl implements IUploadFileService {
             for (Data data : dataList) {
                 addDataNum = this.saveDataToSQL(DataService.TABLE_DATA, data);//导入一行数据。
             }
-            log.info("导入成功，共{}条数据！",dataList.size());
+            Slf4jLogUtil.get().info("导入成功，共{}条数据！",dataList.size());
             sheetMsg.append("导入成功，共" + dataList.size() + "条数据！");
         } else {
             sheetMsg.append(titleErrMsg);
@@ -287,7 +287,7 @@ public class UploadFileServiceImpl implements IUploadFileService {
             Cell cell = titleRow.getCell(n);
             if (null == cell) {
                 rowErrorMsg.append(DataService.BR + "第" + (n+1) + "列标题有问题，请仔细检查。");
-                log.error("第{}/{}列标题有问题，请仔细检查。",(n+1),numTitleCells);
+                Slf4jLogUtil.get().error("第{}/{}列标题有问题，请仔细检查。",(n+1),numTitleCells);
                 continue;
             }
 
@@ -296,17 +296,17 @@ public class UploadFileServiceImpl implements IUploadFileService {
             String cellValue = this.getValue(cell);
             if (StringUtils.isEmpty(cellValue)) {
                 rowErrorMsg.append(DataService.BR + "第" + (n+1) + "列标题为空，请仔细检查。");
-                log.error("第{}/{}列标题为空。",(n+1),numTitleCells);
+                Slf4jLogUtil.get().error("第{}/{}列标题为空。",(n+1),numTitleCells);
                 continue;
             }
             if (!this.checkTitles(cellValue)) {//对比SQL表头
                 rowErrorMsg.append(DataService.BR + "第" + (n+1) + "列标题在数据中不存在，请仔细检查。");
-                log.error("第{}/{}列标题在数据中不存在。",(n+1),numTitleCells);
+                Slf4jLogUtil.get().error("第{}/{}列标题在数据中不存在。",(n+1),numTitleCells);
                 continue;
             }
             if (this.checkSameTitle(cellValue,valueList)) {
                 rowErrorMsg.append(DataService.BR + "第" + (n+1) + "列标题重复，请仔细检查。");
-                log.error("第{}/{}列标题重复。",(n+1),numTitleCells);
+                Slf4jLogUtil.get().error("第{}/{}列标题重复。",(n+1),numTitleCells);
                 continue;
             }
             Map<Integer,String> titleMap = new LinkedHashMap<>();
@@ -339,7 +339,7 @@ public class UploadFileServiceImpl implements IUploadFileService {
             Row row = sheet.getRow(p);
             if (row == null) {
                 msg.append("第" + (p+1) + "行数据有问题，请仔细检查。" + DataService.BR);
-                log.error("第{}/{}行数据有问题，请仔细检查。",(p+1),numRows);
+                Slf4jLogUtil.get().error("第{}/{}行数据有问题，请仔细检查。",(p+1),numRows);
                 continue;
             }
 
@@ -388,7 +388,7 @@ public class UploadFileServiceImpl implements IUploadFileService {
     private boolean checkTitles(String cellValue) throws Exception {
         List<Map<String,String>> colsNameList = this.getTitles();
         if (colsNameList.size() == 0) {
-            log.info(ResponseCodeEnum.UPLOAD_GET_HEADER_INFO_FROM_SQL_ZERO.getMessage());
+            Slf4jLogUtil.get().info(ResponseCodeEnum.UPLOAD_GET_HEADER_INFO_FROM_SQL_ZERO.getMessage());
             return false;
         }
 
@@ -430,14 +430,14 @@ public class UploadFileServiceImpl implements IUploadFileService {
     private List<Map<String,String>> getTitles() throws Exception {
         List<Map<String,String>> colsNameList;
         try {
-            log.info("文件上传，取得表头开始");
+            Slf4jLogUtil.get().info("文件上传，取得表头开始");
 
             colsNameList = dataService.getAllHeaders();
             if (colsNameList == null) {
                 throw new Exception(ResponseCodeEnum.UPLOAD_GET_HEADER_INFO_FROM_SQL_NULL.getMessage());
             }
 
-            log.info("文件上传，取得表头结束");
+            Slf4jLogUtil.get().info("文件上传，取得表头结束");
         } catch (Exception e) {
             e.printStackTrace();
             throw new Exception(ResponseCodeEnum.UPLOAD_GET_HEADER_INFO_FROM_SQL_FAILED.getMessage());

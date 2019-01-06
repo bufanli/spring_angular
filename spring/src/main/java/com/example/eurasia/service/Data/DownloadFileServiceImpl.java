@@ -5,7 +5,7 @@ import com.example.eurasia.entity.Data.QueryCondition;
 import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;
-import lombok.extern.slf4j.Slf4j;
+import com.example.eurasia.service.Util.Slf4jLogUtil;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFColor;
@@ -25,7 +25,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-@Slf4j
+//@Slf4j
 /*@Transactional(readOnly = true)事物注解*/
 @Service("DownloadFileServiceImpl")
 @Component
@@ -41,12 +41,12 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
 
         List<String> colsNameList = this.getTitles(DataService.TABLE_DATA);
         if (colsNameList.size() == 0) {
-            log.info(ResponseCodeEnum.EXPORT_GET_HEADER_INFO_FROM_SQL_ZERO.getMessage());
+            Slf4jLogUtil.get().info(ResponseCodeEnum.EXPORT_GET_HEADER_INFO_FROM_SQL_ZERO.getMessage());
             return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_GET_HEADER_INFO_FROM_SQL_ZERO);
         }
         List<Data> dataList = this.getRows(DataService.TABLE_DATA,queryConditionsArr);
         if (dataList.size() == 0) {
-            log.info(ResponseCodeEnum.EXPORT_GET_DATA_INFO_FROM_SQL_ZERO.getMessage());
+            Slf4jLogUtil.get().info(ResponseCodeEnum.EXPORT_GET_DATA_INFO_FROM_SQL_ZERO.getMessage());
             return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_GET_DATA_INFO_FROM_SQL_ZERO);
         }
 
@@ -63,7 +63,7 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
             this.buildExcelDocument(fileName, wb, response);
 
             responseMsg.append("导出到文件的条目数：" + (rowIndex+1));
-            log.info("导出到文件的条目数：{}",(rowIndex+1));
+            Slf4jLogUtil.get().info("导出到文件的条目数：{}",(rowIndex+1));
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_DATA_INFO_FAILED);
@@ -200,14 +200,14 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
     private List<String> getTitles(String tableName) throws Exception {
         List<String> colsNameList;
         try {
-            log.info("文件导出，取得表头开始");
+            Slf4jLogUtil.get().info("文件导出，取得表头开始");
 
             colsNameList = dataService.getAllHeaderNames(tableName);
             if (colsNameList == null) {
                 throw new Exception(ResponseCodeEnum.EXPORT_GET_HEADER_INFO_FROM_SQL_NULL.getMessage());
             }
 
-            log.info("文件导出，取得表头结束");
+            Slf4jLogUtil.get().info("文件导出，取得表头结束");
         } catch (Exception e) {
             e.printStackTrace();
             throw new Exception(ResponseCodeEnum.EXPORT_GET_HEADER_INFO_FROM_SQL_FAILED.getMessage());
@@ -219,14 +219,14 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
     private List<Data> getRows(String tableName, QueryCondition[] queryConditionsArr) throws Exception {
         List<Data> dataList;
         try {
-            log.info("文件导出，查询数据开始");
+            Slf4jLogUtil.get().info("文件导出，查询数据开始");
 
             dataList = dataService.searchData(tableName, queryConditionsArr);
             if (dataList == null) {
                 throw new Exception(ResponseCodeEnum.EXPORT_GET_DATA_INFO_FROM_SQL_NULL.getMessage());
             }
 
-            log.info("文件导出，查询数据结束");
+            Slf4jLogUtil.get().info("文件导出，查询数据结束");
         } catch (Exception e) {
             e.printStackTrace();
             throw new Exception(ResponseCodeEnum.EXPORT_GET_DATA_INFO_FROM_SQL_FAILED.getMessage());
