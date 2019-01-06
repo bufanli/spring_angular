@@ -510,6 +510,10 @@ public class UserInfoServiceImpl implements IUserInfoService {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
             String nowDate = sdf.format(new Date());
 
+            // if to date is empty, it means no date limit
+            if("".equals(valid[1])){
+                return true;
+            }
             if (valid[1].compareTo(nowDate) > 0) {//相等返回0，小于返回-1，大于返回1
                 return true;
             }
