@@ -80,7 +80,9 @@ public class DataService {
 
         addNum = getDataDao().addData(tableName, data);
         if (addNum > 0) {
+            /* T.B.D 一时回避
             deleteNum = getDataDao().deleteSameData(tableName);
+            */
         }
 
         return (deleteNum != -1) ? addNum : 0;

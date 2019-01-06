@@ -57,10 +57,12 @@ public class UserInfoServiceImpl implements IUserInfoService {
             new ResponseResultUtil().error(ResponseCodeEnum.USER_UPDATE_FAILED);
         }
 
+        /* T.B.D 一时回避
         String retCheck = this.checkUserInfo(userInfo);
         if (!StringUtils.isEmpty(retCheck)) {
             return new ResponseResultUtil().error(ResponseCodeEnum.USER_CHECK_INFO_FAILED.getCode(),retCheck);
         }
+        */
 
         Slf4jLogUtil.get().info("更新用户ID=(" + userInfo.getUserIDFromBasicInfos() + ")");
         Slf4jLogUtil.get().info("更新用户的基本信息开始");
