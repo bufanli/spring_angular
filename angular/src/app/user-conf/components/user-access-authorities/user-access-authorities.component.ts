@@ -34,19 +34,25 @@ export class UserAccessAuthoritiesComponent implements AfterViewInit {
   }
   // init date picker
   setDatePickerValue() {
-    this.setDatePickerFormat('#start-time' + this.componentID);
-    this.setDatePickerFormat('#to-time' + this.componentID);
-    this.setDatePickerFormat('#expired-time' + this.componentID);
+    this.setDatePickerFormat('#product-start-time' + this.componentID);
+    this.setDatePickerFormat('#product-to-time' + this.componentID);
+    this.setDatePickerFormat('#user-start-time' + this.componentID);
+    this.setDatePickerFormat('#user-to-time' + this.componentID);
     // set initial date to datepicker
-    const dateArray = this.currentUserAccessAuthorities['日期'].split(
+    let dateArray = this.currentUserAccessAuthorities['日期'].split(
       this.commonUtilitiesService.DATA_COMMON_SEPERATOR);
-    const startDate = dateArray[0];
-    const toDate = dateArray[1];
-    // set query start date and to date
-    $('#start-time' + this.componentID).datepicker('update', startDate);
-    $('#to-time' + this.componentID).datepicker('update', toDate);
-    // set expired time
-    $('#expired-time' + this.componentID).datepicker('update', this.currentUserAccessAuthorities['有效期']);
+    let startDate = dateArray[0];
+    let toDate = dateArray[1];
+    // set product start date and to date
+    $('#product-start-time' + this.componentID).datepicker('update', startDate);
+    $('#product-to-time' + this.componentID).datepicker('update', toDate);
+    dateArray = this.currentUserAccessAuthorities['有效期'].split(
+      this.commonUtilitiesService.DATA_COMMON_SEPERATOR);
+    startDate = dateArray[0];
+    toDate = dateArray[1];
+    // set user expired start time and to time
+    $('#user-start-time' + this.componentID).datepicker('update', startDate);
+    $('#user-to-time' + this.componentID).datepicker('update', toDate);
   }
   // set date picker format
   setDatePickerFormat(controlID: string): void {
@@ -58,34 +64,39 @@ export class UserAccessAuthoritiesComponent implements AfterViewInit {
       enableOnReadonly: false,
     });
     $(controlID).on('changeDate', this, this.changeDateHandler);
+    $(controlID).on('onChange', this, this.changeDateHandler);
   }
 
   // handler of date change
   changeDateHandler(target: any): void {
     // get component
     const component = target.data;
-    // put date to component
-    if (target.target.id === ('start-time' + component.componentID) ||
-      target.target.id === ('to-time' + component.componentID)) {
-      // start time
-      const startDate = $('#start-time' + component.componentID).datepicker('getDate');
-      const startDateStr = component.commonUtilitiesService.convertDateToLocalString(startDate);
-      // to time
-      const toDate = $('#to-time' + component.componentID).datepicker('getDate');
-      const toDateStr = component.commonUtilitiesService.convertDateToLocalString(toDate);
-      // convert limit date
-      const dateArray = new Array();
-      dateArray.push(startDateStr);
-      dateArray.push(toDateStr);
-      component.currentUserAccessAuthorities['日期'] = dateArray.join(
-        component.commonUtilitiesService.DATA_COMMON_SEPERATOR);
-    } else {
-      // expired time
-      const expiredTime = $('#expired-time' + component.componentID).datepicker('getDate');
-      component.currentUserAccessAuthorities['有效期'] = component.commonUtilitiesService.convertDateToLocalString(expiredTime);
-    }
-
+    // product start time
+    let startDate = $('#product-start-time' + component.componentID).datepicker('getDate');
+    let startDateStr = component.commonUtilitiesService.convertDateToLocalString(startDate);
+    // product to time
+    let toDate = $('#product-to-time' + component.componentID).datepicker('getDate');
+    let toDateStr = component.commonUtilitiesService.convertDateToLocalString(toDate);
+    // convert limit date
+    let dateArray = new Array();
+    dateArray.push(startDateStr);
+    dateArray.push(toDateStr);
+    component.currentUserAccessAuthorities['日期'] = dateArray.join(
+      component.commonUtilitiesService.DATA_COMMON_SEPERATOR);
+    // user start time
+    startDate = $('#user-start-time' + component.componentID).datepicker('getDate');
+    startDateStr = component.commonUtilitiesService.convertDateToLocalString(startDate);
+    // user to time
+    toDate = $('#user-to-time' + component.componentID).datepicker('getDate');
+    toDateStr = component.commonUtilitiesService.convertDateToLocalString(toDate);
+     // convert limit date
+    dateArray = new Array();
+    dateArray.push(startDateStr);
+    dateArray.push(toDateStr);
+    component.currentUserAccessAuthorities['有效期'] = dateArray.join(
+      component.commonUtilitiesService.DATA_COMMON_SEPERATOR);
   }
+
   // set initial product codes
   setQueryProducts() {
     const products = this.currentUserAccessAuthorities['商品编码'].split(
