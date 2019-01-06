@@ -64,7 +64,7 @@ public class UploadFileController {
                 responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
             } else {
                 Date date = new Date(System.currentTimeMillis());
-                DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd");
+                DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd-HH-mm-ss");
                 String strFormat = dateFormat.format(date);
 /*
         另外使用以上代码需要注意，因为以jar包发布时，我们存储的路径是与jar包同级的static目录，
