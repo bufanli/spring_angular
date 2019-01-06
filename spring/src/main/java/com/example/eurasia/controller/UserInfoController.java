@@ -291,27 +291,6 @@ public class UserInfoController {
 
     /**
      * @author
-     * @date 2018-11-18
-     * @description 用户名密码登陆后取得用户的基本信息
-     */
-    @RequestMapping(value="/getUserBasicInfoByLogin/{loginUserID}", method = RequestMethod.GET)
-    public @ResponseBody
-    ResponseResult getUserBasicInfoByLogin(HttpServletRequest request, @PathVariable(value="loginUserID") String loginUserID) {
-        ResponseResult responseResult;
-        try {
-            Slf4jLogUtil.get().info("用户名密码登陆后取得用户的基本信息开始");
-            // 此处没有检查用户名是否存在，是因为在登陆时loginUserByUsernamePassword检查过了。
-            responseResult = userInfoServiceImpl.getUserBasicInfo(loginUserID);
-            Slf4jLogUtil.get().info("用户名密码登陆后取得用户的基本信息结束");
-        } catch (Exception e) {
-            e.printStackTrace();
-            responseResult = new ResponseResultUtil().error();
-        }
-        return responseResult;
-    }
-
-    /**
-     * @author
      * @date 2018-12-07
      * @description 取得用户默认的详细信息(访问权限，可显示列等)
      */
@@ -353,27 +332,6 @@ public class UserInfoController {
                 responseResult = userInfoServiceImpl.getUserDetailedInfos(editUserID);
             }
             Slf4jLogUtil.get().info("取得用户的详细信息结束");
-        } catch (Exception e) {
-            e.printStackTrace();
-            responseResult = new ResponseResultUtil().error();
-        }
-        return responseResult;
-    }
-
-    /**
-     * @author
-     * @date 2018-12-07
-     * @description 用户名密码登陆后取得用户的详细信息(访问权限，可显示列等)
-     */
-    @RequestMapping(value="/getUserDetailedInfosByLogin/{loginUserID}", method = RequestMethod.GET)
-    public @ResponseBody
-    ResponseResult getUserDetailedInfosByLogin(HttpServletRequest request, @PathVariable(value="loginUserID") String loginUserID) {
-        ResponseResult responseResult;
-        try {
-            Slf4jLogUtil.get().info("用户名密码登陆后取得用户的详细信息开始");
-            // 此处没有检查用户名是否存在，是因为在登陆时loginUserByUsernamePassword检查过了。
-            responseResult = userInfoServiceImpl.getUserDetailedInfos(loginUserID);
-            Slf4jLogUtil.get().info("用户名密码登陆后取得用户的详细信息结束");
         } catch (Exception e) {
             e.printStackTrace();
             responseResult = new ResponseResultUtil().error();
