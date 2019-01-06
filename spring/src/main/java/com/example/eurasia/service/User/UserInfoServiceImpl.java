@@ -355,13 +355,13 @@ public class UserInfoServiceImpl implements IUserInfoService {
                     }
                     break;
                 case UserService.MUST_USER_NAME:
-                    if (!StringUtils.isEmpty(userCustom.getValue())) {
+                    if (StringUtils.isEmpty(userCustom.getValue())) {
                         ret <<= 1;
                     }
 
                     break;
                 case UserService.MUST_USER_PHONE:
-                    if (!StringUtils.isEmpty(userCustom.getValue())) {
+                    if (StringUtils.isEmpty(userCustom.getValue())) {
                         ret <<= 1;
                     }
                     if (this.isUserPhoneExist(userCustom.getValue()) == false) {
@@ -433,7 +433,7 @@ public class UserInfoServiceImpl implements IUserInfoService {
                     userCustom.getKey().equals(UserService.MUST_PRODUCT_NUMBER)) {
                 String queryConditionArr[] = userCustom.getValue().split(QueryCondition.QUERY_CONDITION_SPLIT,-1);
                 for (String queryCondition : queryConditionArr) {
-                    if (!StringUtils.isEmpty(queryCondition)) {
+                    if (StringUtils.isEmpty(queryCondition)) {
                         ret <<= 1;
                         break;
                     }
