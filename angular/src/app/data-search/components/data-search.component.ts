@@ -165,15 +165,15 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
   getQueryTime() {
     // start time
     if (this.isFontGray('#start-time') === false) {
-      const time = $('#start-time').datepicker('getDate').toLocaleString();
-      this.searchParam[1].value = time.slice(0, 10);
+      const time = $('#start-time').datepicker('getDate');
+      this.searchParam[1].value = this.commonUtilitiesService.convertDateToLocalString(time);
     } else {
       this.searchParam[1].value = '';
     }
     // end time
     if (this.isFontGray('#end-time') === false) {
-      const time = $('#end-time').datepicker('getDate').toLocaleString();
-      this.searchParam[2].value = time.slice(0, 10);
+      const time = $('#end-time').datepicker('getDate');
+      this.searchParam[2].value = this.commonUtilitiesService.convertDateToLocalString(time);
     } else {
       this.searchParam[2].value = '';
     }
