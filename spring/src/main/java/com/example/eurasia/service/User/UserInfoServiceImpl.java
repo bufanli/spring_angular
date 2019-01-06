@@ -510,7 +510,7 @@ public class UserInfoServiceImpl implements IUserInfoService {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
             String nowDate = sdf.format(new Date());
 
-            if (valid[1].compareTo(nowDate) <= 0) {//相等返回0，小于返回-1，大于返回1
+            if (valid[1].compareTo(nowDate) > 0) {//相等返回0，小于返回-1，大于返回1
                 return true;
             }
         } catch (Exception e) {

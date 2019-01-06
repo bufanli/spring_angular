@@ -13,7 +13,7 @@ const httpOptions = {
 })
 export class LoginService {
 
-  private ADMIN_LOGIN_URL = 'loginAdmin';
+  private ADMIN_LOGIN_URL = 'loginUserByUsernamePassword';
   constructor(private http: HttpClient, private router: Router) { }
 
   // admin login
