@@ -162,4 +162,12 @@ export class CommonUtilitiesService {
     options.windowClass = 'modal fade in';
     return options;
   }
+  // convert empty string to ~~
+  public convertEmptyToDash(str: string): string {
+    if (str === '') {
+      return '~~';
+    } else {
+      return str;
+    }
+  }
 }

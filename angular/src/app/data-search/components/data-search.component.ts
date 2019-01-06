@@ -63,6 +63,9 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
     }
     // get rid of last two chars
     result = result.substr(0, result.lastIndexOf('~~'));
+    // convert empty to dash
+    result = this.commonUtilitiesService.convertEmptyToDash(result);
+    // set to params
     this.searchParam[0].value = result;
   }
 
