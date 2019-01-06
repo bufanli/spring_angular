@@ -505,16 +505,13 @@ public class UserInfoServiceImpl implements IUserInfoService {
                 return false;
             }
 
+            //因为数据库中，起始和结束时间都有，所有没有对起始和结束时间进行空检查。
             String[] valid = userValid.split(QueryCondition.QUERY_CONDITION_SPLIT,-1);
 
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
             String nowDate = sdf.format(new Date());
 
-            // if to date is empty, it means no date limit
-            if("".equals(valid[1])){
-                return true;
-            }
-            if (valid[1].compareTo(nowDate) > 0) {//相等返回0，小于返回-1，大于返回1
+            if (valid[1].compareTo(nowDate) >= 0) {//相等返回0，小于返回-1，大于返回1
                 return true;
             }
         } catch (Exception e) {

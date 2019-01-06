@@ -29,20 +29,6 @@ public class UserInfoController {
 
     /**
      * @author
-     * @date 2018-12-08
-     * @description 设定登陆用户ID
-     */
-    @RequestMapping(value="/dummyLogin", method = RequestMethod.GET)
-    public @ResponseBody
-    ResponseResult dummyLogin(HttpServletRequest request) {
-        HttpSession session = request.getSession();
-        session.setAttribute("userID", UserService.USER_DEFAULT);
-
-        return new ResponseResultUtil().success();
-    }
-
-    /**
-     * @author
      * @date 2018-11-18
      * @description 用户通过用户名密码登陆
      */
@@ -94,48 +80,21 @@ public class UserInfoController {
     /**
      * @author
      * @date 2018-12-08
-     * @description 判读添加的用户ID是否已存在
+     * @description 判读用户是否已登陆
      */
-    @RequestMapping(value="/isUserIDExist", method = RequestMethod.GET)
+    @RequestMapping(value="/isUserLogging", method = RequestMethod.GET)
     public @ResponseBody
-    ResponseResult isUserIDExist(HttpServletRequest request) {
-        ResponseResult responseResult;
-        boolean isExist = false;
-        try {
-            Slf4jLogUtil.get().info("判断添加用户是否已存在开始");
-            HttpSession session = request.getSession();
-            String userID = (String)session.getAttribute(HttpSessionEnum.ADD_USER_ID.getAttribute());
-            if (userInfoServiceImpl.isUserIDExist(userID)) {
-                responseResult = new ResponseResultUtil().error(ResponseCodeEnum.USER_ADD_IS_EXIST);
-            } else {
-                responseResult = new ResponseResultUtil().success(ResponseCodeEnum.USER_ADD_IS_NOT_EXIST);
-            }
-            Slf4jLogUtil.get().info("判断添加用户是否已存在结束");
-        } catch (Exception e) {
-            e.printStackTrace();
-            responseResult = new ResponseResultUtil().error(ResponseCodeEnum.USER_ADD_FAILED);
-        }
-        return responseResult;
-    }
-
-    /**
-     * @author
-     * @date 2018-12-22
-     * @description 用户通过微信登陆
-     */
-    @RequestMapping(value="/loginUserByWeChat", method = RequestMethod.GET)
-    public @ResponseBody
-    ResponseResult loginUserByWeChat(HttpServletRequest request) {
+    ResponseResult isUserLogging(HttpServletRequest request) {
         ResponseResult responseResult;
         try {
-            Slf4jLogUtil.get().info("用户登陆开始");
+            Slf4jLogUtil.get().info("判断用户是否已登陆开始");
             HttpSession session = request.getSession();
             String userID = (String)session.getAttribute(HttpSessionEnum.LOGIN_ID.getAttribute());
             if (!StringUtils.isEmpty(userID)) {
-                // 扫描登陆的时候，才会有id
+                // 登陆的时候，才会有id
                 String loginStatus = (String)session.getAttribute(HttpSessionEnum.LOGIN_STATUS.getAttribute());
                 if (loginStatus.equals(HttpSessionEnum.LOGIN_STATUS_SUCCESS)) {
-                    responseResult = new ResponseResultUtil().success(ResponseCodeEnum.SYSTEM_LOGIN_SUCCESS);
+                    responseResult = new ResponseResultUtil().success(ResponseCodeEnum.SYSTEM_LOGIN_ING);
                 } else if (loginStatus.equals(HttpSessionEnum.LOGIN_STATUS_NO_USER)) {
                     responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_NO_USER);
                 } else {
@@ -143,10 +102,9 @@ public class UserInfoController {
                 }
             } else {
                 // unlogin
-                session.setAttribute(HttpSessionEnum.LOGIN_STATUS.getAttribute(),HttpSessionEnum.LOGIN_STATUS_UN_LOGIN);
                 responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_NOT_ING);
             }
-            Slf4jLogUtil.get().info("用户登陆结束");
+            Slf4jLogUtil.get().info("判断用户是否已登陆结束");
         } catch (Exception e) {
             e.printStackTrace();
             responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
