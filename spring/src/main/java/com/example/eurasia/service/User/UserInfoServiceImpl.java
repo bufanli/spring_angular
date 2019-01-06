@@ -57,7 +57,7 @@ public class UserInfoServiceImpl implements IUserInfoService {
             new ResponseResultUtil().error(ResponseCodeEnum.USER_UPDATE_FAILED);
         }
 
-        if (this.checkUserInfo(userInfo) != UserService.CHECK_USER_INFO_FLAG) {
+        if (!StringUtils.isEmpty(this.checkUserInfo(userInfo))) {
             return new ResponseResultUtil().error(ResponseCodeEnum.USER_CHECK_INFO_FAILED);
         }
 
@@ -101,7 +101,7 @@ public class UserInfoServiceImpl implements IUserInfoService {
             new ResponseResultUtil().error(ResponseCodeEnum.USER_ADD_FAILED);
         }
 
-        if (this.checkUserInfo(userInfo) != UserService.CHECK_USER_INFO_FLAG) {
+        if (!StringUtils.isEmpty(this.checkUserInfo(userInfo))) {
             return new ResponseResultUtil().error(ResponseCodeEnum.USER_CHECK_INFO_FAILED);
         }
 
@@ -314,20 +314,30 @@ public class UserInfoServiceImpl implements IUserInfoService {
      * @author FuJia
      * @Time 2018-12-08 00:00:00
      */
-    private int checkUserInfo(UserInfo userInfo) throws Exception {
+    private String checkUserInfo(UserInfo userInfo) throws Exception {
+        StringBuffer ret = new StringBuffer("");
 
-        int ret = UserService.CHECK_USER_INFO_FLAG;
+        int ret1 = UserService.CHECK_USER_INFO_FLAG_NO_ERROR;
+        int ret2 = UserService.CHECK_USER_INFO_FLAG_NO_ERROR;
+        int ret3 = UserService.CHECK_USER_INFO_FLAG_NO_ERROR;
+        int ret4 = UserService.CHECK_USER_INFO_FLAG_NO_ERROR;
 
-        ret &= this.checkUserBasicInfo(userInfo.getUserBasicInfos());
+        ret1 &= this.checkUserBasicInfo(userInfo.getUserBasicInfos());
 
-        ret &= this.checkUserAccessAuthority(userInfo.getUserDetailedInfos().getUserAccessAuthorities());
+        ret2 &= this.checkUserAccessAuthority(userInfo.getUserDetailedInfos().getUserAccessAuthorities());
 
-        ret &= this.checkUserQueryConditionDisplay(userInfo.getUserDetailedInfos().getUserAccessAuthorities(),
+        ret3 &= this.checkUserQueryConditionDisplay(userInfo.getUserDetailedInfos().getUserAccessAuthorities(),
                 userInfo.getUserDetailedInfos().getUserAccessAuthorities());
 
-        ret &= this.checkUserHeaderDisplay(userInfo.getUserDetailedInfos().getUserAccessAuthorities());
+        ret4 &= this.checkUserHeaderDisplay(userInfo.getUserDetailedInfos().getUserAccessAuthorities());
 
-        return ret;
+        if (ret1 != UserService.CHECK_USER_INFO_FLAG_NO_ERROR
+                || ret2 != UserService.CHECK_USER_INFO_FLAG_NO_ERROR
+                || ret3 != UserService.CHECK_USER_INFO_FLAG_NO_ERROR
+                || ret4 != UserService.CHECK_USER_INFO_FLAG_NO_ERROR) {
+            ret.append(ResponseCodeEnum.USER_CHECK_INFO_FAILED.getMessage());//T.B.D
+        }
+        return ret.toString();
     }
 
     /**
@@ -346,7 +356,7 @@ public class UserInfoServiceImpl implements IUserInfoService {
 
 >>>    :     无符号右移，忽略符号位，空位都以0补齐
 */
-        int ret = UserService.CHECK_USER_INFO_FLAG;
+        int ret = UserService.CHECK_USER_INFO_FLAG_NO_ERROR;
         for (UserCustom userCustom:userCustoms) {
             switch (userCustom.getKey()) {
                 case UserService.MUST_USER_ID:
@@ -388,7 +398,46 @@ public class UserInfoServiceImpl implements IUserInfoService {
      * @Time 2018-12-02 00:00:00
      */
     private int checkUserAccessAuthority(UserCustom[] userCustoms) throws Exception {
-        return this.checkProductDateAndProductNumber(userCustoms);
+        int ret = UserService.CHECK_USER_INFO_FLAG_NO_ERROR;
+        for (UserCustom userCustom:userCustoms) {
+            switch (userCustom.getKey()) {
+                case UserService.MUST_USER_VALID:
+                    String userValidArr[] = userCustom.getValue().split(QueryCondition.QUERY_CONDITION_SPLIT,-1);
+                    for (String userValid : userValidArr) {
+                        if (StringUtils.isEmpty(userValid)) {//起始日期和结束日期，只要有一个为空，就错误。
+                            ret <<= 1;
+                            break;
+                        }
+                    }
+                    break;
+                case UserService.MUST_PRODUCT_DATE:
+                    String productDateArr[] = userCustom.getValue().split(QueryCondition.QUERY_CONDITION_SPLIT,-1);
+                    for (String productDate : productDateArr) {
+                        if (StringUtils.isEmpty(productDate)) {//起始日期和结束日期，只要有一个为空，就错误。
+                            ret <<= 1;
+                            break;
+                        }
+                    }
+                    break;
+                case UserService.MUST_PRODUCT_NUMBER:
+                    String productNumberArr[] = userCustom.getValue().split(QueryCondition.QUERY_CONDITION_SPLIT);
+                    boolean isNull = false;
+                    for (String productNumber : productNumberArr) {
+                        if (!StringUtils.isEmpty(productNumber)) {//只要有一个不为空
+                            isNull = true;
+                            break;
+                        }
+                    }
+                    if (isNull == false) {
+                        ret <<= 1;
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        return ret;
     }
 
     /**
@@ -402,8 +451,21 @@ public class UserInfoServiceImpl implements IUserInfoService {
     private int checkUserQueryConditionDisplay(UserCustom[] userQueryConditionDisplays,
                                                UserCustom[] userHeaderDisplays) throws Exception {
         //可显示的查询条件，应是可显示列的子集
-        int ret = UserService.CHECK_USER_INFO_FLAG;
-        return ret;//T.B.D
+        int ret = UserService.CHECK_USER_INFO_FLAG_NO_ERROR;
+        /* T.B.D Web为对应，一时回避
+        for (UserCustom userQueryConditionDisplay:userQueryConditionDisplays) {
+            if (userQueryConditionDisplay.getValue().equals(UserService.PERMITION_TRUE) ) {
+                for (UserCustom userHeaderDisplay:userHeaderDisplays) {
+                    if (userHeaderDisplay.getKey().equals(userQueryConditionDisplay.getKey())) {
+                        if (userHeaderDisplay.getValue().equals(UserService.PERMITION_FALSE) ) {
+                            ret <<= 1;
+                        }
+                    }
+                }
+            }
+        }
+        */
+        return ret;
     }
 
     /**
@@ -415,33 +477,8 @@ public class UserInfoServiceImpl implements IUserInfoService {
      * @Time 2018-12-02 00:00:00
      */
     private int checkUserHeaderDisplay(UserCustom[] userCustoms) throws Exception {
-        return this.checkProductDateAndProductNumber(userCustoms);
-    }
-
-    /**
-     * 添加/更新用户信息时，检查日期和商品编码数据的有效性
-     * @param
-     * @return
-     * @exception
-     * @author FuJia
-     * @Time 2018-12-02 00:00:00
-     */
-    private int checkProductDateAndProductNumber(UserCustom[] userCustoms) throws Exception {
-        int ret = UserService.CHECK_USER_INFO_FLAG;
-        for (UserCustom userCustom:userCustoms) {
-            if (userCustom.getKey().equals(UserService.MUST_PRODUCT_DATE) ||
-                    userCustom.getKey().equals(UserService.MUST_PRODUCT_NUMBER)) {
-                String queryConditionArr[] = userCustom.getValue().split(QueryCondition.QUERY_CONDITION_SPLIT,-1);
-                for (String queryCondition : queryConditionArr) {
-                    if (StringUtils.isEmpty(queryCondition)) {
-                        ret <<= 1;
-                        break;
-                    }
-                }
-            }
-        }
-
-        return ret;
+        int ret = UserService.CHECK_USER_INFO_FLAG_NO_ERROR;
+        return ret;//T.B.D
     }
 
     /**
@@ -505,7 +542,7 @@ public class UserInfoServiceImpl implements IUserInfoService {
                 return false;
             }
 
-            //因为数据库中，起始和结束时间都有，所有没有对起始和结束时间进行空检查。
+            //因为数据库中，起始和结束时间都有，所有没有对起始和结束时间进行空检查。参照方法checkUserAccessAuthority
             String[] valid = userValid.split(QueryCondition.QUERY_CONDITION_SPLIT,-1);
 
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
