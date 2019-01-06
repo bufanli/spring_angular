@@ -57,8 +57,9 @@ public class UserInfoServiceImpl implements IUserInfoService {
             new ResponseResultUtil().error(ResponseCodeEnum.USER_UPDATE_FAILED);
         }
 
-        if (!StringUtils.isEmpty(this.checkUserInfo(userInfo))) {
-            return new ResponseResultUtil().error(ResponseCodeEnum.USER_CHECK_INFO_FAILED);
+        String retCheck = this.checkUserInfo(userInfo);
+        if (!StringUtils.isEmpty(retCheck)) {
+            return new ResponseResultUtil().error(ResponseCodeEnum.USER_CHECK_INFO_FAILED.getCode(),retCheck);
         }
 
         Slf4jLogUtil.get().info("更新用户ID=(" + userInfo.getUserIDFromBasicInfos() + ")");
@@ -101,8 +102,9 @@ public class UserInfoServiceImpl implements IUserInfoService {
             new ResponseResultUtil().error(ResponseCodeEnum.USER_ADD_FAILED);
         }
 
-        if (!StringUtils.isEmpty(this.checkUserInfo(userInfo))) {
-            return new ResponseResultUtil().error(ResponseCodeEnum.USER_CHECK_INFO_FAILED);
+        String retCheck = this.checkUserInfo(userInfo);
+        if (!StringUtils.isEmpty(retCheck)) {
+            return new ResponseResultUtil().error(ResponseCodeEnum.USER_CHECK_INFO_FAILED.getCode(),retCheck);
         }
 
         Slf4jLogUtil.get().info("添加用户ID=(" + userInfo.getUserIDFromBasicInfos() + ")");
@@ -317,26 +319,12 @@ public class UserInfoServiceImpl implements IUserInfoService {
     private String checkUserInfo(UserInfo userInfo) throws Exception {
         StringBuffer ret = new StringBuffer("");
 
-        int ret1 = UserService.CHECK_USER_INFO_FLAG_NO_ERROR;
-        int ret2 = UserService.CHECK_USER_INFO_FLAG_NO_ERROR;
-        int ret3 = UserService.CHECK_USER_INFO_FLAG_NO_ERROR;
-        int ret4 = UserService.CHECK_USER_INFO_FLAG_NO_ERROR;
+        ret.append(this.checkUserBasicInfo(userInfo.getUserBasicInfos()));
+        ret.append(this.checkUserAccessAuthority(userInfo.getUserDetailedInfos().getUserAccessAuthorities()));
+        ret.append(this.checkUserQueryConditionDisplay(userInfo.getUserDetailedInfos().getUserAccessAuthorities(),
+                userInfo.getUserDetailedInfos().getUserAccessAuthorities()));
+        ret.append(this.checkUserHeaderDisplay(userInfo.getUserDetailedInfos().getUserAccessAuthorities()));
 
-        ret1 &= this.checkUserBasicInfo(userInfo.getUserBasicInfos());
-
-        ret2 &= this.checkUserAccessAuthority(userInfo.getUserDetailedInfos().getUserAccessAuthorities());
-
-        ret3 &= this.checkUserQueryConditionDisplay(userInfo.getUserDetailedInfos().getUserAccessAuthorities(),
-                userInfo.getUserDetailedInfos().getUserAccessAuthorities());
-
-        ret4 &= this.checkUserHeaderDisplay(userInfo.getUserDetailedInfos().getUserAccessAuthorities());
-
-        if (ret1 != UserService.CHECK_USER_INFO_FLAG_NO_ERROR
-                || ret2 != UserService.CHECK_USER_INFO_FLAG_NO_ERROR
-                || ret3 != UserService.CHECK_USER_INFO_FLAG_NO_ERROR
-                || ret4 != UserService.CHECK_USER_INFO_FLAG_NO_ERROR) {
-            ret.append(ResponseCodeEnum.USER_CHECK_INFO_FAILED.getMessage());//T.B.D
-        }
         return ret.toString();
     }
 
@@ -348,37 +336,44 @@ public class UserInfoServiceImpl implements IUserInfoService {
      * @author FuJia
      * @Time 2018-12-02 00:00:00
      */
-    private int checkUserBasicInfo(UserCustom[] userCustoms) throws Exception {
-/*
-<<      :     左移运算符，num << 1,相当于num乘以2
-
->>      :     右移运算符，num >> 1,相当于num除以2
-
->>>    :     无符号右移，忽略符号位，空位都以0补齐
-*/
-        int ret = UserService.CHECK_USER_INFO_FLAG_NO_ERROR;
+    private String checkUserBasicInfo(UserCustom[] userCustoms) throws Exception {
+        StringBuffer ret = new StringBuffer("");
         for (UserCustom userCustom:userCustoms) {
             switch (userCustom.getKey()) {
                 case UserService.MUST_USER_ID:
+                    if (StringUtils.isEmpty(userCustom.getValue())) {
+                        ret.append(ResponseCodeEnum.USER_ADD_ID_IS_NULL.getMessage());
+                        ret.append(UserService.BR);
+                        break;
+                    }
                     if (this.isUserIDExist(userCustom.getValue())) {
-                        ret <<= 1;
+                        ret.append(ResponseCodeEnum.USER_ADD_ID_IS_EXIST.getMessage());
+                        ret.append(UserService.BR);
+                        break;
                     }
                     break;
                 case UserService.MUST_USER_NAME:
                     if (StringUtils.isEmpty(userCustom.getValue())) {
-                        ret <<= 1;
+                        ret.append(ResponseCodeEnum.USER_ADD_NAME_IS_NULL.getMessage());
+                        ret.append(UserService.BR);
+                        break;
                     }
-
                     break;
                 case UserService.MUST_USER_PHONE:
                     if (StringUtils.isEmpty(userCustom.getValue())) {
-                        ret <<= 1;
+                        ret.append(ResponseCodeEnum.USER_ADD_PHONE_IS_NULL.getMessage());
+                        ret.append(UserService.BR);
+                        break;
                     }
                     if (this.isUserPhoneExist(userCustom.getValue()) == false) {
-                        ret <<= 1;
+                        ret.append(ResponseCodeEnum.USER_ADD_PHONE_IS_EXIST.getMessage());
+                        ret.append(UserService.BR);
+                        break;
                     }
                     if (PhoneValidatorUtil.matchPhone(userCustom.getValue(),1) == false) {
-                        ret <<= 1;
+                        ret.append(ResponseCodeEnum.USER_ADD_PHONE_FORMAT_ERROR.getMessage());
+                        ret.append(UserService.BR);
+                        break;
                     }
                     break;
                 default:
@@ -386,7 +381,7 @@ public class UserInfoServiceImpl implements IUserInfoService {
             }
         }
 
-        return ret;
+        return ret.toString();
     }
 
     /**
@@ -397,26 +392,44 @@ public class UserInfoServiceImpl implements IUserInfoService {
      * @author FuJia
      * @Time 2018-12-02 00:00:00
      */
-    private int checkUserAccessAuthority(UserCustom[] userCustoms) throws Exception {
-        int ret = UserService.CHECK_USER_INFO_FLAG_NO_ERROR;
+    private String checkUserAccessAuthority(UserCustom[] userCustoms) throws Exception {
+        StringBuffer ret = new StringBuffer("");
         for (UserCustom userCustom:userCustoms) {
             switch (userCustom.getKey()) {
                 case UserService.MUST_USER_VALID:
                     String userValidArr[] = userCustom.getValue().split(QueryCondition.QUERY_CONDITION_SPLIT,-1);
-                    for (String userValid : userValidArr) {
-                        if (StringUtils.isEmpty(userValid)) {//起始日期和结束日期，只要有一个为空，就错误。
-                            ret <<= 1;
-                            break;
-                        }
+                    if (userValidArr.length != 2) {
+                        ret.append(ResponseCodeEnum.USER_ADD_VALID_FORMAT_ERROR.getMessage());
+                        ret.append(UserService.BR);
+                        break;
+                    }
+                    if (StringUtils.isEmpty(userValidArr[0])) {
+                        ret.append(ResponseCodeEnum.USER_ADD_VALID_FROM_DATE_IS_NULL.getMessage());
+                        ret.append(UserService.BR);
+                        break;
+                    }
+                    if (StringUtils.isEmpty(userValidArr[1])) {
+                        ret.append(ResponseCodeEnum.USER_ADD_VALID_TO_DATE_IS_NULL.getMessage());
+                        ret.append(UserService.BR);
+                        break;
                     }
                     break;
                 case UserService.MUST_PRODUCT_DATE:
                     String productDateArr[] = userCustom.getValue().split(QueryCondition.QUERY_CONDITION_SPLIT,-1);
-                    for (String productDate : productDateArr) {
-                        if (StringUtils.isEmpty(productDate)) {//起始日期和结束日期，只要有一个为空，就错误。
-                            ret <<= 1;
-                            break;
-                        }
+                    if (productDateArr.length != 2) {
+                        ret.append(ResponseCodeEnum.USER_ADD_PRODUCT_DATE_FORMAT_ERROR.getMessage());
+                        ret.append(UserService.BR);
+                        break;
+                    }
+                    if (StringUtils.isEmpty(productDateArr[0])) {
+                        ret.append(ResponseCodeEnum.USER_ADD_PRODUCT_DATE_FROM_DATE_IS_NULL.getMessage());
+                        ret.append(UserService.BR);
+                        break;
+                    }
+                    if (StringUtils.isEmpty(productDateArr[1])) {
+                        ret.append(ResponseCodeEnum.USER_ADD_PRODUCT_DATE_TO_DATE_IS_NULL.getMessage());
+                        ret.append(UserService.BR);
+                        break;
                     }
                     break;
                 case UserService.MUST_PRODUCT_NUMBER:
@@ -429,7 +442,9 @@ public class UserInfoServiceImpl implements IUserInfoService {
                         }
                     }
                     if (isNull == false) {
-                        ret <<= 1;
+                        ret.append(ResponseCodeEnum.USER_ADD_PRODUCT_NUMBER_IS_NULL.getMessage());
+                        ret.append(UserService.BR);
+                        break;
                     }
                     break;
                 default:
@@ -437,7 +452,7 @@ public class UserInfoServiceImpl implements IUserInfoService {
             }
         }
 
-        return ret;
+        return ret.toString();
     }
 
     /**
@@ -448,24 +463,24 @@ public class UserInfoServiceImpl implements IUserInfoService {
      * @author FuJia
      * @Time 2018-12-02 00:00:00
      */
-    private int checkUserQueryConditionDisplay(UserCustom[] userQueryConditionDisplays,
+    private String checkUserQueryConditionDisplay(UserCustom[] userQueryConditionDisplays,
                                                UserCustom[] userHeaderDisplays) throws Exception {
         //可显示的查询条件，应是可显示列的子集
-        int ret = UserService.CHECK_USER_INFO_FLAG_NO_ERROR;
+        StringBuffer ret = new StringBuffer("");
         /* T.B.D Web为对应，一时回避
         for (UserCustom userQueryConditionDisplay:userQueryConditionDisplays) {
             if (userQueryConditionDisplay.getValue().equals(UserService.PERMITION_TRUE) ) {
                 for (UserCustom userHeaderDisplay:userHeaderDisplays) {
                     if (userHeaderDisplay.getKey().equals(userQueryConditionDisplay.getKey())) {
                         if (userHeaderDisplay.getValue().equals(UserService.PERMITION_FALSE) ) {
-                            ret <<= 1;
+                            //T.B.D
                         }
                     }
                 }
             }
         }
         */
-        return ret;
+        return ret.toString();
     }
 
     /**
@@ -476,9 +491,9 @@ public class UserInfoServiceImpl implements IUserInfoService {
      * @author FuJia
      * @Time 2018-12-02 00:00:00
      */
-    private int checkUserHeaderDisplay(UserCustom[] userCustoms) throws Exception {
-        int ret = UserService.CHECK_USER_INFO_FLAG_NO_ERROR;
-        return ret;//T.B.D
+    private String checkUserHeaderDisplay(UserCustom[] userCustoms) throws Exception {
+        StringBuffer ret = new StringBuffer("");
+        return ret.toString();//T.B.D
     }
 
     /**
@@ -540,6 +555,11 @@ public class UserInfoServiceImpl implements IUserInfoService {
             if (StringUtils.isEmpty(userValid)) {
                 Slf4jLogUtil.get().info("没有检索到用户(" + userID + ")的有效期");
                 return false;
+            }
+
+            // 某些用户的有效期，像管理员的有效期一样，只有"～～"的情况
+            if (userValid.equals(QueryCondition.QUERY_CONDITION_SPLIT)) {
+                return true;
             }
 
             //因为数据库中，起始和结束时间都有，所有没有对起始和结束时间进行空检查。参照方法checkUserAccessAuthority
