@@ -154,7 +154,7 @@ spring.datasource.continueOnError＝true|false 有了错误是否继续运行
 			<version>1.2.3</version>
 		</dependency>
 
-</dependencies>
+	</dependencies>
 
 	<build>
 		<finalName>demo</finalName>

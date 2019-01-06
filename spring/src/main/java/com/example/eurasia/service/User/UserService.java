@@ -81,7 +81,10 @@ public class UserService {
 
     public static final String COLUMN_SHOW_MORE = "更多";//在显示数据的表格最后增加的列
 
-    public static final int CHECK_USER_INFO_FLAG = 0xFFFF;
+    public static final int CHECK_USER_INFO_FLAG_NO_ERROR = 0xFFFF;
+    public static final int CHECK_USER_INFO_FLAG_USER_ID_NULL = 0xFFFE;//userID为空
+    public static final int CHECK_USER_INFO_FLAG_USER_NAME_NULL = 0xFFFD;//用户名为空
+    public static final int CHECK_USER_INFO_FLAG_USER_PHONE_NULL = 0xFFFC;//手机号码为空
 
     /**
      * 添加数据
