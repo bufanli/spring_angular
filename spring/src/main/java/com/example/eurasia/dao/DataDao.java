@@ -245,7 +245,7 @@ StringUtils.isEmpty(" bob ") = false
         String sqlAnd = " and ";
         String sqlOr= " or ";
         StringBuffer sql = new StringBuffer();
-        sql.append("select * from " + tableName + "LIMIT " + offset + "," + limit + " where ");
+        sql.append("select * from " + tableName + " where ");
 
         for (QueryCondition queryCondition : queryConditionsArr) {
             String key = queryCondition.getKey();
@@ -325,6 +325,7 @@ StringUtils.isEmpty(" bob ") = false
                     break;
             }
         }
+        sql.append(" LIMIT " + offset + "," + limit);
 
         List<Data> dataList = getJdbcTemplate().query(sql.toString(), new DataMapper());
         return dataList;
