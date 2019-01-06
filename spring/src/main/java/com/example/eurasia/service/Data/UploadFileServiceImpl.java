@@ -447,10 +447,10 @@ public class UploadFileServiceImpl implements IUploadFileService {
     }
 
     private String getValue(Cell cell) {
+        String val = "";
         if (null != cell) {
             switch (cell.getCellTypeEnum()) {
                 case NUMERIC: // 数字
-                    String val = "";
                     if (HSSFDateUtil.isCellDateFormatted(cell)) {//判断当前的cell是否为Date
                         //先注释日期类型的转换，在实际测试中发现HSSFDateUtil.isCellDateFormatted(cell)只识别2014/02/02这种格式。
                         //对2014-02-02格式识别不出是日期格式
@@ -515,23 +515,28 @@ public class UploadFileServiceImpl implements IUploadFileService {
                         DecimalFormat df = new DecimalFormat("0");//处理科学计数法
                         val = df.format(cell.getNumericCellValue());
                     }
-                    return val;
+                    break;
                 case STRING: // 字符串
-                    return cell.getStringCellValue() + "";
+                    val = cell.getStringCellValue() + "";
+                    break;
                 case BOOLEAN: // Boolean
-                    return cell.getBooleanCellValue() + "";
+                    val = cell.getBooleanCellValue() + "";
+                    break;
                 case FORMULA: // 公式
-                    return cell.getCellFormula() + "   ";
+                    val = cell.getCellFormula() + "";
+                    break;
                 case BLANK: // 空值
-                    return "";
+                    val = "";
+                    break;
                 case ERROR: // 故障
-                    return "";
+                    val = "";
+                    break;
                 default:
-                    return "未知类型";
+                    val = "未知类型";
+                    break;
             }
-        } else {
-            return "";
         }
+        return val.trim();//去掉字符串中前后的半角空格,返回。
     }
 
 }
