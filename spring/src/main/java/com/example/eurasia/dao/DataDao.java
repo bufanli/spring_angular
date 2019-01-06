@@ -241,11 +241,11 @@ StringUtils.isEmpty(" bob ") = false
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
-    public List<Data> queryListForObject(String tableName, QueryCondition[] queryConditionsArr) {
+    public List<Data> queryListForObject(String tableName, QueryCondition[] queryConditionsArr, int offset, int limit) {
         String sqlAnd = " and ";
         String sqlOr= " or ";
         StringBuffer sql = new StringBuffer();
-        sql.append("select * from " + tableName + " where ");
+        sql.append("select * from " + tableName + "LIMIT " + offset + "," + limit + " where ");
 
         for (QueryCondition queryCondition : queryConditionsArr) {
             String key = queryCondition.getKey();

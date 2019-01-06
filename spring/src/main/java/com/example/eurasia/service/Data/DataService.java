@@ -121,7 +121,7 @@ public class DataService {
             return null;
         }
 
-        return getDataDao().queryListForObject(tableName, queryConditionsArr);
+        return getDataDao().queryListForObject(tableName,queryConditionsArr,0,100);
     }
 
     /**
