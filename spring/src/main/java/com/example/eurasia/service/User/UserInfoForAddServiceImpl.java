@@ -143,6 +143,9 @@ public class UserInfoForAddServiceImpl {
                     break;
             }
         }
+        if (ret.indexOf(UserService.BR) >= 0) {
+            ret.delete((ret.length() - UserService.BR.length()),ret.length());
+        }
 
         return ret.toString();
     }
@@ -213,6 +216,9 @@ public class UserInfoForAddServiceImpl {
                 default:
                     break;
             }
+        }
+        if (ret.indexOf(UserService.BR) >= 0) {
+            ret.delete((ret.length() - UserService.BR.length()),ret.length());
         }
 
         return ret.toString();

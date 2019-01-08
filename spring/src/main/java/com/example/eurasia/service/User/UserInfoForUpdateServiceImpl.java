@@ -147,6 +147,9 @@ public class UserInfoForUpdateServiceImpl {
                     break;
             }
         }
+        if (ret.indexOf(UserService.BR) >= 0) {
+            ret.delete((ret.length() - UserService.BR.length()),ret.length());
+        }
 
         return ret.toString();
     }
@@ -217,6 +220,9 @@ public class UserInfoForUpdateServiceImpl {
                 default:
                     break;
             }
+        }
+        if (ret.indexOf(UserService.BR) >= 0) {
+            ret.delete((ret.length() - UserService.BR.length()),ret.length());
         }
 
         return ret.toString();
