@@ -136,6 +136,8 @@ public enum ResponseCodeEnum {
     SEARCH_DATA_INFO_FROM_SQL_NULL(ResponseCode.RESPONSE_CODE_NULL, "从数据库取得数据信息为NULL"),
     SEARCH_DATA_INFO_FROM_SQL_ZERO(ResponseCode.RESPONSE_CODE_OK, "从数据库取得数据信息为0"),
     SEARCH_DATA_QUERY_CONDITION_ERROR(ResponseCode.RESPONSE_CODE_NG, "查询条件错误"),
+    SEARCH_DATA_QUERY_CONDITION_FORMAT_ERROR(ResponseCode.RESPONSE_CODE_NG, "格式错误。"),
+    SEARCH_DATA_QUERY_CONDITION_ACCESS_ERROR(ResponseCode.RESPONSE_CODE_NG, "不在许可范围内。"),
 
     /* 查询条件 */
     QUERY_CONDITION_DISPLAY_FROM_SQL_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "从数据库取得查询条件显示可否成功"),

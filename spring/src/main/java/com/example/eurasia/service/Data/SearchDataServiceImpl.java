@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -33,8 +34,9 @@ public class SearchDataServiceImpl implements ISearchDataService {
 
         List<Data> dataList;
         try {
-            if (this.checkQueryConditions(queryConditionsArr) == false) {
-                return new ResponseResultUtil().error(ResponseCodeEnum.SEARCH_DATA_QUERY_CONDITION_ERROR);
+            String retCheck = this.checkQueryConditions(userID,queryConditionsArr);
+            if (!StringUtils.isEmpty(retCheck)) {
+                return new ResponseResultUtil().error(ResponseCodeEnum.SEARCH_DATA_QUERY_CONDITION_ERROR.getCode(),retCheck);
             }
 
             this.setUserQueryConditionDefaultValue(userID,queryConditionsArr);
@@ -55,50 +57,66 @@ public class SearchDataServiceImpl implements ISearchDataService {
         return new ResponseResultUtil().success(ResponseCodeEnum.SEARCH_DATA_INFO_FROM_SQL_SUCCESS, dataList);
     }
 
-    private boolean checkQueryConditions(QueryCondition[] queryConditionsArr) {
+    private String checkQueryConditions(String userID, QueryCondition[] queryConditionsArr) throws Exception {
+        StringBuffer ret = new StringBuffer("");
         for (QueryCondition queryCondition : queryConditionsArr) {
-            if (queryCondition.checkValue() == false) {
-                return false;
+
+            // 检查格式
+            if (queryCondition.checkValueFormat() == false) {
+                ret.append(queryCondition.getKey() + ResponseCodeEnum.SEARCH_DATA_QUERY_CONDITION_FORMAT_ERROR.getMessage());
+                ret.append(UserService.BR);
             }
+
+            // 检查内容
+            String queryConditionValue = null;
+            switch (queryCondition.getKey()) {
+                case UserService.MUST_PRODUCT_DATE:
+                    //检查商品编码是否在该用户都权限内
+                    queryConditionValue = userService.getOneUserCustom(UserService.TABLE_USER_ACCESS_AUTHORITY,
+                            UserService.MUST_PRODUCT_NUMBER,
+                            userID);
+                    if (!queryConditionValue.equals(QueryCondition.QUERY_CONDITION_SPLIT)//"～～"的场合，是没有限制
+                            && queryConditionValue.contains(queryCondition.getValue()) == false) {
+                        ret.append(queryCondition.getKey() + ResponseCodeEnum.SEARCH_DATA_QUERY_CONDITION_ACCESS_ERROR.getMessage());
+                        ret.append(UserService.BR);
+                    }
+                    break;
+                default:
+                    break;
+            }
+
         }
-        return true;
+        if (ret.indexOf(UserService.BR) >= 0) {
+            ret.delete((ret.length() - UserService.BR.length()),ret.length());
+        }
+        return ret.toString();
     }
 
     private void setUserQueryConditionDefaultValue(String userID, QueryCondition[] queryConditionsArr) throws Exception {
 
+        String queryConditionValue = null;
         for (QueryCondition queryCondition : queryConditionsArr) {
-            String queryConditionValue = null;
-            switch (queryCondition.getType()) {
-                case QueryCondition.QUERY_CONDITION_TYPE_STRING:
-                    queryConditionValue = "";
-                    break;
-                case QueryCondition.QUERY_CONDITION_TYPE_DATE:
-                    if (queryCondition.getKey().equals(UserService.MUST_PRODUCT_DATE)) {
+            switch (queryCondition.getKey()) {
+                case UserService.MUST_PRODUCT_DATE:
+                    String dateArr[] = queryCondition.getQueryConditionToArr();
+                    if (dateArr[0].equals("") || dateArr[1].equals("")) {//为了在起始日期和结束日期都存在都情况下，不查询该用户的日期范围
                         queryConditionValue = userService.getOneUserCustom(UserService.TABLE_USER_ACCESS_AUTHORITY,
                                 UserService.MUST_PRODUCT_DATE,
                                 userID);
-                    } else {
-                        queryConditionValue = QueryCondition.QUERY_CONDITION_SPLIT;
-                    }
-                    break;
-                case QueryCondition.QUERY_CONDITION_TYPE_MONEY:
-                case QueryCondition.QUERY_CONDITION_TYPE_AMOUNT:
-                    queryConditionValue = QueryCondition.QUERY_CONDITION_SPLIT;
-                    break;
-                case QueryCondition.QUERY_CONDITION_TYPE_LIST:
-                    if (queryCondition.getKey().equals(UserService.MUST_PRODUCT_NUMBER)) {
-                        queryConditionValue = userService.getOneUserCustom(UserService.TABLE_USER_ACCESS_AUTHORITY,
-                                UserService.MUST_PRODUCT_NUMBER,
-                                userID);
-                    } else {
-                        queryConditionValue = QueryCondition.QUERY_CONDITION_SPLIT;
+                        String dateArrFromSql[] = queryConditionValue.split(QueryCondition.QUERY_CONDITION_SPLIT,-1);
+                        if (dateArr[0].equals("")) {
+                            dateArr[0] = dateArrFromSql[0];
+                        }
+                        if (dateArr[1].equals("")) {
+                            dateArr[1] = dateArrFromSql[1];
+                        }
+                        queryCondition.setValue(queryConditionValue);
                     }
                     break;
                 default:
-                    queryConditionValue = "";
                     break;
             }
-            queryCondition.setValue(queryConditionValue);
         }
     }
+
 }

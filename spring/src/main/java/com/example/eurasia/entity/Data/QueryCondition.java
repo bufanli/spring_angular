@@ -112,7 +112,7 @@ public class QueryCondition implements Cloneable {
     }
 
     /**
-     * 检查Value。
+     * 检查Value格式。
      * @param
      * @return
      * @exception
@@ -120,7 +120,7 @@ public class QueryCondition implements Cloneable {
      * @Time 2018-12-15 00:00:00
      */
     @JsonIgnore
-    public Boolean checkValue() {
+    public Boolean checkValueFormat() {
 
         if (this.getKey() == null || this.getValue() == null || this.getType() == null) {
             Slf4jLogUtil.get().error("条件中有null值");
@@ -134,16 +134,6 @@ public class QueryCondition implements Cloneable {
             case QueryCondition.QUERY_CONDITION_TYPE_DATE:
             case QueryCondition.QUERY_CONDITION_TYPE_MONEY:
             case QueryCondition.QUERY_CONDITION_TYPE_AMOUNT:
-                if (this.getValue().contains(QueryCondition.QUERY_CONDITION_SPLIT) == false) {
-                    Slf4jLogUtil.get().error(this.getValue() + "中没有~~");
-                    return false;
-                }
-                String queryConditionArr[] = this.getValue().split(QueryCondition.QUERY_CONDITION_SPLIT,-1);
-                if (queryConditionArr.length !=2 ) {
-                    Slf4jLogUtil.get().error(this.getValue() + "中开始条件和结束条件不足");
-                    return false;
-                }
-                break;
             case QueryCondition.QUERY_CONDITION_TYPE_LIST:
                 if (this.getValue().contains(QueryCondition.QUERY_CONDITION_SPLIT) == false) {
                     Slf4jLogUtil.get().error(this.getValue() + "中没有~~");
