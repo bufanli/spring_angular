@@ -4,7 +4,7 @@ import com.example.eurasia.service.Data.IUploadFileService;
 import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;
-import com.example.eurasia.service.User.IUserInfoService;
+import com.example.eurasia.service.User.UserInfoServiceImpl;
 import com.example.eurasia.service.Util.Slf4jLogUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -39,7 +39,7 @@ public class UploadFileController {
     private IUploadFileService uploadFileService;
     @Qualifier("UserInfoServiceImpl")
     @Autowired
-    private IUserInfoService userInfoServiceImpl;
+    private UserInfoServiceImpl userInfoServiceImpl;
 
     //跳转到上传文件的页面
     @RequestMapping(value="/goUploadFile", method = RequestMethod.GET)

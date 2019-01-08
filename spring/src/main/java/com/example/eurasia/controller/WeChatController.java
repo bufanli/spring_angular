@@ -2,7 +2,7 @@ package com.example.eurasia.controller;
 
 import com.example.eurasia.entity.WeChat.AccessToken;
 import com.example.eurasia.entity.WeChat.WechatUserUnionID;
-import com.example.eurasia.service.User.IUserInfoService;
+import com.example.eurasia.service.User.UserInfoServiceImpl;
 import com.example.eurasia.service.Util.HttpSessionEnum;
 import com.example.eurasia.service.Util.Slf4jLogUtil;
 import com.example.eurasia.service.WeChat.IWeChatAuthService;
@@ -38,7 +38,7 @@ public class WeChatController {
     //注入Service服务对象
     @Qualifier("UserInfoServiceImpl")
     @Autowired
-    private IUserInfoService userInfoServiceImpl;
+    private UserInfoServiceImpl userInfoServiceImpl;
 
     //pc点击微信登录，生成登录二维码
     @RequestMapping(value = "/wxLoginPage",method = RequestMethod.POST)

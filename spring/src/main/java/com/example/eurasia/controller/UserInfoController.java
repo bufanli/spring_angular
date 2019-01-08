@@ -5,7 +5,9 @@ import com.example.eurasia.entity.User.UserInfo;
 import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;
-import com.example.eurasia.service.User.IUserInfoService;
+import com.example.eurasia.service.User.UserInfoForAddServiceImpl;
+import com.example.eurasia.service.User.UserInfoForUpdateServiceImpl;
+import com.example.eurasia.service.User.UserInfoServiceImpl;
 import com.example.eurasia.service.User.UserService;
 import com.example.eurasia.service.Util.HttpSessionEnum;
 import com.example.eurasia.service.Util.Slf4jLogUtil;
@@ -25,7 +27,13 @@ public class UserInfoController {
     //注入Service服务对象
     @Qualifier("UserInfoServiceImpl")
     @Autowired
-    private IUserInfoService userInfoServiceImpl;
+    private UserInfoServiceImpl userInfoServiceImpl;
+    @Qualifier("UserInfoForAddServiceImpl")
+    @Autowired
+    private UserInfoForAddServiceImpl userInfoForAddServiceImpl;
+    @Qualifier("UserInfoForUpdateServiceImpl")
+    @Autowired
+    private UserInfoForUpdateServiceImpl userInfoForUpdateServiceImpl;
 
     /**
      * @author
@@ -132,7 +140,7 @@ public class UserInfoController {
                     new ResponseResultUtil().error(ResponseCodeEnum.USER_UPDATE_FAILED);
                 }
 
-                responseResult = userInfoServiceImpl.updateUser(userInfo);
+                responseResult = userInfoForUpdateServiceImpl.updateUser(userInfo);
             }
             Slf4jLogUtil.get().info("更新用户结束");
         } catch (Exception e) {
@@ -162,7 +170,7 @@ public class UserInfoController {
                     new ResponseResultUtil().error(ResponseCodeEnum.USER_ADD_FAILED);
                 }
 
-                responseResult = userInfoServiceImpl.addUser(userInfo);
+                responseResult = userInfoForAddServiceImpl.addUser(userInfo);
             }
             Slf4jLogUtil.get().info("添加用户结束");
         } catch (Exception e) {

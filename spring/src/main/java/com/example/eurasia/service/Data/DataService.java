@@ -80,9 +80,7 @@ public class DataService {
 
         addNum = getDataDao().addData(tableName, data);
         if (addNum > 0) {
-            /* T.B.D 一时回避
             deleteNum = getDataDao().deleteSameData(tableName);
-            */
         }
 
         return (deleteNum != -1) ? addNum : 0;
@@ -108,6 +106,7 @@ public class DataService {
         }
     }
 
+
     /**
      * 根据查询条件进行数据查询
      * @param
@@ -121,7 +120,33 @@ public class DataService {
             return null;
         }
 
-        return getDataDao().queryListForObject(tableName,queryConditionsArr,0,100);
+        Long count = getDataDao().queryTableRows(tableName);
+        if (count.longValue() <= 0) {
+            return new ArrayList<>();
+        }
+
+        return getDataDao().queryListForObject(tableName,queryConditionsArr,0,count);
+    }
+
+    /**
+     * 根据查询条件进行数据查询
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-09-20 00:00:00
+     */
+    public List<Data> searchData(String tableName, QueryCondition[] queryConditionsArr, long offset, long limit) throws Exception {
+        if (StringUtils.isEmpty(tableName) || queryConditionsArr == null) {
+            return null;
+        }
+
+        Long count = getDataDao().queryTableRows(tableName);
+        if (count.longValue() <= 0) {
+            return new ArrayList<>();
+        }
+
+        return getDataDao().queryListForObject(tableName,queryConditionsArr,offset,limit);
     }
 
     /**

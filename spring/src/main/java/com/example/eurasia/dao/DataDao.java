@@ -83,30 +83,33 @@ sbf = new StringBuffer("");//重新new
         StringBuffer strCcolsName = new StringBuffer();
         List<Map<String,Object>> colsNameList = queryListForColumnName(tableName);
         for(Map<String,Object> colsName: colsNameList) {
-            Set<Map.Entry<String, Object>> set = colsName.entrySet();
-            Iterator<Map.Entry<String, Object>> it = set.iterator();
-            while (it.hasNext()) {
-                Map.Entry<String,Object> entry = it.next();
-                strCcolsName.append(entry.getValue());
-                strCcolsName.append(CommonDao.COMMA);
-            }
+            strCcolsName.append(colsName.get("COLUMN_NAME").toString());
+            strCcolsName.append(CommonDao.COMMA);
         }
+
         strCcolsName.deleteCharAt(strCcolsName.length() - CommonDao.COMMA.length());
         String[] name = strCcolsName.toString().split(CommonDao.COMMA,-1);
+/*
+mysql根据两个字段判断重复的数据并且删除，只保留一条。
+DELETE from table
+where id Not IN
+(select id from
+(select MIN(id) as id,count(列1) as count from table
+GROUP BY 列1,date
+HAVING count(列1)>1) as temp);
 
+MySQL统计重复数据，根据多条字段查询。
+SELECT count(*),列1,列2,列3 from table
+GROUP BY 列1,列2,列3 having count(*) > 1;
+ */
         StringBuffer sql =  new StringBuffer();
-        sql.append("delete " + tableName);
-        sql.append(" from " + tableName);
-        sql.append(" ( select min(id) id," + strCcolsName);
+        sql.append("delete from " + tableName);
+        sql.append(" where id Not IN");
+        sql.append(" (select id from");
+        sql.append(" (select min(id) as " + strCcolsName);
         sql.append(" from " + tableName);
         sql.append(" group by " + strCcolsName);
-        sql.append(" having count(*) > 1)tempSameDataTable");
-        sql.append(" where ");
-        sql.append(tableName + "." + name[0] + " = 'tempSameDataTable." + name[0]);
-        for (int i=1; i < name.length; i++) {
-            sql.append("' and " + tableName + "." + name[i] + " = 'tempSameDataTable." + name[i]);
-        }
-        sql.append("' and " + tableName + ".id > 'tempSameDataTable.id'");
+        sql.append(" having count(*) > 1) as tempSameDataTable)");
 
         int num = getJdbcTemplate().update(sql.toString());//执行成功返回数据库当中受影响的记录条数，失败则返回-1
         return num;
@@ -241,69 +244,83 @@ StringUtils.isEmpty(" bob ") = false
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
-    public List<Data> queryListForObject(String tableName, QueryCondition[] queryConditionsArr, int offset, int limit) {
+    public List<Data> queryListForObject(String tableName, QueryCondition[] queryConditionsArr, long offset, long limit) {
         String sqlAnd = " and ";
         String sqlOr= " or ";
-        StringBuffer sql = new StringBuffer();
-        sql.append("select * from " + tableName + " where ");
+        String sqlWhere= " where ";
+        boolean haveCondition = false;
 
+        StringBuffer sql = new StringBuffer();
+        sql.append("select * from " + tableName);
+
+        sql.append(sqlWhere);
         for (QueryCondition queryCondition : queryConditionsArr) {
             String key = queryCondition.getKey();
             switch (queryCondition.getType()) {
                 case QueryCondition.QUERY_CONDITION_TYPE_STRING:
-                    if (queryCondition.isValuesNotNULL() == true) {
+                    if (queryCondition.isValuesNotNULL() == true) {//不为空
+                        haveCondition = true;
                         String value = queryCondition.getValue();
+                        sql.append("( ");
                         sql.append(key + " like '%" + value + "%'");
+                        sql.append(" )");
                         sql.append(sqlAnd);
                     } else {
 
                     }
                     break;
                 case QueryCondition.QUERY_CONDITION_TYPE_DATE:
+                    haveCondition = true;
                     String dateArr[] = queryCondition.getQueryConditionToArr();
                     String dateStart = dateArr[0];
                     String dateEnd = dateArr[1];
+                    sql.append("( ");
                     if (dateStart.equals("") == true && dateEnd.equals("") == false) {
-                        dateStart = "(select min(" + key + ")";
+                        dateStart = "(select min(" + key + "))";
                         dateEnd = convertDateToNewFormat(dateEnd);
-                        sql.append(" (" + key + " between " + dateStart + " and '" + dateEnd + "')");
+                        sql.append(key + " between " + dateStart + " and '" + dateEnd + "'");
                     } else if (dateStart.equals("") == false && dateEnd.equals("") == true) {
-                        dateEnd = "(select max(" + key + "))";
                         dateStart = convertDateToNewFormat(dateStart);
-                        sql.append(" (" + key + " between '" + dateStart + "' and " + dateEnd + ")");
+                        dateEnd = "(select max(" + key + "))";
+                        sql.append(key + " between '" + dateStart + "' and " + dateEnd);
                     } else if (dateStart.equals("") == false && dateEnd.equals("") == false) {
                         dateStart = convertDateToNewFormat(dateStart);
                         dateEnd = convertDateToNewFormat(dateEnd);
-                        sql.append(" (" + key + " between '" + dateStart + "' and '" + dateEnd + "')");
+                        sql.append(key + " between '" + dateStart + "' and '" + dateEnd + "'");
                     } else if (dateStart.equals("") == true && dateEnd.equals("") == true) {
-                        if (sql.indexOf(sqlAnd) >= 0) {
-                            sql.delete((sql.length() - sqlAnd.length()),sql.length());
-                        }
+                        dateStart = "(select min(" + key + "))";
+                        dateEnd = "(select max(" + key + "))";
+                        sql.append(key + " between " + dateStart + " and " + dateEnd);
                     }
+                    sql.append(" )");
+                    sql.append(sqlAnd);
                     break;
                 case QueryCondition.QUERY_CONDITION_TYPE_MONEY:
                 case QueryCondition.QUERY_CONDITION_TYPE_AMOUNT:
+                    haveCondition = true;
                     String arr[] = queryCondition.getQueryConditionToArr();
                     String conditionStart = arr[0];
                     String conditionEnd = arr[1];
+                    sql.append("( ");
                     if (conditionStart.equals("") == true && conditionEnd.equals("") == false) {
-                        conditionStart = "(select min(" + key + ")";
-                        sql.append(" (" + key + " between " + conditionStart + " and '" + conditionEnd + "')");
+                        conditionStart = "(select min(" + key + "))";
+                        sql.append(key + " between " + conditionStart + " and '" + conditionEnd + "'");
                     } else if (conditionStart.equals("") == false && conditionEnd.equals("") == true) {
                         conditionEnd = "(select max(" + key + "))";
-                        sql.append(" (" + key + " between '" + conditionStart + "' and " + conditionEnd + ")");
+                        sql.append(key + " between '" + conditionStart + "' and " + conditionEnd);
                     } else if (conditionStart.equals("") == false && conditionEnd.equals("") == false) {
-                        sql.append(" (" + key + " between '" + conditionStart + "' and '" + conditionEnd + "')");
+                        sql.append(key + " between '" + conditionStart + "' and '" + conditionEnd + "'");
                     } else if (conditionStart.equals("") == true && conditionEnd.equals("") == true) {
-                        if (sql.indexOf(sqlAnd) >= 0) {
-                            sql.delete((sql.length() - sqlAnd.length()),sql.length());
-                        }
+                        conditionStart = "(select min(" + key + "))";
+                        conditionEnd = "(select max(" + key + "))";
+                        sql.append(key + " between " + conditionStart + " and " + conditionEnd);
                     }
+                    sql.append(" )");
+                    sql.append(sqlAnd);
                     break;
                 case QueryCondition.QUERY_CONDITION_TYPE_LIST:
-                    if (queryCondition.isValuesNotNULL() == false) {
-
-                    } else {
+                    if (queryCondition.isValuesNotNULL() == true) {//不为空
+                        haveCondition = true;
                         String listArr[] = queryCondition.getQueryConditionToArr();
                         sql.append("( ");
                         StringBuffer sqlList = new StringBuffer();
@@ -319,13 +336,22 @@ StringUtils.isEmpty(" bob ") = false
                         sql.append(sqlList);
                         sql.append(" )");
                         sql.append(sqlAnd);
+                    } else {
+
                     }
                     break;
                 default:
                     break;
             }
         }
-        sql.append(" LIMIT " + offset + "," + limit);
+        if (sql.indexOf(sqlAnd) >= 0) {
+            sql.delete((sql.length() - sqlAnd.length()),sql.length());
+        }
+        if (haveCondition == false) {
+            sql.delete((sql.length() - sqlWhere.length()),sql.length());
+        }
+
+        sql.append(" LIMIT " + String.valueOf(offset) + "," + String.valueOf(limit));
 
         List<Data> dataList = getJdbcTemplate().query(sql.toString(), new DataMapper());
         return dataList;

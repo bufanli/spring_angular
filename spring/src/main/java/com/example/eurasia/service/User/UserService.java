@@ -63,6 +63,7 @@ public class UserService {
     public static final String USER_ALL_NORMAL = "sinoshuju_all_normal";//所有的客户,不包括默认用户，管理员用户，临时访问客户等,仅仅是注册的客户。
 
     // 必要的字段名称
+    public static final String MUST_ID = "id";
     public static final String MUST_USER_ID = "userID";
     public static final String MUST_USER_PW = "密码";
     public static final String MUST_USER_NAME = "名字";
@@ -402,11 +403,26 @@ public class UserService {
      * @author FuJia
      * @Time 2018-11-29 00:00:00
      */
-    public int getUserIDNumber(String userID) throws Exception {
+    public long getUserIDNumber(String userID) throws Exception {
         if (StringUtils.isEmpty(userID)) {
             return -1;
         }
-        return getUserDao().queryUserID(UserService.TABLE_USER_BASIC_INFO,UserService.MUST_USER_ID,userID);
+        return getUserDao().queryCountOfColumnValue(UserService.TABLE_USER_BASIC_INFO,UserService.MUST_USER_ID,userID).longValue();
+    }
+
+    /**
+     * 该用户是否在数据库中。
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-11-29 00:00:00
+     */
+    public long getUserIDNumberExcept(String id, String userID) throws Exception {
+        if (StringUtils.isEmpty(id) || StringUtils.isEmpty(userID)) {
+            return -1;
+        }
+        return getUserDao().queryCountOfColumnValueExcept(id,UserService.TABLE_USER_BASIC_INFO,UserService.MUST_USER_ID,userID).longValue();
     }
 
     /**
@@ -417,11 +433,26 @@ public class UserService {
      * @author FuJia
      * @Time 2018-11-29 00:00:00
      */
-    public int getUserPhoneNumber(String phone) throws Exception {
+    public long getUserPhoneNumber(String phone) throws Exception {
         if (StringUtils.isEmpty(phone)) {
             return -1;
         }
-        return getUserDao().queryUserID(UserService.TABLE_USER_BASIC_INFO,UserService.MUST_USER_PHONE,phone);
+        return getUserDao().queryCountOfColumnValue(UserService.TABLE_USER_BASIC_INFO,UserService.MUST_USER_PHONE,phone).longValue();
+    }
+
+    /**
+     * 该电话号码是否在数据库中。
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-11-29 00:00:00
+     */
+    public long getUserPhoneNumberExcept(String id, String phone) throws Exception {
+        if (StringUtils.isEmpty(id) || StringUtils.isEmpty(phone)) {
+            return -1;
+        }
+        return getUserDao().queryCountOfColumnValueExcept(id,UserService.TABLE_USER_BASIC_INFO,UserService.MUST_USER_PHONE,phone).longValue();
     }
 
     /**

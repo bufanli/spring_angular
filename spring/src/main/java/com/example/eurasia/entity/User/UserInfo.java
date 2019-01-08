@@ -1,5 +1,7 @@
 package com.example.eurasia.entity.User;
 
+import com.example.eurasia.service.User.UserService;
+
 /**
  * 用户类
  * @author FuJia
@@ -38,8 +40,22 @@ public class UserInfo implements Cloneable {
         return this.userDetailedInfos;
     }
 
+    public String getIDFromBasicInfos() {
+        for (UserCustom userCustom:this.userBasicInfos) {
+            if (userCustom.getKey().equals(UserService.MUST_ID)) {
+                return userCustom.getValue();
+            }
+        }
+        return null;
+    }
+
     public String getUserIDFromBasicInfos() {
-        return this.userBasicInfos[0].getValue();
+        for (UserCustom userCustom:this.userBasicInfos) {
+            if (userCustom.getKey().equals(UserService.MUST_USER_ID)) {
+                return userCustom.getValue();
+            }
+        }
+        return null;
     }
 
     @Override

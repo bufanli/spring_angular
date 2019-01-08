@@ -29,7 +29,7 @@ public class SearchDataServiceImpl implements ISearchDataService {
     private UserService userService;
 
     @Override
-    public ResponseResult searchData(String userID, QueryCondition[] queryConditionsArr) throws Exception {
+    public ResponseResult searchData(String userID, QueryCondition[] queryConditionsArr, long offset, long limit) throws Exception {
 
         List<Data> dataList;
         try {
@@ -39,10 +39,13 @@ public class SearchDataServiceImpl implements ISearchDataService {
 
             this.setUserQueryConditionDefaultValue(userID,queryConditionsArr);
 
-            dataList = dataService.searchData(DataService.TABLE_DATA, queryConditionsArr);
+            dataList = dataService.searchData(DataService.TABLE_DATA,queryConditionsArr,offset,limit);
 
             if (dataList == null) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.SEARCH_DATA_INFO_FROM_SQL_NULL);
+            }
+            if (dataList.size() <= 0) {
+                return new ResponseResultUtil().error(ResponseCodeEnum.SEARCH_DATA_INFO_FROM_SQL_ZERO);
             }
         } catch (Exception e) {
             e.printStackTrace();
