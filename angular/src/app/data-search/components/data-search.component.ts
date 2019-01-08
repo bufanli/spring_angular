@@ -112,12 +112,42 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
     // show table's columns
     this.filterColumns(httpResponse.data);
     const allHeaders: Header[] = this.addFormatterToHeaders(httpResponse.data);
-    $('#table').bootstrapTable({ columns: allHeaders });
+    // $('#table').bootstrapTable({ columns: allHeaders });
+    // start set bootstrap table
+    $('#table').bootstrapTable({
+      columns: allHeaders,
+      method: 'post',
+      contentType: 'application/x-www-form-urlencoded',
+      url: '/searchData',
+      striped: true,
+      pageNumber: 1,
+      queryParamsType: 'limit',
+      pagination: true,
+      queryParams: function (params) {
+        alert(params.limit);
+        alert(params.pageNumber);
+        return {
+          pageSize: params.limit,
+          pageIndex: params.pageNumber,
+        };
+      },
+      sidePagination: 'server',
+      pageSize: 10,
+      pageList: [],
+      // showColumns: true,
+      locale: 'zh-CN',
+      dataField: 'res',
+      responseHandler: function (res) {
+        console.log(res);
+      }
+    });
+    // $('#table').bootstrapTable('refresh', { url: '/searchData' });
+    // $('#table').bootstrapTable('refresh');
     // show all products after headers are shown
-    const searchConditions = this.getQueryTime();
-    this.convertSelection();
-    this.searchData(searchConditions).subscribe(products =>
-      this.searchDataNotification(products));
+    // const searchConditions = this.getQueryTime();
+    // this.convertSelection();
+    // this.searchData(searchConditions).subscribe(products =>
+    //   this.searchDataNotification(products));
   }
   addFormatterToHeaders(headers: Header[]) {
     const seq: Header = new Header('seq', '', true);
