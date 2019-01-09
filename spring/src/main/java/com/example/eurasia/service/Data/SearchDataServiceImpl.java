@@ -1,7 +1,7 @@
 package com.example.eurasia.service.Data;
 
-import com.example.eurasia.entity.Data.Data;
 import com.example.eurasia.entity.Data.QueryCondition;
+import com.example.eurasia.entity.Data.SearchedData;
 import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;
@@ -11,8 +11,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-
-import java.util.List;
 
 //@Slf4j
 /*@Transactional(readOnly = true)事物注解*/
@@ -32,7 +30,7 @@ public class SearchDataServiceImpl implements ISearchDataService {
     @Override
     public ResponseResult searchData(String userID, QueryCondition[] queryConditionsArr, long offset, long limit) throws Exception {
 
-        List<Data> dataList;
+        SearchedData searchedData;
         try {
             String retCheck = this.checkQueryConditions(userID,queryConditionsArr);
             if (!StringUtils.isEmpty(retCheck)) {
@@ -41,12 +39,11 @@ public class SearchDataServiceImpl implements ISearchDataService {
 
             this.setUserQueryConditionDefaultValue(userID,queryConditionsArr);
 
-            dataList = dataService.searchData(DataService.TABLE_DATA,queryConditionsArr,offset,limit);
-
-            if (dataList == null) {
+            searchedData = dataService.searchData(DataService.TABLE_DATA,queryConditionsArr,offset,limit);
+            if (searchedData.getDataList() == null) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.SEARCH_DATA_INFO_FROM_SQL_NULL);
             }
-            if (dataList.size() <= 0) {
+            if (searchedData.getDataList().size() <= 0) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.SEARCH_DATA_INFO_FROM_SQL_ZERO);
             }
         } catch (Exception e) {
@@ -54,7 +51,7 @@ public class SearchDataServiceImpl implements ISearchDataService {
             return new ResponseResultUtil().error(ResponseCodeEnum.SEARCH_DATA_INFO_FROM_SQL_FAILED);
         }
 
-        return new ResponseResultUtil().success(ResponseCodeEnum.SEARCH_DATA_INFO_FROM_SQL_SUCCESS, dataList);
+        return new ResponseResultUtil().success(ResponseCodeEnum.SEARCH_DATA_INFO_FROM_SQL_SUCCESS, searchedData);
     }
 
     private String checkQueryConditions(String userID, QueryCondition[] queryConditionsArr) throws Exception {

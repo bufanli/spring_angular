@@ -15,6 +15,8 @@ public class QueryCondition implements Cloneable {
 
     public static final String QUERY_CONDITION_SPLIT = "~~";//一个查询条件中的分隔符号
 
+    public static final String PRODUCT_DATE_FORMAT = "yyyy/MM/dd";//日期条件的格式
+
     private String key;
     private String value;
     private String type;

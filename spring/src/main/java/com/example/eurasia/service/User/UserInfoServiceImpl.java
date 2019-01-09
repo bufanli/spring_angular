@@ -231,7 +231,7 @@ public class UserInfoServiceImpl {
             //因为数据库中，起始和结束时间都有，所有没有对起始和结束时间进行空检查。参照方法checkUserAccessAuthority
             String[] valid = userValid.split(QueryCondition.QUERY_CONDITION_SPLIT,-1);
 
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+            SimpleDateFormat sdf = new SimpleDateFormat(QueryCondition.PRODUCT_DATE_FORMAT);
             String nowDate = sdf.format(new Date());
 
             if (valid[1].compareTo(nowDate) >= 0) {//相等返回0，小于返回-1，大于返回1
