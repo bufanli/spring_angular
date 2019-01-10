@@ -1,5 +1,6 @@
 package com.example.eurasia.controller;
 
+import com.example.eurasia.entity.Data.DataSearchParam;
 import com.example.eurasia.entity.Data.QueryCondition;
 import com.example.eurasia.service.Data.ISearchDataService;
 import com.example.eurasia.service.Response.ResponseCodeEnum;
@@ -37,15 +38,15 @@ public class SearchDataController {
      */
     @RequestMapping(value="/searchData", method = RequestMethod.POST)
     public @ResponseBody
-    ResponseResult searchData(@RequestBody QueryCondition[] queryConditionsArr, HttpServletRequest request) {
-        ResponseResult responseResult;
+    ResponseResult searchData(@RequestBody DataSearchParam param, HttpServletRequest request) {
+        ResponseResult responseResult = null;
         try {
             Slf4jLogUtil.get().info("数据查询开始");
             String userID = userInfoServiceImpl.getLoginUserID(request);
             if (StringUtils.isEmpty(userID)) {
                 responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
             } else {
-                responseResult = searchDataService.searchData(userID,queryConditionsArr);
+//                responseResult = searchDataService.searchData(userID,queryConditionsArr);
             }
         } catch (Exception e) {
             e.printStackTrace();

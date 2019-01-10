@@ -48,13 +48,6 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
   ];
   public importCustoms: string[] = [];
 
-  onSearch(): void {
-    const queryConditions = this.getQueryTime();
-    this.convertSelection();
-    this.searchData(queryConditions).subscribe(result =>
-      this.searchDataNotification(result));
-  }
-
   convertSelection(): void {
     let result = '';
     for (const custom of this.importCustoms) {
@@ -89,47 +82,35 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
     return this.http.get<HttpResponse>(this.headersUrl);
   }
 
-  /** search products from the server */
-  searchData(queryConditions: any): Observable<HttpResponse> {
-    return this.http.post<HttpResponse>(this.searchUrl, queryConditions, httpOptions);
-  }
   constructor(private http: HttpClient,
     private downloadHttp: Http,
     private commonUtilitiesService: CommonUtilitiesService) {
   }
 
-  searchDataNotification(result: HttpResponse) {
-    if (result.data == null) {
-      $('#table').bootstrapTable('load', []);
-    } else {
-      $('#table').bootstrapTable('load', this.commonUtilitiesService.reshapeData(result.data));
-    }
-  }
-
   getHeadersNotification(httpResponse: HttpResponse) {
     // if donot destroy table at first, table will not be shown
     $('#table').bootstrapTable('destroy');
-    // show table's columns
+    // get table's columns
     this.filterColumns(httpResponse.data);
     const allHeaders: Header[] = this.addFormatterToHeaders(httpResponse.data);
-    // $('#table').bootstrapTable({ columns: allHeaders });
-    // start set bootstrap table
+    // init data table
+    this.initDataTable(allHeaders);
+  }
+
+  // init data table
+  private initDataTable(headers: Header[]): void {
+    const that: any = this;
     $('#table').bootstrapTable({
-      columns: allHeaders,
+      columns: headers,
       method: 'post',
-      contentType: 'application/x-www-form-urlencoded',
+      // contentType: 'application/x-www-form-urlencoded',
       url: '/searchData',
       striped: true,
       pageNumber: 1,
       queryParamsType: 'limit',
       pagination: true,
       queryParams: function (params) {
-        alert(params.limit);
-        alert(params.pageNumber);
-        return {
-          pageSize: params.limit,
-          pageIndex: params.pageNumber,
-        };
+        return that.getQueryParams(params);
       },
       sidePagination: 'server',
       pageSize: 10,
@@ -137,19 +118,37 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
       // showColumns: true,
       locale: 'zh-CN',
       dataField: 'res',
-      responseHandler: function (res) {
-        console.log(res);
+      responseHandler: function (response) {
+        that.passDataSearchResultToTable(response);
       }
     });
-    // $('#table').bootstrapTable('refresh', { url: '/searchData' });
-    // $('#table').bootstrapTable('refresh');
-    // show all products after headers are shown
-    // const searchConditions = this.getQueryTime();
-    // this.convertSelection();
-    // this.searchData(searchConditions).subscribe(products =>
-    //   this.searchDataNotification(products));
   }
-  addFormatterToHeaders(headers: Header[]) {
+  // get query params
+  private getQueryParams(params: any): any {
+    this.convertSelection();
+    const queryConditions = this.getQueryTime();
+    return {
+      limit: params.limit,
+      offset: params.offset,
+      queryConditions: queryConditions,
+    };
+  }
+  // dispose data search response
+  private passDataSearchResultToTable(response: any): any {
+    if (response) {
+      return {
+        'rows': response.list,
+        'total': response.total
+      };
+    } else {
+      return {
+        'rows': [],
+        'total': 0
+      };
+    }
+  }
+  // add formatter to all headers
+  private addFormatterToHeaders(headers: Header[]) {
     const seq: Header = new Header('seq', '', true);
     seq.width = 50;
     seq.formatter = function (value, row, index) {
