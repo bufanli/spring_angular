@@ -1,6 +1,7 @@
 package com.example.eurasia.dao;
 
 import com.example.eurasia.entity.Data.DataXMLReader;
+import com.example.eurasia.entity.Data.QueryCondition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -259,7 +260,7 @@ CREATE TABLE SPRING_SESSION_ATTRIBUTES (
     // angular得到的时间格式是 2018/9/11 和数据库2018/09/11里面不一致，所以转换一下
     public String convertDateToNewFormat(String dateFromAngular){
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+            SimpleDateFormat sdf = new SimpleDateFormat(QueryCondition.PRODUCT_DATE_FORMAT);
             java.util.Date tempDateEnd= sdf.parse(dateFromAngular);
             return sdf.format(tempDateEnd);
         }catch(ParseException e){

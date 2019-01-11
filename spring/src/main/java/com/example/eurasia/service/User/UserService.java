@@ -12,6 +12,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
@@ -63,6 +64,7 @@ public class UserService {
     public static final String USER_ALL_NORMAL = "sinoshuju_all_normal";//所有的客户,不包括默认用户，管理员用户，临时访问客户等,仅仅是注册的客户。
 
     // 必要的字段名称
+    public static final String MUST_ID = "id";
     public static final String MUST_USER_ID = "userID";
     public static final String MUST_USER_PW = "密码";
     public static final String MUST_USER_NAME = "名字";
@@ -402,11 +404,26 @@ public class UserService {
      * @author FuJia
      * @Time 2018-11-29 00:00:00
      */
-    public int getUserIDNumber(String userID) throws Exception {
+    public long getUserIDNumber(String userID) throws Exception {
         if (StringUtils.isEmpty(userID)) {
             return -1;
         }
-        return getUserDao().queryUserID(UserService.TABLE_USER_BASIC_INFO,UserService.MUST_USER_ID,userID);
+        return getUserDao().queryCountOfColumnValue(UserService.TABLE_USER_BASIC_INFO,UserService.MUST_USER_ID,userID).longValue();
+    }
+
+    /**
+     * 该用户是否在数据库中。
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-11-29 00:00:00
+     */
+    public long getUserIDNumberExcept(String id, String userID) throws Exception {
+        if (StringUtils.isEmpty(id) || StringUtils.isEmpty(userID)) {
+            return -1;
+        }
+        return getUserDao().queryCountOfColumnValueExcept(id,UserService.TABLE_USER_BASIC_INFO,UserService.MUST_USER_ID,userID).longValue();
     }
 
     /**
@@ -417,11 +434,26 @@ public class UserService {
      * @author FuJia
      * @Time 2018-11-29 00:00:00
      */
-    public int getUserPhoneNumber(String phone) throws Exception {
+    public long getUserPhoneNumber(String phone) throws Exception {
         if (StringUtils.isEmpty(phone)) {
             return -1;
         }
-        return getUserDao().queryUserID(UserService.TABLE_USER_BASIC_INFO,UserService.MUST_USER_PHONE,phone);
+        return getUserDao().queryCountOfColumnValue(UserService.TABLE_USER_BASIC_INFO,UserService.MUST_USER_PHONE,phone).longValue();
+    }
+
+    /**
+     * 该电话号码是否在数据库中。
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-11-29 00:00:00
+     */
+    public long getUserPhoneNumberExcept(String id, String phone) throws Exception {
+        if (StringUtils.isEmpty(id) || StringUtils.isEmpty(phone)) {
+            return -1;
+        }
+        return getUserDao().queryCountOfColumnValueExcept(id,UserService.TABLE_USER_BASIC_INFO,UserService.MUST_USER_PHONE,phone).longValue();
     }
 
     /**
@@ -493,25 +525,36 @@ public class UserService {
                 //查询数据库中的最近一个月
                 return getUserDao().queryListForTheLastMouth(tableName,UserService.MUST_PRODUCT_DATE);
             default:
-                //查询用户可见的最近一个月
-                List<Data> userBasicInfosList = this.getUserBasicInfo(userID);
-                if (userBasicInfosList != null) {
-                    String strDate = "";
-
-                    Data userBasicInfo = userBasicInfosList.get(0);
-                    Set<Map.Entry<String, String>> set = userBasicInfo.getKeyValue().entrySet();
-                    Iterator<Map.Entry<String, String>> it = set.iterator();
-                    while (it.hasNext()) {
-                        Map.Entry<String,String> entry = it.next();
-                        if (entry.getKey().equals(UserService.MUST_PRODUCT_DATE)) {
-                            strDate = entry.getValue();
-                            break;
-                        }
+                //获取用户可访问的日期范围
+                String productDate = this.getOneUserCustom(UserService.TABLE_USER_ACCESS_AUTHORITY,
+                        UserService.MUST_PRODUCT_DATE,
+                        userID);
+                if (productDate == null || !productDate.contains(QueryCondition.QUERY_CONDITION_SPLIT)) {
+                    return null;
+                } else {
+                    String[] productDateArr = productDate.split(QueryCondition.QUERY_CONDITION_SPLIT,-1);
+                    if (productDateArr.length != 2) {
+                        return null;
                     }
 
-                    return strDate.split(QueryCondition.QUERY_CONDITION_SPLIT);
-                } else {
-                    return null;
+                    //查询用户可见的最近一个月
+                    SimpleDateFormat sdf = new SimpleDateFormat(QueryCondition.PRODUCT_DATE_FORMAT);
+                    Date dateStart = sdf.parse(productDateArr[0]);
+                    Date dateEnd = sdf.parse(productDateArr[1]);
+                    Calendar cld = Calendar.getInstance();
+                    cld.setTime(dateEnd);
+                    cld.add(Calendar.MONTH, -1);
+                    Date beforeDateEnd = cld.getTime();
+                    if (dateStart.before(beforeDateEnd)) {
+                        //System.out.println(date1 + "在" + date2 + "前面");
+                        productDateArr[0] = sdf.format(beforeDateEnd);
+                    } else if (dateStart.after(beforeDateEnd)) {
+                        //System.out.println(date1 + "在" + date2 + "后面");
+                    } else {
+                        //System.out.println("是同一天的同一时间");
+                    }
+
+                    return productDateArr;
                 }
         }
 

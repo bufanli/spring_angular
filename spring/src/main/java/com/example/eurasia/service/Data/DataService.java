@@ -4,6 +4,7 @@ import com.example.eurasia.dao.DataDao;
 import com.example.eurasia.entity.Data.Data;
 import com.example.eurasia.entity.Data.DataXMLReader;
 import com.example.eurasia.entity.Data.QueryCondition;
+import com.example.eurasia.entity.Data.SearchedData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -80,9 +81,7 @@ public class DataService {
 
         addNum = getDataDao().addData(tableName, data);
         if (addNum > 0) {
-            /* T.B.D 一时回避
             deleteNum = getDataDao().deleteSameData(tableName);
-            */
         }
 
         return (deleteNum != -1) ? addNum : 0;
@@ -108,6 +107,7 @@ public class DataService {
         }
     }
 
+
     /**
      * 根据查询条件进行数据查询
      * @param
@@ -121,7 +121,36 @@ public class DataService {
             return null;
         }
 
-        return getDataDao().queryListForObject(tableName,queryConditionsArr,0,100);
+        long count = getDataDao().queryTableRows(tableName).longValue();
+        if (count <= 0) {
+            return new ArrayList<>();
+        }
+
+        return getDataDao().queryListForObject(tableName,queryConditionsArr,0,count);
+    }
+
+    /**
+     * 根据查询条件进行数据查询
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-09-20 00:00:00
+     */
+    public SearchedData searchData(String tableName, QueryCondition[] queryConditionsArr, long offset, long limit) throws Exception {
+        if (StringUtils.isEmpty(tableName) || queryConditionsArr == null) {
+            return null;
+        }
+
+        List<Data> dataList = new ArrayList<>();
+        long count = getDataDao().queryTableRows(tableName).longValue();
+        if (count <= 0) {
+
+        } else {
+            dataList = getDataDao().queryListForObject(tableName,queryConditionsArr,offset,limit);
+        }
+
+        return new SearchedData(count,dataList);
     }
 
     /**
@@ -241,22 +270,6 @@ public class DataService {
             e.printStackTrace();
         }
         return false;
-    }
-
-    /**
-     * 获取默认搜索日期区间,数据库中最新的一个月。
-     * @param
-     * @return
-     * @exception
-     * @author FuJia
-     * @Time 2018-11-15 00:00:00
-     */
-    public String[] getTheLastMonth(String databaseName) throws Exception {
-        if (StringUtils.isEmpty(databaseName)) {
-            return null;
-        }
-
-        return null;
     }
 
 }

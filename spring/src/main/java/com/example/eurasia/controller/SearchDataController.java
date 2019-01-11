@@ -1,21 +1,17 @@
 package com.example.eurasia.controller;
 
-import com.example.eurasia.entity.Data.DataSearchParam;
 import com.example.eurasia.entity.Data.QueryCondition;
 import com.example.eurasia.service.Data.ISearchDataService;
 import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;
-import com.example.eurasia.service.User.IUserInfoService;
+import com.example.eurasia.service.User.UserInfoServiceImpl;
 import com.example.eurasia.service.Util.Slf4jLogUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -29,24 +25,26 @@ public class SearchDataController {
     private ISearchDataService searchDataService;
     @Qualifier("UserInfoServiceImpl")
     @Autowired
-    private IUserInfoService userInfoServiceImpl;
+    private UserInfoServiceImpl userInfoServiceImpl;
 
     /**
      * @author
      * @date 2018-10-14
      * @description 查询数据
      */
-    @RequestMapping(value="/searchData", method = RequestMethod.POST)
+    @RequestMapping(value="/searchData/{offset}-{limit}", method = RequestMethod.POST)
     public @ResponseBody
-    ResponseResult searchData(@RequestBody DataSearchParam param, HttpServletRequest request) {
-        ResponseResult responseResult = null;
+    ResponseResult searchData(@RequestBody QueryCondition[] queryConditionsArr, HttpServletRequest request,
+                              @PathVariable(value="offset") int offset,
+                              @PathVariable(value="limit") int limit) {
+        ResponseResult responseResult;
         try {
             Slf4jLogUtil.get().info("数据查询开始");
             String userID = userInfoServiceImpl.getLoginUserID(request);
             if (StringUtils.isEmpty(userID)) {
                 responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
             } else {
-//                responseResult = searchDataService.searchData(userID,queryConditionsArr);
+                responseResult = searchDataService.searchData(userID,queryConditionsArr,offset,limit);
             }
         } catch (Exception e) {
             e.printStackTrace();

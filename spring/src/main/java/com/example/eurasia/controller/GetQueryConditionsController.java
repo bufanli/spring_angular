@@ -4,7 +4,7 @@ import com.example.eurasia.service.Data.IGetQueryConditionsService;
 import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;
-import com.example.eurasia.service.User.IUserInfoService;
+import com.example.eurasia.service.User.UserInfoServiceImpl;
 import com.example.eurasia.service.Util.Slf4jLogUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -26,7 +26,7 @@ public class GetQueryConditionsController {
     private IGetQueryConditionsService getQueryConditionsService;
     @Qualifier("UserInfoServiceImpl")
     @Autowired
-    private IUserInfoService userInfoServiceImpl;
+    private UserInfoServiceImpl userInfoServiceImpl;
 
     /**
      * @author
