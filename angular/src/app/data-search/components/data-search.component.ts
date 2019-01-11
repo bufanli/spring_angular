@@ -66,6 +66,10 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
   onDownloadFile(): void {
     this.downloadFile();
   }
+  // data search handler
+  onSearch(): void {
+    $('#table').bootstrapTable('refresh');
+  }
 
   // download data to file
   async downloadFile(): Promise<void> {
@@ -117,9 +121,19 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
       pageList: [],
       // showColumns: true,
       locale: 'zh-CN',
-      dataField: 'res',
       responseHandler: function (response) {
-        that.passDataSearchResultToTable(response);
+        if (response.code === 200 && response.data != null) {
+          const ret: any = {
+            'total': response.data.count,
+            'rows': that.commonUtilitiesService.reshapeData(response.data.dataList),
+          };
+          return ret;
+        } else {
+          return {
+            'rows': [],
+            'total': 0
+          };
+        }
       }
     });
   }
@@ -133,20 +147,7 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
       queryConditions: queryConditions,
     };
   }
-  // dispose data search response
-  private passDataSearchResultToTable(response: any): any {
-    if (response) {
-      return {
-        'rows': response.list,
-        'total': response.total
-      };
-    } else {
-      return {
-        'rows': [],
-        'total': 0
-      };
-    }
-  }
+
   // add formatter to all headers
   private addFormatterToHeaders(headers: Header[]) {
     const seq: Header = new Header('seq', '', true);

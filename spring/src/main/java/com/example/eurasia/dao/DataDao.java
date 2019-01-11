@@ -245,114 +245,8 @@ StringUtils.isEmpty(" bob ") = false
      * @Time 2018-09-20 00:00:00
      */
     public List<Data> queryListForObject(String tableName, QueryCondition[] queryConditionsArr, long offset, long limit) {
-        String sqlAnd = " and ";
-        String sqlOr= " or ";
-        String sqlWhere= " where ";
-        boolean haveCondition = false;
-
-        StringBuffer sql = new StringBuffer();
-        sql.append("select * from " + tableName);
-
-        sql.append(sqlWhere);
-        for (QueryCondition queryCondition : queryConditionsArr) {
-            String key = queryCondition.getKey();
-            switch (queryCondition.getType()) {
-                case QueryCondition.QUERY_CONDITION_TYPE_STRING:
-                    if (queryCondition.isValuesNotNULL() == true) {//不为空
-                        haveCondition = true;
-                        String value = queryCondition.getValue();
-                        sql.append("( ");
-                        sql.append(key + " like '%" + value + "%'");
-                        sql.append(" )");
-                        sql.append(sqlAnd);
-                    } else {
-
-                    }
-                    break;
-                case QueryCondition.QUERY_CONDITION_TYPE_DATE:
-                    haveCondition = true;
-                    String dateArr[] = queryCondition.getQueryConditionToArr();
-                    String dateStart = dateArr[0];
-                    String dateEnd = dateArr[1];
-                    sql.append("( ");
-                    if (dateStart.equals("") == true && dateEnd.equals("") == false) {
-                        dateStart = "(select min(" + key + "))";
-                        dateEnd = convertDateToNewFormat(dateEnd);
-                        sql.append(key + " between " + dateStart + " and '" + dateEnd + "'");
-                    } else if (dateStart.equals("") == false && dateEnd.equals("") == true) {
-                        dateStart = convertDateToNewFormat(dateStart);
-                        dateEnd = "(select max(" + key + "))";
-                        sql.append(key + " between '" + dateStart + "' and " + dateEnd);
-                    } else if (dateStart.equals("") == false && dateEnd.equals("") == false) {
-                        dateStart = convertDateToNewFormat(dateStart);
-                        dateEnd = convertDateToNewFormat(dateEnd);
-                        sql.append(key + " between '" + dateStart + "' and '" + dateEnd + "'");
-                    } else if (dateStart.equals("") == true && dateEnd.equals("") == true) {
-                        dateStart = "(select min(" + key + "))";
-                        dateEnd = "(select max(" + key + "))";
-                        sql.append(key + " between " + dateStart + " and " + dateEnd);
-                    }
-                    sql.append(" )");
-                    sql.append(sqlAnd);
-                    break;
-                case QueryCondition.QUERY_CONDITION_TYPE_MONEY:
-                case QueryCondition.QUERY_CONDITION_TYPE_AMOUNT:
-                    haveCondition = true;
-                    String arr[] = queryCondition.getQueryConditionToArr();
-                    String conditionStart = arr[0];
-                    String conditionEnd = arr[1];
-                    sql.append("( ");
-                    if (conditionStart.equals("") == true && conditionEnd.equals("") == false) {
-                        conditionStart = "(select min(" + key + "))";
-                        sql.append(key + " between " + conditionStart + " and '" + conditionEnd + "'");
-                    } else if (conditionStart.equals("") == false && conditionEnd.equals("") == true) {
-                        conditionEnd = "(select max(" + key + "))";
-                        sql.append(key + " between '" + conditionStart + "' and " + conditionEnd);
-                    } else if (conditionStart.equals("") == false && conditionEnd.equals("") == false) {
-                        sql.append(key + " between '" + conditionStart + "' and '" + conditionEnd + "'");
-                    } else if (conditionStart.equals("") == true && conditionEnd.equals("") == true) {
-                        conditionStart = "(select min(" + key + "))";
-                        conditionEnd = "(select max(" + key + "))";
-                        sql.append(key + " between " + conditionStart + " and " + conditionEnd);
-                    }
-                    sql.append(" )");
-                    sql.append(sqlAnd);
-                    break;
-                case QueryCondition.QUERY_CONDITION_TYPE_LIST:
-                    if (queryCondition.isValuesNotNULL() == true) {//不为空
-                        haveCondition = true;
-                        String listArr[] = queryCondition.getQueryConditionToArr();
-                        sql.append("( ");
-                        StringBuffer sqlList = new StringBuffer();
-                        for (String list : listArr) {
-                            if (!StringUtils.isEmpty(list)) {
-                                sqlList.append(key + " like '%" + list + "%'");
-                                sqlList.append(sqlOr);
-                            }
-                        }
-                        if (sqlList.indexOf(sqlOr) >= 0) {
-                            sqlList.delete((sqlList.length() - sqlOr.length()),sqlList.length());
-                        }
-                        sql.append(sqlList);
-                        sql.append(" )");
-                        sql.append(sqlAnd);
-                    } else {
-
-                    }
-                    break;
-                default:
-                    break;
-            }
-        }
-        if (sql.indexOf(sqlAnd) >= 0) {
-            sql.delete((sql.length() - sqlAnd.length()),sql.length());
-        }
-        if (haveCondition == false) {
-            sql.delete((sql.length() - sqlWhere.length()),sql.length());
-        }
-
+        StringBuffer sql = convertQueryConditionsToSQL(tableName,queryConditionsArr,false);
         sql.append(" LIMIT " + String.valueOf(offset) + "," + String.valueOf(limit));
-
         List<Data> dataList = getJdbcTemplate().query(sql.toString(), new DataMapper());
         return dataList;
     }
@@ -441,5 +335,5 @@ StringUtils.isEmpty(" bob ") = false
 */
         return colsNameList;
     }
-
 }
+

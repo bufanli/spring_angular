@@ -143,7 +143,7 @@ public class DataService {
         }
 
         List<Data> dataList = new ArrayList<>();
-        long count = getDataDao().queryTableRows(tableName).longValue();
+        long count = getDataDao().queryTableRows(tableName,queryConditionsArr).longValue();
         if (count <= 0) {
 
         } else {

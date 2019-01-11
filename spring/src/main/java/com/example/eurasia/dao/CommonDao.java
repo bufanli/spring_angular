@@ -7,6 +7,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
 import java.sql.*;
@@ -23,10 +24,12 @@ public class CommonDao {
     // 加入JdbcTemplate作为成员变变量
     @Autowired
     public JdbcTemplate jdbcTemplate;
+
     // 注意这里要增加get和set方法
     public JdbcTemplate getJdbcTemplate() {
         return jdbcTemplate;
     }
+
     public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
@@ -34,9 +37,10 @@ public class CommonDao {
 
     /**
      * 创建数据库
+     *
      * @param databaseName
      * @return
-     * @exception
+     * @throws
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
@@ -66,10 +70,10 @@ SELECT information_schema.SCHEMATA.SCHEMA_NAME FROM information_schema.SCHEMATA 
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            if(databases != null) databases.close();
-            if(stmt != null) stmt.close();
-            if(preStatement != null) preStatement.close();
-            if(conn != null) conn.close();
+            if (databases != null) databases.close();
+            if (stmt != null) stmt.close();
+            if (preStatement != null) preStatement.close();
+            if (conn != null) conn.close();
         }
 
         return false;
@@ -77,9 +81,10 @@ SELECT information_schema.SCHEMATA.SCHEMA_NAME FROM information_schema.SCHEMATA 
 
     /**
      * 根据表名称创建一张表
+     *
      * @param tableName
      * @return
-     * @exception
+     * @throws
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
@@ -91,7 +96,7 @@ SELECT information_schema.SCHEMATA.SCHEMA_NAME FROM information_schema.SCHEMATA 
             } else {
                 ApplicationContext context = new ClassPathXmlApplicationContext("com/example/eurasia/config/applicationContext.xml");
                 DataXMLReader dataXMLReader = (DataXMLReader) context.getBean(beanName);
-                Map<String,String> map = dataXMLReader.getKeyValue();
+                Map<String, String> map = dataXMLReader.getKeyValue();
 
                 StringBuffer sql = new StringBuffer();
                 sql.append("CREATE TABLE `" + tableName + "` (");
@@ -115,9 +120,10 @@ SELECT information_schema.SCHEMATA.SCHEMA_NAME FROM information_schema.SCHEMATA 
 
     /**
      * 给表中某个字段添加唯一属性
+     *
      * @param tableName
      * @return
-     * @exception
+     * @throws
      * @author FuJia
      * @Time 2018-12-08 00:00:00
      */
@@ -132,11 +138,13 @@ SELECT information_schema.SCHEMATA.SCHEMA_NAME FROM information_schema.SCHEMATA 
         }
         return true;
     }
+
     /**
      * 创建SPRING_SESSION
+     *
      * @param
      * @return
-     * @exception
+     * @throws
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
@@ -195,9 +203,10 @@ CREATE TABLE SPRING_SESSION_ATTRIBUTES (
 
     /**
      * 创建SPRING_SESSION_ATTRIBUTES
+     *
      * @param
      * @return
-     * @exception
+     * @throws
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
@@ -229,9 +238,10 @@ CREATE TABLE SPRING_SESSION_ATTRIBUTES (
 
     /**
      * 查询数据库是否有某表
+     *
      * @param tableName
      * @return
-     * @exception Exception
+     * @throws Exception
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
@@ -240,7 +250,7 @@ CREATE TABLE SPRING_SESSION_ATTRIBUTES (
         ResultSet tables = null;
         try {
             DatabaseMetaData dbMetaData = conn.getMetaData();
-            String[] types = { "TABLE" };
+            String[] types = {"TABLE"};
             tables = dbMetaData.getTables(null, null, tableName, types);
             if (tables.next()) {
                 /*将光标从当前位置向前移一行。*/
@@ -258,12 +268,12 @@ CREATE TABLE SPRING_SESSION_ATTRIBUTES (
     }
 
     // angular得到的时间格式是 2018/9/11 和数据库2018/09/11里面不一致，所以转换一下
-    public String convertDateToNewFormat(String dateFromAngular){
+    public String convertDateToNewFormat(String dateFromAngular) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat(QueryCondition.PRODUCT_DATE_FORMAT);
-            java.util.Date tempDateEnd= sdf.parse(dateFromAngular);
+            java.util.Date tempDateEnd = sdf.parse(dateFromAngular);
             return sdf.format(tempDateEnd);
-        }catch(ParseException e){
+        } catch (ParseException e) {
             e.printStackTrace();
             // 格式不正确的时候至少返回原来的时间字符串
             return dateFromAngular;
@@ -272,9 +282,10 @@ CREATE TABLE SPRING_SESSION_ATTRIBUTES (
 
     /**
      * 查询表的记录数
+     *
      * @param
      * @return
-     * @exception
+     * @throws
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
@@ -287,10 +298,25 @@ CREATE TABLE SPRING_SESSION_ATTRIBUTES (
     }
 
     /**
+     * query table row with query conditions
+     * @param tableName
+     * @return
+     * @throws Exception
+     */
+    public Long queryTableRows(String tableName,
+                               QueryCondition[] queryConditions) throws Exception {
+        StringBuffer sql = convertQueryConditionsToSQL(tableName,queryConditions,true);
+        Long row = getJdbcTemplate().queryForObject(sql.toString(), Long.class);
+        //System.out.println("查询出来的记录数为：" + row);
+        return row;
+    }
+
+    /**
      * 查询表的字段数
+     *
      * @param
      * @return
-     * @exception
+     * @throws
      * @author FuJia
      * @Time 2018-11-17 00:00:00
      */
@@ -305,9 +331,10 @@ CREATE TABLE SPRING_SESSION_ATTRIBUTES (
 
     /**
      * 查询数据库中的最近一个月
+     *
      * @param tableName
      * @return
-     * @exception
+     * @throws
      * @author FuJia
      * @Time 2018-10-15 23:11:00
      */
@@ -344,10 +371,127 @@ select PERIOD_DIFF(DATE_FORMAT(CURDATE(),'%Y%m'),DATE_FORMAT(日期,'%Y%m')) fro
 
         List<Map<String, Object>> dateDescList = getJdbcTemplate().queryForList(sql.append(sqlDesc).toString());
 
-        String[] dateArr =  new String[2];
+        String[] dateArr = new String[2];
         dateArr[0] = dateAscList.get(0).get(dateColumnName).toString();
         dateArr[1] = dateDescList.get(0).get(dateColumnName).toString();
         return dateArr;
     }
 
+    /**
+     * convert query conditions to sql
+     */
+    protected StringBuffer convertQueryConditionsToSQL(String tableName,
+                                                       QueryCondition[] queryConditionsArr,
+                                                       boolean isQueryCount) {
+        String sqlAnd = " and ";
+        String sqlOr = " or ";
+        String sqlWhere = " where ";
+        boolean haveCondition = false;
+
+        StringBuffer sql = new StringBuffer();
+        if(isQueryCount) {
+            sql.append("select count(*) from " + tableName);
+        }else{
+           sql.append("select * from " +tableName);
+        }
+
+        sql.append(sqlWhere);
+        for (QueryCondition queryCondition : queryConditionsArr) {
+            String key = queryCondition.getKey();
+            switch (queryCondition.getType()) {
+                case QueryCondition.QUERY_CONDITION_TYPE_STRING:
+                    if (queryCondition.isValuesNotNULL() == true) {//不为空
+                        haveCondition = true;
+                        String value = queryCondition.getValue();
+                        sql.append("( ");
+                        sql.append(key + " like '%" + value + "%'");
+                        sql.append(" )");
+                        sql.append(sqlAnd);
+                    } else {
+
+                    }
+                    break;
+                case QueryCondition.QUERY_CONDITION_TYPE_DATE:
+                    haveCondition = true;
+                    String dateArr[] = queryCondition.getQueryConditionToArr();
+                    String dateStart = dateArr[0];
+                    String dateEnd = dateArr[1];
+                    sql.append("( ");
+                    if (dateStart.equals("") == true && dateEnd.equals("") == false) {
+                        dateStart = "(select min(" + key + "))";
+                        dateEnd = convertDateToNewFormat(dateEnd);
+                        sql.append(key + " between " + dateStart + " and '" + dateEnd + "'");
+                    } else if (dateStart.equals("") == false && dateEnd.equals("") == true) {
+                        dateStart = convertDateToNewFormat(dateStart);
+                        dateEnd = "(select max(" + key + "))";
+                        sql.append(key + " between '" + dateStart + "' and " + dateEnd);
+                    } else if (dateStart.equals("") == false && dateEnd.equals("") == false) {
+                        dateStart = convertDateToNewFormat(dateStart);
+                        dateEnd = convertDateToNewFormat(dateEnd);
+                        sql.append(key + " between '" + dateStart + "' and '" + dateEnd + "'");
+                    } else if (dateStart.equals("") == true && dateEnd.equals("") == true) {
+                        dateStart = "(select min(" + key + "))";
+                        dateEnd = "(select max(" + key + "))";
+                        sql.append(key + " between " + dateStart + " and " + dateEnd);
+                    }
+                    sql.append(" )");
+                    sql.append(sqlAnd);
+                    break;
+                case QueryCondition.QUERY_CONDITION_TYPE_MONEY:
+                case QueryCondition.QUERY_CONDITION_TYPE_AMOUNT:
+                    haveCondition = true;
+                    String arr[] = queryCondition.getQueryConditionToArr();
+                    String conditionStart = arr[0];
+                    String conditionEnd = arr[1];
+                    sql.append("( ");
+                    if (conditionStart.equals("") == true && conditionEnd.equals("") == false) {
+                        conditionStart = "(select min(" + key + "))";
+                        sql.append(key + " between " + conditionStart + " and '" + conditionEnd + "'");
+                    } else if (conditionStart.equals("") == false && conditionEnd.equals("") == true) {
+                        conditionEnd = "(select max(" + key + "))";
+                        sql.append(key + " between '" + conditionStart + "' and " + conditionEnd);
+                    } else if (conditionStart.equals("") == false && conditionEnd.equals("") == false) {
+                        sql.append(key + " between '" + conditionStart + "' and '" + conditionEnd + "'");
+                    } else if (conditionStart.equals("") == true && conditionEnd.equals("") == true) {
+                        conditionStart = "(select min(" + key + "))";
+                        conditionEnd = "(select max(" + key + "))";
+                        sql.append(key + " between " + conditionStart + " and " + conditionEnd);
+                    }
+                    sql.append(" )");
+                    sql.append(sqlAnd);
+                    break;
+                case QueryCondition.QUERY_CONDITION_TYPE_LIST:
+                    if (queryCondition.isValuesNotNULL() == true) {//不为空
+                        haveCondition = true;
+                        String listArr[] = queryCondition.getQueryConditionToArr();
+                        sql.append("( ");
+                        StringBuffer sqlList = new StringBuffer();
+                        for (String list : listArr) {
+                            if (!StringUtils.isEmpty(list)) {
+                                sqlList.append(key + " like '%" + list + "%'");
+                                sqlList.append(sqlOr);
+                            }
+                        }
+                        if (sqlList.indexOf(sqlOr) >= 0) {
+                            sqlList.delete((sqlList.length() - sqlOr.length()), sqlList.length());
+                        }
+                        sql.append(sqlList);
+                        sql.append(" )");
+                        sql.append(sqlAnd);
+                    } else {
+
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+        if (sql.indexOf(sqlAnd) >= 0) {
+            sql.delete((sql.length() - sqlAnd.length()), sql.length());
+        }
+        if (haveCondition == false) {
+            sql.delete((sql.length() - sqlWhere.length()), sql.length());
+        }
+        return sql;
+    }
 }
