@@ -11,10 +11,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class DataService {
@@ -143,11 +140,12 @@ public class DataService {
         }
 
         List<Data> dataList = new ArrayList<>();
-        long count = getDataDao().queryTableRows(tableName,queryConditionsArr).longValue();
+        long count = getDataDao().queryTableRows(tableName).longValue();
         if (count <= 0) {
 
         } else {
             dataList = getDataDao().queryListForObject(tableName,queryConditionsArr,offset,limit);
+            count = dataList.size();
         }
 
         return new SearchedData(count,dataList);
