@@ -73,8 +73,9 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
 
   // download data to file
   async downloadFile(): Promise<void> {
-    this.getQueryTime();
-    const searchParamJson = JSON.stringify(this.searchParam);
+    this.convertSelection();
+    const queryConditions: any = this.getQueryTime();
+    const searchParamJson = JSON.stringify(queryConditions);
     return this.downloadHttp.post(this.exportUrl, searchParamJson, httpDownloadOptions).toPromise().then(
       res => {
         importedSaveAs(res.blob());
