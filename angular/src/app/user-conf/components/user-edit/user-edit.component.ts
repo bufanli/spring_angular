@@ -9,13 +9,19 @@ import { UserBasicInfo } from '../../entities/user-basic-info';
 import { UserQueryConditionHeader } from '../../entities/user-query-condition-header';
 import { ComponentFactoryResolver, ComponentFactory } from '@angular/core';
 import { EventEmitter } from '@angular/core';
+import { CommonUtilitiesService } from 'src/app/common/services/common-utilities.service';
+import { CommonDialogCallback } from 'src/app/common/interfaces/common-dialog-callback.service';
 
 @Component({
   selector: 'app-user-edit',
   templateUrl: './user-edit.component.html',
   styleUrls: ['./user-edit.component.css']
 })
-export class UserEditComponent implements OnInit, OnDestroy {
+export class UserEditComponent implements OnInit, OnDestroy, CommonDialogCallback {
+
+  private static readonly USER_EDIT_ERROR_TITLE = '用户更新失败';
+  private static readonly USER_EDIT_ERROR_SOURCE_ID = 'SOURCE_ID_ERROR';
+  private static readonly USER_EDIT_ERROR_TYPE = 'danger';
 
   // user access authorities
   public currentUserAccessAuthorities: UserAccessAuthorities = null;
@@ -36,7 +42,8 @@ export class UserEditComponent implements OnInit, OnDestroy {
 
   constructor(private activeModal: NgbActiveModal,
     private userInfoService: UserInfoService,
-    private resolver: ComponentFactoryResolver) {
+    private resolver: ComponentFactoryResolver,
+    private commonUtilitiesService: CommonUtilitiesService) {
   }
 
   createComponent(type: string) {
@@ -106,7 +113,15 @@ export class UserEditComponent implements OnInit, OnDestroy {
       // update ok
       this.activeModal.close();
     } else {
-      // TODO update ng
+      // get message from response when add user failed
+      const failedReason = httpResponse.message;
+      // show modal dialog of error
+      this.commonUtilitiesService.showCommonDialog(
+        UserEditComponent.USER_EDIT_ERROR_TITLE,
+        failedReason,
+        UserEditComponent.USER_EDIT_ERROR_TYPE,
+        this,
+        UserEditComponent.USER_EDIT_ERROR_SOURCE_ID);
     }
   }
   ngOnDestroy() {
@@ -117,4 +132,14 @@ export class UserEditComponent implements OnInit, OnDestroy {
       this.componentRefAccessAuthorities.destroy();
     }
   }
+  // callback on modal dialog closed
+  callbackOnConfirm(sourceID: string): void {
+    // if error modal dialog is closed, then do nothing
+    if (sourceID === UserEditComponent.USER_EDIT_ERROR_SOURCE_ID) {
+      // nothing to do
+    } else {
+      // it is impossible, so do nothing
+    }
+  }
+
 }

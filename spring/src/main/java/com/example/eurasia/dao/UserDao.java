@@ -60,7 +60,7 @@ public class UserDao extends CommonDao {
      */
     public Long queryCountOfColumnValueExcept(String id, String tableName, String columnName, String value)
     {
-        String sql = "select count(*) from " + tableName +" where " + columnName + " = '" + value + "' and id no in ('" + id + "')";
+        String sql = "select count(*) from " + tableName +" where " + columnName + " = '" + value + "' and id not in ('" + id + "')";
         Long count = getJdbcTemplate().queryForObject(sql,Long.class);
         return count;
     }

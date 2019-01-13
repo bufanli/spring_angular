@@ -33,6 +33,7 @@ export const UserAccessAuthoritiesDictionary = [
   '导出数据图可否',
 ];
 export const UserBaiscInfosDictionary = [
+  'id',
   'userID',
   '昵称',
   '性别',

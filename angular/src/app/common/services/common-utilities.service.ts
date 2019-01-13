@@ -103,7 +103,14 @@ export class CommonUtilitiesService {
     dictionary.forEach(dicElement => {
       data.forEach(dataElement => {
         if (dataElement.key === dicElement) {
-          result[dicElement] = dataElement.value;
+          // convert string boolean to boolean
+          if (dataElement.value === 'true' || dataElement.value === 'TRUE') {
+            result[dicElement] = true;
+          } else if (dataElement.value === 'false' || dataElement.value === 'FALSE') {
+            result[dicElement] = false;
+          } else {
+            result[dicElement] = dataElement.value;
+          }
         }
       });
     });
@@ -116,6 +123,14 @@ export class CommonUtilitiesService {
       if (data[dicElement] !== undefined) {
         const elementRet: any = {};
         elementRet.key = dicElement;
+        // convert boolean to string boolean
+        if (data[dicElement] === true) {
+          data[dicElement] = 'TRUE';
+        } else if (data[dicElement] === false) {
+          data[dicElement] = 'FALSE';
+        } else {
+          // do nothing
+        }
         elementRet.value = data[dicElement];
         result.push(elementRet);
       }

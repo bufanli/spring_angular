@@ -83,7 +83,7 @@ public class UserService {
 
     public static final String COLUMN_SHOW_MORE = "更多";//在显示数据的表格最后增加的列
 
-    public static final String BR = "<br/>";
+    public static final String BR = "<br />";
 
     /**
      * 添加数据

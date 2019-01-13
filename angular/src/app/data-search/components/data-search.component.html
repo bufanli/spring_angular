@@ -76,7 +76,7 @@
           </div>
           <div class="col-md-2">
             <div class="form-group">
-              <button type="button" class="btn btn-default btn-block" (click)="onDownloadFile()">
+              <button type="button" class="btn btn-default btn-block" disabled="{{exportEnabled}}" (click)="onDownloadFile()">
                 <span class="glyphicon glyphicon-export"></span> 导出
               </button>
             </div>

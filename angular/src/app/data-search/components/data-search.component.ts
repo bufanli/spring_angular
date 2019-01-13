@@ -14,6 +14,8 @@ import 'bootstrap-select';
 import { HttpResponse } from '../../common/entities/http-response';
 import { saveAs as importedSaveAs } from 'file-saver';
 import { CommonUtilitiesService } from '../../common/services/common-utilities.service';
+import { CurrentUserContainerService } from 'src/app/common/services/current-user-container.service';
+import { UserAccessAuthorities } from 'src/app/user-conf/entities/user-access-authorities';
 
 // json header for post
 const httpOptions = {
@@ -47,6 +49,25 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
     { key: '规格型号', value: '', type: 'String' }
   ];
   public importCustoms: string[] = [];
+
+  // user access authorities definition
+  // 1. export button
+  public exportEnabled: string = null;
+  // 2. others
+
+  // init access authorities from current user container
+
+  private initAccessAuthorites(): void {
+    // get access authorities
+    const accessAuthorities: UserAccessAuthorities =
+      this.currentUserContainer.getCurrentUserAccessAuthorities();
+    // init export button
+    if (accessAuthorities['导出数据可否'] === true) {
+      this.exportEnabled = 'enabled';
+    } else {
+      this.exportEnabled = 'disabled';
+    }
+  }
 
   convertSelection(): void {
     let result = '';
@@ -89,7 +110,8 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
 
   constructor(private http: HttpClient,
     private downloadHttp: Http,
-    private commonUtilitiesService: CommonUtilitiesService) {
+    private commonUtilitiesService: CommonUtilitiesService,
+    private currentUserContainer: CurrentUserContainerService) {
   }
 
   getHeadersNotification(httpResponse: HttpResponse) {
@@ -191,6 +213,8 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
     // selectpicker must be called, otherwise select will not be shown
     $('#import-custom').selectpicker('destroy');
     $('#import-custom').selectpicker();
+    // init access authorities
+    this.initAccessAuthorites();
   }
   // get start and end time for querying
   getQueryTime() {
