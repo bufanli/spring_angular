@@ -1,5 +1,6 @@
 package com.example.eurasia.service.Data;
 
+import com.example.eurasia.entity.Data.Data;
 import com.example.eurasia.entity.Data.QueryCondition;
 import com.example.eurasia.entity.Data.SearchedData;
 import com.example.eurasia.service.Response.ResponseCodeEnum;
@@ -11,6 +12,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+
+import java.util.List;
 
 //@Slf4j
 /*@Transactional(readOnly = true)事物注解*/
@@ -31,6 +34,7 @@ public class SearchDataServiceImpl implements ISearchDataService {
     public ResponseResult searchData(String userID, QueryCondition[] queryConditionsArr, long offset, long limit) throws Exception {
 
         SearchedData searchedData;
+        List<Data> dataList;
         try {
             //检查查询条件的格式和内容
             String retCheck = this.checkQueryConditions(userID,queryConditionsArr);
@@ -45,20 +49,29 @@ public class SearchDataServiceImpl implements ISearchDataService {
             String strCanSearchCount = userService.getOneUserCustom(UserService.TABLE_USER_ACCESS_AUTHORITY,
                     UserService.MUST_SEARCH_COUNT,
                     userID);
-            if (!StringUtils.isEmpty(strCanSearchCount)) {
-                long canSearchCount = Long.parseLong(strCanSearchCount);
-                if ((offset+1)*limit > canSearchCount) {//超过的情况
-                    limit = canSearchCount - offset*limit;
+            long userMax = -1;
+            long userOffset = offset;
+            long userLimit = limit;
+            if (!StringUtils.isEmpty(strCanSearchCount)) {//可查询条数有限制
+                userMax = Long.parseLong(strCanSearchCount);
+                if ((offset+1)*limit > userMax) {//超过的情况
+                    userOffset = userMax/limit;
+                    userLimit = userMax%limit;
                 }
+            } else {//可查询条数没有限制
+                userMax = dataService.queryTableRows(DataService.TABLE_DATA);
             }
 
-            searchedData = dataService.searchData(DataService.TABLE_DATA,queryConditionsArr,offset,limit,"asc");
-            if (searchedData.getDataList() == null) {
+            dataList = dataService.searchData(DataService.TABLE_DATA,queryConditionsArr,userOffset,userLimit,"asc");
+            if (dataList == null) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.SEARCH_DATA_INFO_FROM_SQL_NULL);
             }
-            if (searchedData.getDataList().size() <= 0) {
+            if (dataList.size() <= 0) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.SEARCH_DATA_INFO_FROM_SQL_ZERO);
             }
+
+            searchedData = new SearchedData(userMax,dataList);
+
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseResultUtil().error(ResponseCodeEnum.SEARCH_DATA_INFO_FROM_SQL_FAILED);

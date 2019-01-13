@@ -221,7 +221,7 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
         try {
             Slf4jLogUtil.get().info("文件导出，查询数据开始");
 
-            dataList = dataService.searchData(tableName, queryConditionsArr);
+            dataList = dataService.searchDataForDownload(tableName, queryConditionsArr);
             if (dataList == null) {
                 throw new Exception(ResponseCodeEnum.EXPORT_GET_DATA_INFO_FROM_SQL_NULL.getMessage());
             }
