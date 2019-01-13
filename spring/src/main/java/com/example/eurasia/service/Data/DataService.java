@@ -4,7 +4,6 @@ import com.example.eurasia.dao.DataDao;
 import com.example.eurasia.entity.Data.Data;
 import com.example.eurasia.entity.Data.DataXMLReader;
 import com.example.eurasia.entity.Data.QueryCondition;
-import com.example.eurasia.entity.Data.SearchedData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -116,17 +115,12 @@ public class DataService {
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
-    public List<Data> searchData(String tableName, QueryCondition[] queryConditionsArr) throws Exception {
+    public List<Data> searchDataForDownload(String tableName, QueryCondition[] queryConditionsArr) throws Exception {
         if (StringUtils.isEmpty(tableName) || queryConditionsArr == null) {
             return null;
         }
 
-        long count = getDataDao().queryTableRows(tableName).longValue();
-        if (count <= 0) {
-            return new ArrayList<>();
-        }
-
-        return getDataDao().queryListForObject(tableName,queryConditionsArr,0,count);
+        return getDataDao().queryListForAllObject(tableName,queryConditionsArr);
     }
 
     /**
@@ -137,20 +131,12 @@ public class DataService {
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
-    public SearchedData searchData(String tableName, QueryCondition[] queryConditionsArr, long offset, long limit) throws Exception {
+    public List<Data> searchData(String tableName, QueryCondition[] queryConditionsArr, long offset, long limit, String order) throws Exception {
         if (StringUtils.isEmpty(tableName) || queryConditionsArr == null) {
             return null;
         }
 
-        List<Data> dataList = new ArrayList<>();
-        long count = getDataDao().queryTableRows(tableName,queryConditionsArr).longValue();
-        if (count <= 0) {
-
-        } else {
-            dataList = getDataDao().queryListForObject(tableName,queryConditionsArr,offset,limit);
-        }
-
-        return new SearchedData(count,dataList);
+        return getDataDao().queryListForObject(tableName,queryConditionsArr,offset,limit,order);
     }
 
     /**
@@ -272,4 +258,27 @@ public class DataService {
         return false;
     }
 
+    /**
+     * 查询表的记录数
+     *
+     * @param
+     * @return
+     * @throws
+     * @author FuJia
+     * @Time 2018-09-20 00:00:00
+     */
+    public long queryTableRows(String tableName) throws Exception {
+        return getDataDao().queryTableRows(tableName).longValue();
+    }
+
+    /**
+     * query table row with query conditions
+     * @param tableName
+     * @return
+     * @throws Exception
+     */
+    public long queryTableRows(String tableName,
+                               QueryCondition[] queryConditions) throws Exception {
+        return getDataDao().queryTableRows(tableName,queryConditions).longValue();
+    }
 }
