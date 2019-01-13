@@ -32,14 +32,27 @@ public class SearchDataServiceImpl implements ISearchDataService {
 
         SearchedData searchedData;
         try {
+            //检查查询条件的格式和内容
             String retCheck = this.checkQueryConditions(userID,queryConditionsArr);
             if (!StringUtils.isEmpty(retCheck)) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.SEARCH_DATA_QUERY_CONDITION_ERROR.getCode(),retCheck);
             }
 
+            //为未输入的查询条件进行默认值设定
             this.setUserQueryConditionDefaultValue(userID,queryConditionsArr);
 
-            searchedData = dataService.searchData(DataService.TABLE_DATA,queryConditionsArr,offset,limit);
+            //该用户可查询的条数
+            String strCanSearchCount = userService.getOneUserCustom(UserService.TABLE_USER_ACCESS_AUTHORITY,
+                    UserService.MUST_SEARCH_COUNT,
+                    userID);
+            if (!StringUtils.isEmpty(strCanSearchCount)) {
+                long canSearchCount = Long.parseLong(strCanSearchCount);
+                if ((offset+1)*limit > canSearchCount) {//超过的情况
+                    limit = canSearchCount - offset*limit;
+                }
+            }
+
+            searchedData = dataService.searchData(DataService.TABLE_DATA,queryConditionsArr,offset,limit,"asc");
             if (searchedData.getDataList() == null) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.SEARCH_DATA_INFO_FROM_SQL_NULL);
             }
@@ -65,17 +78,21 @@ public class SearchDataServiceImpl implements ISearchDataService {
             }
 
             // 检查内容
-            String queryConditionValue = null;
+            String queryConditionValueFromSql = null;
             switch (queryCondition.getKey()) {
-                case UserService.MUST_PRODUCT_DATE:
+                case UserService.MUST_PRODUCT_NUMBER:
                     //检查商品编码是否在该用户都权限内
-                    queryConditionValue = userService.getOneUserCustom(UserService.TABLE_USER_ACCESS_AUTHORITY,
+                    queryConditionValueFromSql = userService.getOneUserCustom(UserService.TABLE_USER_ACCESS_AUTHORITY,
                             UserService.MUST_PRODUCT_NUMBER,
                             userID);
-                    if (!queryConditionValue.equals(QueryCondition.QUERY_CONDITION_SPLIT)//"～～"的场合，是没有限制
-                            && queryConditionValue.contains(queryCondition.getValue()) == false) {
-                        ret.append(queryCondition.getKey() + ResponseCodeEnum.SEARCH_DATA_QUERY_CONDITION_ACCESS_ERROR.getMessage());
-                        ret.append(UserService.BR);
+                    if (!queryConditionValueFromSql.equals(QueryCondition.QUERY_CONDITION_SPLIT)) {//"～～"的场合，是没有限制
+                        String dateArr[] = queryCondition.getValue().split(QueryCondition.QUERY_CONDITION_SPLIT);
+                        for (String date:dateArr) {
+                            if (queryConditionValueFromSql.contains(date) == false) {
+                                ret.append(date + ResponseCodeEnum.SEARCH_DATA_QUERY_CONDITION_ACCESS_ERROR.getMessage());
+                                ret.append(UserService.BR);
+                            }
+                        }
                     }
                     break;
                 default:
@@ -91,23 +108,23 @@ public class SearchDataServiceImpl implements ISearchDataService {
 
     private void setUserQueryConditionDefaultValue(String userID, QueryCondition[] queryConditionsArr) throws Exception {
 
-        String queryConditionValue = null;
+        String queryConditionValueFromSql = null;
         for (QueryCondition queryCondition : queryConditionsArr) {
             switch (queryCondition.getKey()) {
                 case UserService.MUST_PRODUCT_DATE:
                     String dateArr[] = queryCondition.getQueryConditionToArr();
                     if (dateArr[0].equals("") || dateArr[1].equals("")) {//为了在起始日期和结束日期都存在都情况下，不查询该用户的日期范围
-                        queryConditionValue = userService.getOneUserCustom(UserService.TABLE_USER_ACCESS_AUTHORITY,
+                        queryConditionValueFromSql = userService.getOneUserCustom(UserService.TABLE_USER_ACCESS_AUTHORITY,
                                 UserService.MUST_PRODUCT_DATE,
                                 userID);
-                        String dateArrFromSql[] = queryConditionValue.split(QueryCondition.QUERY_CONDITION_SPLIT,-1);
+                        String dateArrFromSql[] = queryConditionValueFromSql.split(QueryCondition.QUERY_CONDITION_SPLIT,-1);
                         if (dateArr[0].equals("")) {
                             dateArr[0] = dateArrFromSql[0];
                         }
                         if (dateArr[1].equals("")) {
                             dateArr[1] = dateArrFromSql[1];
                         }
-                        queryCondition.setValue(queryConditionValue);
+                        queryCondition.setArrToQueryCondition(dateArr);
                     }
                     break;
                 default:

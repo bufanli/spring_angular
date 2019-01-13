@@ -1,5 +1,6 @@
 package com.example.eurasia.entity.Data;
 
+import com.example.eurasia.service.User.UserService;
 import com.example.eurasia.service.Util.Slf4jLogUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.util.StringUtils;
@@ -77,6 +78,18 @@ public class QueryCondition implements Cloneable {
         String s8 = "~~4";
         String[] sArr8 = s8.split("~~",-1);//{"","4"}
 */
+    }
+
+    @JsonIgnore
+    public String setArrToQueryCondition(String[] queryConditionArr) {
+        StringBuffer newQueryCondition = new StringBuffer();
+        for (String queryCondition:queryConditionArr) {
+            newQueryCondition.append(queryCondition + QueryCondition.QUERY_CONDITION_SPLIT);
+        }
+        if (newQueryCondition.indexOf(QueryCondition.QUERY_CONDITION_SPLIT) >= 0) {
+            newQueryCondition.delete((newQueryCondition.length() - UserService.BR.length()),newQueryCondition.length());
+        }
+        return newQueryCondition.toString();
     }
 
     /**

@@ -123,7 +123,7 @@ public class DataService {
             return new ArrayList<>();
         }
 
-        return getDataDao().queryListForObject(tableName,queryConditionsArr,0,count);
+        return getDataDao().queryListForObject(tableName,queryConditionsArr,0,count,"asc");
     }
 
     /**
@@ -134,7 +134,7 @@ public class DataService {
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
-    public SearchedData searchData(String tableName, QueryCondition[] queryConditionsArr, long offset, long limit) throws Exception {
+    public SearchedData searchData(String tableName, QueryCondition[] queryConditionsArr, long offset, long limit, String order) throws Exception {
         if (StringUtils.isEmpty(tableName) || queryConditionsArr == null) {
             return null;
         }
@@ -144,7 +144,7 @@ public class DataService {
         if (count <= 0) {
 
         } else {
-            dataList = getDataDao().queryListForObject(tableName,queryConditionsArr,offset,limit);
+            dataList = getDataDao().queryListForObject(tableName,queryConditionsArr,offset,limit,order);
             count = dataList.size();
         }
 

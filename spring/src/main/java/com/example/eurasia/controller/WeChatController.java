@@ -84,13 +84,24 @@ public class WeChatController {
 
                 // 判断openid在数据库中是否存在
                 if (userInfoServiceImpl.isUserIDExist(openId)) {
-                    // 存在，openid保存到session
-                    Slf4jLogUtil.get().info("weChatCallbackForLogin:用户存在");
-                    session.setAttribute(HttpSessionEnum.LOGIN_ID.getAttribute(), openId);
-                    session.setAttribute(HttpSessionEnum.LOGIN_STATUS.getAttribute(), HttpSessionEnum.LOGIN_STATUS_SUCCESS);
+                    // 判断用户有效期
+                    if (userInfoServiceImpl.checkUserValid(openId) == false) {
+                        Slf4jLogUtil.get().info("weChatCallbackForLogin:用户存在，但已过有效期");
+                        // 存在，openid保存到session
+                        session.setAttribute(HttpSessionEnum.LOGIN_ID.getAttribute(), openId);
+                        session.setAttribute(HttpSessionEnum.LOGIN_STATUS.getAttribute(), HttpSessionEnum.LOGIN_STATUS_INVALID);
 
-                    String url = String.format(HttpSessionEnum.LOGIN_SUCCESS_REDIRECT_URI,openId);
-                    response.sendRedirect(url);
+                        String url = String.format(HttpSessionEnum.LOGIN_INVALID_REDIRECT_URI,openId);
+                        response.sendRedirect(url);
+                    } else {
+                        Slf4jLogUtil.get().info("weChatCallbackForLogin:用户存在，在有效期内");
+                        // 存在，openid保存到session
+                        session.setAttribute(HttpSessionEnum.LOGIN_ID.getAttribute(), openId);
+                        session.setAttribute(HttpSessionEnum.LOGIN_STATUS.getAttribute(), HttpSessionEnum.LOGIN_STATUS_SUCCESS);
+
+                        String url = String.format(HttpSessionEnum.LOGIN_SUCCESS_REDIRECT_URI,openId);
+                        response.sendRedirect(url);
+                    }
                 } else {
                     // 不存在
                     Slf4jLogUtil.get().info("weChatCallbackForLogin:用户不存在");

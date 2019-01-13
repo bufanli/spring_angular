@@ -7,7 +7,7 @@
     <column key="装货港" value="List" />
     <column key="中转国" value="List" />
     <column key="原产国" value="List" />
-    <column key="商品编码" value="String" />
+    <column key="商品编码" value="List" />
     <column key="产品名称" value="String" />
     <column key="厂号" value="String" />
     <column key="生产工厂" value="String" />

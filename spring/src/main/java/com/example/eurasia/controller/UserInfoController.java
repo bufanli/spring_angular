@@ -65,9 +65,11 @@ public class UserInfoController {
             if (userInfoServiceImpl.isUserIDExist(userName) == false) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_NO_USER);
             }
+            // 判断用户名和密码
             if (userInfoServiceImpl.checkUserPassWord(userName,userPassword) == false) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_USERNAME_PASSWORD_ERROR);
             }
+            // 判断用户有效期
             if (userInfoServiceImpl.checkUserValid(userName) == false) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_USER_INVALID);
             }

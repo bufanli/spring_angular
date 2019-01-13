@@ -244,9 +244,11 @@ StringUtils.isEmpty(" bob ") = false
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
-    public List<Data> queryListForObject(String tableName, QueryCondition[] queryConditionsArr, long offset, long limit) {
+    public List<Data> queryListForObject(String tableName, QueryCondition[] queryConditionsArr, long offset, long limit, String order) {
         StringBuffer sql = convertQueryConditionsToSQL(tableName,queryConditionsArr,false);
         sql.append(" LIMIT " + String.valueOf(offset) + "," + String.valueOf(limit));
+        sql.append(" order by " + order);
+
         List<Data> dataList = getJdbcTemplate().query(sql.toString(), new DataMapper());
         return dataList;
     }
