@@ -191,6 +191,34 @@ StringUtils.isEmpty(" ") = false //注意在 StringUtils 中空格作非空处�
 StringUtils.isEmpty("   ") = false
 StringUtils.isEmpty("bob") = false
 StringUtils.isEmpty(" bob ") = false
+
+StringUtils.isBlank(""); // true
+StringUtils.isBlank(" "); // true
+StringUtils.isBlank("     "); // true
+StringUtils.isBlank("\t"); // true
+StringUtils.isBlank("\r"); // true
+StringUtils.isBlank("\n"); // true
+StringUtils.isBlank(null); // true
+
+StringUtils.isEmpty(""); // true
+StringUtils.isEmpty(" "); // false
+StringUtils.isEmpty("     "); // false
+StringUtils.isEmpty("\t"); // false
+StringUtils.isEmpty("\r"); // false
+StringUtils.isEmpty("\n"); // false
+StringUtils.isEmpty(null); // true
+
+StringUtils.isWhitespace(""); // true
+StringUtils.isWhitespace(" "); // true
+StringUtils.isWhitespace("    "); // true
+StringUtils.isWhitespace("\t"); // true
+StringUtils.isWhitespace("\r"); // true
+StringUtils.isWhitespace("\n"); // true
+StringUtils.isWhitespace(null); // false
+从上面的结果可以看出，
+    blank：代表的是空串("")、空白符(空格""，" "，制表符"\t"，回车符"\r"，"\n"等)以及null值；
+    empty：代表的是空串("")和null值，不包含空白符；
+    whitespace：包含空串("")和空白符，不包含null值.
 */
             if (!StringUtils.isEmpty(entry.getValue().toString())) {
                 if(!entry.getValue().toString().contains("||")) {
@@ -244,10 +272,17 @@ StringUtils.isEmpty(" bob ") = false
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
-    public List<Data> queryListForObject(String tableName, QueryCondition[] queryConditionsArr, long offset, long limit, String order) {
+    public List<Data> queryListForObject(String tableName, QueryCondition[] queryConditionsArr, long offset, long limit, Map<String, String> order) {
         StringBuffer sql = convertQueryConditionsToSQL(tableName,queryConditionsArr,false);
         sql.append(" LIMIT " + String.valueOf(offset) + "," + String.valueOf(limit));
-        sql.append(" order by " + order);
+        sql.append(" order by ");
+        Set<Map.Entry<String, String>> set = order.entrySet();
+        Iterator<Map.Entry<String, String>> it = set.iterator();
+        while (it.hasNext()) {
+            Map.Entry<String,String> entry = it.next();
+            sql.append(entry.getKey() + " " + entry.getValue() + CommonDao.COMMA);
+        }
+        sql.deleteCharAt(sql.length() - CommonDao.COMMA.length());
 
         List<Data> dataList = getJdbcTemplate().query(sql.toString(), new DataMapper());
         return dataList;

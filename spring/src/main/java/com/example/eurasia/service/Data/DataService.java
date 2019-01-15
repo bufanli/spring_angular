@@ -131,7 +131,7 @@ public class DataService {
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
-    public List<Data> searchData(String tableName, QueryCondition[] queryConditionsArr, long offset, long limit, String order) throws Exception {
+    public List<Data> searchData(String tableName, QueryCondition[] queryConditionsArr, long offset, long limit, Map<String, String> order) throws Exception {
         if (StringUtils.isEmpty(tableName) || queryConditionsArr == null) {
             return null;
         }

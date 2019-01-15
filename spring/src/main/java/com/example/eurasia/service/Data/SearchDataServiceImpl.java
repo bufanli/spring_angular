@@ -13,7 +13,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 //@Slf4j
 /*@Transactional(readOnly = true)事物注解*/
@@ -62,7 +64,11 @@ public class SearchDataServiceImpl implements ISearchDataService {
                 userMax = dataService.queryTableRows(DataService.TABLE_DATA);
             }
 
-            dataList = dataService.searchData(DataService.TABLE_DATA,queryConditionsArr,userOffset,userLimit,"asc");
+
+            Map<String, String> order = new LinkedHashMap<>();
+            order.put("id","asc");
+            order.put("userID","desc");
+            dataList = dataService.searchData(DataService.TABLE_DATA,queryConditionsArr,userOffset,userLimit,order);
             if (dataList == null) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.SEARCH_DATA_INFO_FROM_SQL_NULL);
             }
