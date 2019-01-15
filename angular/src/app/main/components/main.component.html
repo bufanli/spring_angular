@@ -16,7 +16,7 @@
         <li><a routerLink="/web/main/data-search/"><span class="glyphicon glyphicon-search"></span>
             检索</a></li>
         <li *ngIf="isShowUploadMenu"><a routerLink="/web/main/data-upload/"><span class="glyphicon glyphicon-upload"></span> 上传</a></li>
-        <li><a routerLink="/web/main/user-conf/"><span class="glyphicon glyphicon-user"></span> 用户管理</a></li>
+        <li *ngIf="isShowUserConfMenu"><a routerLink="/web/main/user-conf/"><span class="glyphicon glyphicon-user"></span> 用户管理</a></li>
       </ul>
     </div>
   </div>
