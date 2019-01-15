@@ -4,18 +4,20 @@ import { Http, Headers, RequestOptions, Response, ResponseContentType } from '@a
 import { URLSearchParams } from '@angular/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
-import { Product } from '../entities/product';
-import { Header } from '../../common/entities/header';
+import { Product } from '../../entities/product';
+import { Header } from '../../../common/entities/header';
 import 'jquery';
 import 'bootstrap';
 import 'bootstrap-datepicker';
 import 'bootstrap-table';
 import 'bootstrap-select';
-import { HttpResponse } from '../../common/entities/http-response';
+import { HttpResponse } from '../../../common/entities/http-response';
 import { saveAs as importedSaveAs } from 'file-saver';
-import { CommonUtilitiesService } from '../../common/services/common-utilities.service';
+import { CommonUtilitiesService } from '../../../common/services/common-utilities.service';
 import { CurrentUserContainerService } from 'src/app/common/services/current-user-container.service';
 import { UserAccessAuthorities } from 'src/app/user-conf/entities/user-access-authorities';
+import { NgbModal, NgbModalOptions, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
+import { DataDetailComponent } from '../data-detail/data-detail.component';
 
 // json header for post
 const httpOptions = {
@@ -35,9 +37,20 @@ const httpDownloadOptions = {
   styleUrls: ['./data-search.component.css']
 })
 export class DataSearchComponent implements OnInit, AfterViewChecked {
+  // sequence field and title
+  private static readonly SEQUENCE_FIELD = 'seq';
+  private static readonly SEQUENCE_TITLE = '';
+  // operations field and title
+  private static readonly OPERATIONS_FIELD = 'operations';
+  private static readonly OPERATIONS_TITLE = '操作';
+  private static readonly DATA_DETAIL_TITLE = '查看详细';
+  // api urls
   private searchUrl = 'searchData';  // URL to web api
   private exportUrl = 'downloadFile';  // URL to web api
   private headersUrl = 'getHeaders';  // URL to web api
+
+  // this id is just for compiling pass
+  private id: string = null;
   // search parameters
   searchParam = [
     { key: '进口关区', value: '', type: 'List' },
@@ -111,7 +124,9 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
   constructor(private http: HttpClient,
     private downloadHttp: Http,
     private commonUtilitiesService: CommonUtilitiesService,
-    private currentUserContainer: CurrentUserContainerService) {
+    private currentUserContainer: CurrentUserContainerService,
+    public modalService: NgbModal) {
+
   }
 
   getHeadersNotification(httpResponse: HttpResponse) {
@@ -157,6 +172,10 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
             'total': 0
           };
         }
+      },
+      onLoadSuccess: function (data) {
+        // bind data detail on initial step
+        that.bindDataDetailEventHandler(null);
       }
     });
   }
@@ -173,13 +192,34 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
 
   // add formatter to all headers
   private addFormatterToHeaders(headers: Header[]) {
-    const seq: Header = new Header('seq', '', true);
+    const that: any = this;
+    // sequence header
+    const seq: Header = new Header(DataSearchComponent.SEQUENCE_FIELD,
+      DataSearchComponent.SEQUENCE_TITLE,
+      true);
     seq.width = 50;
     seq.formatter = function (value, row, index) {
       return index + 1;
     };
-    let allHeaders: Header[] = [seq];
-    this.commonUtilitiesService.addTooltipFormatter(headers, 200);
+
+    // operations header
+    const operations = new Header(DataSearchComponent.OPERATIONS_FIELD,
+      DataSearchComponent.OPERATIONS_TITLE,
+      true);
+    operations.formatter = function (value, row, index) {
+      const buttonId = row.id;
+      if (that.hasDataDetailAccessAuthority() === true) {
+        return '<button type=\'button\' id=' + buttonId + ' class=\'btn btn-primary btn-xs \'>\
+        <span class=\'glyphicon glyphicon-folder-open\'></span>' + '&nbsp;&nbsp;' + DataSearchComponent.DATA_DETAIL_TITLE + '</button>';
+      } else {
+        return '<button disabled=\'disabled\' type=\'button\' id=' + buttonId + ' class=\'btn btn-primary btn-xs \'>\
+        <span class=\'glyphicon glyphicon-folder-open\'></span>' + '&nbsp;&nbsp;' + DataSearchComponent.DATA_DETAIL_TITLE + '</button>';
+      }
+    };
+    operations.width = 100;
+    // get all headers
+    let allHeaders: Header[] = [seq, operations];
+    this.commonUtilitiesService.addTooltipFormatter(headers, 150);
     allHeaders = allHeaders.concat(headers);
     return allHeaders;
   }
@@ -215,6 +255,59 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
     $('#import-custom').selectpicker();
     // init access authorities
     this.initAccessAuthorites();
+    // bind data detail button on page change event
+    $('#table').on('page-change.bs.table', this, this.bindDataDetailEventHandler);
+  }
+
+  // bind data detail event handler to every page
+  private bindDataDetailEventHandler(target) {
+    if (target == null) {
+      // get current page data
+      const currentPageData = $('#table').bootstrapTable('getData');
+      // bind user edit event, this.modalService is passed as target.data
+      for (let i = 0; i < currentPageData.length; i++) {
+        const buttonId = '#' + currentPageData[i]['id'];
+        $(buttonId).on('click', this, this.showDataDetailModal);
+      }
+    } else {
+      // call from html context
+      const component = target.data;
+      // get current page data
+      const currentPageData = $('#table').bootstrapTable('getData');
+      // bind user edit event, this.modalService is passed as target.data
+      for (let i = 0; i < currentPageData.length; i++) {
+        const buttonId = '#' + currentPageData[i]['id'];
+        $(buttonId).on('click', component, component.showUserSettingModal);
+      }
+    }
+  }
+  // show data detail modal
+  showDataDetailModal(target): void {
+    const service: NgbModal = target.data.modalService;
+    const data: any = target.data.getCurrentData(this.id);
+    // you can not call this.adjustModalOptions,
+    // because showUserSettingModal called in html context
+    const modalRef = service.open(DataDetailComponent, target.data.adjustModalOptions());
+    modalRef.componentInstance.setCurrentData(data);
+    modalRef.componentInstance.notifyClose.subscribe(response => target.data.callbackOfShowDataDetailEnd(response));
+  }
+  // call back when data detail dialog closed
+  private callbackOfShowDataDetailEnd(response: any): void {
+    // do nothing
+  }
+  // get current row's data by id
+  private getCurrentData(id: any): any {
+    const data: any = $('#table').bootstrapTable('getRowByUniqueId', id);
+    return data;
+  }
+  // adjust modal options
+  // adjust modal options
+  // if don't adjust modal options, modal will not be shown correctly
+  adjustModalOptions(): NgbModalOptions {
+    const options: NgbModalOptions = new NgbModalConfig();
+    options.backdrop = false;
+    options.windowClass = 'modal fade in';
+    return options;
   }
   // get start and end time for querying
   getQueryTime() {
@@ -264,5 +357,16 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
     $('[data-toggle="tooltip"]').each(function () {
       $(this).tooltip();
     });
+  }
+  // tell if current user has data detail access authority
+  private hasDataDetailAccessAuthority(): boolean {
+    // get current user's access authorities
+    const currentUserAccessAuthorities: UserAccessAuthorities =
+      this.currentUserContainer.getCurrentUserAccessAuthorities();
+    if (currentUserAccessAuthorities['查看详细可否'] === true) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }

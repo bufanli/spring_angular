@@ -1,0 +1,8 @@
+.data-detail-container {
+  height: 400px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+.my-control-label{
+  padding-top: 7px;
+}

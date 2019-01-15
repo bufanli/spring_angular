@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { HttpResponse } from 'src/app/common/entities/http-response';
 import { HttpClient } from '@angular/common/http';
 import { map } from 'rxjs/operators';
+import { CurrentUserContainerService } from 'src/app/common/services/current-user-container.service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +12,8 @@ import { map } from 'rxjs/operators';
 export class MainGuardService implements CanActivate, CanActivateChild {
   private static readonly IS_LOGGING_URL = 'isUserLogging';
   constructor(private router: Router,
-    private http: HttpClient) { }
+    private http: HttpClient,
+    private currentUserContainerService: CurrentUserContainerService) { }
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
     return this.loginCheck();
   }

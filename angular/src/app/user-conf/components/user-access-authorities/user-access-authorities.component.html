@@ -40,7 +40,7 @@
     <div class="form-group">
       <div class="input-group">
         <span class="input-group-addon" id="lookup-times-label{{this.componentID}}">查看详细频度(每分钟)</span>
-        <input type="number" [(ngModel)]="currentUserAccessAuthorities['查看详细频度']" name="lookup-times{{this.componentID}}"
+        <input disabled="disabled" type="number" [(ngModel)]="currentUserAccessAuthorities['查看详细频度']" name="lookup-times{{this.componentID}}"
           class="form-control" aria-describedby="lookup-times-label">
       </div>
     </div>
@@ -60,7 +60,7 @@
     <div class="form-group">
       <div class="checkbox">
         <label>
-          <input type="checkbox" [(ngModel)]="currentUserAccessAuthorities['复制数据可否']" name="data-copy">复制数据可否
+          <input disabled="disabled" type="checkbox" [(ngModel)]="currentUserAccessAuthorities['复制数据可否']" name="data-copy">复制数据可否
         </label>
       </div>
     </div>
@@ -89,7 +89,7 @@
     <div class="form-group">
       <div class="checkbox">
         <label>
-          <input type="checkbox" [(ngModel)]="currentUserAccessAuthorities['复制详细可否']">复制详细可否
+          <input disabled="disabled" type="checkbox" [(ngModel)]="currentUserAccessAuthorities['复制详细可否']">复制详细可否
         </label>
       </div>
     </div>
@@ -98,7 +98,7 @@
     <div class="form-group">
       <div class="checkbox">
         <label>
-          <input type="checkbox" [(ngModel)]="currentUserAccessAuthorities['下载详细可否']">下载详细可否
+          <input disabled="disabled" type="checkbox" [(ngModel)]="currentUserAccessAuthorities['下载详细可否']">下载详细可否
         </label>
       </div>
     </div>
