@@ -34,8 +34,8 @@ export class LoginComponent implements OnInit {
       if (auth === 'ok') {
         // get open id
         const openID = params['openid'];
-        // save it into current user container service
-        this.currentUserContainerService.saveUserOpenID(this, openID);
+        // navigate to main component
+        this.router.navigate(['/web/main']);
       } else if (auth === 'ng') {
         const reason = params['reason'];
         if (reason === 'user_refused') {
@@ -55,14 +55,7 @@ export class LoginComponent implements OnInit {
   public dummyLogin(): void {
     window.location.href = this.loginURL;
   }
-  // call back to finish getting user basic info and detail info
-  public getUserInfoCallback(errorCode: number) {
-    if (errorCode === 0) {
-      this.router.navigate(['/web/main']);
-    } else {
-      // todo
-    }
-  }
+
   private showBarCode() {
     const obj = new WxLogin({
       self_redirect: false,

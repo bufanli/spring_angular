@@ -26,6 +26,8 @@ export class MainGuardService implements CanActivate, CanActivateChild {
         this.router.navigate(['/web/login/user']);
         return false;
       } else {
+        // save user info to user container
+        this.currentUserContainerService.saveUserInfo(httpResponse.data);
         return true;
       }
     }));

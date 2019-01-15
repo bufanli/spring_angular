@@ -29,7 +29,7 @@ export class AdminLoginComponent implements OnInit {
 
   private adminLoginNotification(httpResponse: HttpResponse) {
     if (httpResponse.code === 200) {
-      this.currentUserContainerService.saveAdminOpenID(this, this.name);
+      this.router.navigate(['/web/main']);
     } else {
       this.error = true;
     }
@@ -38,13 +38,4 @@ export class AdminLoginComponent implements OnInit {
   public onChangeInput(): void {
     this.error = false;
   }
-  // call back to finish getting user basic info and detail info
-  public getUserInfoCallback(errorCode: number) {
-    if (errorCode === 0) {
-      this.router.navigate(['/web/main']);
-    } else {
-      // todo
-    }
-  }
-
 }
