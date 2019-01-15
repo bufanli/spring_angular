@@ -272,10 +272,17 @@ StringUtils.isWhitespace(null); // false
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
-    public List<Data> queryListForObject(String tableName, QueryCondition[] queryConditionsArr, long offset, long limit, String order) {
+    public List<Data> queryListForObject(String tableName, QueryCondition[] queryConditionsArr, long offset, long limit, Map<String, String> order) {
         StringBuffer sql = convertQueryConditionsToSQL(tableName,queryConditionsArr,false);
         sql.append(" LIMIT " + String.valueOf(offset) + "," + String.valueOf(limit));
-        sql.append(" order by " + order);
+        sql.append(" order by ");
+        Set<Map.Entry<String, String>> set = order.entrySet();
+        Iterator<Map.Entry<String, String>> it = set.iterator();
+        while (it.hasNext()) {
+            Map.Entry<String,String> entry = it.next();
+            sql.append(entry.getKey() + " " + entry.getValue() + CommonDao.COMMA);
+        }
+        sql.deleteCharAt(sql.length() - CommonDao.COMMA.length());
 
         List<Data> dataList = getJdbcTemplate().query(sql.toString(), new DataMapper());
         return dataList;
