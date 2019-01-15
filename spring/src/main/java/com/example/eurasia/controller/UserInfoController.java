@@ -1,6 +1,8 @@
 package com.example.eurasia.controller;
 
+import com.example.eurasia.entity.Data.Data;
 import com.example.eurasia.entity.User.UserCustom;
+import com.example.eurasia.entity.User.UserDetailedInfos;
 import com.example.eurasia.entity.User.UserInfo;
 import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Response.ResponseResult;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.List;
 
 //@Slf4j
 @Controller
@@ -104,7 +107,23 @@ public class UserInfoController {
                 // 登陆的时候，才会有id
                 String loginStatus = (String)session.getAttribute(HttpSessionEnum.LOGIN_STATUS.getAttribute());
                 if (loginStatus.equals(HttpSessionEnum.LOGIN_STATUS_SUCCESS)) {
-                    responseResult = new ResponseResultUtil().success(ResponseCodeEnum.SYSTEM_LOGIN_ING);
+
+                    ResponseResult userBasicInfoRes = userInfoServiceImpl.getUserBasicInfo(userID);
+                    ResponseResult userDetailedInfosRes = userInfoServiceImpl.getUserDetailedInfos(userID);
+
+                    if (userBasicInfoRes.getCode() == ResponseCodeEnum.USER_GET_BASIC_INFO_FROM_SQL_SUCCESS.getCode() &&
+                            userBasicInfoRes.getMessage().equals(ResponseCodeEnum.USER_GET_BASIC_INFO_FROM_SQL_SUCCESS.getMessage()) &&
+                            userDetailedInfosRes.getCode() == ResponseCodeEnum.USER_GET_DETAILED_INFOS_SUCCESS.getCode() &&
+                            userDetailedInfosRes.getMessage().equals(ResponseCodeEnum.USER_GET_DETAILED_INFOS_SUCCESS.getMessage())
+                    ) {
+                        UserInfo userInfo = new UserInfo(
+                                ((List<Data>)userBasicInfoRes.getData()).get(0).toUserCustomArr(),
+                                ((UserDetailedInfos)userDetailedInfosRes.getData()));
+                        responseResult = new ResponseResultUtil().success(ResponseCodeEnum.SYSTEM_LOGIN_ING, userInfo);
+                    } else {
+                        responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_ING_INFO_FAILED);
+                    }
+
                 } else if (loginStatus.equals(HttpSessionEnum.LOGIN_STATUS_NO_USER)) {
                     responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_NO_USER);
                 } else {

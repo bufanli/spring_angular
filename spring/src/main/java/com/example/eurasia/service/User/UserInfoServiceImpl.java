@@ -90,7 +90,7 @@ public class UserInfoServiceImpl {
             if (userBasicInfosList == null) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.USER_GET_BASIC_INFO_FROM_SQL_NULL);
             }
-            if (userBasicInfosList.size() == 0) {
+            if (userBasicInfosList.size() != 1) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.USER_GET_BASIC_INFO_FROM_SQL_ZERO);
             }
         } catch (Exception e) {

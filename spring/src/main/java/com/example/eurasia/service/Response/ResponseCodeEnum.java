@@ -7,12 +7,15 @@ public enum ResponseCodeEnum {
     SYSTEM_LOGIN_FAILED(ResponseCode.RESPONSE_CODE_NG, "登录失败"),
     SYSTEM_LOGIN_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "登录成功"),
     SYSTEM_LOGIN_ING(ResponseCode.RESPONSE_CODE_ING, "用户登陆中"),
+    SYSTEM_LOGIN_ING_INFO_FAILED(ResponseCode.RESPONSE_CODE_NG, "用户登陆中,但用户信息获取失败"),
     SYSTEM_LOGIN_NOT_ING(ResponseCode.RESPONSE_CODE_NOT_ING, "用户没有登陆中"),
     SYSTEM_LOGIN_NO_USER(ResponseCode.RESPONSE_CODE_NG, "没有该登陆用户"),
     SYSTEM_LOGIN_USERNAME_PASSWORD_ERROR(ResponseCode.RESPONSE_CODE_NG, "用户名或者密码错误"),
     SYSTEM_LOGIN_USER_INVALID(ResponseCode.RESPONSE_CODE_INVALID, "用户有效期已过"),
 
     /* 用户 */
+    USER_GET_INFO_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "取得用户所有信息成功"),
+    USER_GET_INFO_FAILED(ResponseCode.RESPONSE_CODE_NG, "取得用户所有信息失败"),
     USER_GET_BASIC_INFO_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "取得用户基本信息成功"),
     USER_GET_BASIC_INFO_FAILED(ResponseCode.RESPONSE_CODE_NG, "取得用户基本信息失败"),
     USER_GET_DETAILED_INFOS_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "取得用户详细信息成功"),
