@@ -12,8 +12,7 @@
             <div class="form-group">
               <select class="form-control selectpicker" multiple title="请选择进口关区" id="import-custom" [(ngModel)]="importCustoms"
                 name="import-custom">
-                <option value='上海关区'>上海关区</option>
-                <option value='天津关区'>天津关区</option>
+                <option *ngFor="let custom of IMPORT_CUSTOMS_ENUM" value ="{{custom}}">{{custom}}</option>
               </select>
             </div>
           </div>

@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewChecked } from '@angular/core';
+import { Component, OnInit, AfterViewChecked, AfterViewInit } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Http, Headers, RequestOptions, Response, ResponseContentType } from '@angular/http';
 import { URLSearchParams } from '@angular/http';
@@ -36,7 +36,8 @@ const httpDownloadOptions = {
   templateUrl: './data-search.component.html',
   styleUrls: ['./data-search.component.css']
 })
-export class DataSearchComponent implements OnInit, AfterViewChecked {
+export class DataSearchComponent implements OnInit, AfterViewChecked, AfterViewInit {
+
   // sequence field and title
   private static readonly SEQUENCE_FIELD = 'seq';
   private static readonly SEQUENCE_TITLE = '';
@@ -49,6 +50,27 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
   private exportUrl = 'downloadFile';  // URL to web api
   private headersUrl = 'getHeaders';  // URL to web api
 
+  public IMPORT_CUSTOMS_ENUM = [
+    '天津关区',
+    '上海关区',
+    '深圳关区',
+    '广东分署',
+    '大连关区',
+    '青岛关区',
+    '宁波关区',
+    '厦门关区',
+    '许昌海关',
+    '合肥关区',
+    '南京关区',
+    '郑州关区',
+    '兰州海关',
+    '杭州关区',
+    '福州关区',
+    '黄埔关区',
+    '北京关区',
+    '南宁关区',
+    '重庆关区',
+  ];
   // this id is just for compiling pass
   private id: string = null;
   // search parameters
@@ -250,13 +272,18 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
       $(this).datepicker('update', new Date());
     });
 
-    // selectpicker must be called, otherwise select will not be shown
-    $('#import-custom').selectpicker('destroy');
-    $('#import-custom').selectpicker();
     // init access authorities
     this.initAccessAuthorites();
     // bind data detail button on page change event
     $('#table').on('page-change.bs.table', this, this.bindDataDetailEventHandler);
+  }
+
+  // just for select picker
+  ngAfterViewInit(): void {
+    // if call selectpicker in ngOnInit, select control will not be shown for some reason
+    // but call selectpicker can resolve this issue in ngAfterViewInit
+    $('#import-custom').selectpicker('val', '');
+    $('#import-custom').selectpicker('refresh');
   }
 
   // bind data detail event handler to every page
