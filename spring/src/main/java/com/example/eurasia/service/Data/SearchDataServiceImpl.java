@@ -67,7 +67,8 @@ public class SearchDataServiceImpl implements ISearchDataService {
 
             Map<String, String> order = new LinkedHashMap<>();
             order.put("id","asc");
-            order.put("userID","desc");
+            // data has no userID field, delete it
+//            order.put("userID","desc");
             dataList = dataService.searchData(DataService.TABLE_DATA,queryConditionsArr,userOffset,userLimit,order);
             if (dataList == null) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.SEARCH_DATA_INFO_FROM_SQL_NULL);

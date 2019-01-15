@@ -274,7 +274,6 @@ StringUtils.isWhitespace(null); // false
      */
     public List<Data> queryListForObject(String tableName, QueryCondition[] queryConditionsArr, long offset, long limit, Map<String, String> order) {
         StringBuffer sql = convertQueryConditionsToSQL(tableName,queryConditionsArr,false);
-        sql.append(" LIMIT " + String.valueOf(offset) + "," + String.valueOf(limit));
         sql.append(" order by ");
         Set<Map.Entry<String, String>> set = order.entrySet();
         Iterator<Map.Entry<String, String>> it = set.iterator();
@@ -283,6 +282,7 @@ StringUtils.isWhitespace(null); // false
             sql.append(entry.getKey() + " " + entry.getValue() + CommonDao.COMMA);
         }
         sql.deleteCharAt(sql.length() - CommonDao.COMMA.length());
+        sql.append(" LIMIT " + String.valueOf(offset) + "," + String.valueOf(limit));
 
         List<Data> dataList = getJdbcTemplate().query(sql.toString(), new DataMapper());
         return dataList;
