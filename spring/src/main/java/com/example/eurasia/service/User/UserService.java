@@ -97,7 +97,7 @@ public class UserService {
     public void userServiceInit() throws Exception {
         try {
             //创建用户用表
-            if (this.createTable(UserService.TABLE_USER_BASIC_INFO,BEAN_NAME_USER_BASIC_INFO) == true) {
+            if (this.createTable(UserService.TABLE_USER_BASIC_INFO,UserService.BEAN_NAME_USER_BASIC_INFO) == true) {
                 //给以下字段添加唯一属性
                 this.addUnique(UserService.TABLE_USER_BASIC_INFO, UserService.MUST_USER_ID);
                 this.addUnique(UserService.TABLE_USER_BASIC_INFO, UserService.MUST_USER_PHONE);
@@ -107,7 +107,7 @@ public class UserService {
                 this.addUserForBasicInfo(UserService.USER_DEFAULT,null);
 
             }
-            if (this.createTable(UserService.TABLE_USER_ACCESS_AUTHORITY,BEAN_NAME_USER_ACCESS_AUTHORITY) == true) {
+            if (this.createTable(UserService.TABLE_USER_ACCESS_AUTHORITY,UserService.BEAN_NAME_USER_ACCESS_AUTHORITY) == true) {
                 //给以下字段添加唯一属性
                 this.addUnique(UserService.TABLE_USER_ACCESS_AUTHORITY, UserService.MUST_USER_ID);
 
@@ -115,7 +115,7 @@ public class UserService {
                 this.addUserForAccessAuthority(UserService.USER_ADMINISTRATOR,null);
                 this.addUserForAccessAuthority(UserService.USER_DEFAULT,null);
             }
-            if (this.createTable(UserService.TABLE_USER_QUERY_CONDITION_DISPLAY,BEAN_NAME_USER_QUERY_CONDITION_DISPLAY) == true) {
+            if (this.createTable(UserService.TABLE_USER_QUERY_CONDITION_DISPLAY,UserService.BEAN_NAME_USER_QUERY_CONDITION_DISPLAY) == true) {
                 //给以下字段添加唯一属性
                 this.addUnique(UserService.TABLE_USER_QUERY_CONDITION_DISPLAY, UserService.MUST_USER_ID);
 
@@ -123,10 +123,10 @@ public class UserService {
                 this.addUserForQueryConditionDisplay(UserService.USER_ADMINISTRATOR,null);
                 this.addUserForQueryConditionDisplay(UserService.USER_DEFAULT,null);
             }
-            //if (this.createTable(UserService.TABLE_USER_HEADER_WIDTH,BEAN_NAME_USER_HEADER_WIDTH) == true) {
+            //if (this.createTable(UserService.TABLE_USER_HEADER_WIDTH,UserService.BEAN_NAME_USER_HEADER_WIDTH) == true) {
                 //添加默认用户，管理员，临时客户以及其相关数据
             //}
-            if (this.createTable(UserService.TABLE_USER_HEADER_DISPLAY,BEAN_NAME_USER_HEADER_DISPLAY) == true) {
+            if (this.createTable(UserService.TABLE_USER_HEADER_DISPLAY,UserService.BEAN_NAME_USER_HEADER_DISPLAY) == true) {
                 //给以下字段添加唯一属性
                 this.addUnique(UserService.TABLE_USER_HEADER_DISPLAY, UserService.MUST_USER_ID);
 

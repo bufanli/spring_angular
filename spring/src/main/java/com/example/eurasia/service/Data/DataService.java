@@ -50,11 +50,11 @@ public class DataService {
      */
     public void dataServiceInit() throws Exception {
         try {
-            this.createTable(DataService.TABLE_DATA,BEAN_NAME_COLUMNS_DEFAULT_NAME);
-            this.createTable(DataService.TABLE_QUERY_CONDITION_TYPE,BEAN_NAME_QUERY_CONDITION_TYPE_NAME);
+            this.createTable(DataService.TABLE_DATA,DataService.BEAN_NAME_COLUMNS_DEFAULT_NAME);
+            this.createTable(DataService.TABLE_QUERY_CONDITION_TYPE,DataService.BEAN_NAME_QUERY_CONDITION_TYPE_NAME);
 
             ApplicationContext context = new ClassPathXmlApplicationContext("com/example/eurasia/config/applicationContext.xml");
-            DataXMLReader dataXMLReader = (DataXMLReader) context.getBean(BEAN_NAME_QUERY_CONDITION_TYPE_VALUE);
+            DataXMLReader dataXMLReader = (DataXMLReader) context.getBean(DataService.BEAN_NAME_QUERY_CONDITION_TYPE_VALUE);
             Data queryConditionTypeValue = new Data(dataXMLReader.getKeyValue());
             getDataDao().addData(DataService.TABLE_QUERY_CONDITION_TYPE,queryConditionTypeValue);
         } catch (Exception e) {
