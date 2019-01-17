@@ -1,0 +1,25 @@
+3. 动态显示  datasearch条件，权限（灰掉的要继续实装）
+
+5. 对HTTP增加拦截器，保证Session过期之后重定向.（Spring代码push了，没有注入Annotation） 4
+
+7. delete user 未对应。
+
+9. add user input 和 edit user 这两个component在 getUserDetailedInfo和 getDefaultDetailedInfo的时候，两秒之后
+   出处理中对话框。（不怎么再现，优先级低）
+
+11. 其他的如商品编码也要改（这里有一个bug，Access有限定的商品编码，还是能全部检索出来商品）2
+
+14. 用户有效检查 4 OK? ->待测试
+
+19. 字段排序。（优先级低）
+
+20. 商品代码应该不是string是list类型。（angular需要对应）1
+
+21. logout没有做。
+
+22. 商品编码 用户添加 编辑界面上给出一个全体商品名称和编码选择对话框，让管理员选，
+   用户查询界面，点击商品编码查询，出来自己可以选择的所有商品编码和商品名称的对话框。
+
+23. export data 按钮 在有效设置下还是灰色的 3
+
+24. 透视图 5
