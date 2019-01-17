@@ -1,6 +1,7 @@
 package com.example.eurasia.service.Data;
 
 import com.example.eurasia.entity.Data.Data;
+import com.example.eurasia.entity.Data.DataXMLReader;
 import com.example.eurasia.entity.Data.QueryCondition;
 import com.example.eurasia.entity.Data.SearchedData;
 import com.example.eurasia.service.Response.ResponseCodeEnum;
@@ -9,6 +10,8 @@ import com.example.eurasia.service.Response.ResponseResultUtil;
 import com.example.eurasia.service.User.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -89,10 +92,14 @@ public class SearchDataServiceImpl implements ISearchDataService {
 
     private String checkQueryConditions(String userID, QueryCondition[] queryConditionsArr) throws Exception {
         StringBuffer ret = new StringBuffer("");
+
+        ApplicationContext context = new ClassPathXmlApplicationContext("com/example/eurasia/config/applicationContext.xml");
+        DataXMLReader dataXMLReader = (DataXMLReader) context.getBean(DataService.BEAN_NAME_QUERY_CONDITION_TYPE_VALUE);
+        Map<String, String> queryConditionsBase = dataXMLReader.getKeyValue();
         for (QueryCondition queryCondition : queryConditionsArr) {
 
             // 检查格式
-            if (queryCondition.checkValueFormat() == false) {
+            if (queryCondition.checkQueryCondition(queryConditionsBase) == false) {
                 ret.append(queryCondition.getKey() + ResponseCodeEnum.SEARCH_DATA_QUERY_CONDITION_FORMAT_ERROR.getMessage());
                 ret.append(UserService.BR);
             }
@@ -105,14 +112,16 @@ public class SearchDataServiceImpl implements ISearchDataService {
                     queryConditionValueFromSql = userService.getOneUserCustom(UserService.TABLE_USER_ACCESS_AUTHORITY,
                             UserService.MUST_PRODUCT_NUMBER,
                             userID);
-                    if (!queryConditionValueFromSql.equals(QueryCondition.QUERY_CONDITION_SPLIT)) {//"～～"的场合，是没有限制
-                        String dateArr[] = queryCondition.getValue().split(QueryCondition.QUERY_CONDITION_SPLIT);
-                        for (String date:dateArr) {
-                            if (queryConditionValueFromSql.contains(date) == false) {
-                                ret.append(date + ResponseCodeEnum.SEARCH_DATA_QUERY_CONDITION_ACCESS_ERROR.getMessage());
+                    if (!queryConditionValueFromSql.equals(QueryCondition.QUERY_CONDITION_SPLIT)) {
+                        String productNameArr[] = queryCondition.getValue().split(QueryCondition.QUERY_CONDITION_SPLIT);
+                        for (String productName:productNameArr) {
+                            if (queryConditionValueFromSql.contains(productName) == false) {
+                                ret.append(productName + ResponseCodeEnum.SEARCH_DATA_QUERY_CONDITION_ACCESS_ERROR.getMessage());
                                 ret.append(UserService.BR);
                             }
                         }
+                    } else {//"～～"的场合，是没有限制
+
                     }
                     break;
                 default:

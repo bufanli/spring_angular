@@ -5,6 +5,10 @@ import com.example.eurasia.service.Util.Slf4jLogUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.util.StringUtils;
 
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
 //@Slf4j
 public class QueryCondition implements Cloneable {
 
@@ -135,31 +139,43 @@ public class QueryCondition implements Cloneable {
      * @Time 2018-12-15 00:00:00
      */
     @JsonIgnore
-    public Boolean checkValueFormat() {
+    public Boolean checkQueryCondition(Map<String, String> queryConditionsBase) {
 
         if (this.getKey() == null || this.getValue() == null || this.getType() == null) {
             Slf4jLogUtil.get().error("条件中有null值");
             return false;
         }
 
-        /* 在java的1.7之后的jdk版本，java中的switch里面表达式的类型可以是string类型。*/
-        switch (this.getType()) {
-            case QueryCondition.QUERY_CONDITION_TYPE_STRING:
-                break;
-            case QueryCondition.QUERY_CONDITION_TYPE_DATE:
-            case QueryCondition.QUERY_CONDITION_TYPE_MONEY:
-            case QueryCondition.QUERY_CONDITION_TYPE_AMOUNT:
-            case QueryCondition.QUERY_CONDITION_TYPE_LIST:
-                if (this.getValue().contains(QueryCondition.QUERY_CONDITION_SPLIT) == false) {
-                    Slf4jLogUtil.get().error(this.getValue() + "中没有~~");
+        Set<Map.Entry<String, String>> set = queryConditionsBase.entrySet();
+        Iterator<Map.Entry<String, String>> it = set.iterator();
+        while (it.hasNext()) {
+            Map.Entry<String,String> entry = it.next();
+            if (entry.getKey().equals(this.getKey())) {
+                if (entry.getValue().equals(this.getType())) {
+                    /* 在java的1.7之后的jdk版本，java中的switch里面表达式的类型可以是string类型。*/
+                    switch (this.getType()) {
+                        case QueryCondition.QUERY_CONDITION_TYPE_STRING:
+                            break;
+                        case QueryCondition.QUERY_CONDITION_TYPE_DATE:
+                        case QueryCondition.QUERY_CONDITION_TYPE_MONEY:
+                        case QueryCondition.QUERY_CONDITION_TYPE_AMOUNT:
+                        case QueryCondition.QUERY_CONDITION_TYPE_LIST:
+                            if (this.getValue().contains(QueryCondition.QUERY_CONDITION_SPLIT) == false) {
+                                Slf4jLogUtil.get().error(this.getValue() + "中没有~~");
+                                return false;
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                    return true;
+                } else {
                     return false;
                 }
-                break;
-            default:
-                break;
+            }
         }
 
-        return true;
+        return false;
     }
 
 }
