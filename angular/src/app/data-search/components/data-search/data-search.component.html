@@ -50,7 +50,7 @@
             <div class="form-group">
               <div class="input-group">
                 <span class="input-group-addon" id="product-code">商品编码</span>
-                <input type="text" [(ngModel)]="searchParam[5].value" name="product-code" class="form-control"
+                <input type="text" [(ngModel)]="productCodes" name="product-code" class="form-control"
                   placeholder="请输入商品编码" aria-describedby="product-code">
               </div>
             </div>
@@ -75,7 +75,7 @@
           </div>
           <div class="col-md-2">
             <div class="form-group">
-              <button type="button" class="btn btn-default btn-block" disabled="{{exportEnabled}}" (click)="onDownloadFile()">
+              <button type="button" class="btn btn-default btn-block" [disabled]="!exportEnabled" (click)="onDownloadFile()">
                 <span class="glyphicon glyphicon-export"></span> 导出
               </button>
             </div>

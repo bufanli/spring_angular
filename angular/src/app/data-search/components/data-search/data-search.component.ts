@@ -80,14 +80,18 @@ export class DataSearchComponent implements OnInit, AfterViewChecked, AfterViewI
     { key: '结束日期', value: '', type: 'Date' },
     { key: '产品名称', value: '', type: 'String' },
     { key: '装货港', value: '', type: 'String' },
-    { key: '商品编码', value: '', type: 'String' },
+    { key: '商品编码', value: '', type: 'list' },
     { key: '规格型号', value: '', type: 'String' }
   ];
+  // import customs
   public importCustoms: string[] = [];
+
+  // product codes
+  public productCodes = '';
 
   // user access authorities definition
   // 1. export button
-  public exportEnabled: string = null;
+  public exportEnabled = true;
   // 2. others
 
   // init access authorities from current user container
@@ -98,13 +102,14 @@ export class DataSearchComponent implements OnInit, AfterViewChecked, AfterViewI
       this.currentUserContainer.getCurrentUserAccessAuthorities();
     // init export button
     if (accessAuthorities['导出数据可否'] === true) {
-      this.exportEnabled = 'enabled';
+      this.exportEnabled = true;
     } else {
-      this.exportEnabled = 'disabled';
+      this.exportEnabled = false;
     }
   }
 
   convertSelection(): void {
+    // 1. convert import customs
     let result = '';
     for (const custom of this.importCustoms) {
       result = result + custom;
@@ -116,6 +121,10 @@ export class DataSearchComponent implements OnInit, AfterViewChecked, AfterViewI
     result = this.commonUtilitiesService.convertEmptyToDash(result);
     // set to params
     this.searchParam[0].value = result;
+    // 2. convert product codes
+    // convert comma seperator to dash
+    this.searchParam[5].value = this.commonUtilitiesService.
+      convertCommaSeperatorToDash(this.productCodes);
   }
 
   // download file when exporting data

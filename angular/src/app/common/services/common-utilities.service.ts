@@ -185,4 +185,22 @@ export class CommonUtilitiesService {
       return str;
     }
   }
+  // convert comma seperator to dash seperator
+  convertCommaSeperatorToDash(srcString: string): string {
+    const strArr = srcString.split(',');
+    let temp = '';
+    for (const entry of strArr) {
+      if (entry !== '') {
+        temp += entry;
+        temp += '~~';
+      }
+    }
+    if (temp.endsWith('~~')) {
+      temp = temp.slice(0, temp.length - '~~'.length);
+    }
+    if (temp === '') {
+      temp = '~~';
+    }
+    return temp;
+  }
 }
