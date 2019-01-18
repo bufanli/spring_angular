@@ -80,7 +80,7 @@ export class DataSearchComponent implements OnInit, AfterViewChecked, AfterViewI
     { key: '结束日期', value: '', type: 'Date' },
     { key: '产品名称', value: '', type: 'String' },
     { key: '装货港', value: '', type: 'String' },
-    { key: '商品编码', value: '', type: 'list' },
+    { key: '商品编码', value: '', type: 'List' },
     { key: '规格型号', value: '', type: 'String' }
   ];
   // import customs
