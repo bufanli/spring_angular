@@ -82,11 +82,13 @@ public class UserInfoForUpdateServiceImpl {
         String id = userInfo.getIDFromBasicInfos();
         if (Integer.parseInt(id) >= 0) {
 
-            ret.append(this.checkUserBasicInfo(id,userInfo.getUserBasicInfos()));
-            ret.append(this.checkUserAccessAuthority(id,userInfo.getUserDetailedInfos().getUserAccessAuthorities()));
-            ret.append(this.checkUserQueryConditionDisplay(id,userInfo.getUserDetailedInfos().getUserAccessAuthorities(),
+            String userID = userInfo.getUserIDFromBasicInfos();
+
+            ret.append(this.checkUserBasicInfo(id,userID,userInfo.getUserBasicInfos()));
+            ret.append(this.checkUserAccessAuthority(id,userID,userInfo.getUserDetailedInfos().getUserAccessAuthorities()));
+            ret.append(this.checkUserQueryConditionDisplay(id,userID,userInfo.getUserDetailedInfos().getUserAccessAuthorities(),
                     userInfo.getUserDetailedInfos().getUserAccessAuthorities()));
-            ret.append(this.checkUserHeaderDisplay(id,userInfo.getUserDetailedInfos().getUserAccessAuthorities()));
+            ret.append(this.checkUserHeaderDisplay(id,userID,userInfo.getUserDetailedInfos().getUserAccessAuthorities()));
 
         } else {
 
@@ -103,7 +105,7 @@ public class UserInfoForUpdateServiceImpl {
      * @author FuJia
      * @Time 2018-12-02 00:00:00
      */
-    private String checkUserBasicInfo(String id, UserCustom[] userCustoms) throws Exception {
+    private String checkUserBasicInfo(String id, String userID, UserCustom[] userCustoms) throws Exception {
         StringBuffer ret = new StringBuffer("");
         for (UserCustom userCustom:userCustoms) {
             switch (userCustom.getKey()) {
@@ -162,7 +164,7 @@ public class UserInfoForUpdateServiceImpl {
      * @author FuJia
      * @Time 2018-12-02 00:00:00
      */
-    private String checkUserAccessAuthority(String id, UserCustom[] userCustoms) throws Exception {
+    private String checkUserAccessAuthority(String id, String userID, UserCustom[] userCustoms) throws Exception {
         StringBuffer ret = new StringBuffer("");
         for (UserCustom userCustom:userCustoms) {
             switch (userCustom.getKey()) {
@@ -171,6 +173,10 @@ public class UserInfoForUpdateServiceImpl {
                     if (userValidArr.length != 2) {
                         ret.append(ResponseCodeEnum.USER_UPDATE_VALID_FORMAT_ERROR.getMessage());
                         ret.append(UserService.BR);
+                        break;
+                    }
+                    if (userID.equals(UserService.USER_ADMINISTRATOR) &&
+                            userCustom.getValue().equals(QueryCondition.QUERY_CONDITION_SPLIT)) {//管理员sinoshuju_admin，可以为"~~"
                         break;
                     }
                     if (StringUtils.isEmpty(userValidArr[0])) {
@@ -191,6 +197,10 @@ public class UserInfoForUpdateServiceImpl {
                         ret.append(UserService.BR);
                         break;
                     }
+                    if (userID.equals(UserService.USER_ADMINISTRATOR) &&
+                            userCustom.getValue().equals(QueryCondition.QUERY_CONDITION_SPLIT)) {//管理员sinoshuju_admin，可以为"~~"
+                        break;
+                    }
                     if (StringUtils.isEmpty(productDateArr[0])) {
                         ret.append(ResponseCodeEnum.USER_UPDATE_PRODUCT_DATE_FROM_DATE_IS_NULL.getMessage());
                         ret.append(UserService.BR);
@@ -203,6 +213,10 @@ public class UserInfoForUpdateServiceImpl {
                     }
                     break;
                 case UserService.MUST_PRODUCT_NUMBER:
+                    if (userID.equals(UserService.USER_ADMINISTRATOR) &&
+                            userCustom.getValue().equals(QueryCondition.QUERY_CONDITION_SPLIT)) {//管理员sinoshuju_admin，可以为"~~"
+                        break;
+                    }
                     String productNumberArr[] = userCustom.getValue().split(QueryCondition.QUERY_CONDITION_SPLIT);
                     boolean isNull = false;
                     for (String productNumber : productNumberArr) {
@@ -236,7 +250,7 @@ public class UserInfoForUpdateServiceImpl {
      * @author FuJia
      * @Time 2018-12-02 00:00:00
      */
-    private String checkUserQueryConditionDisplay(String id, UserCustom[] userQueryConditionDisplays,
+    private String checkUserQueryConditionDisplay(String id, String userID, UserCustom[] userQueryConditionDisplays,
                                                   UserCustom[] userHeaderDisplays) throws Exception {
         //可显示的查询条件，应是可显示列的子集
         StringBuffer ret = new StringBuffer("");
@@ -264,7 +278,7 @@ public class UserInfoForUpdateServiceImpl {
      * @author FuJia
      * @Time 2018-12-02 00:00:00
      */
-    private String checkUserHeaderDisplay(String id, UserCustom[] userCustoms) throws Exception {
+    private String checkUserHeaderDisplay(String id, String userID, UserCustom[] userCustoms) throws Exception {
         StringBuffer ret = new StringBuffer("");
         return ret.toString();//T.B.D
     }

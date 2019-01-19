@@ -27,6 +27,7 @@ public class SessionTimeOutIntercepter implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object o) throws Exception {
+        Slf4jLogUtil.get().info("-----> preHandle");
 
         String requestUrl = request.getRequestURI().replace(request.getContextPath(), "");
         response.setContentType("text/html;charset=utf-8");
@@ -63,7 +64,7 @@ public class SessionTimeOutIntercepter implements HandlerInterceptor {
             Slf4jLogUtil.get().info("-----> intervalTime: "+intervalTime);
             //如果超过十秒没有交互的话，就跳转到超时界面
             if(intervalTime>maxInactiveInterval){
-                response.sendRedirect(request.getContextPath()+"/static/timeout.html");
+                response.sendRedirect(request.getContextPath()+"/static/timeout.html");//T.B.D
                 return true;
             }
             //更新operateTime
@@ -74,12 +75,12 @@ public class SessionTimeOutIntercepter implements HandlerInterceptor {
 
     @Override
     public void postHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o, ModelAndView modelAndView) throws Exception {
-
+        Slf4jLogUtil.get().info("-----> postHandle");
     }
 
     @Override
     public void afterCompletion(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o, Exception e) throws Exception {
-
+        Slf4jLogUtil.get().info("-----> afterCompletion");
     }
 
 }
