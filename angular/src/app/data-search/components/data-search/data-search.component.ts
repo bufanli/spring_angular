@@ -71,6 +71,70 @@ export class DataSearchComponent implements OnInit, AfterViewChecked, AfterViewI
     '南宁关区',
     '重庆关区',
   ];
+  public SHIP_PORTS = [
+    '巴伦西亚',
+    '圣多斯',
+    '温哥华',
+    '巴西',
+    '墨尔本',
+    '新加坡',
+    '布宜诺斯艾利斯',
+    '布里斯班',
+    '香港',
+    '帕腊纳瓜',
+    '蒙得维的亚',
+    '釜山',
+    '陶朗加',
+    '高雄',
+    '萨拉特',
+    '丹吉尔',
+    '安特卫普',
+    '悉尼',
+    '巴生港',
+    '伊塔曰阿伊',
+    '沙特阿拉伯',
+    '罗萨里奥',
+    '曼萨尼略',
+    '利特尔顿港',
+    '热那亚',
+    '中国境内',
+    '洛杉矶',
+    '意大利',
+    '德班',
+    '长滩',
+    '乌拉圭',
+    '内皮尔',
+    '里约格兰德',
+    '弗里曼特尔',
+    '南非(阿扎尼亚)',
+    '新西兰',
+    '马来西亚',
+    '米纳阿卜杜拉',
+    '鹿特丹',
+    '澳大利亚',
+    '利尔肯',
+    '塔科马',
+    '洛美',
+    '摩洛哥',
+    '卡塔尔',
+    '里约热内卢',
+    '美国',
+    '槟城',
+    '不来梅港',
+    '奥克兰',
+    '柔弗巴鲁',
+    '阿耳黑西腊斯',
+    '迪拜',
+    '台湾省',
+    '都柏林',
+    '瓦尔帕来索',
+    '加拿大',
+    '不来梅',
+    '伊斯坦布尔',
+    '阿根廷',
+    '巴尔博亚',
+    '重庆关区',
+  ];
   // this id is just for compiling pass
   private id: string = null;
   // search parameters
@@ -79,12 +143,14 @@ export class DataSearchComponent implements OnInit, AfterViewChecked, AfterViewI
     { key: '起始日期', value: '', type: 'Date' },
     { key: '结束日期', value: '', type: 'Date' },
     { key: '产品名称', value: '', type: 'String' },
-    { key: '装货港', value: '', type: 'String' },
+    { key: '装货港', value: '', type: 'List' },
     { key: '商品编码', value: '', type: 'List' },
     { key: '规格型号', value: '', type: 'String' }
   ];
   // import customs
   public importCustoms: string[] = [];
+  // ship ports
+  public shipPorts: string[] = [];
 
   // product codes
   public productCodes = '';
@@ -125,6 +191,19 @@ export class DataSearchComponent implements OnInit, AfterViewChecked, AfterViewI
     // convert comma seperator to dash
     this.searchParam[5].value = this.commonUtilitiesService.
       convertCommaSeperatorToDash(this.productCodes);
+
+    // 3. ship ports
+    result = '';
+    for (const shipPort of this.shipPorts) {
+      result = result + shipPort;
+      result = result + '~~';
+    }
+    // get rid of last two chars
+    result = result.substr(0, result.lastIndexOf('~~'));
+    // convert empty to dash
+    result = this.commonUtilitiesService.convertEmptyToDash(result);
+    // set to params
+    this.searchParam[4].value = result;
   }
 
   // download file when exporting data
@@ -293,6 +372,9 @@ export class DataSearchComponent implements OnInit, AfterViewChecked, AfterViewI
     // but call selectpicker can resolve this issue in ngAfterViewInit
     $('#import-custom').selectpicker('val', '');
     $('#import-custom').selectpicker('refresh');
+    $('#ship-port').selectpicker('val', '');
+    $('#ship-port').selectpicker('refresh');
+
   }
 
   // bind data detail event handler to every page

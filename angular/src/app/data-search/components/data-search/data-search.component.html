@@ -39,11 +39,10 @@
         <div class="row">
           <div class="col-md-4">
             <div class="form-group">
-              <div class="input-group">
-                <span class="input-group-addon" id="ship-port">装货港</span>
-                <input type="text" [(ngModel)]="searchParam[4].value" name="hs_code" class="form-control" placeholder="请输入装货港"
-                  aria-describedby="ship-port">
-              </div>
+              <select class="form-control selectpicker" multiple title="请选择装货港" id="ship-port" [(ngModel)]="shipPorts"
+                name="ship-port">
+                <option *ngFor="let shipPort of SHIP_PORTS" value ="{{shipPort}}">{{shipPort}}</option>
+              </select>
             </div>
           </div>
           <div class="col-md-4">
