@@ -28,7 +28,7 @@ const httpOptions = {
 const head = new Headers({ 'Content-Type': 'application/json' });
 const httpDownloadOptions = {
   headers: head,
-  responseType: ResponseContentType.Json,
+  responseType: ResponseContentType.Blob,
 };
 // json header for download post
 
@@ -224,7 +224,7 @@ export class DataSearchComponent implements OnInit, AfterViewChecked, AfterViewI
     return this.downloadHttp.post(this.exportUrl, searchParamJson, httpDownloadOptions).toPromise().then(
       res => {
         const tempRes: any = res;
-        if (tempRes._body.code === 201) {
+        if (tempRes._body.size === 0) {
           this.currentUserContainer.sessionTimeout();
         } else {
           importedSaveAs(res.blob());

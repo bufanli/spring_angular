@@ -29,3 +29,7 @@
 26. 前端的DataSearch 里面装货港 应该做成下拉菜单，选择值从14000数据里面选出。OK
 
 27. 权限设置画面  商品有效期间 -> 日期  用户有效日期 -> 有效期
+
+28. spring侧的 sessiontimeout判断， 不用每个controller都做一遍，
+      String userID = userInfoServiceImpl.getLoginUserID(request); if (StringUtils.isEmpty(userID)) {
+      放在 统一的SessionTimeOutInterceptor 的 preHandle就可以。
