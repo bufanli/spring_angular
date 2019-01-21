@@ -128,6 +128,8 @@ export class UserInfoService {
   }
 
   private getPermissionsFromHttpResponse(httpResponse: HttpResponse): void {
+    // check session timeout
+    this.userEditComponent.checkSessionTimeout(httpResponse);
     const data: any = httpResponse.data;
     if (data == null) {
       return null;
@@ -224,6 +226,8 @@ export class UserInfoService {
   }
   // get user default basic info notification
   private getDefaultBasicInfoNotification(httpResponse: HttpResponse): void {
+    // check session timeout
+    this.userAddInputComponent.checkSessionTimeout(httpResponse);
     // get default basic info
     // reshape user basic info
     const reshapedResult = this.commonUtilityService.reshapeData(httpResponse.data);
@@ -242,6 +246,8 @@ export class UserInfoService {
   }
   // get default user detailed info notification
   private getDefaultDetailedInfoNotification(httpResponse: HttpResponse): void {
+    // check session timeout
+    this.userAddInputComponent.checkSessionTimeout(httpResponse);
     // get access authorities
     const userAccessAuthorities = this.commonUtilityService.deserializeDataFromHttpResponse(
       UserAccessAuthoritiesDictionary, httpResponse.data.userAccessAuthorities);

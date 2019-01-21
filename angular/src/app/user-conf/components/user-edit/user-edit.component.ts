@@ -148,5 +148,9 @@ export class UserEditComponent implements OnInit, OnDestroy, CommonDialogCallbac
       // it is impossible, so do nothing
     }
   }
-
+  public checkSessionTimeout(httpResponse: any): void {
+    if (httpResponse.code === 201) {
+      this.currentUserContainer.sessionTimeout();
+    }
+  }
 }
