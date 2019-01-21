@@ -21,6 +21,7 @@ import java.io.IOException;
 
 //@Slf4j
 @Controller
+@RequestMapping("api")
 public class DownloadFileController {
 
     //注入Service服务对象

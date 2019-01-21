@@ -25,6 +25,7 @@ import java.util.List;
 
 //@Slf4j
 @Controller
+@RequestMapping("api")
 public class UserInfoController {
 
     //注入Service服务对象

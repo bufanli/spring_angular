@@ -24,6 +24,7 @@ import java.util.Date;
 
 //@Slf4j
 @Controller
+@RequestMapping("api")
 public class UploadFileController {
 
     @GetMapping("/greeting")

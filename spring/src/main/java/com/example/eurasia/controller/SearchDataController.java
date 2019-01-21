@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 
 //@Slf4j
 @Controller
+@RequestMapping("api")
 public class SearchDataController {
 
     //注入Service服务对象
