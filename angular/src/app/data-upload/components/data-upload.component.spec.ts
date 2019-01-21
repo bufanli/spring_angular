@@ -1,6 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DataUploadComponent } from './file-upload.component';
+import { DataUploadComponent } from './data-upload.component';
 
 describe('DataUploadComponent', () => {
   let component: DataUploadComponent;

@@ -9,6 +9,7 @@ import { HttpResponse } from 'src/app/common/entities/http-response';
 import { Router } from '@angular/router';
 import { CommonDialogCallback } from 'src/app/common/interfaces/common-dialog-callback.service';
 import { CommonUtilitiesService } from 'src/app/common/services/common-utilities.service';
+import { CurrentUserContainerService } from 'src/app/common/services/current-user-container.service';
 
 @Component({
   selector: 'app-user-add-input',
@@ -39,7 +40,8 @@ export class UserAddInputComponent implements OnInit, OnDestroy, CommonDialogCal
   constructor(private userInfoService: UserInfoService,
     private resolver: ComponentFactoryResolver,
     private router: Router,
-    private commonUtilitiesService: CommonUtilitiesService) {
+    private commonUtilitiesService: CommonUtilitiesService,
+    private currentUserContainer: CurrentUserContainerService) {
   }
   // set userBasicInfo
   public setUserBasicInfo(userBasicInfo: UserBasicInfo) {
@@ -118,6 +120,8 @@ export class UserAddInputComponent implements OnInit, OnDestroy, CommonDialogCal
       // if ok modal dialog is closed, then navigate to user conf component
       // with parameter of user_add_end
       this.router.navigate(['/web/main/user-conf', 'user_add_end']);
+    } else if (httpResponse.code === 201) {
+      this.currentUserContainer.sessionTimeout();
     } else {
       // get message from response when add user failed
       const failedReason = httpResponse.message;

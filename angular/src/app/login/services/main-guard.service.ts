@@ -10,7 +10,7 @@ import { CurrentUserContainerService } from 'src/app/common/services/current-use
   providedIn: 'root'
 })
 export class MainGuardService implements CanActivate, CanActivateChild {
-  private static readonly IS_LOGGING_URL = 'isUserLogging';
+  private static readonly IS_LOGGING_URL = 'api/isUserLogging';
   constructor(private router: Router,
     private http: HttpClient,
     private currentUserContainerService: CurrentUserContainerService) { }

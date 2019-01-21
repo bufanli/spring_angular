@@ -7,11 +7,15 @@ import { UserBaiscInfosDictionary } from 'src/app/user-conf/services/user-info.s
 import { UserAccessAuthoritiesDictionary } from 'src/app/user-conf/services/user-info.service';
 import { QueryConditionHeaderDictionary } from 'src/app/user-conf/services/user-info.service';
 import { CommonUtilitiesService } from './common-utilities.service';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CurrentUserContainerService {
+  public SESSEION_TIME_URL_USER = '/web/login/user';
+  public SESSEION_TIME_URL_ADMIN = '/web/login/admin';
+  public ADMIN_USER = 'sinoshuju_admin';
 
   private openID: string = null;
 
@@ -21,7 +25,8 @@ export class CurrentUserContainerService {
   private userHeaderDisplays: UserQueryConditionHeader;
 
   constructor(private http: HttpClient,
-    private commonUtilitiesService: CommonUtilitiesService) { }
+    private commonUtilitiesService: CommonUtilitiesService,
+    private router: Router) { }
   public getCurrentUserBasicInfo(): UserBasicInfo {
     return this.userBasicInfo;
   }
@@ -58,5 +63,13 @@ export class CurrentUserContainerService {
     const headerDisplays = this.commonUtilitiesService.deserializeDataFromHttpResponse(
       QueryConditionHeaderDictionary, userInfo.userDetailedInfos.userHeaderDisplays);
     this.userHeaderDisplays = headerDisplays;
+  }
+  // when session timeout, navigate /web/login/user
+  public sessionTimeout(): void {
+    if (this.openID === this.ADMIN_USER) {
+      this.router.navigate([this.SESSEION_TIME_URL_ADMIN]);
+    } else {
+      this.router.navigate([this.SESSEION_TIME_URL_USER]);
+    }
   }
 }

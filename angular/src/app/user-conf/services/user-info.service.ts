@@ -102,11 +102,11 @@ export const QueryConditionHeaderDictionary = [
 })
 export class UserInfoService {
 
-  private getUserDetailedInfosUrl = 'getUserDetailedInfos';  // URL to get user's permission
-  private getDefaultUserBasicInfoUrl = 'getUserDefaultBasicInfo';  // URL to get user's basic info
-  private getDefaultUserDetailedInfoUrl = 'getUserDefaultDetailedInfos';  // URL to get user's detailed info
-  private updateUserInfoUrl = 'updateUser';  // URL to update user
-  private addUserInfoUrl = 'addUser';  // URL to add user
+  private getUserDetailedInfosUrl = 'api/getUserDetailedInfos';  // URL to get user's permission
+  private getDefaultUserBasicInfoUrl = 'api/getUserDefaultBasicInfo';  // URL to get user's basic info
+  private getDefaultUserDetailedInfoUrl = 'api/getUserDefaultDetailedInfos';  // URL to get user's detailed info
+  private updateUserInfoUrl = 'api/updateUser';  // URL to update user
+  private addUserInfoUrl = 'api/addUser';  // URL to add user
   private userEditComponent: UserEditComponent = null;
   private userAddInputComponent: UserAddInputComponent = null;
 

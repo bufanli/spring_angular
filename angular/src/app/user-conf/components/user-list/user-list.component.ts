@@ -7,6 +7,7 @@ import { CommonUtilitiesService } from '../../../common/services/common-utilitie
 import { NgbModal, NgbModalOptions, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
 import { UserEditComponent } from '../user-edit/user-edit.component';
 import { UserBasicInfo } from '../../entities/user-basic-info';
+import { CurrentUserContainerService } from 'src/app/common/services/current-user-container.service';
 const OPERATION_HEADER_INDEX = 11;
 
 @Component({
@@ -16,7 +17,7 @@ const OPERATION_HEADER_INDEX = 11;
 })
 export class UserListComponent implements OnInit, AfterViewChecked {
 
-  private getUsersUrl = 'getAllUserBasicInfo';  // URL to get user list
+  private getUsersUrl = 'api/getAllUserBasicInfo';  // URL to get user list
   // this id is just for compiling pass
   private id: string = null;
   private currentPageNumber = 1;
@@ -38,7 +39,8 @@ export class UserListComponent implements OnInit, AfterViewChecked {
   ];
   constructor(private http: HttpClient,
     private commonUtilitiesService: CommonUtilitiesService,
-    public modalService: NgbModal) {
+    public modalService: NgbModal,
+    private currentUserContainer: CurrentUserContainerService) {
   }
   public showLastPage(): void {
     this.isShowLastPage = true;
@@ -69,6 +71,10 @@ export class UserListComponent implements OnInit, AfterViewChecked {
   }
 
   getUsersNotification(httpResponse: HttpResponse) {
+    if (httpResponse.code === 201) {
+      this.currentUserContainer.sessionTimeout();
+      return;
+    }
     // show user list
     $('#table').bootstrapTable('load', this.commonUtilitiesService.reshapeData(httpResponse.data));
     if (this.isShowLastPage) {

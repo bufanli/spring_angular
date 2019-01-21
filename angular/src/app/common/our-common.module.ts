@@ -20,6 +20,7 @@ import { BrowserModule } from '@angular/platform-browser';
     FormsModule,
     CommonModule,
     BrowserModule,
+    RouterModule,
     // when running with a real server, then comment out followoing codes
     // HttpClientInMemoryWebApiModule.forRoot(
     //   InMemoryDataService, { dataEncapsulation: false }

@@ -18,6 +18,7 @@ import { CurrentUserContainerService } from 'src/app/common/services/current-use
 import { UserAccessAuthorities } from 'src/app/user-conf/entities/user-access-authorities';
 import { NgbModal, NgbModalOptions, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
 import { DataDetailComponent } from '../data-detail/data-detail.component';
+import { Router } from '@angular/router';
 
 // json header for post
 const httpOptions = {
@@ -27,7 +28,7 @@ const httpOptions = {
 const head = new Headers({ 'Content-Type': 'application/json' });
 const httpDownloadOptions = {
   headers: head,
-  responseType: ResponseContentType.Blob
+  responseType: ResponseContentType.Json,
 };
 // json header for download post
 
@@ -46,9 +47,9 @@ export class DataSearchComponent implements OnInit, AfterViewChecked, AfterViewI
   private static readonly OPERATIONS_TITLE = '操作';
   private static readonly DATA_DETAIL_TITLE = '查看详细';
   // api urls
-  private searchUrl = 'searchData';  // URL to web api
-  private exportUrl = 'downloadFile';  // URL to web api
-  private headersUrl = 'getHeaders';  // URL to web api
+  private searchUrl = 'api/searchData';  // URL to web api
+  private exportUrl = 'api/downloadFile';  // URL to web api
+  private headersUrl = 'api/getHeaders';  // URL to web api
 
   public IMPORT_CUSTOMS_ENUM = [
     '天津关区',
@@ -222,7 +223,12 @@ export class DataSearchComponent implements OnInit, AfterViewChecked, AfterViewI
     const searchParamJson = JSON.stringify(queryConditions);
     return this.downloadHttp.post(this.exportUrl, searchParamJson, httpDownloadOptions).toPromise().then(
       res => {
-        importedSaveAs(res.blob());
+        const tempRes: any = res;
+        if (tempRes._body.code === 201) {
+          this.currentUserContainer.sessionTimeout();
+        } else {
+          importedSaveAs(res.blob());
+        }
       });
   }
 
@@ -235,11 +241,15 @@ export class DataSearchComponent implements OnInit, AfterViewChecked, AfterViewI
     private downloadHttp: Http,
     private commonUtilitiesService: CommonUtilitiesService,
     private currentUserContainer: CurrentUserContainerService,
-    public modalService: NgbModal) {
+    public modalService: NgbModal,
+    private route: Router) {
 
   }
 
   getHeadersNotification(httpResponse: HttpResponse) {
+    if (httpResponse.code === 201) {
+      this.currentUserContainer.sessionTimeout();
+    }
     // if donot destroy table at first, table will not be shown
     $('#table').bootstrapTable('destroy');
     // get table's columns
@@ -256,7 +266,7 @@ export class DataSearchComponent implements OnInit, AfterViewChecked, AfterViewI
       columns: headers,
       method: 'post',
       // contentType: 'application/x-www-form-urlencoded',
-      url: '/searchData',
+      url: that.searchUrl,
       striped: true,
       pageNumber: 1,
       queryParamsType: 'limit',
@@ -276,10 +286,16 @@ export class DataSearchComponent implements OnInit, AfterViewChecked, AfterViewI
             'rows': that.commonUtilitiesService.reshapeData(response.data.dataList),
           };
           return ret;
-        } else {
+        } else if (response.code === 201) {
+          that.commonUtilitiesService.sessionTimeout();
           return {
             'rows': [],
             'total': 0
+          };
+        } else {
+          return {
+            'rows': [],
+            'total': 0,
           };
         }
       },

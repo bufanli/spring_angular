@@ -11,6 +11,7 @@ import { ComponentFactoryResolver, ComponentFactory } from '@angular/core';
 import { EventEmitter } from '@angular/core';
 import { CommonUtilitiesService } from 'src/app/common/services/common-utilities.service';
 import { CommonDialogCallback } from 'src/app/common/interfaces/common-dialog-callback.service';
+import { CurrentUserContainerService } from 'src/app/common/services/current-user-container.service';
 
 @Component({
   selector: 'app-user-edit',
@@ -43,7 +44,8 @@ export class UserEditComponent implements OnInit, OnDestroy, CommonDialogCallbac
   constructor(private activeModal: NgbActiveModal,
     private userInfoService: UserInfoService,
     private resolver: ComponentFactoryResolver,
-    private commonUtilitiesService: CommonUtilitiesService) {
+    private commonUtilitiesService: CommonUtilitiesService,
+    private currentUserContainer: CurrentUserContainerService) {
   }
 
   createComponent(type: string) {
@@ -112,6 +114,10 @@ export class UserEditComponent implements OnInit, OnDestroy, CommonDialogCallbac
       this.notifyClose.emit('closed');
       // update ok
       this.activeModal.close();
+    } else if (httpResponse.code === 201) {
+      this.currentUserContainer.sessionTimeout();
+      // close user edit user modal dialog
+      this.activeModal.close();
     } else {
       // get message from response when add user failed
       const failedReason = httpResponse.message;
@@ -123,6 +129,7 @@ export class UserEditComponent implements OnInit, OnDestroy, CommonDialogCallbac
         this,
         UserEditComponent.USER_EDIT_ERROR_SOURCE_ID);
     }
+
   }
   ngOnDestroy() {
     if (this.componentRefBasicInfo != null) {
