@@ -131,7 +131,7 @@ public class WeChatController {
         Slf4jLogUtil.get().info("weChatCallbackForAddUser");
         // if session timeout , then go back admin login
         String userID = userInfoServiceImpl.getLoginUserID(request);
-        if (!StringUtils.isEmpty(userID)) {
+        if (StringUtils.isEmpty(userID)) {
             response.sendRedirect(HttpSessionEnum.LOGIN_ADMIN_URI);
             return;
         }
