@@ -262,12 +262,9 @@ public class UploadFileServiceImpl implements IUploadFileService {
             //读取内容(从第二行开始)
             StringBuffer dataErrMsg = this.readExcelFileSheetDataRow(sheet, titleList, dataList);
 
-            int addDataNum = 0;
-            for (Data data : dataList) {
-                addDataNum = this.saveDataToSQL(DataService.TABLE_DATA, data);//导入一行数据。
-            }
-            Slf4jLogUtil.get().info("导入成功，共{}条数据！",dataList.size());
-            sheetMsg.append("导入成功，共" + dataList.size() + "条数据！");
+            int addDataNum = this.saveDataToSQL(DataService.TABLE_DATA, dataList);//导入数据。
+            Slf4jLogUtil.get().info("导入成功，共{}条数据！",addDataNum);
+            sheetMsg.append("导入成功，共" + addDataNum + "条数据！");
         } else {
             sheetMsg.append(titleErrMsg);
         }
@@ -424,8 +421,21 @@ public class UploadFileServiceImpl implements IUploadFileService {
         return false;//没找到
     }
 
-    private int saveDataToSQL(String tableName, Data data) throws Exception {
-        return dataService.addData(tableName, data);
+    private int saveDataToSQL(String tableName, List<Data> dataList) throws Exception {
+        int addDataNum = 0;
+        int deleteNum = 0;
+        if (dataList.size() > 0) {
+            for (Data data : dataList) {
+                addDataNum += dataService.addData(DataService.TABLE_DATA, data);//导入一行数据。
+            }
+            if (addDataNum > 0) {
+                deleteNum = dataService.deleteSameData(DataService.TABLE_DATA);
+            }
+            int num = addDataNum - deleteNum;//T.B.D
+            return (num < 0) ? 0 : num;
+        } else {
+            return 0;
+        }
     }
 
     private List<Map<String,String>> getTitles() throws Exception {

@@ -41,7 +41,7 @@ public class DataService {
     public static final String BR = "<br/>";
 
     /**
-     * 添加数据
+     * 初始化数据表
      * @param
      * @return
      * @exception
@@ -75,15 +75,27 @@ public class DataService {
             return -1;
         }
 
-        int addNum = 0;
-        int deleteNum = 0;
+        int addNum = getDataDao().addData(tableName, data);
 
-        addNum = getDataDao().addData(tableName, data);
-        if (addNum > 0) {
-            deleteNum = getDataDao().deleteSameData(tableName);
+        return addNum;
+    }
+
+    /**
+     * 删除相同数据
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-09-20 00:00:00
+     */
+    public int deleteSameData(String tableName) throws Exception {
+        if (StringUtils.isEmpty(tableName)) {
+            return -1;
         }
 
-        return (deleteNum != -1) ? addNum : 0;
+        int deleteNum = getDataDao().deleteSameData(tableName);//失败时，返回-1
+
+        return deleteNum;
     }
 
     /**

@@ -80,15 +80,16 @@ sbf = new StringBuffer("");//重新new
      */
     public int deleteSameData(String tableName) throws Exception {
 
-        StringBuffer strCcolsName = new StringBuffer();
-        List<Map<String,Object>> colsNameList = queryListForColumnName(tableName);
+        StringBuffer strColsName = new StringBuffer();
+        List<Map<String,Object>> colsNameList = this.queryListForColumnName(tableName);
         for(Map<String,Object> colsName: colsNameList) {
-            strCcolsName.append(colsName.get("COLUMN_NAME").toString());
-            strCcolsName.append(CommonDao.COMMA);
+            strColsName.append(colsName.get("COLUMN_NAME").toString());
+            strColsName.append(CommonDao.COMMA);
         }
 
-        strCcolsName.deleteCharAt(strCcolsName.length() - CommonDao.COMMA.length());
-        String[] name = strCcolsName.toString().split(CommonDao.COMMA,-1);
+        strColsName.deleteCharAt(strColsName.length() - CommonDao.COMMA.length());
+        strColsName.replace(strColsName.indexOf("id,"),"id,".length(),"");//indexOf从0开始计算,没有查到指定的字符则该方法返回-1
+        String[] name = strColsName.toString().split(CommonDao.COMMA,-1);
 /*
 mysql根据两个字段判断重复的数据并且删除，只保留一条。
 DELETE from table
@@ -104,12 +105,12 @@ GROUP BY 列1,列2,列3 having count(*) > 1;
  */
         StringBuffer sql =  new StringBuffer();
         sql.append("delete from " + tableName);
-        sql.append(" where id Not IN");
-        sql.append(" (select id from");
-        sql.append(" (select min(id) as " + strCcolsName);
+        sql.append(" where id not in");
+        sql.append(" (select minid from");
+        sql.append(" (select min(id) as minid");
         sql.append(" from " + tableName);
-        sql.append(" group by " + strCcolsName);
-        sql.append(" having count(*) > 1) as tempSameDataTable)");
+        sql.append(" group by " + strColsName);
+        sql.append(" having count(*) >= 1) as tempSameDataTable)");
 
         int num = getJdbcTemplate().update(sql.toString());//执行成功返回数据库当中受影响的记录条数，失败则返回-1
         return num;
