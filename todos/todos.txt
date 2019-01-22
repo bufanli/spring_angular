@@ -1,6 +1,6 @@
 ﻿3. 动态显示  datasearch条件，权限（灰掉的要继续实装）
 
-5. 对HTTP增加拦截器，保证Session过期之后重定向.（Spring代码push了，没有注入Annotation） 4
+5. 对HTTP增加拦截器，保证Session过期之后重定向.（Spring代码push了，没有注入Annotation） 4 OK
 
 7. delete user 未对应。
 
