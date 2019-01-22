@@ -9,6 +9,7 @@ import com.example.eurasia.service.WeChat.IWeChatAuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -128,8 +129,12 @@ public class WeChatController {
     @RequestMapping(value = "/weChatCallbackForAddUser", method = RequestMethod.GET)
     public void weChatCallbackForAddUser(@RequestParam("code") String code, @RequestParam("state") String state, HttpServletRequest request, HttpServletResponse response) throws Exception {
         Slf4jLogUtil.get().info("weChatCallbackForAddUser");
-        HttpSession session = request.getSession();
-
+        // if session timeout , then go back admin login
+        String userID = userInfoServiceImpl.getLoginUserID(request);
+        if (!StringUtils.isEmpty(userID)) {
+            response.sendRedirect(HttpSessionEnum.LOGIN_ADMIN_URI);
+            return;
+        }
         if (code != null) {
             // 用户允许授权
             Slf4jLogUtil.get().info("weChatCallbackForAddUser:用户允许");

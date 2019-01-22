@@ -19,6 +19,7 @@ public enum HttpSessionEnum {
     public static final String LOGIN_INVALID_REDIRECT_URI = "/web/login/user?auth=ng&reason=invalid";
     public static final String LOGIN_NO_USER_REDIRECT_URI = "/web/login/user?auth=ng&reason=no_user";
     public static final String LOGIN_NO_OPENID_URL = "/web/login";
+    public static final String LOGIN_ADMIN_URI= "/web/login/admin";
     public static final String LOGIN_REFUSE_REDIRECT_URI = "/web/login/user?auth=ng&reason=user_refused";
 
     public static final String ADD_USER_REDIRECT_URI = "/web/main/user-conf?auth=ok&openid=%s";
