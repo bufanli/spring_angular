@@ -19,6 +19,7 @@ import java.util.Map;
 public class CommonDao {
 
     public static final String COMMA = ",";
+    public static final String ID_COMMA = "id,";
 
     // 属性注入
     // 加入JdbcTemplate作为成员变变量

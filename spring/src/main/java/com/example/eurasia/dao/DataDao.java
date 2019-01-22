@@ -88,7 +88,7 @@ sbf = new StringBuffer("");//重新new
         }
 
         strColsName.deleteCharAt(strColsName.length() - CommonDao.COMMA.length());
-        strColsName.replace(strColsName.indexOf("id,"),"id,".length(),"");//indexOf从0开始计算,没有查到指定的字符则该方法返回-1
+        strColsName.replace(strColsName.indexOf(CommonDao.ID_COMMA),CommonDao.ID_COMMA.length(),"");//indexOf从0开始计算,没有查到指定的字符则该方法返回-1
         String[] name = strColsName.toString().split(CommonDao.COMMA,-1);
 /*
 mysql根据两个字段判断重复的数据并且删除，只保留一条。
