@@ -59,14 +59,9 @@ public class SearchDataServiceImpl implements ISearchDataService {
             long userLimit = limit;
             if (!StringUtils.isEmpty(strCanSearchCount)) {//可查询条数有限制
                 userMax = Long.parseLong(strCanSearchCount);
-                if ((offset+1)*limit > userMax) {//超过的情况
-                    userOffset = userMax/limit;
-                    userLimit = userMax%limit;
-                }
             } else {//可查询条数没有限制
                 userMax = dataService.queryTableRows(DataService.TABLE_DATA);
             }
-
 
             Map<String, String> order = new LinkedHashMap<>();
             order.put("id","asc");
