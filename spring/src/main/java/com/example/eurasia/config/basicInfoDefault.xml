@@ -4,7 +4,7 @@
     <column key="昵称" value="" />
     <column key="性别" value="" />
     <column key="名字" value="默认用户" />
-    <column key="密码" value="" />
+    <column key="密码" value="000000" />
     <column key="年龄" value="" />
     <column key="国家" value="" />
     <column key="城市" value="" />
