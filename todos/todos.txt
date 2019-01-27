@@ -1,35 +1,45 @@
-﻿3. 动态显示  datasearch条件，权限（灰掉的要继续实装）
+﻿【processing】
 
-5. 对HTTP增加拦截器，保证Session过期之后重定向.（Spring代码push了，没有注入Annotation） 4 OK
+1. 动态显示  datasearch条件，权限（灰掉的要继续实装） 日期要最近一个月。
 
-7. delete user 未对应。
+2. delete user 未对应。
 
-9. add user input 和 edit user 这两个component在 getUserDetailedInfo和 getDefaultDetailedInfo的时候，两秒之后
+3. add user input 和 edit user 这两个component在 getUserDetailedInfo和 getDefaultDetailedInfo的时候，两秒之后
    出处理中对话框。（不怎么再现，优先级低）
 
-11. 其他的如商品编码也要改（这里有一个bug，Access有限定的商品编码，还是能全部检索出来商品）2 OK
+4. 用户有效检查 4 OK? ->待测试
 
-14. 用户有效检查 4 OK? ->待测试
+5. 字段排序。（优先级低）
 
-19. 字段排序。（优先级低）
+6. logout没有做。
 
-20. 商品代码应该不是string是list类型。（angular需要对应）1 OK
-
-21. logout没有做。
-
-22. 商品编码 用户添加 编辑界面上给出一个全体商品名称和编码选择对话框，让管理员选，
+7. 商品编码 用户添加 编辑界面上给出一个全体商品名称和编码选择对话框，让管理员选，
    用户查询界面，点击商品编码查询，出来自己可以选择的所有商品编码和商品名称的对话框。
 
-23. export data 按钮 在有效设置下还是灰色的 3 OK
+8. 透视图 3
 
-24. 透视图 5
+9. 编辑管理员时候，给商品编码为空，会报错，但是不应该报错，管理员允许空商品编码。
 
-25. 编辑管理员时候，给商品编码为空，会报错，但是不应该报错，管理员允许空商品编码。
+10. 权限设置画面  商品有效期间 -> 日期  用户有效日期 -> 有效期
 
-26. 前端的DataSearch 里面装货港 应该做成下拉菜单，选择值从14000数据里面选出。OK
-
-27. 权限设置画面  商品有效期间 -> 日期  用户有效日期 -> 有效期
-
-28. spring侧的 sessiontimeout判断， 不用每个controller都做一遍，
+11. spring侧的 sessiontimeout判断， 不用每个controller都做一遍，
       String userID = userInfoServiceImpl.getLoginUserID(request); if (StringUtils.isEmpty(userID)) {
       放在 统一的SessionTimeOutInterceptor 的 preHandle就可以。
+
+12. 用户在	其他IP同时登陆时候，让该IP登陆自动logout。
+
+13. 数据查询的时候 还是显示 loading，死掉。2
+
+14. 查询条件 改成 日期 厂号 国家 申报曾位 经营单位。货主单位 海关编码 产品名称  1
+
+【finished】
+
+1. 对HTTP增加拦截器，保证Session过期之后重定向.（Spring代码push了，没有注入Annotation） 4 OK
+
+2. 其他的如商品编码也要改（这里有一个bug，Access有限定的商品编码，还是能全部检索出来商品）2 OK
+
+3. 商品代码应该不是string是list类型。（angular需要对应）1 OK
+
+4. 前端的DataSearch 里面装货港 应该做成下拉菜单，选择值从14000数据里面选出。OK
+
+5. export data 按钮 在有效设置下还是灰色的 3 OK
