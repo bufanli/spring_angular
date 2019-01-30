@@ -71,7 +71,7 @@ public class UserService {
     public static final String MUST_USER_PHONE = "手机号码";
     public static final String MUST_USER_VALID = "有效期";
     public static final String MUST_PRODUCT_DATE = "日期";
-    public static final String MUST_PRODUCT_NUMBER = "商品编码";
+    public static final String MUST_PRODUCT_NUMBER = "海关编码";//海关/商品编码
     public static final String MUST_SEARCH_COUNT = "看的条数";
 
     //登陆用字段

@@ -103,7 +103,7 @@ public class SearchDataServiceImpl implements ISearchDataService {
             String queryConditionValueFromSql = null;
             switch (queryCondition.getKey()) {
                 case UserService.MUST_PRODUCT_NUMBER:
-                    //检查商品编码是否在该用户都权限内
+                    //检查海关/商品编码是否在该用户都权限内
                     queryConditionValueFromSql = userService.getOneUserCustom(UserService.TABLE_USER_ACCESS_AUTHORITY,
                             UserService.MUST_PRODUCT_NUMBER,
                             userID);
