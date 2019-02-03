@@ -2,7 +2,7 @@
 <mapping>
     <column key="userID" value="sinoshuju_admin" />
     <column key="日期" value="~~" />
-    <column key="商品编码" value="~~" />
+    <column key="海关编码" value="~~" />
     <column key="有效期" value="~~" />
     <column key="上传可否" value="TRUE" />
     <column key="看的条数" value="" />

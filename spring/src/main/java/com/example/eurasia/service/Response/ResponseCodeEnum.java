@@ -108,7 +108,7 @@ public enum ResponseCodeEnum {
     USER_ADD_PRODUCT_DATE_FORMAT_ERROR(ResponseCode.RESPONSE_CODE_NG, "添加可访问的日期范围格式不正确。"),
     USER_ADD_PRODUCT_DATE_FROM_DATE_IS_NULL(ResponseCode.RESPONSE_CODE_NG, "添加可访问的日期范围的起始有效期为空。"),
     USER_ADD_PRODUCT_DATE_TO_DATE_IS_NULL(ResponseCode.RESPONSE_CODE_NG, "添加可访问的日期范围的结束有效期为空。"),
-    USER_ADD_PRODUCT_NUMBER_IS_NULL(ResponseCode.RESPONSE_CODE_NG, "添加可访问的商品编码为空。"),
+    USER_ADD_PRODUCT_NUMBER_IS_NULL(ResponseCode.RESPONSE_CODE_NG, "添加可访问的海关/商品编码为空。"),
     USER_UPDATE_ID_IS_NULL(ResponseCode.RESPONSE_CODE_NG, "更新用户ID为空。"),
     USER_UPDATE_ID_IS_EXIST(ResponseCode.RESPONSE_CODE_NG, "更新用户ID已存在。"),
     USER_UPDATE_NAME_IS_NULL(ResponseCode.RESPONSE_CODE_NG, "更新用户名为空。"),
@@ -121,7 +121,7 @@ public enum ResponseCodeEnum {
     USER_UPDATE_PRODUCT_DATE_FORMAT_ERROR(ResponseCode.RESPONSE_CODE_NG, "更新可访问的日期范围格式不正确。"),
     USER_UPDATE_PRODUCT_DATE_FROM_DATE_IS_NULL(ResponseCode.RESPONSE_CODE_NG, "更新可访问的日期范围的起始有效期为空。"),
     USER_UPDATE_PRODUCT_DATE_TO_DATE_IS_NULL(ResponseCode.RESPONSE_CODE_NG, "更新可访问的日期范围的结束有效期为空。"),
-    USER_UPDATE_PRODUCT_NUMBER_IS_NULL(ResponseCode.RESPONSE_CODE_NG, "更新可访问的商品编码为空。"),
+    USER_UPDATE_PRODUCT_NUMBER_IS_NULL(ResponseCode.RESPONSE_CODE_NG, "更新可访问的海关/商品编码为空。"),
 
     /* 取得表头 */
     HEADER_GET_ALL_INFO_FROM_SQL_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "从数据库取得表头信息成功"),
