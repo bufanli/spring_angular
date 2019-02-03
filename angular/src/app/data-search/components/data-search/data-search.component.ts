@@ -305,20 +305,19 @@ export class DataSearchComponent implements OnInit, AfterViewChecked, AfterViewI
   ngAfterViewInit(): void {
     // if call selectpicker in ngOnInit, select control will not be shown for some reason
     // but call selectpicker can resolve this issue in ngAfterViewInit
-    $('#ori-country').selectpicker('val', '');
-    $('#ori-country').selectpicker('refresh');
+    this.setSelectOptions('#ori-country');
+    this.setSelectOptions('#apply-companies');
+    this.setSelectOptions('#owner-companies');
+    this.setSelectOptions('#operation-companies');
+    this.setSelectOptions('#major-manage-customs');
+  }
 
-    $('#apply-companies').selectpicker('val', '');
-    $('#apply-companies').selectpicker('refresh');
-
-    $('#owner-companies').selectpicker('val', '');
-    $('#owner-companies').selectpicker('refresh');
-
-    $('#operation-companies').selectpicker('val', '');
-    $('#operation-companies').selectpicker('refresh');
-
-    $('#major-manage-customs').selectpicker('val', '');
-    $('#major-manage-customs').selectpicker('refresh');
+  private setSelectOptions(id: string): void {
+    $(id).selectpicker({
+      'liveSearch': true,
+    });
+    $(id).selectpicker('val', '');
+    $(id).selectpicker('refresh');
   }
 
   // bind data detail event handler to every page

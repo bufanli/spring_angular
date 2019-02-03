@@ -85,15 +85,15 @@ public class QueryCondition implements Cloneable {
     }
 
     @JsonIgnore
-    public String setArrToQueryCondition(String[] queryConditionArr) {
+    public void setArrToQueryCondition(String[] queryConditionArr) {
         StringBuffer newQueryCondition = new StringBuffer();
         for (String queryCondition:queryConditionArr) {
             newQueryCondition.append(queryCondition + QueryCondition.QUERY_CONDITION_SPLIT);
         }
         if (newQueryCondition.indexOf(QueryCondition.QUERY_CONDITION_SPLIT) >= 0) {
-            newQueryCondition.delete((newQueryCondition.length() - UserService.BR.length()),newQueryCondition.length());
+            newQueryCondition.delete((newQueryCondition.length() - QueryCondition.QUERY_CONDITION_SPLIT.length()),newQueryCondition.length());
         }
-        return newQueryCondition.toString();
+        this.setValue(newQueryCondition.toString());
     }
 
     /**
