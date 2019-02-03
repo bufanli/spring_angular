@@ -32,6 +32,12 @@
 
 14. 查询条件 改成 日期 厂号 国家 申报曾位 经营单位。货主单位 海关编码 产品名称  1
 
+15. 针对最新的数据（2019/1/27 现在）格式columnDefaultName.xml调整了一次，但是queryConditionTypeValue.xml等文件没有更新。OK
+
+16. POI的Excel导入，还有 OutofMemory问题，这个要用 POI Event模式来解决。
+
+17. SessionTimeout时候Spring返回  code 201，但是Spring侧的其他错误也在用  201，这个要改善。
+
 【finished】
 
 1. 对HTTP增加拦截器，保证Session过期之后重定向.（Spring代码push了，没有注入Annotation） 4 OK

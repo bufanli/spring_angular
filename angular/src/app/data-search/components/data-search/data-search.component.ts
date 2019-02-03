@@ -19,6 +19,7 @@ import { UserAccessAuthorities } from 'src/app/user-conf/entities/user-access-au
 import { NgbModal, NgbModalOptions, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
 import { DataDetailComponent } from '../data-detail/data-detail.component';
 import { Router } from '@angular/router';
+import { DataSearchConstListService } from '../../services/data-search-const-list.service';
 
 // json header for post
 const httpOptions = {
@@ -51,110 +52,30 @@ export class DataSearchComponent implements OnInit, AfterViewChecked, AfterViewI
   private exportUrl = 'api/downloadFile';  // URL to web api
   private headersUrl = 'api/getHeaders';  // URL to web api
 
-  public IMPORT_CUSTOMS_ENUM = [
-    '天津关区',
-    '上海关区',
-    '深圳关区',
-    '广东分署',
-    '大连关区',
-    '青岛关区',
-    '宁波关区',
-    '厦门关区',
-    '许昌海关',
-    '合肥关区',
-    '南京关区',
-    '郑州关区',
-    '兰州海关',
-    '杭州关区',
-    '福州关区',
-    '黄埔关区',
-    '北京关区',
-    '南宁关区',
-    '重庆关区',
-  ];
-  public SHIP_PORTS = [
-    '巴伦西亚',
-    '圣多斯',
-    '温哥华',
-    '巴西',
-    '墨尔本',
-    '新加坡',
-    '布宜诺斯艾利斯',
-    '布里斯班',
-    '香港',
-    '帕腊纳瓜',
-    '蒙得维的亚',
-    '釜山',
-    '陶朗加',
-    '高雄',
-    '萨拉特',
-    '丹吉尔',
-    '安特卫普',
-    '悉尼',
-    '巴生港',
-    '伊塔曰阿伊',
-    '沙特阿拉伯',
-    '罗萨里奥',
-    '曼萨尼略',
-    '利特尔顿港',
-    '热那亚',
-    '中国境内',
-    '洛杉矶',
-    '意大利',
-    '德班',
-    '长滩',
-    '乌拉圭',
-    '内皮尔',
-    '里约格兰德',
-    '弗里曼特尔',
-    '南非(阿扎尼亚)',
-    '新西兰',
-    '马来西亚',
-    '米纳阿卜杜拉',
-    '鹿特丹',
-    '澳大利亚',
-    '利尔肯',
-    '塔科马',
-    '洛美',
-    '摩洛哥',
-    '卡塔尔',
-    '里约热内卢',
-    '美国',
-    '槟城',
-    '不来梅港',
-    '奥克兰',
-    '柔弗巴鲁',
-    '阿耳黑西腊斯',
-    '迪拜',
-    '台湾省',
-    '都柏林',
-    '瓦尔帕来索',
-    '加拿大',
-    '不来梅',
-    '伊斯坦布尔',
-    '阿根廷',
-    '巴尔博亚',
-    '重庆关区',
-  ];
   // this id is just for compiling pass
   private id: string = null;
   // search parameters
   searchParam = [
-    { key: '进口关区', value: '', type: 'List' },
     { key: '起始日期', value: '', type: 'Date' },
     { key: '结束日期', value: '', type: 'Date' },
-    { key: '产品名称', value: '', type: 'String' },
-    { key: '装货港', value: '', type: 'List' },
-    { key: '商品编码', value: '', type: 'List' },
-    { key: '规格型号', value: '', type: 'String' }
+    { key: '加工厂号', value: '', type: 'String' },
+    { key: '贸易国', value: '', type: 'List' },
+    { key: '申报单位名称', value: '', type: 'List' },
+    { key: '货主单位名称', value: '', type: 'List' },
+    { key: '经营单位名称', value: '', type: 'List' },
+    { key: '主管关区', value: '', type: 'List' },
+    { key: '商品名称', value: '', type: 'String' },
   ];
-  // import customs
-  public importCustoms: string[] = [];
-  // ship ports
-  public shipPorts: string[] = [];
-
-  // product codes
-  public productCodes = '';
+  // ori countries
+  public oriCountries: string[] = [];
+  // owner companies
+  public ownerCompanies: string[] = [];
+  // operation companies
+  public operationCompanies: string[] = [];
+  // apply units
+  public applyCompanies: string[] = [];
+  // major manage customs
+  public majorManageCustoms: string[] = [];
 
   // user access authorities definition
   // 1. export button
@@ -162,7 +83,6 @@ export class DataSearchComponent implements OnInit, AfterViewChecked, AfterViewI
   // 2. others
 
   // init access authorities from current user container
-
   private initAccessAuthorites(): void {
     // get access authorities
     const accessAuthorities: UserAccessAuthorities =
@@ -175,36 +95,30 @@ export class DataSearchComponent implements OnInit, AfterViewChecked, AfterViewI
     }
   }
 
-  convertSelection(): void {
-    // 1. convert import customs
-    let result = '';
-    for (const custom of this.importCustoms) {
-      result = result + custom;
-      result = result + '~~';
-    }
-    // get rid of last two chars
-    result = result.substr(0, result.lastIndexOf('~~'));
-    // convert empty to dash
-    result = this.commonUtilitiesService.convertEmptyToDash(result);
-    // set to params
-    this.searchParam[0].value = result;
-    // 2. convert product codes
-    // convert comma seperator to dash
-    this.searchParam[5].value = this.commonUtilitiesService.
-      convertCommaSeperatorToDash(this.productCodes);
-
-    // 3. ship ports
-    result = '';
-    for (const shipPort of this.shipPorts) {
-      result = result + shipPort;
-      result = result + '~~';
-    }
-    // get rid of last two chars
-    result = result.substr(0, result.lastIndexOf('~~'));
-    // convert empty to dash
-    result = this.commonUtilitiesService.convertEmptyToDash(result);
-    // set to params
-    this.searchParam[4].value = result;
+  private convertSelection(): void {
+    // 1. manufacturer factory
+    this.searchParam[2].value =
+      this.commonUtilitiesService.convertStringCommaSeperatorToDash(this.searchParam[2].value);
+    // 2. ori countries
+    this.searchParam[3].value =
+      this.commonUtilitiesService.convertArrayCommaSeperatorToDash(this.oriCountries);
+    // 3. apply companies
+    this.searchParam[4].value =
+      this.commonUtilitiesService.convertArrayCommaSeperatorToDash(this.applyCompanies);
+    // 4. convert owner companies
+    this.searchParam[5].value =
+      this.commonUtilitiesService.convertArrayCommaSeperatorToDash(this.ownerCompanies);
+    // 5. operation companies
+    this.searchParam[6].value =
+      this.commonUtilitiesService.convertArrayCommaSeperatorToDash(this.operationCompanies);
+    // 6.major manange customs
+    this.searchParam[7].value =
+      this.commonUtilitiesService.convertArrayCommaSeperatorToDash(this.majorManageCustoms);
+  }
+  // get query conditions
+  private getQueryConditions(): any {
+    this.convertSelection();
+    return this.getQueryTime();
   }
 
   // download file when exporting data
@@ -218,8 +132,7 @@ export class DataSearchComponent implements OnInit, AfterViewChecked, AfterViewI
 
   // download data to file
   async downloadFile(): Promise<void> {
-    this.convertSelection();
-    const queryConditions: any = this.getQueryTime();
+    const queryConditions: any = this.getQueryConditions();
     const searchParamJson = JSON.stringify(queryConditions);
     return this.downloadHttp.post(this.exportUrl, searchParamJson, httpDownloadOptions).toPromise().then(
       res => {
@@ -242,7 +155,8 @@ export class DataSearchComponent implements OnInit, AfterViewChecked, AfterViewI
     private commonUtilitiesService: CommonUtilitiesService,
     private currentUserContainer: CurrentUserContainerService,
     public modalService: NgbModal,
-    private route: Router) {
+    private route: Router,
+    public dataSearchConstListService: DataSearchConstListService) {
 
   }
 
@@ -287,7 +201,7 @@ export class DataSearchComponent implements OnInit, AfterViewChecked, AfterViewI
           };
           return ret;
         } else if (response.code === 201) {
-          that.commonUtilitiesService.sessionTimeout();
+          that.CurrentUserContainerService.sessionTimeout();
           return {
             'rows': [],
             'total': 0
@@ -307,8 +221,7 @@ export class DataSearchComponent implements OnInit, AfterViewChecked, AfterViewI
   }
   // get query params
   private getQueryParams(params: any): any {
-    this.convertSelection();
-    const queryConditions = this.getQueryTime();
+    const queryConditions = this.getQueryConditions();
     return {
       limit: params.limit,
       offset: params.offset,
@@ -386,11 +299,20 @@ export class DataSearchComponent implements OnInit, AfterViewChecked, AfterViewI
   ngAfterViewInit(): void {
     // if call selectpicker in ngOnInit, select control will not be shown for some reason
     // but call selectpicker can resolve this issue in ngAfterViewInit
-    $('#import-custom').selectpicker('val', '');
-    $('#import-custom').selectpicker('refresh');
-    $('#ship-port').selectpicker('val', '');
-    $('#ship-port').selectpicker('refresh');
+    $('#ori-country').selectpicker('val', '');
+    $('#ori-country').selectpicker('refresh');
 
+    $('#apply-companies').selectpicker('val', '');
+    $('#apply-companies').selectpicker('refresh');
+
+    $('#owner-companies').selectpicker('val', '');
+    $('#owner-companies').selectpicker('refresh');
+
+    $('#operation-companies').selectpicker('val', '');
+    $('#operation-companies').selectpicker('refresh');
+
+    $('#major-manage-customs').selectpicker('val', '');
+    $('#major-manage-customs').selectpicker('refresh');
   }
 
   // bind data detail event handler to every page

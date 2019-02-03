@@ -7,20 +7,14 @@
     </div>
     <div class="panel-body">
       <form role="form" (ngSubmit)="onSearch()">
+        <!-- <commnent> first row</commnent> -->
         <div class="row">
-          <div class="col-md-4">
-            <div class="form-group">
-              <select class="form-control selectpicker" multiple title="请选择进口关区" id="import-custom" [(ngModel)]="importCustoms"
-                name="import-custom">
-                <option *ngFor="let custom of IMPORT_CUSTOMS_ENUM" value ="{{custom}}">{{custom}}</option>
-              </select>
-            </div>
-          </div>
           <div class="col-md-4">
             <div class="form-group">
               <div class="input-group input-daterange">
                 <span class="input-group-addon" id="date">日期</span>
-                <input type="text" class="form-control" aria-describedby="date" id="start-time" style="color:gray" autocomplete="off">
+                <input type="text" class="form-control" aria-describedby="date" id="start-time" style="color:gray"
+                  autocomplete="off">
                 <div class="input-group-addon">到</div>
                 <input type="text" class="form-control" id="end-time" style="color:gray" autocomplete="off">
               </div>
@@ -29,37 +23,64 @@
           <div class="col-md-4">
             <div class="form-group">
               <div class="input-group">
-                <span class="input-group-addon" id="enterprise">产品名称</span>
-                <input type="text" [(ngModel)]="searchParam[3].value" name="product-name" class="form-control"
-                  placeholder="请输入商品名称" aria-describedby="enterprise">
+                <span class="input-group-addon" id="manufacturer">加工厂号</span>
+                <input type="text" [(ngModel)]="searchParam[2].value" name="product-name" class="form-control"
+                  placeholder="请输入加工厂号" aria-describedby="manufacturer">
               </div>
             </div>
           </div>
+          <div class="col-md-4">
+            <div class=" form-group">
+              <select class="form-control selectpicker" multiple title="请选择贸易国" id="ori-country" [(ngModel)]="oriCountries"
+                name="ori-country">
+                <option *ngFor="let oriCountry of this.dataSearchConstListService.getOriCountries()" value="{{oriCountry}}">{{oriCountry}}</option>
+              </select>
+            </div>
+          </div>
         </div>
+        <!-- <commnent> second row</commnent> -->
         <div class="row">
           <div class="col-md-4">
             <div class="form-group">
-              <select class="form-control selectpicker" multiple title="请选择装货港" id="ship-port" [(ngModel)]="shipPorts"
-                name="ship-port">
-                <option *ngFor="let shipPort of SHIP_PORTS" value ="{{shipPort}}">{{shipPort}}</option>
+              <select class="form-control selectpicker" multiple title="请选择申报单位名称" id="apply-companies" [(ngModel)]="applyCompanies"
+                name="apply-companies">
+                <option *ngFor="let applyCompany of this.dataSearchConstListService.getApplyCompanies()" value="{{applyCompany}}">{{applyCompany}}</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <select class="form-control selectpicker" multiple title="请选择货主单位名称" id="owner-companies" [(ngModel)]="ownerCompanies"
+                name="owner-units">
+                <option *ngFor="let ownerCompany of this.dataSearchConstListService.getOwnerCompanies()" value="{{ownerCompany}}">{{ownerCompany}}</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <select class="form-control selectpicker" multiple title="请选择经营单位名称" id="operation-companies" [(ngModel)]="operationCompanies"
+                name="owner-units">
+                <option *ngFor="let operationCompany of this.dataSearchConstListService.getOperationCompanies()" value="{{operationCompany}}">{{operationCompany}}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <!-- <commnent> third row</commnent> -->
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <select class="form-control selectpicker" multiple title="请选择主管关区" id="major-manage-customs" [(ngModel)]="majorManageCustoms"
+                name="major-manage-customs">
+                <option *ngFor="let majorManageCustom of this.dataSearchConstListService.getMajorManageCustoms()" value="{{majorManageCustom}}">{{majorManageCustom}}</option>
               </select>
             </div>
           </div>
           <div class="col-md-4">
             <div class="form-group">
               <div class="input-group">
-                <span class="input-group-addon" id="product-code">商品编码</span>
-                <input type="text" [(ngModel)]="productCodes" name="product-code" class="form-control"
-                  placeholder="请输入商品编码" aria-describedby="product-code">
-              </div>
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="form-group">
-              <div class="input-group">
-                <span class="input-group-addon" id="brand_client">规格型号</span>
-                <input type="text" [(ngModel)]="searchParam[6].value" name="specification" class="form-control"
-                  placeholder="请输入规格型号" aria-describedby="specification">
+                <span class="input-group-addon" id="product-name">商品名称</span>
+                <input type="text" [(ngModel)]="this.searchParam[7].value" name="product-name" class="form-control"
+                  placeholder="请输入商品名称" aria-describedby="product-name">
               </div>
             </div>
           </div>

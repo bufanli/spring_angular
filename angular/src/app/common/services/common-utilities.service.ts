@@ -185,8 +185,9 @@ export class CommonUtilitiesService {
       return str;
     }
   }
-  // convert comma seperator to dash seperator
-  convertCommaSeperatorToDash(srcString: string): string {
+  // convert comma seperator to dash seperator(string)
+  // AA,BB -> AA~~BB
+  convertStringCommaSeperatorToDash(srcString: string): string {
     const strArr = srcString.split(',');
     let temp = '';
     for (const entry of strArr) {
@@ -202,5 +203,17 @@ export class CommonUtilitiesService {
       temp = '~~';
     }
     return temp;
+  }
+  // covert comman seperator to dash
+  // ['AA','BB'] -> AA~~BB
+  convertArrayCommaSeperatorToDash(srcArr: string[]): string {
+    let result = '';
+    for (const entry of srcArr) {
+      result = result + entry;
+      result = result + '~~';
+    }
+    // get rid of last two chars
+    result = result.substr(0, result.lastIndexOf('~~'));
+    return result;
   }
 }
