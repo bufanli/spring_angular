@@ -24,7 +24,7 @@
             <div class="form-group">
               <div class="input-group">
                 <span class="input-group-addon" id="manufacturer">加工厂号</span>
-                <input type="text" [(ngModel)]="searchParam[2].value" name="product-name" class="form-control"
+                <input type="text" [(ngModel)]="this.manufacturerFactory" name="product-name" class="form-control"
                   placeholder="请输入加工厂号" aria-describedby="manufacturer">
               </div>
             </div>
@@ -79,7 +79,7 @@
             <div class="form-group">
               <div class="input-group">
                 <span class="input-group-addon" id="product-name">商品名称</span>
-                <input type="text" [(ngModel)]="this.searchParam[7].value" name="product-name" class="form-control"
+                <input type="text" [(ngModel)]="this.productName" name="product-name" class="form-control"
                   placeholder="请输入商品名称" aria-describedby="product-name">
               </div>
             </div>

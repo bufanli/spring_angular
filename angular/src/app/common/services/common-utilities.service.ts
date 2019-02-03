@@ -196,9 +196,6 @@ export class CommonUtilitiesService {
         temp += '~~';
       }
     }
-    if (temp.endsWith('~~')) {
-      temp = temp.slice(0, temp.length - '~~'.length);
-    }
     if (temp === '') {
       temp = '~~';
     }
@@ -212,8 +209,10 @@ export class CommonUtilitiesService {
       result = result + entry;
       result = result + '~~';
     }
-    // get rid of last two chars
-    result = result.substr(0, result.lastIndexOf('~~'));
+    // if it is empty, add ~~
+    if (result === '') {
+      result = '~~';
+    }
     return result;
   }
 }

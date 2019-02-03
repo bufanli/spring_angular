@@ -134,8 +134,7 @@ public class SearchDataServiceImpl implements ISearchDataService {
 
         String queryConditionValueFromSql = null;
         for (QueryCondition queryCondition : queryConditionsArr) {
-            switch (queryCondition.getKey()) {
-                case UserService.MUST_PRODUCT_DATE:
+            if(queryCondition.getKey().equals(UserService.MUST_PRODUCT_DATE)) {
                     String dateArr[] = queryCondition.getQueryConditionToArr();
                     if (dateArr[0].equals("") || dateArr[1].equals("")) {//为了在起始日期和结束日期都存在都情况下，不查询该用户的日期范围
                         queryConditionValueFromSql = userService.getOneUserCustom(UserService.TABLE_USER_ACCESS_AUTHORITY,
@@ -150,9 +149,6 @@ public class SearchDataServiceImpl implements ISearchDataService {
                         }
                         queryCondition.setArrToQueryCondition(dateArr);
                     }
-                    break;
-                default:
-                    break;
             }
         }
     }

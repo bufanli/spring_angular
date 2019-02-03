@@ -58,7 +58,7 @@ export class DataSearchComponent implements OnInit, AfterViewChecked, AfterViewI
   searchParam = [
     { key: '起始日期', value: '', type: 'Date' },
     { key: '结束日期', value: '', type: 'Date' },
-    { key: '加工厂号', value: '', type: 'String' },
+    { key: '加工厂号', value: '', type: 'List' },
     { key: '贸易国', value: '', type: 'List' },
     { key: '申报单位名称', value: '', type: 'List' },
     { key: '货主单位名称', value: '', type: 'List' },
@@ -76,6 +76,10 @@ export class DataSearchComponent implements OnInit, AfterViewChecked, AfterViewI
   public applyCompanies: string[] = [];
   // major manage customs
   public majorManageCustoms: string[] = [];
+  // manufacturer factory
+  public manufacturerFactory = '';
+  // product name
+  public productName = '';
 
   // user access authorities definition
   // 1. export button
@@ -98,7 +102,7 @@ export class DataSearchComponent implements OnInit, AfterViewChecked, AfterViewI
   private convertSelection(): void {
     // 1. manufacturer factory
     this.searchParam[2].value =
-      this.commonUtilitiesService.convertStringCommaSeperatorToDash(this.searchParam[2].value);
+      this.commonUtilitiesService.convertStringCommaSeperatorToDash(this.manufacturerFactory);
     // 2. ori countries
     this.searchParam[3].value =
       this.commonUtilitiesService.convertArrayCommaSeperatorToDash(this.oriCountries);
@@ -114,6 +118,8 @@ export class DataSearchComponent implements OnInit, AfterViewChecked, AfterViewI
     // 6.major manange customs
     this.searchParam[7].value =
       this.commonUtilitiesService.convertArrayCommaSeperatorToDash(this.majorManageCustoms);
+    // product name
+    this.searchParam[8].value = this.productName;
   }
   // get query conditions
   private getQueryConditions(): any {
@@ -201,7 +207,7 @@ export class DataSearchComponent implements OnInit, AfterViewChecked, AfterViewI
           };
           return ret;
         } else if (response.code === 201) {
-          that.CurrentUserContainerService.sessionTimeout();
+          // that.currentUserContainer.sessionTimeout();
           return {
             'rows': [],
             'total': 0
@@ -366,28 +372,28 @@ export class DataSearchComponent implements OnInit, AfterViewChecked, AfterViewI
     return options;
   }
   // get start and end time for querying
-  getQueryTime() {
+  getQueryTime(): any {
     // start time
     if (this.isFontGray('#start-time') === false) {
       const time = $('#start-time').datepicker('getDate');
-      this.searchParam[1].value = this.commonUtilitiesService.convertDateToLocalString(time);
+      this.searchParam[0].value = this.commonUtilitiesService.convertDateToLocalString(time);
     } else {
-      this.searchParam[1].value = '';
+      this.searchParam[0].value = '';
     }
     // end time
     if (this.isFontGray('#end-time') === false) {
       const time = $('#end-time').datepicker('getDate');
-      this.searchParam[2].value = this.commonUtilitiesService.convertDateToLocalString(time);
+      this.searchParam[1].value = this.commonUtilitiesService.convertDateToLocalString(time);
     } else {
-      this.searchParam[2].value = '';
+      this.searchParam[1].value = '';
     }
     // copy searchParam to another
     const queryContiditons: any = this.searchParam.slice();
     // date query parameter
-    const queryTimeValue = queryContiditons[1].value + '~~' + queryContiditons[2].value;
+    const queryTimeValue = queryContiditons[0].value + '~~' + queryContiditons[1].value;
     const queryTime = { key: '日期', value: queryTimeValue, type: 'Date' };
-    queryContiditons.splice(1, 1); // from index=1, delete 1 element
-    queryContiditons.splice(1, 1); // from index=1, delete 1 element
+    queryContiditons.splice(0, 1); // from index=1, delete 1 element
+    queryContiditons.splice(0, 1); // from index=1, delete 1 element
     queryContiditons.push(queryTime);
     return queryContiditons;
   }
