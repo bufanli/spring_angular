@@ -20,6 +20,7 @@ import { NgbModal, NgbModalOptions, NgbModalConfig } from '@ng-bootstrap/ng-boot
 import { DataDetailComponent } from '../data-detail/data-detail.component';
 import { Router } from '@angular/router';
 import { DataSearchConstListService } from '../../services/data-search-const-list.service';
+import { DataStatisticsComponent } from '../data-statistics/data-statistics.component';
 
 // json header for post
 const httpOptions = {
@@ -436,6 +437,6 @@ export class DataSearchComponent implements OnInit, AfterViewChecked, AfterViewI
       const service: NgbModal = this.modalService;
       // you can not call this.adjustModalOptions,
       // because showUserSettingModal called in html context
-      const modalRef = service.open(DataDetailComponent, this.adjustModalOptions());
+      const modalRef = service.open(DataStatisticsComponent, this.adjustModalOptions());
     }
 }

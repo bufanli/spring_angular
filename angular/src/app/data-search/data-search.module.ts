@@ -8,6 +8,7 @@ import { DataDetailComponent } from './components/data-detail/data-detail.compon
 import { CommonModule } from '@angular/common';
 import { NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { DataStatisticsComponent } from './components/data-statistics/data-statistics.component';
+import { NgxEchartsModule } from 'ngx-echarts';
 
 const dataSearchRoutes: Routes = [
   {
@@ -29,9 +30,11 @@ const dataSearchRoutes: Routes = [
     HttpClientModule,
     HttpModule,
     NgbModalModule,
+    NgxEchartsModule,
   ],
   entryComponents: [
     DataDetailComponent,
+    DataStatisticsComponent,
   ]
 
 })
