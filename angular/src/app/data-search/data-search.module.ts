@@ -7,6 +7,7 @@ import { HttpModule } from '@angular/http';
 import { DataDetailComponent } from './components/data-detail/data-detail.component';
 import { CommonModule } from '@angular/common';
 import { NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
+import { DataStatisticsComponent } from './components/data-statistics/data-statistics.component';
 
 const dataSearchRoutes: Routes = [
   {
@@ -19,6 +20,7 @@ const dataSearchRoutes: Routes = [
   declarations: [
     DataSearchComponent,
     DataDetailComponent,
+    DataStatisticsComponent,
   ],
   imports: [
     RouterModule.forChild(<any>dataSearchRoutes),

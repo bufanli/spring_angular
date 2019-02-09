@@ -430,4 +430,12 @@ export class DataSearchComponent implements OnInit, AfterViewChecked, AfterViewI
       return false;
     }
   }
+  // data statistics
+    // show data detail modal
+    public onStatistics(): void {
+      const service: NgbModal = this.modalService;
+      // you can not call this.adjustModalOptions,
+      // because showUserSettingModal called in html context
+      const modalRef = service.open(DataDetailComponent, this.adjustModalOptions());
+    }
 }
