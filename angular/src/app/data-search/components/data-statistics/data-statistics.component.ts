@@ -8,8 +8,6 @@ declare const require: any;
 })
 export class DataStatisticsComponent implements OnInit {
 
-  // demo_html = require('!!html-loader!./data-statistics.component.html');
-  // demo_ts = require('!!raw-loader!./statistics.component.ts');
   options: any;
 
   constructor() { }
@@ -30,7 +28,11 @@ export class DataStatisticsComponent implements OnInit {
         data: ['bar', 'bar2'],
         align: 'left'
       },
-      tooltip: {},
+      tooltip: {
+        feature: {
+          saveAsImage: {},
+        }
+      },
       xAxis: {
         data: xAxisData,
         silent: false,

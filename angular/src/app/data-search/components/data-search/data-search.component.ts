@@ -21,6 +21,8 @@ import { DataDetailComponent } from '../data-detail/data-detail.component';
 import { Router } from '@angular/router';
 import { DataSearchConstListService } from '../../services/data-search-const-list.service';
 import { DataStatisticsComponent } from '../data-statistics/data-statistics.component';
+import { StatisticsReportQueryData } from '../../entities/statistics-report-query-data';
+import { ComputeField } from '../../entities/compute-field';
 
 // json header for post
 const httpOptions = {
@@ -52,6 +54,7 @@ export class DataSearchComponent implements OnInit, AfterViewChecked, AfterViewI
   private searchUrl = 'api/searchData';  // URL to web api
   private exportUrl = 'api/downloadFile';  // URL to web api
   private headersUrl = 'api/getHeaders';  // URL to web api
+  private statisticsReportsUrl = 'api/statisticsReport';  // URL to web api
 
   // this id is just for compiling pass
   private id: string = null;
@@ -432,11 +435,37 @@ export class DataSearchComponent implements OnInit, AfterViewChecked, AfterViewI
     }
   }
   // data statistics
-    // show data detail modal
-    public onStatistics(): void {
-      const service: NgbModal = this.modalService;
-      // you can not call this.adjustModalOptions,
-      // because showUserSettingModal called in html context
-      const modalRef = service.open(DataStatisticsComponent, this.adjustModalOptions());
-    }
+  // show data detail modal
+  public onStatistics(): void {
+    this.statisticReport().subscribe(httpResponse => {
+      console.log(httpResponse.data);
+    });
+    const service: NgbModal = this.modalService;
+    // you can not call this.adjustModalOptions,
+    // because showUserSettingModal called in html context
+    const modalRef = service.open(DataStatisticsComponent, this.adjustModalOptions());
+  }
+  // statistic report
+  private statisticReport(): Observable<HttpResponse> {
+    // post statistics report request
+    const statisticsReportQueryData: StatisticsReportQueryData
+      = new StatisticsReportQueryData();
+    // group by field
+    statisticsReportQueryData.setGroupByField('收货人');
+    // compute fields
+    const computeFields: ComputeField[] = [];
+    const computeField1: ComputeField = new ComputeField();
+    const computeField2: ComputeField = new ComputeField();
+    computeField1.setFieldName('重量');
+    computeField1.setComputeType('SUM');
+    computeField2.setFieldName('件数');
+    computeField2.setComputeType('SUM');
+    computeFields.push(computeField1);
+    computeFields.push(computeField2);
+    statisticsReportQueryData.setComputeFields(computeFields);
+    // query conditions
+    const queryConditions: any = this.getQueryConditions();
+    statisticsReportQueryData.setQueryConditions(queryConditions);
+    return this.http.post<HttpResponse>(this.statisticsReportsUrl, statisticsReportQueryData, httpOptions);
+  }
 }
