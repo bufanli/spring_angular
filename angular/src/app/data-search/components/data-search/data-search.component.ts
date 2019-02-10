@@ -23,6 +23,8 @@ import { DataSearchConstListService } from '../../services/data-search-const-lis
 import { DataStatisticsComponent } from '../data-statistics/data-statistics.component';
 import { StatisticsReportQueryData } from '../../entities/statistics-report-query-data';
 import { ComputeField } from '../../entities/compute-field';
+import { ProcessingDialogCallback } from 'src/app/common/interfaces/processing-dialog-callback';
+import { DataStatisticsService } from '../../services/data-statistics.service';
 
 // json header for post
 const httpOptions = {
@@ -41,7 +43,9 @@ const httpDownloadOptions = {
   templateUrl: './data-search.component.html',
   styleUrls: ['./data-search.component.css']
 })
-export class DataSearchComponent implements OnInit, AfterViewChecked, AfterViewInit {
+export class DataSearchComponent implements OnInit,
+  AfterViewChecked,
+  AfterViewInit {
 
   // sequence field and title
   private static readonly SEQUENCE_FIELD = 'seq';
@@ -54,7 +58,6 @@ export class DataSearchComponent implements OnInit, AfterViewChecked, AfterViewI
   private searchUrl = 'api/searchData';  // URL to web api
   private exportUrl = 'api/downloadFile';  // URL to web api
   private headersUrl = 'api/getHeaders';  // URL to web api
-  private statisticsReportsUrl = 'api/statisticsReport';  // URL to web api
 
   // this id is just for compiling pass
   private id: string = null;
@@ -166,7 +169,8 @@ export class DataSearchComponent implements OnInit, AfterViewChecked, AfterViewI
     private currentUserContainer: CurrentUserContainerService,
     public modalService: NgbModal,
     private route: Router,
-    public dataSearchConstListService: DataSearchConstListService) {
+    public dataSearchConstListService: DataSearchConstListService,
+    private dataStatisticsService: DataStatisticsService) {
 
   }
 
@@ -366,7 +370,6 @@ export class DataSearchComponent implements OnInit, AfterViewChecked, AfterViewI
     return data;
   }
   // adjust modal options
-  // adjust modal options
   // if don't adjust modal options, modal will not be shown correctly
   adjustModalOptions(): NgbModalOptions {
     const options: NgbModalOptions = new NgbModalConfig();
@@ -434,38 +437,11 @@ export class DataSearchComponent implements OnInit, AfterViewChecked, AfterViewI
       return false;
     }
   }
-  // data statistics
-  // show data detail modal
-  public onStatistics(): void {
-    this.statisticReport().subscribe(httpResponse => {
-      console.log(httpResponse.data);
-    });
-    const service: NgbModal = this.modalService;
-    // you can not call this.adjustModalOptions,
-    // because showUserSettingModal called in html context
-    const modalRef = service.open(DataStatisticsComponent, this.adjustModalOptions());
-  }
   // statistic report
-  private statisticReport(): Observable<HttpResponse> {
-    // post statistics report request
-    const statisticsReportQueryData: StatisticsReportQueryData
-      = new StatisticsReportQueryData();
-    // group by field
-    statisticsReportQueryData.setGroupByField('收货人');
-    // compute fields
-    const computeFields: ComputeField[] = [];
-    const computeField1: ComputeField = new ComputeField();
-    const computeField2: ComputeField = new ComputeField();
-    computeField1.setFieldName('重量');
-    computeField1.setComputeType('SUM');
-    computeField2.setFieldName('件数');
-    computeField2.setComputeType('SUM');
-    computeFields.push(computeField1);
-    computeFields.push(computeField2);
-    statisticsReportQueryData.setComputeFields(computeFields);
+  public onStatisticsReport(): void {
     // query conditions
     const queryConditions: any = this.getQueryConditions();
-    statisticsReportQueryData.setQueryConditions(queryConditions);
-    return this.http.post<HttpResponse>(this.statisticsReportsUrl, statisticsReportQueryData, httpOptions);
+    this.dataStatisticsService.statisticsReport(queryConditions);
   }
+
 }

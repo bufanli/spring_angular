@@ -7,7 +7,7 @@ import { UserAccessAuthoritiesComponent } from '../user-access-authorities/user-
 import { UserInfoService } from '../../services/user-info.service';
 import { HttpResponse } from 'src/app/common/entities/http-response';
 import { Router } from '@angular/router';
-import { CommonDialogCallback } from 'src/app/common/interfaces/common-dialog-callback.service';
+import { CommonDialogCallback } from 'src/app/common/interfaces/common-dialog-callback';
 import { CommonUtilitiesService } from 'src/app/common/services/common-utilities.service';
 import { CurrentUserContainerService } from 'src/app/common/services/current-user-container.service';
 

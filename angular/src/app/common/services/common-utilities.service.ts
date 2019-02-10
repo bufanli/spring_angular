@@ -3,9 +3,10 @@ import { Header } from '../entities/header';
 import { HttpResponse } from '../entities/http-response';
 import { forEach } from '@angular/router/src/utils/collection';
 import { element } from '@angular/core/src/render3/instructions';
-import { NgbModal, NgbModalOptions, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
-import { CommonDialogCallback } from '../interfaces/common-dialog-callback.service';
+import { NgbModal, NgbModalOptions, NgbModalConfig, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
+import { CommonDialogCallback } from '../interfaces/common-dialog-callback';
 import { ModalDialogComponent } from '../components/modal-dialog/modal-dialog.component';
+import { ProcessingDialogCallback } from '../interfaces/processing-dialog-callback';
 
 @Injectable({
   providedIn: 'root'
@@ -14,6 +15,8 @@ export class CommonUtilitiesService {
 
   public DATA_COMMON_SEPERATOR = '~~';
   public VIEW_COMMON_SEPERATOR = ',';
+  public PROCESSING_TITLE = '处理中';
+  public PROCESSING_BODY = '处理中,请稍后';
   public CHINA_PROVINCES: string[] = [
     '北京',
     '天津',
@@ -50,6 +53,8 @@ export class CommonUtilitiesService {
     '香港特别行政区',
     '澳门',
   ];
+  // processing modal dialog handler
+  private processingDialog: NgbModalRef = null;
 
   constructor(public modalService: NgbModal) { }
 
@@ -163,6 +168,23 @@ export class CommonUtilitiesService {
     modalRef.componentInstance.setSourceID(sourceID);
     modalRef.componentInstance.setType(dialogType);
     modalRef.componentInstance.notifier.subscribe(response => this.callbackOfModalDialog(response, callback));
+  }
+  // show processing dialog
+  showProcessingDialog(callback: ProcessingDialogCallback, data: any, sourceID: string) {
+    // show processing dialog
+    const modalRef = this.modalService.open(ModalDialogComponent, this.adjustModalOptions());
+    modalRef.componentInstance.setTitle(this.PROCESSING_TITLE);
+    modalRef.componentInstance.setBody(this.PROCESSING_BODY);
+    modalRef.componentInstance.setType('info');
+    this.processingDialog = modalRef;
+    // call callback to process
+    callback.callbackOnProcessing(sourceID, data);
+  }
+  // close processing dialog
+  // it should be called on process finishing
+  closeProcessingDialog() {
+    this.processingDialog.close();
+    this.processingDialog = null;
   }
 
   // callback of modal dialog

@@ -10,7 +10,7 @@ import { UserQueryConditionHeader } from '../../entities/user-query-condition-he
 import { ComponentFactoryResolver, ComponentFactory } from '@angular/core';
 import { EventEmitter } from '@angular/core';
 import { CommonUtilitiesService } from 'src/app/common/services/common-utilities.service';
-import { CommonDialogCallback } from 'src/app/common/interfaces/common-dialog-callback.service';
+import { CommonDialogCallback } from 'src/app/common/interfaces/common-dialog-callback';
 import { CurrentUserContainerService } from 'src/app/common/services/current-user-container.service';
 
 @Component({
