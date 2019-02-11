@@ -175,7 +175,7 @@ export class CommonUtilitiesService {
     const modalRef = this.modalService.open(ModalDialogComponent, this.adjustModalOptions());
     modalRef.componentInstance.setTitle(this.PROCESSING_TITLE);
     modalRef.componentInstance.setBody(this.PROCESSING_BODY);
-    modalRef.componentInstance.setType('info');
+    modalRef.componentInstance.setType('processing');
     this.processingDialog = modalRef;
     // call callback to process
     callback.callbackOnProcessing(sourceID, data);

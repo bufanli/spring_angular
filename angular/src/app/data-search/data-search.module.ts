@@ -2,13 +2,15 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { DataSearchComponent } from './components/data-search/data-search.component';
 import { FormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { HttpModule } from '@angular/http';
 import { DataDetailComponent } from './components/data-detail/data-detail.component';
 import { CommonModule } from '@angular/common';
-import { NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModalModule, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DataStatisticsComponent } from './components/data-statistics/data-statistics.component';
 import { NgxEchartsModule } from 'ngx-echarts';
+import { DataStatisticsService } from './services/data-statistics.service';
+import { CommonUtilitiesService } from '../common/services/common-utilities.service';
 
 const dataSearchRoutes: Routes = [
   {
@@ -35,7 +37,9 @@ const dataSearchRoutes: Routes = [
   entryComponents: [
     DataDetailComponent,
     DataStatisticsComponent,
+  ],
+  providers: [
+    DataStatisticsService,
   ]
-
 })
 export class DataSearchModule { }
