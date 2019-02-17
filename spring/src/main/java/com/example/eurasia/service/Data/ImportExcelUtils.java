@@ -4,7 +4,7 @@ import org.springframework.util.StringUtils;
 
 import java.io.File;
 
-public class ExcelImportUtils {
+public class ImportExcelUtils {
 
     /**
      * 是否是2003的excel
@@ -57,7 +57,7 @@ public class ExcelImportUtils {
         }
 
         //验证文件名是否合格
-        if(!ExcelImportUtils.validateExcel(fileName)){
+        if(!ImportExcelUtils.validateExcel(fileName)){
             //"文件excel格式错误";
             return false;
         }

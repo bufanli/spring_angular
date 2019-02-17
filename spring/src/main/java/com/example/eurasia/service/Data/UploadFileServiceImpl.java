@@ -126,8 +126,8 @@ public class UploadFileServiceImpl implements IUploadFileService {
                 Slf4jLogUtil.get().info("第{}/{}个文件开始读取,文件名:{}",(i+1),fileNumber,fileName);
 
                 try {
-                    if (ExcelImportUtils.isExcelFileValidata(files[i]) == true) {
-                        responseRead = new ExcelImportUserMode().readExcelFile(files[i]);//返回值的利用
+                    if (ImportExcelUtils.isExcelFileValidata(files[i]) == true) {
+                        responseRead = new ImportExcelByUserMode().readExcelFile(files[i]);//返回值的利用
                     } else {
                         fileNGNum++;
                         responseNG.append(fileName +": 文件格式有问题" + DataService.BR);

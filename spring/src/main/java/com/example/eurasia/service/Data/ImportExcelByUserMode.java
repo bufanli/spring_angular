@@ -21,7 +21,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class ExcelImportUserMode {
+public class ImportExcelByUserMode {
 
     //注入DataService服务对象
     @Qualifier("dataService")
@@ -35,9 +35,9 @@ public class ExcelImportUserMode {
 
         try {
             inputStream = new FileInputStream(file);
-            if (ExcelImportUtils.isExcel2003(file.toString())) {
+            if (ImportExcelUtils.isExcel2003(file.toString())) {
                 workbook = new HSSFWorkbook(inputStream);
-            } else if (ExcelImportUtils.isExcel2007(file.toString())) {
+            } else if (ImportExcelUtils.isExcel2007(file.toString())) {
                 workbook = new XSSFWorkbook(inputStream);
             }
 
