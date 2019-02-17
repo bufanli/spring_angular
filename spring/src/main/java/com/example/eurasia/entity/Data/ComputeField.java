@@ -1,14 +1,23 @@
 package com.example.eurasia.entity.Data;
 
-public class ComputeField {
+public class ComputeField implements Cloneable {
     // compute type constant
     public static final String SUM = "SUM";
     public static final String AVG = "AVG";
     // compute field
     private String fieldName;
     // compute type
-   private String computeType;
-   // set field name
+    private String computeType;
+
+    public ComputeField () {
+    }
+
+    public ComputeField (String fieldName, String computeType) {
+        this.fieldName = fieldName;
+        this.computeType = computeType;
+    }
+
+    // set field name
     public void setFieldName(String fieldName) {
         this.fieldName = fieldName;
     }
@@ -23,5 +32,16 @@ public class ComputeField {
     // get compute type
     public String getComputeType(){
         return this.computeType;
+    }
+
+    public StringBuffer toSql() {
+        StringBuffer sql = new StringBuffer();
+        sql.append(this.getComputeType() + "(" + this.getFieldName() + ")");
+        return sql;
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 }

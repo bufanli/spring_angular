@@ -1,5 +1,6 @@
 package com.example.eurasia.dao;
 
+import com.example.eurasia.entity.Data.ComputeField;
 import com.example.eurasia.entity.Data.DataXMLReader;
 import com.example.eurasia.entity.Data.QueryCondition;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -384,18 +385,48 @@ select PERIOD_DIFF(DATE_FORMAT(CURDATE(),'%Y%m'),DATE_FORMAT(日期,'%Y%m')) fro
     protected StringBuffer convertQueryConditionsToSQL(String tableName,
                                                        QueryCondition[] queryConditionsArr,
                                                        boolean isQueryCount) {
+
+        StringBuffer sql = new StringBuffer();
+        if (isQueryCount) {
+            sql.append("select count(*) from " + tableName);
+        } else {
+            sql.append("select * from " + tableName);
+        }
+
+        sql.append(convertWhereToSQL(queryConditionsArr));
+        return sql;
+    }
+
+    /**
+     * convert query conditions to sql
+     */
+    protected StringBuffer convertQueryConditionsToSQL(String tableName,
+                                                       String groupByField,
+                                                       ComputeField[] computeFields,
+                                                       QueryCondition[] queryConditionsArr) {
+
+        StringBuffer sql = new StringBuffer();
+        sql.append("select " + groupByField + " ");
+        for (ComputeField computeField:computeFields) {
+            sql.append(computeField.toSql() + " ");
+        }
+        sql.append("from " + tableName);
+        sql.append(convertWhereToSQL(queryConditionsArr));
+        sql.append(" group by " + groupByField);
+
+        return sql;
+    }
+
+    /**
+     * convert "where" to sql
+     */
+    protected StringBuffer convertWhereToSQL(QueryCondition[] queryConditionsArr) {
         String sqlAnd = " and ";
         String sqlOr = " or ";
         String sqlWhere = " where ";
         boolean haveCondition = false;
 
         StringBuffer sql = new StringBuffer();
-        if(isQueryCount) {
-            sql.append("select count(*) from " + tableName);
-        }else{
-           sql.append("select * from " +tableName);
-        }
-
         sql.append(sqlWhere);
         for (QueryCondition queryCondition : queryConditionsArr) {
             String key = queryCondition.getKey();
