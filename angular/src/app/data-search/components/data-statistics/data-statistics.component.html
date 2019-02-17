@@ -7,6 +7,28 @@
   </h4>
 </div>
 <div class="modal-body">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">
+        商品统计
+      </h3>
+    </div>
+    <div class="panel-body">
+      <form role="form">
+        <!-- <commnent> first row start </commnent> -->
+        <div class="row">
+          <div class="col-md-4">
+            <div class=" form-group">
+              <select class="form-control selectpicker" title="请统计图类型" id="statistics-type" [(ngModel)]="type" name="ori-country">
+                <option *ngFor="let type of this.getStatisticsTypes()" value="{{type}}">{{type}}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <!-- <commnent> first row start </commnent> -->
+      </form>
+    </div>
+  </div>
   <div echarts [options]="this.options" class="demo-chart"></div>
 </div>
 <div class="modal-footer">

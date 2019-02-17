@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterContentInit, AfterViewChecked, AfterViewInit } from '@angular/core';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 declare const require: any;
 
 @Component({
@@ -6,11 +7,19 @@ declare const require: any;
   templateUrl: './data-statistics.component.html',
   styleUrls: ['./data-statistics.component.css']
 })
-export class DataStatisticsComponent implements OnInit {
+export class DataStatisticsComponent implements OnInit, AfterViewInit {
 
   options: any;
+  // selected statistics type
+  type: string = null;
+  // statistics type list
+  public readonly STATISTICS_TYPES: string[] = ['柱状图', '饼状图', '折线图'];
 
-  constructor() { }
+  constructor(private activeModal: NgbActiveModal) { }
+  // get statistics type
+  public getStatisticsTypes(): string[] {
+    return this.STATISTICS_TYPES;
+  }
 
   ngOnInit() {
     const xAxisData = [];
@@ -64,7 +73,21 @@ export class DataStatisticsComponent implements OnInit {
     };
   }
   public close(): void {
-
+    this.activeModal.close();
+  }
+  // just for select picker
+  ngAfterViewInit(): void {
+    // if call selectpicker in ngOnInit, select control will not be shown for some reason
+    // but call selectpicker can resolve this issue in ngAfterViewInit
+    this.setSelectOptions('#statistics-type', false);
   }
 
+  // init select picker
+  private setSelectOptions(id: string, liveSearch: boolean): void {
+    $(id).selectpicker({
+      'liveSearch': liveSearch,
+    });
+    $(id).selectpicker('val', '');
+    $(id).selectpicker('refresh');
+  }
 }
