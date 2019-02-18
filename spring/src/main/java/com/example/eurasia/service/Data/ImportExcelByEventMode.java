@@ -1,6 +1,7 @@
 package com.example.eurasia.service.Data;
 
 
+import com.example.eurasia.service.Util.Slf4jLogUtil;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 
 import java.io.*;
@@ -8,6 +9,7 @@ import java.io.*;
 public class ImportExcelByEventMode {
 
     public String readExcelFile(File file) throws Exception {
+        Slf4jLogUtil.get().info("EventUserModel读取文件:" + file.getName());
 
         StringBuffer msg = new StringBuffer();//信息接收器
         InputStream inputStream = null;//初始化输入流
