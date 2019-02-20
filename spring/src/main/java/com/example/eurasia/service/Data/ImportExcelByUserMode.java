@@ -99,7 +99,7 @@ public class ImportExcelByUserMode {
             //读取内容(从第二行开始)
             StringBuffer dataErrMsg = this.readExcelFileSheetDataRow(sheet, titleList, dataList);
 
-            int addDataNum = this.saveDataToSQL(DataService.TABLE_DATA, dataList);//导入数据。
+            int addDataNum = new ImportExcelRowReader().saveDataToSQL(DataService.TABLE_DATA, dataList);//导入数据。
             Slf4jLogUtil.get().info("导入成功，共{}条数据！",addDataNum);
             sheetMsg.append("导入成功，共" + addDataNum + "条数据！");
         } else {
@@ -154,7 +154,7 @@ public class ImportExcelByUserMode {
             msg.append(rowErrorMsg);
         } else {
             msg.setLength(0);
-            titleList.addAll(valueList);
+            titleList.addAll(valueList);//addAll实现的是浅拷贝
         }
 
         return msg;
@@ -208,7 +208,7 @@ public class ImportExcelByUserMode {
             keyValue.clear();
         }
 
-        dataList.addAll(valueList);
+        dataList.addAll(valueList);//addAll实现的是浅拷贝
         return msg;
     }
 
@@ -256,23 +256,6 @@ public class ImportExcelByUserMode {
         }
 
         return false;//没找到
-    }
-
-    private int saveDataToSQL(String tableName, List<Data> dataList) throws Exception {
-        int addDataNum = 0;
-        int deleteNum = 0;
-        if (dataList.size() > 0) {
-            for (Data data : dataList) {
-                addDataNum += dataService.addData(DataService.TABLE_DATA, data);//导入一行数据。
-            }
-            if (addDataNum > 0) {
-                deleteNum = dataService.deleteSameData(DataService.TABLE_DATA);
-            }
-            int num = addDataNum - deleteNum;//T.B.D
-            return (num < 0) ? 0 : num;
-        } else {
-            return 0;
-        }
     }
 
     private List<Map<String,String>> getTitles() throws Exception {

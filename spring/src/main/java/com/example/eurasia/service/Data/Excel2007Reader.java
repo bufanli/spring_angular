@@ -102,12 +102,12 @@ public class Excel2007Reader {
      *
      * @param pkg        The XLSX package to process
      * @param minColumns The minimum number of columns to output, or -1 for no minimum
-     * @param rowReader
      */
-    public Excel2007Reader(OPCPackage pkg, int minColumns, ImportExcelRowReader rowReader) {
+    public Excel2007Reader(OPCPackage pkg, int minColumns) {
         xlsxPackage = pkg;
         this.minColumns = minColumns;
-        this.rowReader = rowReader;
+        //处理每行数据
+        rowReader = new ImportExcelRowReader();
     }
 
 

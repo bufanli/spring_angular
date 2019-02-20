@@ -6,16 +6,16 @@ import org.apache.poi.hssf.eventusermodel.*;
 import org.apache.poi.hssf.eventusermodel.EventWorkbookBuilder.SheetRecordCollectingListener;
 import org.apache.poi.hssf.eventusermodel.dummyrecord.LastCellOfRowDummyRecord;
 import org.apache.poi.hssf.eventusermodel.dummyrecord.MissingCellDummyRecord;
-import org.apache.poi.hssf.model.HSSFFormulaParser;
 import org.apache.poi.hssf.record.*;
+import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 抽象Excel2003读取器，通过实现HSSFListener监听器，采用事件驱动模式解析excel2003
@@ -33,7 +33,7 @@ public class Excel2003Reader implements HSSFListener {
     private int lastColumnNumber;
 
     /** Should we output the formula, or the value it has? */
-    private boolean outputFormulaValues = true;
+    private boolean outputFormulaValues;
 
     /** For parsing Formulas */
     private SheetRecordCollectingListener workbookBuildingListener;
@@ -47,27 +47,58 @@ public class Excel2003Reader implements HSSFListener {
     // 表索引
     private int sheetIndex = -1;
     private BoundSheetRecord[] orderedBSRs;
-    @SuppressWarnings("unchecked")
-    private ArrayList boundSheetRecordArr = new ArrayList();
-
-    //当前Sheet的内容
-    private List<Map<String,Object>> currentSheetDataMap;
+    private List<BoundSheetRecord> boundSheetRecordArr;
 
     // For handling formulas with string results
     private int nextRow;
     private int nextColumn;
     private boolean outputNextStringRecord;
 
-    // 当前行
-    private int curRow = 0;
+    // 第一行的列数
+    private int firstRowColumn;
 
     // 存储行记录的容器
-    private List<String> rowList = new ArrayList<String>();
-    private List<Map<Integer,String>> titleList = new ArrayList<>();
-    private List<Data> dataList = new ArrayList<>();
+    private List<String> rowList;
 
+    //信息接收器
+    private StringBuffer message;
+
+    //处理每行数据
     private ImportExcelRowReader rowReader;
 
+    Excel2003Reader() {
+
+        minColumns = -1;
+        lastRowNumber = -1;
+        lastColumnNumber = -1;
+
+        outputFormulaValues = true;
+
+        // 表索引
+        sheetIndex = -1;
+        boundSheetRecordArr = new ArrayList<>();
+
+        // For handling formulas with string results
+        nextRow = -1;
+        nextColumn = -1;
+        outputNextStringRecord = false;
+
+        // 第一行的列数
+        firstRowColumn = -1;
+
+        // 存储行记录的容器
+        rowList = new ArrayList<String>();
+
+        //信息接收器
+        message = new StringBuffer();
+
+        //处理每行数据
+        rowReader = new ImportExcelRowReader();
+    }
+
+    public StringBuffer getMessage() {
+        return this.message;
+    }
 
     public void setRowReader(ImportExcelRowReader rowReader) {
         this.rowReader = rowReader;
@@ -81,30 +112,30 @@ public class Excel2003Reader implements HSSFListener {
     public void process(InputStream inputStream) throws IOException {
 
         //创建一个 org.apache.poi.poifs.filesystem.Filesystem
-        poiFS = new POIFSFileSystem(inputStream);
+        this.poiFS = new POIFSFileSystem(inputStream);
 
         //将excel 2003格式POI文档输入流
-        InputStream din = poiFS.createDocumentInputStream("Workbook");
+        InputStream din = this.poiFS.createDocumentInputStream("Workbook");
 
         //添加监听记录的事件
         MissingRecordAwareHSSFListener listener = new MissingRecordAwareHSSFListener(this);
-        formatListener = new FormatTrackingHSSFListener(listener);//监听代理，方便获取recordformat
+        this.formatListener = new FormatTrackingHSSFListener(listener);//监听代理，方便获取recordformat
 
         //创建时间工厂
         HSSFEventFactory factory = new HSSFEventFactory();
 
         //这儿为所有类型的Record都注册了监听器，如果需求明确的话，可以用addListener方法，并指定所需的Record类型
         HSSFRequest request = new HSSFRequest();
-        if (outputFormulaValues) {
-            request.addListenerForAllRecords(formatListener);
+        if (this.outputFormulaValues) {
+            request.addListenerForAllRecords(this.formatListener);
         } else {
-            workbookBuildingListener = new EventWorkbookBuilder.SheetRecordCollectingListener(formatListener);
-            request.addListenerForAllRecords(workbookBuildingListener);
+            this.workbookBuildingListener = new EventWorkbookBuilder.SheetRecordCollectingListener(this.formatListener);
+            request.addListenerForAllRecords(this.workbookBuildingListener);
         }
 
         //处理基于时间文档流(循环获取每一条Record进行处理)
         //factory.processEvents(request, din);
-        factory.processWorkbookEvents(request, poiFS);
+        factory.processWorkbookEvents(request, this.poiFS);
     }
 
 
@@ -112,7 +143,6 @@ public class Excel2003Reader implements HSSFListener {
      * HSSFListener 监听方法，处理 Record
      */
     @Override
-    @SuppressWarnings("unchecked")
     public void processRecord(Record record) {
         int thisRow = -1;
         int thisColumn = -1;
@@ -120,7 +150,7 @@ public class Excel2003Reader implements HSSFListener {
         String value = null;
         switch (record.getSid()) {
             case BOFRecord.sid:
-                //表示Workbook或Sheet区域的开始
+                //HSSFWorkbook、HSSFSheet的开始
 
                 BOFRecord bofRecord = (BOFRecord)record;
                 if (bofRecord.getType() == BOFRecord.TYPE_WORKBOOK) {
@@ -138,15 +168,12 @@ public class Excel2003Reader implements HSSFListener {
                     */
 
                     //读取新的一个Sheet页
-                    sheetIndex++;
-                    if (orderedBSRs == null) {
-                        orderedBSRs = BoundSheetRecord.orderByBofPosition(boundSheetRecordArr);
+                    this.sheetIndex++;
+                    if (this.orderedBSRs == null) {
+                        this.orderedBSRs = BoundSheetRecord.orderByBofPosition(this.boundSheetRecordArr);
                     }
-                    String sheetName = orderedBSRs[sheetIndex].getSheetname();
+                    String sheetName = this.orderedBSRs[this.sheetIndex].getSheetname();
                     Slf4jLogUtil.get().debug("Encountered sheet reference,开始解析sheet[" + sheetName + "]页面内容.");
-
-                    //当前Sheet的内容
-                    currentSheetDataMap = new ArrayList<Map<String,Object>>();
                 }
                 break;
             case BoundSheetRecord.sid:
@@ -154,143 +181,166 @@ public class Excel2003Reader implements HSSFListener {
 
                 BoundSheetRecord boundSheetRecord = (BoundSheetRecord) record;
                 Slf4jLogUtil.get().debug("New sheet named: " + boundSheetRecord.getSheetname());
-                boundSheetRecordArr.add(record);
+                this.boundSheetRecordArr.add(boundSheetRecord);
                 break;
             case SSTRecord.sid:
                 // SSTRecords store a array of unique strings used in Excel.
 
-                sstRecord = (SSTRecord)record;
-                for (int k = 0; k < sstRecord.getNumUniqueStrings(); k++) {
-                    Slf4jLogUtil.get().debug("String table value " + k + " = " + sstRecord.getString(k));
+                this.sstRecord = (SSTRecord)record;
+                for (int k = 0; k < this.sstRecord.getNumUniqueStrings(); k++) {
+                    Slf4jLogUtil.get().debug("String table value " + k + " = " + this.sstRecord.getString(k));
                 }
                 break;
             case RowRecord.sid:
                 //执行行记录事件
 
                 RowRecord rowRecord = (RowRecord) record;
-                Slf4jLogUtil.get().debug("Row found, first column at "
-                        + rowRecord.getFirstCol() + " last column at "
-                        + rowRecord.getLastCol());//计数从0开始
+                if (rowRecord.getRowNumber() == 0) {//第一行
+                    this.firstRowColumn = rowRecord.getLastCol();
+                } else if (rowRecord.getRowNumber() > 0) {//第二行之后
+                    if (rowRecord.getLastCol() > this.firstRowColumn) {
+                        this.message.append("第" + rowRecord.getRowNumber() + "行的列数，比第一行多。");
+                        return;
+                    }
+                }
+                Slf4jLogUtil.get().debug("Row found:" + rowRecord.getRowNumber() +
+                        ", first column at " + rowRecord.getFirstCol() +
+                        ", last column at " + rowRecord.getLastCol());//计数从0开始
                 break;
             case BlankRecord.sid:
-                //空白记录的信息
+                //空白单元格，单元格没有值，但是有单元格样式
 
                 BlankRecord blankRecord = (BlankRecord)record;
                 thisRow = blankRecord.getRow();
                 thisColumn = blankRecord.getColumn();
                 thisStr = "";
-                rowList.add(thisColumn, thisStr);
+                this.rowList.add(thisColumn, thisStr);
 
-                Slf4jLogUtil.get().debug("空。行：" + blankRecord.getRow()+", 列：" + blankRecord.getColumn());
+                Slf4jLogUtil.get().debug("Blank:行：" + blankRecord.getRow()+", 列：" + blankRecord.getColumn());
                 break;
             case BoolErrRecord.sid:
-                //解析boolean错误信息
+                //布尔或错误单元格，根据属性isError判断是布尔还是错误单元格
 
                 BoolErrRecord boolErrRecord = (BoolErrRecord)record;
                 thisRow = boolErrRecord.getRow();
                 thisColumn = boolErrRecord.getColumn();
-                thisStr = boolErrRecord.getBooleanValue() + "";
-                rowList.add(thisColumn, thisStr);
 
                 if(boolErrRecord.isBoolean()){
-                    //addDataAndChangeRow(boolErrRecord.getRow(),boolErrRecord.getColumn(), boolErrRecord.getBooleanValue());
+                    thisStr = boolErrRecord.getBooleanValue() + "";
                     Slf4jLogUtil.get().debug("Boolean:" + boolErrRecord.getBooleanValue() +
                             ", 行：" + boolErrRecord.getRow() + ", 列：" + boolErrRecord.getColumn());
                 }
                 if(boolErrRecord.isError()){
+                    thisStr = "";
                     Slf4jLogUtil.get().debug("Error:" + boolErrRecord.getErrorValue() +
                             ", 行：" + boolErrRecord.getRow() + ", 列：" + boolErrRecord.getColumn());
                 }
-
+                this.rowList.add(thisColumn, thisStr);
                 break;
             case FormulaRecord.sid:
-                //单元格为公式类型
+                //公式单元格
 
                 FormulaRecord formulaRecord = (FormulaRecord)record;
                 thisRow = formulaRecord.getRow();
                 thisColumn = formulaRecord.getColumn();
-                if (outputFormulaValues) {
+                if (this.outputFormulaValues) {
                     if (Double.isNaN(formulaRecord.getValue())) {
                         // Formula result is a string
                         // This is stored in the next record
-                        outputNextStringRecord = true;
-                        nextRow = formulaRecord.getRow();
-                        nextColumn = formulaRecord.getColumn();
+                        this.outputNextStringRecord = true;
+                        this.nextRow = formulaRecord.getRow();
+                        this.nextColumn = formulaRecord.getColumn();
                     } else {
-                        thisStr = formatListener.formatNumberDateCell(formulaRecord);
+                        thisStr = this.formatListener.formatNumberDateCell(formulaRecord);
                     }
                 } else {
-                    thisStr = '"' + HSSFFormulaParser.toFormulaString(stubWorkbook, formulaRecord.getParsedExpression()) + '"';
+                    //thisStr = '"' + HSSFFormulaParser.toFormulaString(stubWorkbook, formulaRecord.getParsedExpression()) + '"';
+                    thisStr = "";
                 }
-                rowList.add(thisColumn, thisStr);
+                this.rowList.add(thisColumn, thisStr);
                 Slf4jLogUtil.get().debug("Formula:" + formulaRecord.getValue() +
                         ", 行：" + formulaRecord.getRow() + ", 列：" + formulaRecord.getColumn());
                 break;
             case StringRecord.sid:
-                //单元格中公式的字符串
+                //存储文本公式的缓存结果
 
-                if (outputNextStringRecord) {
+                if (this.outputNextStringRecord) {
                     // String for formula
                     StringRecord stringRecord = (StringRecord)record;
+                    thisRow = this.nextRow;
+                    thisColumn = this.nextColumn;
                     thisStr = stringRecord.getString();
-                    thisRow = nextRow;
-                    thisColumn = nextColumn;
-                    outputNextStringRecord = false;
+                    this.rowList.add(thisColumn, thisStr);
+                    this.outputNextStringRecord = false;
 
                     Slf4jLogUtil.get().debug("Formula String:" + stringRecord.getString());
                 }
                 break;
             case LabelRecord.sid:
+                //只读，支持读取直接存储在单元格中的字符串，而不是存储在SSTRecord中，
+                //除了读取不要使用LabelRecord，应该使用SSTRecord替代
 
                 LabelRecord labelRecord = (LabelRecord)record;
-                curRow = thisRow = labelRecord.getRow();
+                thisRow = labelRecord.getRow();
                 thisColumn = labelRecord.getColumn();
                 value = labelRecord.getValue().trim();
                 value = value.equals("") ? " " : value;
-                rowList.add(thisColumn, value);
-                Slf4jLogUtil.get().debug("Lable:" + labelRecord.getValue() +
+                this.rowList.add(thisColumn, value);
+                Slf4jLogUtil.get().debug("Label:" + labelRecord.getValue() +
                         ", 行：" + labelRecord.getRow() + ", 列：" + labelRecord.getColumn());
                 break;
             case LabelSSTRecord.sid:
-                //发现字符串类型，这儿要取字符串的值的话，跟据其index去字符串表里读取
+                //引用了SSTRecord中一个String类型的单元格值，这儿要取字符串的值的话，跟据其index去字符串表里读取
 
                 LabelSSTRecord labelSSTRecord = (LabelSSTRecord)record;
-                curRow = thisRow = labelSSTRecord.getRow();
+                thisRow = labelSSTRecord.getRow();
                 thisColumn = labelSSTRecord.getColumn();
-                if (sstRecord == null) {
-                    rowList.add(thisColumn, " ");
+                if (this.sstRecord == null) {
+                    value = " ";
                 } else {
-                    value = sstRecord.getString(labelSSTRecord.getSSTIndex()).toString().trim();
+                    value = this.sstRecord.getString(labelSSTRecord.getSSTIndex()).toString().trim();
                     value = value.equals("") ? " " : value;
-                    rowList.add(thisColumn, value);
                 }
+                rowList.add(thisColumn, value);
                 Slf4jLogUtil.get().debug("String:" +
-                        sstRecord.getString(labelSSTRecord.getSSTIndex()) +
+                        this.sstRecord.getString(labelSSTRecord.getSSTIndex()) +
                         ", 行：" + labelSSTRecord.getRow() + ", 列：" + labelSSTRecord.getColumn());
                 break;
             case NumberRecord.sid:
-                //发现数字类型的cell，因为数字和日期都是用这个格式，所以下面一定要判断是不是日期格式，
+                //数值单元格，因为数字和日期都是用这个格式，所以下面一定要判断是不是日期格式，
                 //另外默认的数字也会被视为日期格式，所以如果是数字的话，一定要明确指定格式！！！！！！！
 
                 NumberRecord numberRecord = (NumberRecord)record;
-                //HSSFDateUtil.isInternalDateFormat(nr.getXFIndex())  判断是否为时间列
-                curRow = thisRow = numberRecord.getRow();
+                thisRow = numberRecord.getRow();
                 thisColumn = numberRecord.getColumn();
-                value = formatListener.formatNumberDateCell(numberRecord).trim();
+                value = this.formatListener.formatNumberDateCell(numberRecord).trim();
                 value = value.equals("") ? " " : value;
-                // 向容器加入列值
-                rowList.add(thisColumn, value);
 
-                if(thisColumn==5||thisColumn==6){
-                    //addDataAndChangeRow(numberRecord.getRow(),numberRecord.getColumn(),getTime(numberRecord.getValue()));
+                short x = numberRecord.getXFIndex();
+                if(HSSFDateUtil.isInternalDateFormat(numberRecord.getXFIndex())){
+                    value = (new SimpleDateFormat("yyyy-MM-dd")).format(HSSFDateUtil.getJavaDate(numberRecord.getValue()));
                     Slf4jLogUtil.get().debug("Date:" + numberRecord.getValue() +
                             ", 行：" + numberRecord.getRow() + ", 列：" + numberRecord.getColumn());
                 }else{
-                    //addDataAndChangeRow(numberRecord.getRow(),numberRecord.getColumn(),(int)numberRecord.getValue());
                     Slf4jLogUtil.get().debug("Number:" + numberRecord.getValue() +
                             ", 行：" + numberRecord.getRow() + ", 列：" + numberRecord.getColumn());
                 }
+                this.rowList.add(thisColumn, value);
+                break;
+            case EOFRecord.sid:
+                //HSSFWorkbook、HSSFSheet的结束
 
+                EOFRecord eofRecord = (EOFRecord)record;
+
+                List<Data> dataList = this.rowReader.getDataList();
+                int addDataNum = 0;
+                try {
+                    addDataNum = this.rowReader.saveDataToSQL(DataService.TABLE_DATA, dataList);//导入数据。
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                Slf4jLogUtil.get().info("导入成功，共{}条数据！",addDataNum);
+                this.message.append("导入成功，共" + addDataNum + "条数据！");
                 break;
             default:
                 break;
@@ -298,41 +348,39 @@ public class Excel2003Reader implements HSSFListener {
 
 
         // 遇到新行的操作
-        if (thisRow != -1 && thisRow != lastRowNumber) {
-            lastColumnNumber = -1;
+        if (thisRow != -1 && thisRow != this.lastRowNumber) {
+            this.lastColumnNumber = -1;
         }
 
         // 空值的操作
         if (record instanceof MissingCellDummyRecord) {
             MissingCellDummyRecord mc = (MissingCellDummyRecord)record;
-            curRow = thisRow = mc.getRow();
+            thisRow = mc.getRow();
             thisColumn = mc.getColumn();
-            rowList.add(thisColumn, " ");
+            this.rowList.add(thisColumn, " ");
+            Slf4jLogUtil.get().debug("MissingCellDummyRecord:行：" + mc.getRow() + ", 列：" + mc.getColumn());
         }
 
         // 更新行和列的值
         if (thisRow > -1) {
-            lastRowNumber = thisRow;
+            this.lastRowNumber = thisRow;
         }
         if (thisColumn > -1) {
-            lastColumnNumber = thisColumn;
+            this.lastColumnNumber = thisColumn;
         }
 
         // 行结束时的操作
         if (record instanceof LastCellOfRowDummyRecord) {
-            if (minColumns > 0) {
-                // 列值重新置空
-                if (lastColumnNumber == -1) {
-                    lastColumnNumber = 0;
-                }
+            if (this.minColumns > 0) {
+                //T.B.D
             }
-            lastColumnNumber = -1;
+            this.lastColumnNumber = -1;
 
             // 每行结束时， 调用getRows() 方法
-            rowReader.getRows(sheetIndex, curRow, rowList);
+            this.rowReader.getRows(this.sheetIndex, thisRow, this.rowList);
 
             // 清空容器
-            rowList.clear();
+            this.rowList.clear();
         }
     }
 
@@ -363,33 +411,6 @@ public class Excel2003Reader implements HSSFListener {
             sb.append(minutes);
         }
         return sb.toString();
-    }
-
-    /**
-     *  添加数据记录并检查是否换行
-     * @param row 实际当前行号
-     * @param col 实际记录当前列
-     * @param value  当前cell的值
-     */
-    public void addDataAndChangeRow(int row,int col,Object value){
-        /*
-        //当前行如果大于实际行表示改行忽略，不记录
-        if(curRow != row){
-            if(CollectionUtils.isEmpty(currentSheetDataMap)){
-                currentSheetDataMap = new ArrayList<Map<String,Object>>();
-            }
-            currentSheetDataMap.add(currentSheetRowDataMap);
-            Slf4jLogUtil.get().debug("行号:" + curRow + " 行内容：" + currentSheetRowDataMap.toString());
-            Slf4jLogUtil.get().debug("\n");
-            currentSheetRowDataMap = new HashMap<String,Object>();
-            currentSheetRowDataMap.put(trianListheadTitle[col], value);
-            Slf4jLogUtil.get().debug(row + ":" + col + "  " + value + "\r");
-            curRow = row;
-        }else{
-            currentSheetRowDataMap.put(trianListheadTitle[col], value);
-            Slf4jLogUtil.get().debug(row + ":" + col + "  " + value + "\r");
-        }
-        */
     }
 
 }

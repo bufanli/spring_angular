@@ -20,14 +20,12 @@ public class ImportExcelByEventMode {
                 inputStream = new PushbackInputStream(inputStream, 8);
             }
 
-            ImportExcelRowReader reader = new ImportExcelRowReader();
             if (ImportExcelUtils.isExcel2003(file.toString())) {
                 Excel2003Reader excel03 = new Excel2003Reader();
-                excel03.setRowReader(reader);
                 excel03.process(inputStream);
             } else if (ImportExcelUtils.isExcel2007(file.toString())) {
                 OPCPackage pag = OPCPackage.open(inputStream);
-                Excel2007Reader excel07 = new Excel2007Reader(pag, -1, reader);
+                Excel2007Reader excel07 = new Excel2007Reader(pag, -1);
                 excel07.process();
                 pag.close();
             }
