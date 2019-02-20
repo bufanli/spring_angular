@@ -61,10 +61,10 @@ public class ImportExcelRowReader {
         int deleteNum = 0;
         if (dataList.size() > 0) {
             for (Data data : dataList) {
-                addDataNum += dataService.addData(DataService.TABLE_DATA, data);//导入一行数据。
+                addDataNum += dataService.addData(tableName, data);//导入一行数据。
             }
             if (addDataNum > 0) {
-                deleteNum = dataService.deleteSameData(DataService.TABLE_DATA);
+                deleteNum = dataService.deleteSameData(tableName);
             }
             int num = addDataNum - deleteNum;//T.B.D
             return (num < 0) ? 0 : num;
