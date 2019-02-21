@@ -84,4 +84,21 @@ public class ImportExcelRowReader {
             return 0;
         }
     }
+
+    /**
+     * 检查是否为空行
+     * @param rowList
+     * @return
+     */
+    public boolean checkNullRow(List<String> rowList){
+        boolean isNull = false;
+        String temp;
+        for(int i=0,size = rowList.size();i<size;i++){
+            temp = rowList.get(i);
+            if(temp == null || temp.trim().length() == 0)continue;
+            isNull = true;
+            break;
+        }
+        return isNull;
+    }
 }

@@ -175,7 +175,6 @@ public class Excel2003Reader implements HSSFListener {
                         this.orderedBSRs = BoundSheetRecord.orderByBofPosition(this.boundSheetRecordArr);
                     }
                     this.currentSheetName = this.orderedBSRs[this.sheetIndex].getSheetname();
-                    this.rowReader.clearDataList();
                     Slf4jLogUtil.get().debug("Encountered sheet reference,开始解析sheet[" + this.currentSheetName + "]页面内容.");
                 }
                 break;
@@ -335,15 +334,20 @@ public class Excel2003Reader implements HSSFListener {
 
                 EOFRecord eofRecord = (EOFRecord)record;
 
-                List<Data> dataList = this.rowReader.getDataList();
-                int addDataNum = 0;
-                try {
-                    addDataNum = this.rowReader.saveDataToSQL(DataService.TABLE_DATA, dataList);//导入数据。
-                } catch (Exception e) {
-                    e.printStackTrace();
+                //前一个Sheet页内容
+                if (this.sheetIndex > -1) {
+                    List<Data> dataList = this.rowReader.getDataList();
+                    int addDataNum = 0;
+                    try {
+                        addDataNum = this.rowReader.saveDataToSQL(DataService.TABLE_DATA, dataList);//导入数据。
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    Slf4jLogUtil.get().info("导入成功，共{}条数据！",addDataNum);
+                    this.message.append("导入成功，共" + addDataNum + "条数据！");
+                    //清空保存前一个Sheet页内容用的List
+                    this.rowReader.clearDataList();
                 }
-                Slf4jLogUtil.get().info("导入成功，共{}条数据！",addDataNum);
-                this.message.append("导入成功，共" + addDataNum + "条数据！");
                 break;
             default:
                 break;
@@ -377,10 +381,13 @@ public class Excel2003Reader implements HSSFListener {
             if (this.minColumns > 0) {
                 //T.B.D
             }
-            this.lastColumnNumber = -1;
 
-            // 每行结束时， 调用getRows() 方法
-            this.rowReader.getRows(this.sheetIndex, thisRow, this.rowList);
+            if (this.lastColumnNumber > -1 && this.rowReader.checkNullRow(this.rowList)) {
+                // 每行结束时， 调用getRows() 方法
+                this.rowReader.getRows(this.sheetIndex, this.lastRowNumber, this.rowList);
+            }
+
+            this.lastColumnNumber = -1;
 
             // 清空容器
             this.rowList.clear();
