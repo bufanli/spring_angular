@@ -45,6 +45,7 @@ public class Excel2003Reader implements HSSFListener {
     private SSTRecord sstRecord;
 
     // 表索引
+    private String currentSheetName;
     private int sheetIndex = -1;
     private BoundSheetRecord[] orderedBSRs;
     private List<BoundSheetRecord> boundSheetRecordArr;
@@ -75,6 +76,7 @@ public class Excel2003Reader implements HSSFListener {
         outputFormulaValues = true;
 
         // 表索引
+        currentSheetName = null;
         sheetIndex = -1;
         boundSheetRecordArr = new ArrayList<>();
 
@@ -172,8 +174,9 @@ public class Excel2003Reader implements HSSFListener {
                     if (this.orderedBSRs == null) {
                         this.orderedBSRs = BoundSheetRecord.orderByBofPosition(this.boundSheetRecordArr);
                     }
-                    String sheetName = this.orderedBSRs[this.sheetIndex].getSheetname();
-                    Slf4jLogUtil.get().debug("Encountered sheet reference,开始解析sheet[" + sheetName + "]页面内容.");
+                    this.currentSheetName = this.orderedBSRs[this.sheetIndex].getSheetname();
+                    this.rowReader.clearDataList();
+                    Slf4jLogUtil.get().debug("Encountered sheet reference,开始解析sheet[" + this.currentSheetName + "]页面内容.");
                 }
                 break;
             case BoundSheetRecord.sid:
@@ -199,7 +202,7 @@ public class Excel2003Reader implements HSSFListener {
                     this.firstRowColumn = rowRecord.getLastCol();
                 } else if (rowRecord.getRowNumber() > 0) {//第二行之后
                     if (rowRecord.getLastCol() > this.firstRowColumn) {
-                        this.message.append("第" + rowRecord.getRowNumber() + "行的列数，比第一行多。");
+                        this.message.append("Sheet[" + this.currentSheetName + "]第" + rowRecord.getRowNumber() + "行的列数，比第一行多。");
                         return;
                     }
                 }

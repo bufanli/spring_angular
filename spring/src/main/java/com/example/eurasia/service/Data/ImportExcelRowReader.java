@@ -56,6 +56,10 @@ public class ImportExcelRowReader {
         this.dataList.addAll(dataList);//addAll实现的是浅拷贝
     }
 
+    public void clearDataList() {
+        this.dataList.clear();
+    }
+
     public int saveDataToSQL(String tableName, List<Data> dataList) throws Exception {
         int addDataNum = 0;
         int deleteNum = 0;
