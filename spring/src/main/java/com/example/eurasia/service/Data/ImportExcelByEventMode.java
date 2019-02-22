@@ -24,10 +24,8 @@ public class ImportExcelByEventMode {
                 Excel2003Reader excel03 = new Excel2003Reader();
                 excel03.process(inputStream);
             } else if (ImportExcelUtils.isExcel2007(file.toString())) {
-                OPCPackage pag = OPCPackage.open(inputStream);
-                Excel2007Reader excel07 = new Excel2007Reader(pag, -1);
-                excel07.process();
-                pag.close();
+                Excel2007Reader excel07 = new Excel2007Reader();
+                excel07.processAllSheets(inputStream);
             }
 
         } catch (IOException e) {

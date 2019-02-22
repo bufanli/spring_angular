@@ -286,7 +286,7 @@ public class Excel2003Reader implements HSSFListener {
                 thisRow = labelRecord.getRow();
                 thisColumn = labelRecord.getColumn();
                 value = labelRecord.getValue().trim();
-                //value = value.equals("") ? " " : value;
+                value = value.equals("") ? " " : value;
                 this.rowList.add(thisColumn, value);
                 Slf4jLogUtil.get().debug("Label:" + labelRecord.getValue() +
                         ", 行：" + labelRecord.getRow() + ", 列：" + labelRecord.getColumn());
@@ -301,7 +301,7 @@ public class Excel2003Reader implements HSSFListener {
                     value = "";
                 } else {
                     value = this.sstRecord.getString(labelSSTRecord.getSSTIndex()).toString().trim();
-                    //value = value.equals("") ? " " : value;
+                    value = value.equals("") ? " " : value;
                 }
                 rowList.add(thisColumn, value);
                 Slf4jLogUtil.get().debug("String:" +
@@ -316,7 +316,7 @@ public class Excel2003Reader implements HSSFListener {
                 thisRow = numberRecord.getRow();
                 thisColumn = numberRecord.getColumn();
                 value = this.formatListener.formatNumberDateCell(numberRecord).trim();
-                //value = value.equals("") ? " " : value;
+                value = value.equals("") ? " " : value;
 
                 short x = numberRecord.getXFIndex();
                 if(HSSFDateUtil.isInternalDateFormat(numberRecord.getXFIndex())){
