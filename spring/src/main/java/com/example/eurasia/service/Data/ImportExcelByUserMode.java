@@ -10,6 +10,7 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.io.File;
@@ -21,12 +22,17 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+@Component
 public class ImportExcelByUserMode {
 
     //注入DataService服务对象
     @Qualifier("dataService")
     @Autowired
     private DataService dataService;
+
+    //处理每行数据
+    @Autowired
+    private ImportExcelRowReader rowReader;
 
     public String readExcelFile(File file) throws Exception {
 
@@ -99,7 +105,7 @@ public class ImportExcelByUserMode {
             //读取内容(从第二行开始)
             StringBuffer dataErrMsg = this.readExcelFileSheetDataRow(sheet, titleList, dataList);
 
-            int addDataNum = new ImportExcelRowReader().saveDataToSQL(DataService.TABLE_DATA, dataList);//导入数据。
+            int addDataNum = this.rowReader.saveDataToSQL(DataService.TABLE_DATA, dataList);//导入数据。
             Slf4jLogUtil.get().info("导入成功，共{}条数据！",addDataNum);
             sheetMsg.append("导入成功，共" + addDataNum + "条数据！");
         } else {

@@ -7,6 +7,8 @@ import org.apache.poi.util.SAXHelper;
 import org.apache.poi.xssf.eventusermodel.XSSFReader;
 import org.apache.poi.xssf.model.SharedStringsTable;
 import org.apache.poi.xssf.usermodel.XSSFRichTextString;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.xml.sax.*;
 import org.xml.sax.helpers.DefaultHandler;
 
@@ -16,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+@Component
 public class Excel2007Reader {
 
     private int sheetIndex = -1;
@@ -74,7 +77,8 @@ public class Excel2007Reader {
         private int curRow = -1;
         private int curCol = -1;
 
-        private ImportExcelRowReader rowReader = new ImportExcelRowReader();
+        @Autowired
+        private ImportExcelRowReader rowReader;
 
         private SheetHandler(SharedStringsTable sst) {
             this.sst = sst;

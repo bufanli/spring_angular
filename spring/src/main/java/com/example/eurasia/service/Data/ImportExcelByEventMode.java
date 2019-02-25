@@ -2,11 +2,18 @@ package com.example.eurasia.service.Data;
 
 
 import com.example.eurasia.service.Util.Slf4jLogUtil;
-import org.apache.poi.openxml4j.opc.OPCPackage;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.io.*;
 
+@Component
 public class ImportExcelByEventMode {
+
+    @Autowired
+    private Excel2003Reader excel2003Reader;
+    @Autowired
+    private Excel2007Reader excel2007Reader;
 
     public String readExcelFile(File file) throws Exception {
         Slf4jLogUtil.get().info("EventUserModel读取文件:" + file.getName());
@@ -21,11 +28,9 @@ public class ImportExcelByEventMode {
             }
 
             if (ImportExcelUtils.isExcel2003(file.toString())) {
-                Excel2003Reader excel03 = new Excel2003Reader();
-                excel03.process(inputStream);
+                excel2003Reader.process(inputStream);
             } else if (ImportExcelUtils.isExcel2007(file.toString())) {
-                Excel2007Reader excel07 = new Excel2007Reader();
-                excel07.processAllSheets(inputStream);
+                excel2007Reader.processAllSheets(inputStream);
             }
 
         } catch (IOException e) {

@@ -5,7 +5,6 @@ import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;
 import com.example.eurasia.service.Util.Slf4jLogUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,10 +18,10 @@ import java.io.IOException;
 @Component
 public class UploadFileServiceImpl implements IUploadFileService {
 
-    //注入DataService服务对象
-    @Qualifier("dataService")
     @Autowired
-    private DataService dataService;
+    private ImportExcelByUserMode importExcelByUserMode;
+    @Autowired
+    private ImportExcelByEventMode importExcelByEventMode;
 
     @Override
     public ResponseResult batchUpload(File uploadDir, MultipartFile[] files) throws Exception {
@@ -127,7 +126,8 @@ public class UploadFileServiceImpl implements IUploadFileService {
 
                 try {
                     if (ImportExcelUtils.isExcelFileValidata(files[i]) == true) {
-                        responseRead = new ImportExcelByUserMode().readExcelFile(files[i]);//返回值的利用
+                        //responseRead = importExcelByUserMode.readExcelFile(files[i]);
+                        responseRead = importExcelByEventMode.readExcelFile(files[i]);
                     } else {
                         fileNGNum++;
                         responseNG.append(fileName +": 文件格式有问题" + DataService.BR);

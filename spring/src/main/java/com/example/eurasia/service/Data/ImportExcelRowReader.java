@@ -3,9 +3,11 @@ package com.example.eurasia.service.Data;
 import com.example.eurasia.entity.Data.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
 import java.util.*;
 
+@Component
 public class ImportExcelRowReader {
 
     //注入DataService服务对象

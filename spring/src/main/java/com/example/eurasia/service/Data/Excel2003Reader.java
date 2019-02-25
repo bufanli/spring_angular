@@ -1,6 +1,7 @@
 package com.example.eurasia.service.Data;
 
 import com.example.eurasia.entity.Data.Data;
+import com.example.eurasia.entity.Data.QueryCondition;
 import com.example.eurasia.service.Util.Slf4jLogUtil;
 import org.apache.poi.hssf.eventusermodel.*;
 import org.apache.poi.hssf.eventusermodel.EventWorkbookBuilder.SheetRecordCollectingListener;
@@ -10,6 +11,8 @@ import org.apache.poi.hssf.record.*;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,6 +26,7 @@ import java.util.List;
  * 在HSSF中，低层次的二进制结构称为记录（Record）。记录有不同的类型，每一种类型由org.apache.poi.hssf.record包中的一个Java类描述。
  * 注意Excel2003Reader类中引用的Record类在hssf包下。
  */
+@Component
 public class Excel2003Reader implements HSSFListener {
 
     private POIFSFileSystem poiFS;
@@ -65,6 +69,7 @@ public class Excel2003Reader implements HSSFListener {
     private StringBuffer message;
 
     //处理每行数据
+    @Autowired
     private ImportExcelRowReader rowReader;
 
     Excel2003Reader() {
@@ -93,19 +98,11 @@ public class Excel2003Reader implements HSSFListener {
 
         //信息接收器
         message = new StringBuffer();
-
-        //处理每行数据
-        rowReader = new ImportExcelRowReader();
     }
 
     public StringBuffer getMessage() {
         return this.message;
     }
-
-    public void setRowReader(ImportExcelRowReader rowReader) {
-        this.rowReader = rowReader;
-    }
-
 
     /**
      * 遍历excel下所有的sheet
@@ -316,15 +313,15 @@ public class Excel2003Reader implements HSSFListener {
                 thisRow = numberRecord.getRow();
                 thisColumn = numberRecord.getColumn();
                 value = this.formatListener.formatNumberDateCell(numberRecord).trim();
-                value = value.equals("") ? " " : value;
 
-                short x = numberRecord.getXFIndex();
-                if(HSSFDateUtil.isInternalDateFormat(numberRecord.getXFIndex())){
-                    value = (new SimpleDateFormat("yyyy-MM-dd")).format(HSSFDateUtil.getJavaDate(numberRecord.getValue()));
-                    Slf4jLogUtil.get().debug("Date:" + numberRecord.getValue() +
+                //if(HSSFDateUtil.isInternalDateFormat(numberRecord.getXFIndex())){//判断是否为时间列
+                if(value.contains("/")) {//T.B.D
+                    value = (new SimpleDateFormat(QueryCondition.PRODUCT_DATE_FORMAT))
+                            .format(HSSFDateUtil.getJavaDate(numberRecord.getValue()));
+                    Slf4jLogUtil.get().debug("Date:" + value +
                             ", 行：" + numberRecord.getRow() + ", 列：" + numberRecord.getColumn());
                 }else{
-                    Slf4jLogUtil.get().debug("Number:" + numberRecord.getValue() +
+                    Slf4jLogUtil.get().debug("Number:" + value +
                             ", 行：" + numberRecord.getRow() + ", 列：" + numberRecord.getColumn());
                 }
                 this.rowList.add(thisColumn, value);
@@ -365,7 +362,7 @@ public class Excel2003Reader implements HSSFListener {
             thisRow = mc.getRow();
             thisColumn = mc.getColumn();
             this.rowList.add(thisColumn, "");
-            Slf4jLogUtil.get().debug("MissingCellDummyRecord:行：" + mc.getRow() + ", 列：" + mc.getColumn());
+            //Slf4jLogUtil.get().debug("MissingCellDummyRecord:行：" + mc.getRow() + ", 列：" + mc.getColumn());
         }
 
         // 更新行和列的值
@@ -395,7 +392,7 @@ public class Excel2003Reader implements HSSFListener {
     }
 
     /**
-     * HH:MM格式时间的数字转换方法</li>
+     * HH:MM格式时间的数字转换方法
      * @param dayNum
      * @return
      */
