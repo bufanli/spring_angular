@@ -23,6 +23,9 @@ public class Excel2007Reader {
 
     private int sheetIndex = -1;
 
+    @Autowired
+    private ImportExcelRowReader rowReader;//必须是static，否则匿名内部类中引用时会报空指针异常
+
     public void processOneSheet(InputStream inputStream) throws Exception {
         OPCPackage pkg = OPCPackage.open(inputStream);
         XSSFReader r = new XSSFReader( pkg );
@@ -77,9 +80,6 @@ public class Excel2007Reader {
         private int curRow = -1;
         private int curCol = -1;
 
-        @Autowired
-        private ImportExcelRowReader rowReader;
-
         private SheetHandler(SharedStringsTable sst) {
             this.sst = sst;
         }
@@ -119,16 +119,16 @@ public class Excel2007Reader {
             if (name.equals("v")) {
                 String value = this.lastContents.trim();
                 value = value.equals("") ? " " : value;
-                this.rowList.add(this.curCol, value);
                 this.curCol++;
+                this.rowList.add(this.curCol, value);
             } else {
                 // 如果标签名称为 row ，这说明已到行尾，调用 getRows() 方法
                 if (name.equals("row")) {
                     // 每行结束时， 调用getRows() 方法
-                    this.rowReader.getRows(Excel2007Reader.this.sheetIndex, this.curRow, this.rowList);
+                    this.curRow++;
+                    rowReader.getRows(Excel2007Reader.this.sheetIndex, this.curRow, this.rowList);
                     this.rowList.clear();
-                    curRow++;
-                    curCol = -1;
+                    this.curCol = -1;
                 }
             }
         }
