@@ -1,5 +1,6 @@
 package com.example.eurasia.dao;
 
+import com.example.eurasia.entity.Data.ComputeField;
 import com.example.eurasia.entity.Data.Data;
 import com.example.eurasia.entity.Data.QueryCondition;
 import org.springframework.stereotype.Repository;
@@ -315,6 +316,24 @@ Mysql limit offset示例
      */
     public List<Data> queryListForAllObject(String tableName, QueryCondition[] queryConditionsArr) throws Exception {
         StringBuffer sql = convertQueryConditionsToSQL(tableName,queryConditionsArr,false);
+
+        List<Data> dataList = getJdbcTemplate().query(sql.toString(), new DataMapper());
+        return dataList;
+    }
+
+    /**
+     * 查询并返回List集合
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-10-27 00:00:00
+     */
+    public List<Data> queryListForAllObject(String tableName,
+                                            String groupByField,
+                                            ComputeField[] computeFields,
+                                            QueryCondition[] queryConditionsArr) throws Exception {
+        StringBuffer sql = convertQueryConditionsToSQL(tableName,groupByField,computeFields,queryConditionsArr);
 
         List<Data> dataList = getJdbcTemplate().query(sql.toString(), new DataMapper());
         return dataList;

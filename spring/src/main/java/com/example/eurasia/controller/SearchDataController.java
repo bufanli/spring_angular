@@ -1,7 +1,6 @@
 package com.example.eurasia.controller;
 
 import com.example.eurasia.entity.Data.DataSearchParam;
-import com.example.eurasia.entity.Data.QueryCondition;
 import com.example.eurasia.service.Data.ISearchDataService;
 import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Response.ResponseResult;
@@ -12,7 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -39,15 +41,18 @@ public class SearchDataController {
     ResponseResult searchData(@RequestBody DataSearchParam dataSearchParam, HttpServletRequest request){
         ResponseResult responseResult;
         try {
-            Slf4jLogUtil.get().info("数据查询开始");
+            Slf4jLogUtil.get().info("查询数据开始");
             String userID = userInfoServiceImpl.getLoginUserID(request);
             if (StringUtils.isEmpty(userID)) {
                 responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
             } else {
-                responseResult = searchDataService.searchData(userID,
-                        dataSearchParam.getQueryConditions(),
-                        dataSearchParam.getOffset(),
-                        dataSearchParam.getLimit());
+                if (dataSearchParam.getQueryConditions() == null ||
+                        dataSearchParam.getOffset() <= -1 ||
+                        dataSearchParam.getLimit() <= -1) {
+                    responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SEARCH_DATA_QUERY_CONDITION_ERROR);
+                } else {
+                    responseResult = searchDataService.searchData(userID, dataSearchParam);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();

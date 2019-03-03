@@ -1,6 +1,7 @@
 package com.example.eurasia.service.Data;
 
 import com.example.eurasia.dao.DataDao;
+import com.example.eurasia.entity.Data.ComputeField;
 import com.example.eurasia.entity.Data.Data;
 import com.example.eurasia.entity.Data.DataXMLReader;
 import com.example.eurasia.entity.Data.QueryCondition;
@@ -118,23 +119,6 @@ public class DataService {
         }
     }
 
-
-    /**
-     * 根据查询条件进行数据查询
-     * @param
-     * @return
-     * @exception
-     * @author FuJia
-     * @Time 2018-09-20 00:00:00
-     */
-    public List<Data> searchDataForDownload(String tableName, QueryCondition[] queryConditionsArr) throws Exception {
-        if (StringUtils.isEmpty(tableName) || queryConditionsArr == null) {
-            return null;
-        }
-
-        return getDataDao().queryListForAllObject(tableName,queryConditionsArr);
-    }
-
     /**
      * 根据查询条件进行数据查询
      * @param
@@ -165,6 +149,38 @@ public class DataService {
         }
 
         return getDataDao().queryListForAllObject(tableName);
+    }
+
+    /**
+     * 根据查询条件进行数据查询
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-09-20 00:00:00
+     */
+    public List<Data> searchDataForDownload(String tableName, QueryCondition[] queryConditionsArr) throws Exception {
+        if (StringUtils.isEmpty(tableName) || queryConditionsArr == null) {
+            return null;
+        }
+
+        return getDataDao().queryListForAllObject(tableName,queryConditionsArr);
+    }
+
+    /**
+     * 根据查询条件进行数据查询
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-09-20 00:00:00
+     */
+    public List<Data> searchDataForStatisticReport(String tableName, String groupByField, ComputeField[] computeFields, QueryCondition[] queryConditionsArr) throws Exception {
+        if (StringUtils.isEmpty(tableName) || StringUtils.isEmpty(groupByField) || computeFields == null || queryConditionsArr == null) {
+            return null;
+        }
+
+        return getDataDao().queryListForAllObject(tableName,groupByField,computeFields,queryConditionsArr);
     }
 
     /**

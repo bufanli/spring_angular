@@ -1,9 +1,6 @@
 package com.example.eurasia.service.Data;
 
-import com.example.eurasia.entity.Data.Data;
-import com.example.eurasia.entity.Data.DataXMLReader;
-import com.example.eurasia.entity.Data.QueryCondition;
-import com.example.eurasia.entity.Data.SearchedData;
+import com.example.eurasia.entity.Data.*;
 import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;
@@ -36,10 +33,14 @@ public class SearchDataServiceImpl implements ISearchDataService {
     private UserService userService;
 
     @Override
-    public ResponseResult searchData(String userID, QueryCondition[] queryConditionsArr, long offset, long limit) throws Exception {
+    public ResponseResult searchData(String userID, DataSearchParam dataSearchParam) throws Exception {
 
-        SearchedData searchedData;
-        List<Data> dataList;
+        SearchedData searchedData = null;
+        List<Data> dataList = null;
+        QueryCondition[] queryConditionsArr = dataSearchParam.getQueryConditions();
+        long userOffset = dataSearchParam.getOffset();
+        long userLimit = dataSearchParam.getLimit();
+        long userMax = -1;
         try {
             //检查查询条件的格式和内容
             String retCheck = this.checkQueryConditions(userID,queryConditionsArr);
@@ -51,23 +52,13 @@ public class SearchDataServiceImpl implements ISearchDataService {
             this.setUserQueryConditionDefaultValue(userID,queryConditionsArr);
 
             //该用户可查询的条数
-            String strCanSearchCount = userService.getOneUserCustom(UserService.TABLE_USER_ACCESS_AUTHORITY,
-                    UserService.MUST_SEARCH_COUNT,
-                    userID);
-            long userMax = -1;
-            long userOffset = offset;
-            long userLimit = limit;
-            if (!StringUtils.isEmpty(strCanSearchCount)) {//可查询条数有限制
-                userMax = Long.parseLong(strCanSearchCount);
-            } else {//可查询条数没有限制
-                userMax = dataService.queryTableRows(DataService.TABLE_DATA);
-            }
+            userMax = this.getUserMax(userID);
 
             Map<String, String> order = new LinkedHashMap<>();
-            order.put("id","asc");
-            // data has no userID field, delete it
-//            order.put("userID","desc");
+            order.put("id","asc");//T.B.D
+
             dataList = dataService.searchData(DataService.TABLE_DATA,queryConditionsArr,userOffset,userLimit,order);
+
             if (dataList == null) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.SEARCH_DATA_INFO_FROM_SQL_NULL);
             }
@@ -83,6 +74,59 @@ public class SearchDataServiceImpl implements ISearchDataService {
         }
 
         return new ResponseResultUtil().success(ResponseCodeEnum.SEARCH_DATA_INFO_FROM_SQL_SUCCESS, searchedData);
+    }
+
+    public ResponseResult statisticsReport(String userID, StatisticsReportQueryData statisticsReportQueryData) throws Exception {
+
+        StatisticReportValue[] statisticReportValues = new StatisticReportValue[1];
+        List<Data> dataList = null;
+        String groupByField = statisticsReportQueryData.getGroupByField();
+        ComputeField[] computeFields = statisticsReportQueryData.getComputeFields();
+        QueryCondition[] queryConditionsArr = statisticsReportQueryData.getQueryConditions();
+
+        long userMax = -1;
+        try {
+            //检查查询条件的格式和内容
+            String retCheck = this.checkQueryConditions(userID,queryConditionsArr);
+            if (!StringUtils.isEmpty(retCheck)) {
+                return new ResponseResultUtil().error(ResponseCodeEnum.STATISTICS_REPORT_QUERY_CONDITION_ERROR.getCode(),retCheck);
+            }
+
+            //为未输入的查询条件进行默认值设定
+            this.setUserQueryConditionDefaultValue(userID,queryConditionsArr);
+
+            //该用户可查询的条数
+            userMax = this.getUserMax(userID);
+
+            Map<String, String> order = new LinkedHashMap<>();
+            order.put("id","asc");//T.B.D
+
+            dataList = dataService.searchDataForStatisticReport(DataService.TABLE_DATA,groupByField,computeFields,queryConditionsArr);;
+
+            if (dataList == null) {
+                return new ResponseResultUtil().error(ResponseCodeEnum.STATISTICS_REPORT_FROM_SQL_NULL);
+            }
+            if (dataList.size() <= 0) {
+                return new ResponseResultUtil().error(ResponseCodeEnum.STATISTICS_REPORT_FROM_SQL_ZERO);
+            }
+
+            // Just For Test
+//            StatisticReportValue statisticReportValue = new StatisticReportValue();
+//            statisticReportValue.setGroupByField("收货人");//groupByField
+//            ComputeValue computeValue = new ComputeValue();
+//            computeValue.setFieldName("重量");
+//            computeValue.setComputeValue("100.25");
+//            ComputeValue[] computeValues = new ComputeValue[1];
+//            computeValues[0] = computeValue;
+//            statisticReportValue.setComputeValues(computeValues);//computeFields
+//            statisticReportValues[0] = statisticReportValue;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseResultUtil().error(ResponseCodeEnum.STATISTICS_REPORT_FROM_SQL_FAILED);
+        }
+
+        return new ResponseResultUtil().success(ResponseCodeEnum.SEARCH_DATA_INFO_FROM_SQL_SUCCESS, dataList);
     }
 
     private String checkQueryConditions(String userID, QueryCondition[] queryConditionsArr) throws Exception {
@@ -135,22 +179,34 @@ public class SearchDataServiceImpl implements ISearchDataService {
         String queryConditionValueFromSql = null;
         for (QueryCondition queryCondition : queryConditionsArr) {
             if(queryCondition.getKey().equals(UserService.MUST_PRODUCT_DATE)) {
-                    String dateArr[] = queryCondition.getQueryConditionToArr();
-                    if (dateArr[0].equals("") || dateArr[1].equals("")) {//为了在起始日期和结束日期都存在都情况下，不查询该用户的日期范围
-                        queryConditionValueFromSql = userService.getOneUserCustom(UserService.TABLE_USER_ACCESS_AUTHORITY,
-                                UserService.MUST_PRODUCT_DATE,
-                                userID);
-                        String dateArrFromSql[] = queryConditionValueFromSql.split(QueryCondition.QUERY_CONDITION_SPLIT,-1);
-                        if (dateArr[0].equals("")) {
-                            dateArr[0] = dateArrFromSql[0];
-                        }
-                        if (dateArr[1].equals("")) {
-                            dateArr[1] = dateArrFromSql[1];
-                        }
-                        queryCondition.setArrToQueryCondition(dateArr);
+                String dateArr[] = queryCondition.getQueryConditionToArr();
+                if (dateArr[0].equals("") || dateArr[1].equals("")) {//为了在起始日期和结束日期都存在都情况下，不查询该用户的日期范围
+                    queryConditionValueFromSql = userService.getOneUserCustom(UserService.TABLE_USER_ACCESS_AUTHORITY,
+                            UserService.MUST_PRODUCT_DATE,
+                            userID);
+                    String dateArrFromSql[] = queryConditionValueFromSql.split(QueryCondition.QUERY_CONDITION_SPLIT,-1);
+                    if (dateArr[0].equals("")) {
+                        dateArr[0] = dateArrFromSql[0];
                     }
+                    if (dateArr[1].equals("")) {
+                        dateArr[1] = dateArrFromSql[1];
+                    }
+                    queryCondition.setArrToQueryCondition(dateArr);
+                }
             }
         }
     }
 
+    private long getUserMax(String userID) throws Exception {
+        long userMax = -1;
+        String strCanSearchCount = userService.getOneUserCustom(UserService.TABLE_USER_ACCESS_AUTHORITY,
+                UserService.MUST_SEARCH_COUNT,
+                userID);
+        if (!StringUtils.isEmpty(strCanSearchCount)) {//可查询条数有限制
+            userMax = Long.parseLong(strCanSearchCount);
+        } else {//可查询条数没有限制
+            userMax = dataService.queryTableRows(DataService.TABLE_DATA);
+        }
+        return userMax;
+    }
 }
