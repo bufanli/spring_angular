@@ -29,7 +29,8 @@ public class ImportExcelRowReader {
      */
     public void getRows(int sheetIndex, int row, List<String> rowList) {
 
-        //如果需要的话，判断行内容是否都为空，也就是判断有没有任何数据。
+        //如果需要的话，判断行内容是否都为空，
+        //也可以在startElement/endElement中通过if (qName.equals("row")) 进行判断。
         /*
         for (int i = 0; i < rowList.size(); i++) {
             //System.out.print(rowList.get(i) + " ");
