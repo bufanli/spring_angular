@@ -169,6 +169,18 @@ export class CommonUtilitiesService {
     modalRef.componentInstance.setType(dialogType);
     modalRef.componentInstance.notifier.subscribe(response => this.callbackOfModalDialog(response, callback));
   }
+  // show simple dialog
+  showSimpleDialog(dialogTitle: string,
+    dialogBody: string,
+    dialogType: string): void {
+    // you can not call this.adjustModalOptions,
+    // because showUserSettingModal called in html context
+    const modalRef = this.modalService.open(ModalDialogComponent, this.adjustModalOptions());
+    modalRef.componentInstance.setTitle(dialogTitle);
+    modalRef.componentInstance.setBody(dialogBody);
+    modalRef.componentInstance.setSourceID(null);
+    modalRef.componentInstance.setType(dialogType);
+  }
   // show processing dialog
   showProcessingDialog(callback: ProcessingDialogCallback, data: any, sourceID: string) {
     // show processing dialog

@@ -441,7 +441,7 @@ export class DataSearchComponent implements OnInit,
   public onStatisticsReport(): void {
     // query conditions
     const queryConditions: any = this.getQueryConditions();
-    this.dataStatisticsService.statisticsReport(queryConditions);
+    this.dataStatisticsService.statisticsSetting(queryConditions);
   }
 
 }

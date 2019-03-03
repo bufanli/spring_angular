@@ -19,17 +19,56 @@
         <div class="row">
           <div class="col-md-4">
             <div class=" form-group">
-              <select class="form-control selectpicker" title="请统计图类型" id="statistics-type" [(ngModel)]="type" name="ori-country">
+              <select class="form-control selectpicker" title="统计图类型" id="statistics-type" [(ngModel)]="type" name="statistics-type">
                 <option *ngFor="let type of this.getStatisticsTypes()" value="{{type}}">{{type}}</option>
               </select>
             </div>
           </div>
+          <div class="col-md-4">
+            <div class=" form-group">
+              <select class="form-control selectpicker" title="统计维度" id="group-fields" [(ngModel)]="selectedGroupByField"
+                name="group-fields">
+                <option *ngFor="let field of this.getGroupByFields()" value="{{field}}">{{field}}</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class=" form-group">
+              <select class="form-control selectpicker" title="计算维度" id="compute-groups" [(ngModel)]="selectedComputeFields"
+                name="statistics-dimension">
+                <option *ngFor="let field of this.getGroupByFields()" value="{{field}}">{{field}}</option>
+              </select>
+            </div>
+          </div>
         </div>
-        <!-- <commnent> first row start </commnent> -->
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <button type="button" class="btn btn-primary btn-block">
+                <span class="glyphicon glyphicon-stats"></span> 生成报表(导出前十)
+              </button>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <button type="button" class="btn btn-primary btn-block">
+                <span class="glyphicon glyphicon-stats"></span> 生成报表(导出全部)
+              </button>
+            </div>
+          </div>
+        </div>
       </form>
     </div>
   </div>
-  <div echarts [options]="this.options" class="demo-chart"></div>
+  <div *ngIf="this.isStatisticsDataOK" echarts [options]="this.options" class="demo-chart"></div>
+  <div *ngIf="!this.isStatisticsDataOK">
+    <div *ngIf="this.isWaitingStatisticsInput" class="panel-body">
+      {{this.WAIT_STATISTICS_INPUT}}
+    </div>
+    <div *ngIf="this.isWaitingStatisticsReport" class="panel-body">
+      {{this.WAIT_STATISTICS_REPORT}}
+    </div>
+  </div>
 </div>
 <div class="modal-footer">
   <button type="button" class="btn btn-default" data-dismiss="modal" (click)="close()">
