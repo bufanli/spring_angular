@@ -17,18 +17,19 @@ export class DataStatisticsComponent implements OnInit, AfterViewInit {
   public readonly LINE_CHART: string = '折线图';
   public readonly BAR_CHART: string = '柱状图';
   public readonly PIE_CHART: string = '饼状图';
-  private readonly STATISTICS_TYPES: string[] = [this.LINE_CHART, this.PIE_CHART, this.BAR_CHART];
   public options: any;
   // selected statistics type
   type: string = null;
   // selected group by field
   public selectedGroupByField: string = null;
   // statistics group by field
-  public groupByFields: string[] = ['进口关区', '原产国', '装货港'];
+  public groupByFields: string[] = null;
   // selected compute fields
   public selectedComputeFields: string[] = null;
   // statics compute fields
-  public computeFields: string[] = ['重量', '数量', 'TEU', '票数'];
+  public computeFields: string[] = null;
+  // statistics types
+  public statisticsTypes: string[] = null;
   // query conditions
   private queryConditions: any = null;
   // statistics data ok
@@ -41,7 +42,11 @@ export class DataStatisticsComponent implements OnInit, AfterViewInit {
     private commonUtilities: CommonUtilitiesService) { }
   // get statistics types
   public getStatisticsTypes(): string[] {
-    return this.STATISTICS_TYPES;
+    return this.statisticsTypes;
+  }
+  public setStatisticsTypes(statisticsTypes: string[]): void {
+    this.statisticsTypes = statisticsTypes;
+    this.setSelectOptions('#statistics-type', false);
   }
   // change status to get statistics report
   private changeStatusToGetStatisticsReport(): void {
@@ -59,6 +64,7 @@ export class DataStatisticsComponent implements OnInit, AfterViewInit {
   }
   public setGroupByFields(groupByFields: string[]) {
     this.groupByFields = groupByFields;
+    this.setSelectOptions('#group-fields', true);
   }
   // get compute fields
   public getComputeFields(): string[] {
@@ -67,6 +73,7 @@ export class DataStatisticsComponent implements OnInit, AfterViewInit {
   // set compute fields
   public setComputeFields(computeFields: string[]) {
     this.computeFields = computeFields;
+    this.setSelectOptions('#compute-fields', true);
   }
   // set query conditions
   public setQueryConditions(queryConditions: any) {
@@ -104,55 +111,7 @@ export class DataStatisticsComponent implements OnInit, AfterViewInit {
     this.options = options;
   }
   ngOnInit() {
-    const xAxisData = [];
-    const data1 = [];
-    const data2 = [];
-
-    for (let i = 0; i < 100; i++) {
-      xAxisData.push('category' + i);
-      data1.push((Math.sin(i / 5) * (i / 5 - 10) + i / 6) * 5);
-      data2.push((Math.cos(i / 5) * (i / 5 - 10) + i / 6) * 5);
-    }
-
-    this.options = {
-      legend: {
-        data: ['bar', 'bar2'],
-        align: 'left'
-      },
-      tooltip: {
-        feature: {
-          saveAsImage: {},
-        }
-      },
-      xAxis: {
-        data: xAxisData,
-        silent: false,
-        splitLine: {
-          show: false
-        }
-      },
-      yAxis: {
-      },
-      series: [{
-        name: 'bar',
-        type: 'bar',
-        data: data1,
-        animationDelay: function (idx) {
-          return idx * 10;
-        }
-      }, {
-        name: 'bar2',
-        type: 'bar',
-        data: data2,
-        animationDelay: function (idx) {
-          return idx * 10 + 100;
-        }
-      }],
-      animationEasing: 'elasticOut',
-      animationDelayUpdate: function (idx) {
-        return idx * 5;
-      }
-    };
+    // todo
   }
   public close(): void {
     this.activeModal.close();
@@ -166,7 +125,7 @@ export class DataStatisticsComponent implements OnInit, AfterViewInit {
     // group by fields
     this.setSelectOptions('#group-fields', true);
     // compute fields
-    this.setSelectOptions('#compute-types', true);
+    this.setSelectOptions('#compute-fields', true);
   }
 
   // init select picker

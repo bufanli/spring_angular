@@ -1,4 +1,4 @@
-export class StatiticsFields {
+export class StatisticsFields {
   // selectable statistics types
   private statisticsTypes: string[] = null;
   // selectable group by fields

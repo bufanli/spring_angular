@@ -34,9 +34,9 @@
           </div>
           <div class="col-md-4">
             <div class=" form-group">
-              <select class="form-control selectpicker" title="计算维度" id="compute-groups" [(ngModel)]="selectedComputeFields"
-                name="statistics-dimension">
-                <option *ngFor="let field of this.getGroupByFields()" value="{{field}}">{{field}}</option>
+              <select class="form-control selectpicker" title="计算维度" id="compute-fields" [(ngModel)]="selectedComputeFields"
+                name="compute-fields">
+                <option *ngFor="let field of this.getComputeFields()" value="{{field}}">{{field}}</option>
               </select>
             </div>
           </div>

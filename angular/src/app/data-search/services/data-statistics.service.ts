@@ -7,12 +7,9 @@ import { HttpResponse } from 'src/app/common/entities/http-response';
 import { NgbModal, NgbModalOptions, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
 import { DataStatisticsComponent } from '../components/data-statistics/data-statistics.component';
 import { Injectable } from '@angular/core';
-import { StatiticsFields } from '../entities/statistics-fields';
+import { StatisticsFields } from '../entities/statistics-fields';
 import { StatisticsReportEntry } from '../entities/statistics-report-entry';
-import { Data } from '@angular/router';
 import { ComputeValue } from '../entities/compute-value';
-import { link } from 'fs';
-import { serializePaths } from '@angular/router/src/url_tree';
 
 // json header for post
 const httpOptions = {
@@ -27,6 +24,8 @@ export class DataStatisticsService implements ProcessingDialogCallback {
   private queryConditions: any = null;
   // statistics report url
   private statisticsReportsUrl = 'api/statisticsReport';  // URL to web api
+  // statistics settings url
+  private statisticsSettingUrl = 'api/statisticsSetting';  // URL to web api
   // statistics report query data
   private statisticsReportQueryData: StatisticsReportQueryData = null;
   // statistics component
@@ -49,7 +48,7 @@ export class DataStatisticsService implements ProcessingDialogCallback {
   public callbackOnProcessing(sourceID: string, data: any): void {
     if (sourceID === this.GET_STATISTICS_FIELDS_SOURCE_ID) {
       // post get statistics fields request
-      this.http.post<HttpResponse>(this.statisticsReportsUrl, this.statisticsFieldsUrl, httpOptions).subscribe(
+      this.http.post<HttpResponse>(this.statisticsSettingUrl, null, httpOptions).subscribe(
         httpResponse => { this.callbackGettingStatisticsFields(httpResponse); }
       );
     }
@@ -57,7 +56,10 @@ export class DataStatisticsService implements ProcessingDialogCallback {
   // callback when getting statistics fields
   private callbackGettingStatisticsFields(httpResponse: HttpResponse) {
     // statistics fields
-    const statisticsFields: StatiticsFields = httpResponse.data;
+    const statisticsFields: StatisticsFields = new StatisticsFields();
+    statisticsFields.setComputeFields(httpResponse.data.computeFields);
+    statisticsFields.setGroupByFields(httpResponse.data.groupByFields);
+    statisticsFields.setStatisticsTypes(httpResponse.data.statisticsTypes);
     // close processing dialog
     this.commonUtilitiesService.closeProcessingDialog();
     const service: NgbModal = this.modalService;
@@ -69,7 +71,7 @@ export class DataStatisticsService implements ProcessingDialogCallback {
     modalRef.componentInstance.setGroupByFields(statisticsFields.getGroupByFields());
     modalRef.componentInstance.setStatisticsTypes(statisticsFields.getStatisticsTypes());
     // set query conditions
-    modalRef.componentInstance.setQueryCondtions(this.queryConditions);
+    modalRef.componentInstance.setQueryConditions(this.queryConditions);
   }
   // statistics report
   public statisticsReport(
@@ -209,7 +211,7 @@ export class DataStatisticsService implements ProcessingDialogCallback {
     computeFields.forEach(computeField => {
       const seriesEntry = {
         name: computeField.getFieldName(),
-        type: link,
+        type: 'line',
         data: this.convertComputeValueToDataArray(statisticsReport, computeField.getFieldName()),
       };
       series.push(seriesEntry);

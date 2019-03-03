@@ -1,5 +1,6 @@
 package com.example.eurasia.controller;
 
+import com.example.eurasia.entity.Data.StatisticsFields;
 import com.example.eurasia.entity.Data.StatisticsReportQueryData;
 import com.example.eurasia.service.Data.ISearchDataService;
 import com.example.eurasia.service.Response.ResponseCodeEnum;
@@ -32,6 +33,31 @@ public class StatisticsReportController {
     @Autowired
     private UserInfoServiceImpl userInfoServiceImpl;
 
+    /**
+     * @author
+     * @date
+     * @description 数据统计报告
+     */
+    @RequestMapping(value="/statisticsSetting", method = RequestMethod.POST)
+    public @ResponseBody
+    ResponseResult statisticsReport(HttpServletRequest request,
+                                    HttpServletResponse response) throws Exception {
+        ResponseResult responseResult;
+        StatisticsFields  statisticsFields = new StatisticsFields();
+        try {
+            String[] statisticsType = {"柱状图","饼状图","折线图"};
+            String[] computeFields = {"重量(千克)","数量","件数","票数"};
+            String[] groupByFields = {"收货人","装货港","月份"};
+            statisticsFields.setComputeFields(computeFields);
+            statisticsFields.setGroupByFields(groupByFields);
+            statisticsFields.setStatisticsTypes(statisticsType);
+        }catch(Exception e){
+            e.printStackTrace();
+            responseResult = new ResponseResultUtil().error();
+        }
+        responseResult = new ResponseResultUtil().success(statisticsFields);
+        return responseResult;
+    }
     /**
      * @author
      * @date
