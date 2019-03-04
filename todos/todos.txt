@@ -39,6 +39,7 @@
 17. SessionTimeout时候Spring返回  code 201，但是Spring侧的其他错误也在用  201，这个要改善。
 
 18. data-detail的  ts里面定义了header的内容，这个其实在data-search-component里面可以去到，不用再angular上写死，导致每次都得angular侧更改。要改修。
+     user-info.service.ts 里面也有同样的定义，都需要改修。
 
 19. 如果Excel数据文件中有数据库里不存在的字段，那么最好是进行比对，把数据库以外的字段抛弃之后处理Excel,现状是出错。
 
