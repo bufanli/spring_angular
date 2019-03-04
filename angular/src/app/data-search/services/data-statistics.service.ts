@@ -29,11 +29,12 @@ export class DataStatisticsService implements ProcessingDialogCallback {
   // statistics report query data
   private statisticsReportQueryData: StatisticsReportQueryData = null;
   // statistics component
-  private dataStatisticsComponent: DataStatisticsComponent = null;
+  private dataStatisticsComponent: any = null;
   // statistics type
   private statisticsType: string;
   // static fields url
   private statisticsFieldsUrl = 'api/statisticsFields';  // URL to web api
+
   constructor(private commonUtilitiesService: CommonUtilitiesService,
     private http: HttpClient,
     public modalService: NgbModal) { }
@@ -72,15 +73,17 @@ export class DataStatisticsService implements ProcessingDialogCallback {
     modalRef.componentInstance.setStatisticsTypes(statisticsFields.getStatisticsTypes());
     // set query conditions
     modalRef.componentInstance.setQueryConditions(this.queryConditions);
+    // save component
+    this.dataStatisticsComponent = modalRef.componentInstance;
+    // save service
+    modalRef.componentInstance.setStatisticsService(this);
   }
   // statistics report
   public statisticsReport(
-    dataStatisticsComponent: DataStatisticsComponent,
     statisticsType: string,
     queryConditions: any,
     groupByField: string,
     computeFields: string[]): void {
-    // get statistics report callback
     // post statistics report request
     const statisticsReportQueryData: StatisticsReportQueryData
       = new StatisticsReportQueryData();
@@ -99,8 +102,6 @@ export class DataStatisticsService implements ProcessingDialogCallback {
     statisticsReportQueryData.setQueryConditions(queryConditions);
     // save statistics report query data in advance
     this.statisticsReportQueryData = statisticsReportQueryData;
-    // save data statistics component
-    this.dataStatisticsComponent = dataStatisticsComponent;
     // save statistics type
     this.statisticsType = statisticsType;
     // post statistics report request
@@ -123,6 +124,14 @@ export class DataStatisticsService implements ProcessingDialogCallback {
     const options: any = this.convertStatisticsReportToOptions(statisticsReport);
     // set options to component
     this.dataStatisticsComponent.setOptions(options);
+  }
+  private convertDataToStatisticsReportArray(data: any): StatisticsReportEntry[] {
+    const result: StatisticsReportEntry[] = [];
+    data.forEach(element => {
+      const entry: StatisticsReportEntry = new StatisticsReportEntry();
+      entry.setGroupByField
+    });
+    return null;
   }
   // convert statistics report data to data statistics component's options
   private convertStatisticsReportToOptions(statisticsReport: StatisticsReportEntry[]): any {

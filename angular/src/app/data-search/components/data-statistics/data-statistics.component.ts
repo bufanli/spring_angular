@@ -10,7 +10,7 @@ import { CommonUtilitiesService } from 'src/app/common/services/common-utilities
 export class DataStatisticsComponent implements OnInit, AfterViewInit {
 
   private readonly STATISTICS_PARAM_ERROR_TITLE = '统计报表参数选择错误';
-  public readonly WAIT_STATISTICS_INPUT = '请选择统计图类型，统计维度，统计变量';
+  public readonly WAIT_STATISTICS_INPUT = '请选择统计图类型，统计维度，计算维度';
   public readonly WAIT_STATISTICS_REPORT = '正在计算统计数据，请稍后';
   private readonly STATISTICS_PARAM_ERROR_TYPE = 'warning';
   // statistics types
@@ -38,6 +38,9 @@ export class DataStatisticsComponent implements OnInit, AfterViewInit {
   public isWaitingStatisticsInput = true;
   public isWaitingStatisticsReport = false;
 
+  // statistics service
+  private statisticsService: any = null;
+
   constructor(private activeModal: NgbActiveModal,
     private commonUtilities: CommonUtilitiesService) { }
   // get statistics types
@@ -52,6 +55,10 @@ export class DataStatisticsComponent implements OnInit, AfterViewInit {
   private changeStatusToGetStatisticsReport(): void {
     this.isStatisticsDataOK = false;
     this.isWaitingStatisticsReport = true;
+  }
+  // set statistics service
+  public setStatisticsService(statisticsService: any): void {
+    this.statisticsService = statisticsService;
   }
   // set chart options
   public setOptions(options: any): void {
@@ -91,7 +98,13 @@ export class DataStatisticsComponent implements OnInit, AfterViewInit {
         this.WAIT_STATISTICS_INPUT,
         this.STATISTICS_PARAM_ERROR_TYPE);
     } else {
-      //
+      // call service to get statistics report
+      this.statisticsService.statisticsReport(
+        this.type,
+        this.queryConditions,
+        this.selectedGroupByField,
+        this.selectedComputeFields
+      );
     }
   }
   // check statistics parameters

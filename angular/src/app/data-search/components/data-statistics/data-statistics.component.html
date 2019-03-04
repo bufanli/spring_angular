@@ -10,7 +10,7 @@
   <div class="panel panel-default">
     <div class="panel-heading">
       <h3 class="panel-title">
-        商品统计
+        统计设定
       </h3>
     </div>
     <div class="panel-body">
@@ -34,7 +34,7 @@
           </div>
           <div class="col-md-4">
             <div class=" form-group">
-              <select class="form-control selectpicker" title="计算维度" id="compute-fields" [(ngModel)]="selectedComputeFields"
+              <select class="form-control selectpicker" multiple title="计算维度" id="compute-fields" [(ngModel)]="selectedComputeFields"
                 name="compute-fields">
                 <option *ngFor="let field of this.getComputeFields()" value="{{field}}">{{field}}</option>
               </select>
@@ -44,7 +44,7 @@
         <div class="row">
           <div class="col-md-4">
             <div class="form-group">
-              <button type="button" class="btn btn-primary btn-block">
+              <button type="button" class="btn btn-primary btn-block" (click)="this.exportTopTenStatisticsReport()">
                 <span class="glyphicon glyphicon-stats"></span> 生成报表(导出前十)
               </button>
             </div>
