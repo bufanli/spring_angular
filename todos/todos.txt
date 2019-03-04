@@ -40,6 +40,10 @@
 
 18. data-detail的  ts里面定义了header的内容，这个其实在data-search-component里面可以去到，不用再angular上写死，导致每次都得angular侧更改。要改修。
 
+19. 如果Excel数据文件中有数据库里不存在的字段，那么最好是进行比对，把数据库以外的字段抛弃之后处理Excel,现状是出错。
+
+20. 第二个sheet页空的时候会抛出异常（userMode）。
+
 【finished】
 
 1. 对HTTP增加拦截器，保证Session过期之后重定向.（Spring代码push了，没有注入Annotation） 4 OK
