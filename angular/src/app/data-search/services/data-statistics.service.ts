@@ -126,11 +126,11 @@ export class DataStatisticsService implements ProcessingDialogCallback {
     this.dataStatisticsComponent.setOptions(options);
   }
   private convertDataToStatisticsReportArray(data: any): StatisticsReportEntry[] {
-    const result: StatisticsReportEntry[] = [];
-    data.forEach(element => {
-      const entry: StatisticsReportEntry = new StatisticsReportEntry();
-      entry.setGroupByField
-    });
+    // const result: StatisticsReportEntry[] = [];
+    // data.forEach(element => {
+    //   const entry: StatisticsReportEntry = new StatisticsReportEntry();
+    //   entry.setGroupByField
+    // });
     return null;
   }
   // convert statistics report data to data statistics component's options
