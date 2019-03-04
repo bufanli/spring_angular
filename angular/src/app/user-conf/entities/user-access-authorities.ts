@@ -1,7 +1,7 @@
 export class UserAccessAuthorities {
   public userID: string;
   public 日期: string;
-  public 商品编码: string;
+  public 海关编码: string;
   public 有效期: string;
   public 上传可否: boolean;
   public 看的条数: string;

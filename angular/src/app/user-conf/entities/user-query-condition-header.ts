@@ -7,7 +7,7 @@ export class UserQueryConditionHeader {
   装货港: string;
   中转国: string;
   原产国: string;
-  商品编码: string;
+  海关编码: string;
   产品名称: string;
   厂号: string;
   生产工厂: string;

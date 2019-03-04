@@ -89,7 +89,7 @@ export class UserAccessAuthoritiesComponent implements AfterViewInit {
     // user to time
     toDate = $('#user-to-time' + component.componentID).datepicker('getDate');
     toDateStr = component.commonUtilitiesService.convertDateToLocalString(toDate);
-     // convert limit date
+    // convert limit date
     dateArray = new Array();
     dateArray.push(startDateStr);
     dateArray.push(toDateStr);
@@ -99,12 +99,12 @@ export class UserAccessAuthoritiesComponent implements AfterViewInit {
 
   // set initial product codes
   setQueryProducts() {
-    const products = this.currentUserAccessAuthorities['商品编码'].split(
+    const products = this.currentUserAccessAuthorities['海关编码'].split(
       this.commonUtilitiesService.DATA_COMMON_SEPERATOR);
     if (products.length > 1) {
       this.productCodes = products.join(this.commonUtilitiesService.VIEW_COMMON_SEPERATOR);
     } else {
-      this.productCodes = this.currentUserAccessAuthorities['商品编码'];
+      this.productCodes = this.currentUserAccessAuthorities['海关编码'];
     }
     // get rid of first view common seperator
     if (this.productCodes.startsWith(this.commonUtilitiesService.VIEW_COMMON_SEPERATOR)) {
@@ -117,18 +117,23 @@ export class UserAccessAuthoritiesComponent implements AfterViewInit {
   }
   // get current user access authorities
   getCurrentUserAccessAuthorities(): UserAccessAuthorities {
-    // convert product codes
-    const productsArray = this.productCodes.split(this.commonUtilitiesService.VIEW_COMMON_SEPERATOR);
-    if (productsArray.length > 1) {
-      this.currentUserAccessAuthorities['商品编码'] = productsArray.join(
-        this.commonUtilitiesService.DATA_COMMON_SEPERATOR);
-    } else if (productsArray.length === 1) {
-      // only one product is permitted
-      this.currentUserAccessAuthorities['商品编码'] =
-        productsArray[0] + this.commonUtilitiesService.DATA_COMMON_SEPERATOR;
-    } else {
+    if (this.productCodes === null) {
       // no product limit
-      this.currentUserAccessAuthorities['商品编码'] = this.commonUtilitiesService.DATA_COMMON_SEPERATOR;
+      this.currentUserAccessAuthorities['海关编码'] = this.commonUtilitiesService.DATA_COMMON_SEPERATOR;
+    } else {
+      // convert product codes
+      const productsArray = this.productCodes.split(this.commonUtilitiesService.VIEW_COMMON_SEPERATOR);
+      if (productsArray.length > 1) {
+        this.currentUserAccessAuthorities['海关编码'] = productsArray.join(
+          this.commonUtilitiesService.DATA_COMMON_SEPERATOR);
+      } else if (productsArray.length === 1) {
+        // only one product is permitted
+        this.currentUserAccessAuthorities['海关编码'] =
+          productsArray[0] + this.commonUtilitiesService.DATA_COMMON_SEPERATOR;
+      } else {
+        // no product limit
+        this.currentUserAccessAuthorities['海关编码'] = this.commonUtilitiesService.DATA_COMMON_SEPERATOR;
+      }
     }
     return this.currentUserAccessAuthorities;
   }
