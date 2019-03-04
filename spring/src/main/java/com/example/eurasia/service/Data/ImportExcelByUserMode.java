@@ -91,11 +91,17 @@ public class ImportExcelByUserMode {
 
         StringBuffer sheetMsg = new StringBuffer();//信息接收器
 
-        String dataStyle = this.checkSheetDataStyle(sheet);
-        if (dataStyle.equals("Data1")) {//T.B.D. dummy
+        String dataStyle = this.checkSheetDataStyle(sheet);//T.B.D. dummy
+        if (dataStyle == null) {
+            sheetMsg.append(sheet.getSheetName() + "的第1行没有数据，请仔细检查。");
+            Slf4jLogUtil.get().error(sheet.getSheetName() + "的第1行没有数据，请仔细检查。");
+            return sheetMsg;
+        } else {
+            if (dataStyle.equals("Data1")) {
 
-        } else if (dataStyle.equals("Data2")) {//T.B.D. dummy
+            } else if (dataStyle.equals("Data2")) {
 
+            }
         }
 
         //读取标题行
@@ -123,6 +129,11 @@ public class ImportExcelByUserMode {
         msg.append("第1行标题行:");
 
         Row titleRow = sheet.getRow(0);//标题行
+        if (titleRow == null) {
+            msg.append("第1行没有数据，请仔细检查。");
+            Slf4jLogUtil.get().error("第1行没有数据，请仔细检查。");
+            return msg;
+        }
         int numTitleCells = titleRow.getLastCellNum();//标题行的列数
         for (int n=0; n<numTitleCells; n++) {//循环列
             Cell cell = titleRow.getCell(n);
@@ -219,7 +230,11 @@ public class ImportExcelByUserMode {
     }
 
     private String checkSheetDataStyle(Sheet sheet) {
-        int numTitleCells = sheet.getRow(0).getLastCellNum();//标题行的列数
+        Row titleRow = sheet.getRow(0);//标题行
+        if (titleRow == null) {
+            return null;
+        }
+        int numTitleCells = titleRow.getLastCellNum();//标题行的列数
 
         // 多表格的情况下，需要区分将数据导入哪个数据表里。
         // T.B.D. dummy
