@@ -92,10 +92,10 @@ public enum ResponseCodeEnum {
     USER_ADD_HEADER_WIDTH_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "添加用户可显示的表头宽度成功"),
     USER_ADD_HEADER_WIDTH_FAILED(ResponseCode.RESPONSE_CODE_NG, "添加用户可显示的表头宽度失败"),
     USER_ADD_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "添加用户成功"),
-    USER_ADD_FAILED(ResponseCode.RESPONSE_CODE_NG, "添加用户失败"),
+    USER_ADD_FAILED(ResponseCode.RESPONSE_CODE_USER_ADD_NG, "添加用户失败"),
     USER_UPDATE_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "更新用户成功"),
-    USER_UPDATE_FAILED(ResponseCode.RESPONSE_CODE_NG, "更新用户失败"),
-    USER_CHECK_INFO_FAILED(ResponseCode.RESPONSE_CODE_NG, "请检查带*的信息是否都已填写,或者用户、电话号码是否已注册！"),
+    USER_UPDATE_FAILED(ResponseCode.RESPONSE_CODE_USER_UPDATE_NG, "更新用户失败"),
+    USER_CHECK_INFO_FAILED(ResponseCode.RESPONSE_CODE_USER_CHECK_INFO_FAILED, "请检查带*的信息是否都已填写,或者用户、电话号码是否已注册！"),
     USER_ADD_ID_IS_NULL(ResponseCode.RESPONSE_CODE_USER_ADD_CHECK_NG, "添加用户ID为空。"),
     USER_ADD_ID_IS_EXIST(ResponseCode.RESPONSE_CODE_USER_ADD_CHECK_NG, "添加用户ID已存在。"),
     USER_ADD_NAME_IS_NULL(ResponseCode.RESPONSE_CODE_USER_ADD_CHECK_NG, "添加用户名为空。"),
@@ -220,7 +220,10 @@ public enum ResponseCodeEnum {
         private static final Integer RESPONSE_CODE_NG = 201;//Session Timeout
         private static final Integer RESPONSE_CODE_NULL = 202;
         private static final Integer RESPONSE_CODE_USER_ADD_CHECK_NG = 203;//添加用户时，信息判断
+        private static final Integer RESPONSE_CODE_USER_ADD_NG = 204;//添加用户失败
         private static final Integer RESPONSE_CODE_USER_UPDATE_CHECK_NG = 204;//更新用户时，信息判断
+        private static final Integer RESPONSE_CODE_USER_UPDATE_NG = 205;//更新用户失败
+        private static final Integer RESPONSE_CODE_USER_CHECK_INFO_FAILED = 206;
         private static final Integer RESPONSE_CODE_ING = 300;
         private static final Integer RESPONSE_CODE_NOT_ING = 301;
         private static final Integer RESPONSE_CODE_INVALID = 302;
