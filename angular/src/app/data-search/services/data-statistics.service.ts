@@ -127,22 +127,25 @@ export class DataStatisticsService implements ProcessingDialogCallback {
     this.dataStatisticsComponent.setOptions(options);
   }
   private convertDataToStatisticsReportArray(data: any): StatisticsReportEntry[] {
-    const result: StatisticsReportEntry[] = [];
-    data.forEach(element => {
+    const result: StatisticsReportEntry[] = new Array<StatisticsReportEntry>(data.length);
+    for (let i = 0; i < data.length; i++) {
+      const element = data[i];
       const entry: StatisticsReportEntry = new StatisticsReportEntry();
       // group by field
       entry.setGroupByField = element.groupByField;
       // compute values
       const computeValues: any = element.computeValues;
-      const finalComputeValues: ComputeValue[] = [];
-      computeValues.forEach(computeValuesElement => {
+      const finalComputeValues: ComputeValue[] = new Array<ComputeValue>(computeValues.length);
+      for (let ii = 0; ii < computeValues.length; ii++) {
+        const computeValuesElement = computeValues[ii];
         const computeValue: ComputeValue = new ComputeValue();
         computeValue.setComputeField(computeValuesElement.fieldName);
-        computeValue.setComputeField(computeValuesElement.fieldName);
-        finalComputeValues.push(computeValue);
-      });
+        computeValue.setComputeValue(computeValuesElement.computeValue);
+        finalComputeValues[ii] = computeValue;
+      }
       entry.setComputeValues(finalComputeValues);
-    });
+      result[i] = entry;
+    }
     return result;
   }
   // convert statistics report data to data statistics component's options
