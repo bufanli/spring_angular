@@ -119,7 +119,8 @@ export class DataStatisticsService implements ProcessingDialogCallback {
   // callback when getting statistics report
   private callbackGettingStatisticsReport(httpResponse: HttpResponse) {
     // statistics report
-    const statisticsReport: StatisticsReportEntry[] = httpResponse.data;
+    const statisticsReport: StatisticsReportEntry[] =
+      this.convertDataToStatisticsReportArray(httpResponse.data);
     // convert statistics report to options
     const options: any = this.convertStatisticsReportToOptions(statisticsReport);
     // set options to component
@@ -129,9 +130,20 @@ export class DataStatisticsService implements ProcessingDialogCallback {
     const result: StatisticsReportEntry[] = [];
     data.forEach(element => {
       const entry: StatisticsReportEntry = new StatisticsReportEntry();
-      entry.setGroupByField
+      // group by field
+      entry.setGroupByField = element.groupByField;
+      // compute values
+      const computeValues: any = element.computeValues;
+      const finalComputeValues: ComputeValue[] = [];
+      computeValues.forEach(computeValuesElement => {
+        const computeValue: ComputeValue = new ComputeValue();
+        computeValue.setComputeField(computeValuesElement.fieldName);
+        computeValue.setComputeField(computeValuesElement.fieldName);
+        finalComputeValues.push(computeValue);
+      });
+      entry.setComputeValues(finalComputeValues);
     });
-    return null;
+    return result;
   }
   // convert statistics report data to data statistics component's options
   private convertStatisticsReportToOptions(statisticsReport: StatisticsReportEntry[]): any {
@@ -195,10 +207,12 @@ export class DataStatisticsService implements ProcessingDialogCallback {
     const count = 1;
     computeFields.forEach(element => {
       let position: string;
+      let offset = 0;
       if (count === 1) {
         position = 'left';
       } else {
         position = 'right';
+        offset = (count - 1) * 40;
       }
       const yAxisEntry = {
         type: 'value',
@@ -206,6 +220,7 @@ export class DataStatisticsService implements ProcessingDialogCallback {
         min: this.minComputeValue(statisticsReport, element.getFieldName()),
         max: this.maxComputeValue(statisticsReport, element.getFieldName()),
         position: position,
+        offset: offset,
         axisLine: {
           lineStyle: {}
         },
