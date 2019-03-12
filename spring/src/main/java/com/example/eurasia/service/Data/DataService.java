@@ -33,12 +33,22 @@ public class DataService {
 
     public static final String TABLE_DATA = "eurasiaTable";
     public static final String TABLE_QUERY_CONDITION_TYPE = "queryConditionTypeTable";
+    public static final String TABLE_STATISTICS_SETTING_GROUP_BY = "statisticsSettingGroupByTable";
+    public static final String TABLE_STATISTICS_SETTING_TYPE = "statisticsSettingTypeTable";
+    public static final String TABLE_STATISTICS_SETTING_COMPUTE_BY = "statisticsSettingComputeByTable";
 
     public static final String BEAN_NAME_COLUMNS_DEFAULT_NAME = "columnDefaultName";
     public static final String BEAN_NAME_QUERY_CONDITION_TYPE_NAME = "queryConditionTypeName";
     public static final String BEAN_NAME_QUERY_CONDITION_TYPE_VALUE = "queryConditionTypeValue";
+    public static final String BEAN_NAME_STATISTICS_SETTING_GROUP_BY_NAME = "statisticsSettingGroupByName";
+    public static final String BEAN_NAME_STATISTICS_SETTING_TYPE_NAME = "statisticsSettingTypeName";
+    public static final String BEAN_NAME_STATISTICS_SETTING_COMPUTE_BY_NAME = "statisticsSettingComputeByName";
+    public static final String BEAN_NAME_STATISTICS_SETTING_GROUP_BY_VALUE = "statisticsSettingGroupByValue";
+    public static final String BEAN_NAME_STATISTICS_SETTING_TYPE_VALUE = "statisticsSettingTypeValue";
+    public static final String BEAN_NAME_STATISTICS_SETTING_COMPUTE_BY_VALUE = "statisticsSettingComputeByValue";
 
     public static final String EXPORT_EXCEL_SHEET_NAME = "统计表";
+    public static final String STATISTICS_REPORT_NAME_EX = "汇总报表";
     public static final String BR = "<br/>";
 
     /**
@@ -53,11 +63,23 @@ public class DataService {
         try {
             this.createTable(DataService.TABLE_DATA,DataService.BEAN_NAME_COLUMNS_DEFAULT_NAME);
             this.createTable(DataService.TABLE_QUERY_CONDITION_TYPE,DataService.BEAN_NAME_QUERY_CONDITION_TYPE_NAME);
+            this.createTable(DataService.TABLE_STATISTICS_SETTING_GROUP_BY,DataService.BEAN_NAME_STATISTICS_SETTING_GROUP_BY_NAME);
+            this.createTable(DataService.TABLE_STATISTICS_SETTING_TYPE,DataService.BEAN_NAME_STATISTICS_SETTING_TYPE_NAME);
+            this.createTable(DataService.TABLE_STATISTICS_SETTING_COMPUTE_BY,DataService.BEAN_NAME_STATISTICS_SETTING_COMPUTE_BY_NAME);
 
             ApplicationContext context = new ClassPathXmlApplicationContext("com/example/eurasia/config/applicationContext.xml");
             DataXMLReader dataXMLReader = (DataXMLReader) context.getBean(DataService.BEAN_NAME_QUERY_CONDITION_TYPE_VALUE);
             Data queryConditionTypeValue = new Data(dataXMLReader.getKeyValue());
             getDataDao().addData(DataService.TABLE_QUERY_CONDITION_TYPE,queryConditionTypeValue);
+            dataXMLReader = (DataXMLReader) context.getBean(DataService.BEAN_NAME_STATISTICS_SETTING_GROUP_BY_VALUE);
+            Data statisticsSettingGroupByValue = new Data(dataXMLReader.getKeyValue());
+            getDataDao().addData(DataService.TABLE_STATISTICS_SETTING_GROUP_BY,statisticsSettingGroupByValue);
+            dataXMLReader = (DataXMLReader) context.getBean(DataService.BEAN_NAME_STATISTICS_SETTING_TYPE_VALUE);
+            Data statisticsSettingTypeValue = new Data(dataXMLReader.getKeyValue());
+            getDataDao().addData(DataService.TABLE_STATISTICS_SETTING_TYPE,statisticsSettingTypeValue);
+            dataXMLReader = (DataXMLReader) context.getBean(DataService.BEAN_NAME_STATISTICS_SETTING_COMPUTE_BY_VALUE);
+            Data statisticsSettingComputeByValue = new Data(dataXMLReader.getKeyValue());
+            getDataDao().addData(DataService.TABLE_STATISTICS_SETTING_COMPUTE_BY,statisticsSettingComputeByValue);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -184,6 +206,22 @@ public class DataService {
     }
 
     /**
+     * 取得统计数据用的GroupBY，Type，ComputeBy等
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2019-03-10 00:00:00
+     */
+    public List<Data> getStatisticsSetting(String tableName) throws Exception {
+        if (StringUtils.isEmpty(tableName)) {
+            return null;
+        }
+
+        return getDataDao().queryListForAllObject(tableName);
+    }
+
+    /**
      * 取得指定表的所有表头[COLUMN_NAME,名字]
      * @param
      * @return
@@ -236,12 +274,8 @@ public class DataService {
      * @Time 2018-09-20 00:00:00
      */
     public List<Data> getAllQueryConditions() throws Exception {
-        List<Data> allQueryConditionsList = getDataDao().queryListForAllObject(DataService.TABLE_QUERY_CONDITION_TYPE);
-        if (allQueryConditionsList.size() != 1) {
-            return null;
-        }
 
-        return allQueryConditionsList;
+        return getDataDao().queryListForAllObject(DataService.TABLE_QUERY_CONDITION_TYPE);
     }
 
     /**

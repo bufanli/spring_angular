@@ -101,7 +101,7 @@ public class SearchDataServiceImpl implements ISearchDataService {
             Map<String, String> order = new LinkedHashMap<>();
             order.put("id","asc");//T.B.D
 
-            dataList = dataService.searchDataForStatisticReport(DataService.TABLE_DATA,groupByField,computeFields,queryConditionsArr);;
+            dataList = dataService.searchDataForStatisticReport(DataService.TABLE_DATA,groupByField,computeFields,queryConditionsArr);
 
             if (dataList == null) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.STATISTICS_REPORT_FROM_SQL_NULL);
@@ -126,7 +126,56 @@ public class SearchDataServiceImpl implements ISearchDataService {
             return new ResponseResultUtil().error(ResponseCodeEnum.STATISTICS_REPORT_FROM_SQL_FAILED);
         }
 
-        return new ResponseResultUtil().success(ResponseCodeEnum.SEARCH_DATA_INFO_FROM_SQL_SUCCESS, dataList);
+        return new ResponseResultUtil().success(ResponseCodeEnum.STATISTICS_REPORT_FROM_SQL_SUCCESS, dataList);
+    }
+
+    public ResponseResult getStatisticsSetting() throws Exception {
+        StatisticsFields  statisticsFields = new StatisticsFields();
+        List<Data> groupByFieldsList = null;
+        List<Data> statisticsTypeList = null;
+        List<Data> computeByFieldsList = null;
+        try {
+
+            groupByFieldsList = dataService.getStatisticsSetting(DataService.TABLE_STATISTICS_SETTING_GROUP_BY);
+            if (groupByFieldsList == null) {
+                return new ResponseResultUtil().error(ResponseCodeEnum.STATISTICS_SETTING_GROUP_BY_FROM_SQL_NULL);
+            }
+            if (groupByFieldsList.size() != 1) {
+                return new ResponseResultUtil().error(ResponseCodeEnum.STATISTICS_SETTING_GROUP_BY_FROM_SQL_SIZE_WRONG);
+            }
+
+            statisticsTypeList = dataService.getStatisticsSetting(DataService.TABLE_STATISTICS_SETTING_TYPE);
+            if (statisticsTypeList == null) {
+                return new ResponseResultUtil().error(ResponseCodeEnum.STATISTICS_SETTING_TYPE_FROM_SQL_NULL);
+            }
+            if (statisticsTypeList.size() != 1) {
+                return new ResponseResultUtil().error(ResponseCodeEnum.STATISTICS_SETTING_TYPE_FROM_SQL_SIZE_WRONG);
+            }
+
+            computeByFieldsList = dataService.getStatisticsSetting(DataService.TABLE_STATISTICS_SETTING_COMPUTE_BY);
+            if (computeByFieldsList == null) {
+                return new ResponseResultUtil().error(ResponseCodeEnum.STATISTICS_SETTING_COMPUTE_BY_FROM_SQL_NULL);
+            }
+            if (computeByFieldsList.size() != 1) {
+                return new ResponseResultUtil().error(ResponseCodeEnum.STATISTICS_SETTING_COMPUTE_BY_FROM_SQL_SIZE_WRONG);
+            }
+
+
+            String[] groupByFields = groupByFieldsList.get(0).getValuesToArray();
+            for (int i=0; i<groupByFields.length; i++) {
+                groupByFields[i] = groupByFields[i] + DataService.STATISTICS_REPORT_NAME_EX;
+            }
+            String[] statisticsType = statisticsTypeList.get(0).getValuesToArray();
+            String[] computeFields = computeByFieldsList.get(0).getValuesToArray();
+            statisticsFields.setGroupByFields(groupByFields);
+            statisticsFields.setComputeFields(computeFields);
+            statisticsFields.setStatisticsTypes(statisticsType);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseResultUtil().error(ResponseCodeEnum.STATISTICS_SETTING_FROM_SQL_FAILED);
+        }
+
+        return new ResponseResultUtil().success(ResponseCodeEnum.STATISTICS_SETTING_FROM_SQL_SUCCESS, statisticsFields);
     }
 
     private String checkQueryConditions(String userID, QueryCondition[] queryConditionsArr) throws Exception {

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mapping>
+    <column key="By1"             value="收货人" />
+    <column key="By2"             value="装货港" />
+    <column key="By3"             value="月份" />
+</mapping>
