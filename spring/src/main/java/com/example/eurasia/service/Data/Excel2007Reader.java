@@ -239,14 +239,14 @@ public class Excel2007Reader {
                     this.nullRowFlag = false;
                 }
 
-                //补全单元格之间的空单元格
-//                if (!this.ref.equals(this.preRef)) {
-//                    int len = this.countNullCell(this.ref, this.preRef);
-//                    for (int i = 0; i < len; i++) {
-//                        this.curCol++;
-//                        this.rowList.add(this.curCol, "");
-//                    }
-//                }
+                //补全单元格之间的空单元格(T.B.D ps:目前不知道这个事件模式为什么跳过空格)
+                if (!this.ref.equals(this.preRef)) {
+                    int len = this.countNullCell(this.ref, this.preRef);
+                    for (int i = 0; i < len; i++) {
+                        this.curCol++;
+                        this.rowList.add(this.curCol, "");
+                    }
+                }
 
                 this.preRef = this.ref;
                 this.curCol++;
@@ -368,12 +368,11 @@ public class Excel2007Reader {
             } else if (null == cellType) {
                 this.cellDataType = CellDataType.NUMBER;                //cellType为空，则表示该单元格类型为数字
 
-                if ("9".equals(cellStyleStr)) { //处理日期
-                    int styleIndex = Integer.parseInt(cellStyleStr);
-                    XSSFCellStyle style = this.st.getStyleAt(styleIndex);
-                    this.formatIndex = style.getDataFormat();
-                    this.formatString = style.getDataFormatString();
-
+                int styleIndex = Integer.parseInt(cellStyleStr);
+                XSSFCellStyle style = this.st.getStyleAt(styleIndex);
+                this.formatIndex = style.getDataFormat();
+                this.formatString = style.getDataFormatString();
+                if (this.formatIndex == 14) {//处理日期
                     if (this.formatString == null) {
                         this.cellDataType = CellDataType.NULL;
                         this.formatString = BuiltinFormats.getBuiltinFormat(this.formatIndex);
@@ -383,12 +382,10 @@ public class Excel2007Reader {
                             this.formatString = QueryCondition.PRODUCT_DATE_FORMAT;
                         }
                     }
-                } else if ("6".equals(cellStyleStr)) { //处理空格
-                    this.cellDataType = CellDataType.NULL;
+                } else {
 
-                    this.curCol++;
-                    this.rowList.add(this.curCol, "");
                 }
+
             }
 
         }
