@@ -333,7 +333,7 @@ Mysql limit offset示例
                                             String groupByField,
                                             ComputeField[] computeFields,
                                             QueryCondition[] queryConditionsArr) throws Exception {
-        StringBuffer sql = convertQueryConditionsToSQL(tableName,groupByField,computeFields,queryConditionsArr);
+        StringBuffer sql = convertStatisticsReportQueryDataToSQL(tableName,groupByField,computeFields,queryConditionsArr);
 
         List<Data> dataList = getJdbcTemplate().query(sql.toString(), new DataMapper());
         return dataList;

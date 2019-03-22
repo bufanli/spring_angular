@@ -400,20 +400,38 @@ select PERIOD_DIFF(DATE_FORMAT(CURDATE(),'%Y%m'),DATE_FORMAT(日期,'%Y%m')) fro
     /**
      * convert query conditions to sql
      */
-    protected StringBuffer convertQueryConditionsToSQL(String tableName,
+    protected StringBuffer convertStatisticsReportQueryDataToSQL(String tableName,
                                                        String groupByField,
                                                        ComputeField[] computeFields,
                                                        QueryCondition[] queryConditionsArr) {
 
         StringBuffer sql = new StringBuffer();
-        sql.append("select " + groupByField + " ");
+        StringBuffer selectColSql = new StringBuffer();
+        StringBuffer groupBySql = new StringBuffer();
+        if (groupByField.equals("Y")) {
+            //报告类型是周期(年)的情况
+            selectColSql.append("日期");
+            groupBySql.append("date_format('日期','%Y')");
+        } else if (groupByField.equals("M")) {
+            //报告类型是周期(月)的情况
+            selectColSql.append("日期");
+            groupBySql.append("date_format('日期','%Y-%m')");
+        } else if (groupByField.equals("P")) {
+            //报告类型是周期(季度)的情况
+            selectColSql.append("日期");
+            groupBySql.append("concat(date_format('日期', '%Y'),FLOOR((date_format('日期', '%m')+2)/3))");
+        } else {
+            selectColSql.append(groupByField);
+            groupBySql.append(groupByField);
+        }
+
+        sql.append("select " + selectColSql + " ");
         for (ComputeField computeField:computeFields) {
             sql.append(computeField.toSql() + " ");
         }
         sql.append("from " + tableName);
         sql.append(convertWhereToSQL(queryConditionsArr));
-        sql.append(" group by " + groupByField);
-
+        sql.append(" group by " + groupBySql);
         return sql;
     }
 
