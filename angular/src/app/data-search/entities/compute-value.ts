@@ -7,8 +7,8 @@ export class ComputeValue {
   public getComputeField(): string {
     return this.computeField;
   }
-  public setComputeValue(computeValue: number): void {
-    this.computeValue = computeValue;
+  public setComputeValue(computeValue): void {
+    this.computeValue = parseFloat(computeValue);
   }
   public getComputeValue(): number {
     return this.computeValue;

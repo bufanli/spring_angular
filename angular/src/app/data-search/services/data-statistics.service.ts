@@ -10,6 +10,7 @@ import { Injectable } from '@angular/core';
 import { StatisticsFields } from '../entities/statistics-fields';
 import { StatisticsReportEntry } from '../entities/statistics-report-entry';
 import { ComputeValue } from '../entities/compute-value';
+import { CurrentUserContainerService } from 'src/app/common/services/current-user-container.service';
 
 // json header for post
 const httpOptions = {
@@ -37,7 +38,8 @@ export class DataStatisticsService implements ProcessingDialogCallback {
 
   constructor(private commonUtilitiesService: CommonUtilitiesService,
     private http: HttpClient,
-    public modalService: NgbModal) { }
+    public modalService: NgbModal,
+    private currentUserContainer: CurrentUserContainerService) { }
   // get statistic report
   public statisticsSetting(queryConditions: any): void {
     this.queryConditions = queryConditions;
@@ -56,6 +58,10 @@ export class DataStatisticsService implements ProcessingDialogCallback {
   }
   // callback when getting statistics fields
   private callbackGettingStatisticsFields(httpResponse: HttpResponse) {
+    if (httpResponse.code === 201) {
+      this.currentUserContainer.sessionTimeout();
+      return;
+    }
     // statistics fields
     const statisticsFields: StatisticsFields = new StatisticsFields();
     statisticsFields.setComputeFields(httpResponse.data.computeFields);
@@ -114,10 +120,15 @@ export class DataStatisticsService implements ProcessingDialogCallback {
     const options: NgbModalOptions = new NgbModalConfig();
     options.backdrop = false;
     options.windowClass = 'modal fade in';
+    options.size = 'lg';
     return options;
   }
   // callback when getting statistics report
   private callbackGettingStatisticsReport(httpResponse: HttpResponse) {
+    if (httpResponse.code === 201) {
+      this.currentUserContainer.sessionTimeout();
+      return;
+    }
     // statistics report
     const statisticsReport: StatisticsReportEntry[] =
       this.convertDataToStatisticsReportArray(httpResponse.data);
@@ -132,7 +143,7 @@ export class DataStatisticsService implements ProcessingDialogCallback {
       const element = data[i];
       const entry: StatisticsReportEntry = new StatisticsReportEntry();
       // group by field
-      entry.setGroupByField = element.groupByField;
+      entry.setGroupByField(element.groupByField);
       // compute values
       const computeValues: any = element.computeValues;
       const finalComputeValues: ComputeValue[] = new Array<ComputeValue>(computeValues.length);
@@ -188,7 +199,7 @@ export class DataStatisticsService implements ProcessingDialogCallback {
     // legend
     const legendData = [];
     this.statisticsReportQueryData.getComputeFields().forEach(element => {
-      legendData.push(element);
+      legendData.push(element.getFieldName());
     });
     const legend = {
       data: legendData,
@@ -199,15 +210,14 @@ export class DataStatisticsService implements ProcessingDialogCallback {
       xAxisData.push(element.getGroupByField());
     });
 
-    const firstXAxis = {
-      type: 'catetory',
+    const xAxis = {
+      type: 'category',
       data: xAxisData,
     };
-    const xAxis = [firstXAxis];
     // yAxis
     const yAxis = [];
     const computeFields = this.statisticsReportQueryData.getComputeFields();
-    const count = 1;
+    let count = 0;
     computeFields.forEach(element => {
       let position: string;
       let offset = 0;
@@ -217,6 +227,7 @@ export class DataStatisticsService implements ProcessingDialogCallback {
         position = 'right';
         offset = (count - 1) * 40;
       }
+      count++;
       const yAxisEntry = {
         type: 'value',
         name: element.getFieldName(),
@@ -231,17 +242,23 @@ export class DataStatisticsService implements ProcessingDialogCallback {
           formatter: '{value}'
         }
       };
-      yAxis.push(yAxisEntry);
+      if (count === 1) {
+        yAxis.push(yAxisEntry);
+      }
     });
     // series
     const series = [];
+    count = 0;
     computeFields.forEach(computeField => {
-      const seriesEntry = {
-        name: computeField.getFieldName(),
-        type: 'line',
-        data: this.convertComputeValueToDataArray(statisticsReport, computeField.getFieldName()),
-      };
-      series.push(seriesEntry);
+      count = count + 1;
+      if (count === 1) {
+        const seriesEntry = {
+          name: computeField.getFieldName(),
+          type: 'line',
+          data: this.convertComputeValueToDataArray(statisticsReport, computeField.getFieldName()),
+        };
+        series.push(seriesEntry);
+      }
     });
     // finally combine
     const option = {
@@ -262,7 +279,7 @@ export class DataStatisticsService implements ProcessingDialogCallback {
     return null;
   }
   private minComputeValue(statisticsReport: StatisticsReportEntry[], computeField: string): Number {
-    let result = Number.MAX_VALUE;
+    let result: number = Number.MAX_VALUE;
     statisticsReport.forEach(element => {
       const computeValues: ComputeValue[] = element.getComputeValues();
       computeValues.forEach(computeValue => {
@@ -295,7 +312,7 @@ export class DataStatisticsService implements ProcessingDialogCallback {
       const computeValues = element.getComputeValues();
       computeValues.forEach(computeValue => {
         if (computeValue.getComputeField() === computeField) {
-          data.push(computeValue.getComputeValue);
+          data.push(computeValue.getComputeValue());
         }
       });
     });

@@ -8,23 +8,18 @@
 </div>
 <div class="modal-body">
   <div class="panel panel-default">
-    <div class="panel-heading">
-      <h3 class="panel-title">
-        统计设定
-      </h3>
-    </div>
     <div class="panel-body">
       <form role="form">
         <!-- <commnent> first row start </commnent> -->
         <div class="row">
-          <div class="col-md-4">
+          <div class="col-md-3">
             <div class=" form-group">
               <select class="form-control selectpicker" title="统计图类型" id="statistics-type" [(ngModel)]="type" name="statistics-type">
                 <option *ngFor="let type of this.getStatisticsTypes()" value="{{type}}">{{type}}</option>
               </select>
             </div>
           </div>
-          <div class="col-md-4">
+          <div class="col-md-3">
             <div class=" form-group">
               <select class="form-control selectpicker" title="统计维度" id="group-fields" [(ngModel)]="selectedGroupByField"
                 name="group-fields">
@@ -32,27 +27,28 @@
               </select>
             </div>
           </div>
-          <div class="col-md-4">
+          <div class="col-md-3">
             <div class=" form-group">
-              <select class="form-control selectpicker" multiple title="计算维度" id="compute-fields" [(ngModel)]="selectedComputeFields"
-                name="compute-fields">
+              <select class="form-control" multiple title="计算维度" id="compute-fields" [(ngModel)]="selectedComputeFields"
+                name="compute-fields" (change)="onChangeComputeFields()">
                 <option *ngFor="let field of this.getComputeFields()" value="{{field}}">{{field}}</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class=" form-group">
+              <select class="form-control selectpicker" title="统计图计算维度" id="chart-compute-field" [(ngModel)]="selectedChartComputeField"
+                name="chart-compute-fields">
+                <option *ngFor="let field of (this.selectedComputeFields)" value="{{field}}">{{field}}</option>
               </select>
             </div>
           </div>
         </div>
         <div class="row">
-          <div class="col-md-4">
+          <div class="col-md-3">
             <div class="form-group">
               <button type="button" class="btn btn-primary btn-block" (click)="this.exportTopTenStatisticsReport()">
-                <span class="glyphicon glyphicon-stats"></span> 生成报表(导出前十)
-              </button>
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="form-group">
-              <button type="button" class="btn btn-primary btn-block">
-                <span class="glyphicon glyphicon-stats"></span> 生成报表(导出全部)
+                <span class="glyphicon glyphicon-stats"></span> 生成报表
               </button>
             </div>
           </div>

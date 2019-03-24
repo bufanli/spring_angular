@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterContentInit, AfterViewChecked, AfterViewInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, Input, AfterContentChecked, AfterViewChecked } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { CommonUtilitiesService } from 'src/app/common/services/common-utilities.service';
 
@@ -7,7 +7,7 @@ import { CommonUtilitiesService } from 'src/app/common/services/common-utilities
   templateUrl: './data-statistics.component.html',
   styleUrls: ['./data-statistics.component.css']
 })
-export class DataStatisticsComponent implements OnInit, AfterViewInit {
+export class DataStatisticsComponent implements OnInit, AfterViewInit, AfterViewChecked {
 
   private readonly STATISTICS_PARAM_ERROR_TITLE = '统计报表参数选择错误';
   public readonly WAIT_STATISTICS_INPUT = '请选择统计图类型，统计维度，计算维度';
@@ -26,6 +26,9 @@ export class DataStatisticsComponent implements OnInit, AfterViewInit {
   public groupByFields: string[] = null;
   // selected compute fields
   public selectedComputeFields: string[] = null;
+  public seletcedComputeFieldsChanged = false;
+  // selected chart compute field
+  public selectedChartComputeField: string = null;
   // statics compute fields
   public computeFields: string[] = null;
   // statistics types
@@ -43,6 +46,10 @@ export class DataStatisticsComponent implements OnInit, AfterViewInit {
 
   constructor(private activeModal: NgbActiveModal,
     private commonUtilities: CommonUtilitiesService) { }
+
+  public onChangeComputeFields() {
+    this.seletcedComputeFieldsChanged = true;
+  }
   // get statistics types
   public getStatisticsTypes(): string[] {
     return this.statisticsTypes;
@@ -51,11 +58,7 @@ export class DataStatisticsComponent implements OnInit, AfterViewInit {
     this.statisticsTypes = statisticsTypes;
     this.setSelectOptions('#statistics-type', false);
   }
-  // change status to get statistics report
-  private changeStatusToGetStatisticsReport(): void {
-    this.isStatisticsDataOK = false;
-    this.isWaitingStatisticsReport = true;
-  }
+
   // set statistics service
   public setStatisticsService(statisticsService: any): void {
     this.statisticsService = statisticsService;
@@ -139,6 +142,16 @@ export class DataStatisticsComponent implements OnInit, AfterViewInit {
     this.setSelectOptions('#group-fields', true);
     // compute fields
     this.setSelectOptions('#compute-fields', true);
+    // chart compute fields
+    this.setSelectOptions('#chart-compute-field', false);
+
+  }
+  // if selected computed fields changed, refresh statistics computed field select options
+  ngAfterViewChecked(): void {
+    if (this.seletcedComputeFieldsChanged === true) {
+      $('#chart-compute-field').selectpicker('refresh');
+      this.seletcedComputeFieldsChanged = false;
+    }
   }
 
   // init select picker
