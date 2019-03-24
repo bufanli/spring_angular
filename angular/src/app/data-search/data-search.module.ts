@@ -11,6 +11,8 @@ import { DataStatisticsComponent } from './components/data-statistics/data-stati
 import { NgxEchartsModule } from 'ngx-echarts';
 import { DataStatisticsService } from './services/data-statistics.service';
 import { CommonUtilitiesService } from '../common/services/common-utilities.service';
+import { DataStatisticsGraphComponent } from './components/data-statistics-graph/data-statistics-graph.component';
+import { DataStatisticsOriginalDataComponent } from './components/data-statistics-original-data/data-statistics-original-data.component';
 
 const dataSearchRoutes: Routes = [
   {
@@ -24,6 +26,8 @@ const dataSearchRoutes: Routes = [
     DataSearchComponent,
     DataDetailComponent,
     DataStatisticsComponent,
+    DataStatisticsGraphComponent,
+    DataStatisticsOriginalDataComponent,
   ],
   imports: [
     RouterModule.forChild(<any>dataSearchRoutes),
@@ -37,6 +41,8 @@ const dataSearchRoutes: Routes = [
   entryComponents: [
     DataDetailComponent,
     DataStatisticsComponent,
+    DataStatisticsGraphComponent,
+    DataStatisticsOriginalDataComponent,
   ],
   providers: [
     DataStatisticsService,

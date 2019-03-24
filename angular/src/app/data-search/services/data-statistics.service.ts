@@ -132,10 +132,8 @@ export class DataStatisticsService implements ProcessingDialogCallback {
     // statistics report
     const statisticsReport: StatisticsReportEntry[] =
       this.convertDataToStatisticsReportArray(httpResponse.data);
-    // convert statistics report to options
-    const options: any = this.convertStatisticsReportToOptions(statisticsReport);
     // set options to component
-    this.dataStatisticsComponent.setOptions(options);
+    this.dataStatisticsComponent.setStatisticsReportEntries(statisticsReport);
   }
   private convertDataToStatisticsReportArray(data: any): StatisticsReportEntry[] {
     const result: StatisticsReportEntry[] = new Array<StatisticsReportEntry>(data.length);
@@ -160,7 +158,7 @@ export class DataStatisticsService implements ProcessingDialogCallback {
     return result;
   }
   // convert statistics report data to data statistics component's options
-  private convertStatisticsReportToOptions(statisticsReport: StatisticsReportEntry[]): any {
+  public convertStatisticsReportToOptions(statisticsReport: StatisticsReportEntry[]): any {
     if (this.statisticsType === this.dataStatisticsComponent.LINE_CHART) {
       // line chart
       return this.convertStatisticsReportToLineChartOptions(statisticsReport);

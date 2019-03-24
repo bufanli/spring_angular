@@ -1,6 +1,10 @@
-import { Component, OnInit, AfterViewInit, Input, AfterContentChecked, AfterViewChecked } from '@angular/core';
+import { Component, OnInit, AfterViewInit, AfterViewChecked, ViewChild, ViewContainerRef, ComponentRef } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { CommonUtilitiesService } from 'src/app/common/services/common-utilities.service';
+import { DataStatisticsGraphComponent } from '../data-statistics-graph/data-statistics-graph.component';
+import { DataStatisticsOriginalDataComponent } from '../data-statistics-original-data/data-statistics-original-data.component';
+import { ComponentFactoryResolver } from '@angular/core/src/render3';
+import { StatisticsReportEntry } from '../../entities/statistics-report-entry';
 
 @Component({
   selector: 'app-data-statistics',
@@ -10,7 +14,7 @@ import { CommonUtilitiesService } from 'src/app/common/services/common-utilities
 export class DataStatisticsComponent implements OnInit, AfterViewInit, AfterViewChecked {
 
   private readonly STATISTICS_PARAM_ERROR_TITLE = '统计报表参数选择错误';
-  public readonly WAIT_STATISTICS_INPUT = '请选择统计图类型，统计维度，计算维度';
+  public readonly WAIT_STATISTICS_INPUT = '请选择统计图类型，统计维度，计算维度，统计图计算维度';
   public readonly WAIT_STATISTICS_REPORT = '正在计算统计数据，请稍后';
   private readonly STATISTICS_PARAM_ERROR_TYPE = 'warning';
   // statistics types
@@ -43,10 +47,33 @@ export class DataStatisticsComponent implements OnInit, AfterViewInit, AfterView
 
   // statistics service
   private statisticsService: any = null;
+  // statistics report entries
+  private statisticsReportEntries: StatisticsReportEntry[] = null;
+
+  private resolver: ComponentFactoryResolver;
+  @ViewChild('statisticsContainer', { read: ViewContainerRef }) container: ViewContainerRef;
+  componnetRefDataStatisticsGraph: ComponentRef<DataStatisticsGraphComponent>;
+  componentRefDataStatisticsOriginalData: ComponentRef<DataStatisticsOriginalDataComponent>;
 
   constructor(private activeModal: NgbActiveModal,
     private commonUtilities: CommonUtilitiesService) { }
 
+  createComponent(type: string) {
+    this.container.clear();
+    if (type === 'graph') {
+      const factory = this.resolver.resolveComponentFactory(DataStatisticsGraphComponent);
+      this.componnetRefDataStatisticsGraph = this.container.createComponent(factory);
+      this.componnetRefDataStatisticsGraph.instance.setStatisticsReportEntries(this.statisticsReportEntries);
+      // this.componentRef.instance.output.subscribe((msg: string) => console.log(msg));
+    } else if (type === 'original-data') {
+      const factory = this.resolver.resolveComponentFactory(DataStatisticsOriginalDataComponent);
+      this.componentRefDataStatisticsOriginalData = this.container.createComponent(factory);
+      this.componentRefDataStatisticsOriginalData.instance.setStatisticsReportEntries(this.statisticsReportEntries);
+      this.componentRefDataStatisticsOriginalData.instance.setSelectedGroupbyField(this.selectedGroupByField);
+      this.componentRefDataStatisticsOriginalData.instance.setSelectedComputeFields(this.selectedComputeFields);
+      // this.componentRef.instance.output.subscribe((msg: string) => console.log(msg));
+    }
+  }
   public onChangeComputeFields() {
     this.seletcedComputeFieldsChanged = true;
   }
@@ -67,6 +94,15 @@ export class DataStatisticsComponent implements OnInit, AfterViewInit, AfterView
   public setOptions(options: any): void {
     this.isStatisticsDataOK = true;
     this.options = options;
+  }
+  // set statistics report entries
+  public setStatisticsReportEntries(statisticsReportEntries: StatisticsReportEntry[]): void {
+    // set statistics report entries
+    this.statisticsReportEntries = statisticsReportEntries;
+    // set data ok flag
+    this.isStatisticsDataOK = true;
+    // create statistics graph component
+    this.createComponent('graph');
   }
   // get group by fields
   public getGroupByFields(): string[] {
@@ -94,7 +130,7 @@ export class DataStatisticsComponent implements OnInit, AfterViewInit, AfterView
     return this.queryConditions;
   }
   // export top ten statistics report
-  public exportTopTenStatisticsReport() {
+  public exportStatisticsReport() {
     if (this.checkStatisticsParameters() === false) {
       // show error dialog
       this.commonUtilities.showSimpleDialog(this.STATISTICS_PARAM_ERROR_TITLE,
@@ -115,7 +151,8 @@ export class DataStatisticsComponent implements OnInit, AfterViewInit, AfterView
     // necessary parameter is not selected
     if ((this.type === null) ||
       (this.selectedComputeFields === null) ||
-      (this.selectedGroupByField === null)) {
+      (this.selectedGroupByField === null) ||
+      (this.selectedChartComputeField === null)) {
       return false;
     } {
       // all necessary paramters is all selected

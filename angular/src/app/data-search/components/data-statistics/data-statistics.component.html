@@ -47,7 +47,7 @@
         <div class="row">
           <div class="col-md-3">
             <div class="form-group">
-              <button type="button" class="btn btn-primary btn-block" (click)="this.exportTopTenStatisticsReport()">
+              <button type="button" class="btn btn-primary btn-block" (click)="this.exportStatisticsReport()">
                 <span class="glyphicon glyphicon-stats"></span> 生成报表
               </button>
             </div>
@@ -56,7 +56,24 @@
       </form>
     </div>
   </div>
-  <div *ngIf="this.isStatisticsDataOK" echarts [options]="this.options" class="demo-chart"></div>
+  <div *ngIf="this.isStatisticsDataOK">
+    <ul class="nav nav-tabs">
+      <li class="active">
+        <a href="#graph" data-toggle="tab" (click)="createComponent('graph')">
+          统计图
+        </a>
+      </li>
+      <li>
+        <a href="#original-data" data-toggle="tab" (click)="createComponent('original-data')">
+          统计数据
+        </a>
+      </li>
+    </ul>
+    <div id="statistics-container" class="tab-content">
+      <div class="clearfix" style="margin-bottom: 1em;"></div>
+      <ng-template #statisticsContainer></ng-template>
+    </div>
+  </div>
   <div *ngIf="!this.isStatisticsDataOK">
     <div *ngIf="this.isWaitingStatisticsInput" class="panel-body">
       {{this.WAIT_STATISTICS_INPUT}}
