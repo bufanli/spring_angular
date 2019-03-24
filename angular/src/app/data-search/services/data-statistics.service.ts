@@ -33,8 +33,8 @@ export class DataStatisticsService implements ProcessingDialogCallback {
   private dataStatisticsComponent: any = null;
   // statistics type
   private statisticsType: string;
-  // static fields url
-  private statisticsFieldsUrl = 'api/statisticsFields';  // URL to web api
+  // top N
+  public readonly TOP_N = 10;
 
   constructor(private commonUtilitiesService: CommonUtilitiesService,
     private http: HttpClient,
@@ -126,6 +126,7 @@ export class DataStatisticsService implements ProcessingDialogCallback {
   // callback when getting statistics report
   private callbackGettingStatisticsReport(httpResponse: HttpResponse) {
     if (httpResponse.code === 201) {
+      this.dataStatisticsComponent.close();
       this.currentUserContainer.sessionTimeout();
       return;
     }
