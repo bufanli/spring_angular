@@ -1,9 +1,9 @@
-import { Component, OnInit, AfterViewInit, AfterViewChecked, ViewChild, ViewContainerRef, ComponentRef } from '@angular/core';
+import { Component, OnInit, AfterViewInit, AfterViewChecked, } from '@angular/core';
+import { ViewChild, ViewContainerRef, ComponentRef, ComponentFactoryResolver } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { CommonUtilitiesService } from 'src/app/common/services/common-utilities.service';
 import { DataStatisticsGraphComponent } from '../data-statistics-graph/data-statistics-graph.component';
 import { DataStatisticsOriginalDataComponent } from '../data-statistics-original-data/data-statistics-original-data.component';
-import { ComponentFactoryResolver } from '@angular/core/src/render3';
 import { StatisticsReportEntry } from '../../entities/statistics-report-entry';
 
 @Component({
