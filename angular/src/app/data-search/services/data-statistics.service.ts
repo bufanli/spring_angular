@@ -159,10 +159,11 @@ export class DataStatisticsService implements ProcessingDialogCallback {
     return result;
   }
   // convert statistics report data to data statistics component's options
-  public convertStatisticsReportToOptions(statisticsReport: StatisticsReportEntry[]): any {
+  public convertStatisticsReportToOptions(statisticsReport: StatisticsReportEntry[],
+    chartComputeField: string): any {
     if (this.statisticsType === this.dataStatisticsComponent.LINE_CHART) {
       // line chart
-      return this.convertStatisticsReportToLineChartOptions(statisticsReport);
+      return this.convertStatisticsReportToLineChartOptions(statisticsReport, chartComputeField);
     } else if (this.statisticsType === this.dataStatisticsComponent.PIE_CHART) {
       // pie chart
       return this.convertStatisticsReportToPieChartOptions(statisticsReport);
@@ -175,7 +176,7 @@ export class DataStatisticsService implements ProcessingDialogCallback {
     return null;
   }
   // convert statistics report data to line chart opitons
-  private convertStatisticsReportToLineChartOptions(statisticsReport: StatisticsReportEntry[]): any {
+  private convertStatisticsReportToLineChartOptions(statisticsReport: StatisticsReportEntry[], chartComputeField: string): any {
     // tool box
     const dataView = {
       show: true,
@@ -198,7 +199,10 @@ export class DataStatisticsService implements ProcessingDialogCallback {
     // legend
     const legendData = [];
     this.statisticsReportQueryData.getComputeFields().forEach(element => {
-      legendData.push(element.getFieldName());
+      // push selected chart field  into legend
+      if (element.getFieldName() === chartComputeField) {
+        legendData.push(element.getFieldName());
+      }
     });
     const legend = {
       data: legendData,
@@ -216,41 +220,28 @@ export class DataStatisticsService implements ProcessingDialogCallback {
     // yAxis
     const yAxis = [];
     const computeFields = this.statisticsReportQueryData.getComputeFields();
-    let count = 0;
     computeFields.forEach(element => {
-      let position: string;
-      let offset = 0;
-      if (count === 1) {
-        position = 'left';
-      } else {
-        position = 'right';
-        offset = (count - 1) * 40;
-      }
-      count++;
-      const yAxisEntry = {
-        type: 'value',
-        name: element.getFieldName(),
-        min: this.minComputeValue(statisticsReport, element.getFieldName()),
-        max: this.maxComputeValue(statisticsReport, element.getFieldName()),
-        position: position,
-        offset: offset,
-        axisLine: {
-          lineStyle: {}
-        },
-        axisLabel: {
-          formatter: '{value}'
-        }
-      };
-      if (count === 1) {
+      if (element.getFieldName() === chartComputeField) {
+        const yAxisEntry = {
+          type: 'value',
+          name: element.getFieldName(),
+          min: this.minComputeValue(statisticsReport, element.getFieldName()),
+          max: this.maxComputeValue(statisticsReport, element.getFieldName()),
+          position: 'left',
+          axisLine: {
+            lineStyle: {}
+          },
+          axisLabel: {
+            formatter: '{value}'
+          }
+        };
         yAxis.push(yAxisEntry);
       }
     });
     // series
     const series = [];
-    count = 0;
     computeFields.forEach(computeField => {
-      count = count + 1;
-      if (count === 1) {
+      if (computeField.getFieldName() === chartComputeField) {
         const seriesEntry = {
           name: computeField.getFieldName(),
           type: 'line',

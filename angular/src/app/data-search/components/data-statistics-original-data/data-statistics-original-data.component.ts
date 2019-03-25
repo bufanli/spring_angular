@@ -36,19 +36,40 @@ export class DataStatisticsOriginalDataComponent implements OnInit {
       pageSize: this.statisticsService.TOP_N,
       pageList: [],
     });
+    // convert statistics report entries into data
+    const statisticsData =
+      this.convertAllStatisticsReportEntriesIntoData();
     // load data into table
-
+    $('#table').bootstrapTable('load', statisticsData);
   }
   // set statistics report entries
   public setStatisticsReportEntries(statisticsReportEntries: StatisticsReportEntry[]): void {
     this.statisticsReportEntries = statisticsReportEntries;
   }
   // set selected group by field
-  public setSelectedGroupbyField(selectedGroupbyField): void {
+  public setSelectedGroupbyField(selectedGroupbyField: string): void {
     this.selectedGroupbyField = selectedGroupbyField;
   }
   // set selected compute fields
   public setSelectedComputeFields(selectedComputeFields: string[]): void {
     this.selectedComputeFields = selectedComputeFields;
+  }
+  // convert all statistics report entries into data
+  private convertAllStatisticsReportEntriesIntoData(): any {
+    const statisticsData = [];
+    this.statisticsReportEntries.forEach(element => {
+      statisticsData.push(this.convertOneStatisticsReportEntryIntoData(element));
+    });
+    return statisticsData;
+  }
+  // convert one statistics report entry into data
+  private convertOneStatisticsReportEntryIntoData(statisticsReportEntry: StatisticsReportEntry): any {
+    const oneStatisticsData: any = {};
+    // group by field
+    oneStatisticsData[this.selectedGroupbyField] = statisticsReportEntry.getGroupByField();
+    // repeat each compute values
+    statisticsReportEntry.getComputeValues().forEach(element => {
+      oneStatisticsData[element.getComputeField()] = element.getComputeValue();
+    });
   }
 }

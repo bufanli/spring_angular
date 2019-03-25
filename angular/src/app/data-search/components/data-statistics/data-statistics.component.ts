@@ -64,6 +64,7 @@ export class DataStatisticsComponent implements OnInit, AfterViewInit, AfterView
       const factory = this.resolver.resolveComponentFactory(DataStatisticsGraphComponent);
       this.componnetRefDataStatisticsGraph = this.container.createComponent(factory);
       this.componnetRefDataStatisticsGraph.instance.setStatisticsReportEntries(this.statisticsReportEntries);
+      this.componnetRefDataStatisticsGraph.instance.setChartComputeField(this.selectedChartComputeField);
       // this.componentRef.instance.output.subscribe((msg: string) => console.log(msg));
     } else if (type === 'original-data') {
       const factory = this.resolver.resolveComponentFactory(DataStatisticsOriginalDataComponent);
