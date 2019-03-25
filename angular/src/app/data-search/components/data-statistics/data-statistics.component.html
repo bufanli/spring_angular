@@ -7,57 +7,53 @@
   </h4>
 </div>
 <div class="modal-body">
-  <div class="panel panel-default">
-    <div class="panel-body">
-      <form role="form">
-        <!-- <commnent> first row start </commnent> -->
-        <div class="row">
-          <div class="col-md-3">
-            <div class=" form-group">
-              <select class="form-control selectpicker" title="统计图类型" id="statistics-type" [(ngModel)]="type" name="statistics-type">
-                <option *ngFor="let type of this.getStatisticsTypes()" value="{{type}}">{{type}}</option>
-              </select>
-            </div>
-          </div>
-          <div class="col-md-3">
-            <div class=" form-group">
-              <select class="form-control selectpicker" title="统计维度" id="group-fields" [(ngModel)]="selectedGroupByField"
-                name="group-fields">
-                <option *ngFor="let field of this.getGroupByFields()" value="{{field}}">{{field}}</option>
-              </select>
-            </div>
-          </div>
-          <div class="col-md-3">
-            <div class=" form-group">
-              <select class="form-control" multiple title="计算维度" id="compute-fields" [(ngModel)]="selectedComputeFields"
-                name="compute-fields" (change)="onChangeComputeFields()">
-                <option *ngFor="let field of this.getComputeFields()" value="{{field}}">{{field}}</option>
-              </select>
-            </div>
-          </div>
-          <div class="col-md-3">
-            <div class=" form-group">
-              <select class="form-control selectpicker" title="统计图计算维度" id="chart-compute-field" [(ngModel)]="selectedChartComputeField"
-                name="chart-compute-fields">
-                <option *ngFor="let field of (this.selectedComputeFields)" value="{{field}}">{{field}}</option>
-              </select>
-            </div>
-          </div>
+  <form role="form">
+    <!-- <commnent> first row start </commnent> -->
+    <div class="row">
+      <div class="col-md-3">
+        <div class=" form-group">
+          <select class="form-control selectpicker" title="统计图类型" id="statistics-type" [(ngModel)]="type" name="statistics-type">
+            <option *ngFor="let type of this.getStatisticsTypes()" value="{{type}}">{{type}}</option>
+          </select>
         </div>
-        <div class="row">
-          <div class="col-md-3">
-            <div class="form-group">
-              <button type="button" class="btn btn-primary btn-block" (click)="this.exportStatisticsReport()">
-                <span class="glyphicon glyphicon-stats"></span> 生成报表
-              </button>
-            </div>
-          </div>
+      </div>
+      <div class="col-md-3">
+        <div class=" form-group">
+          <select class="form-control selectpicker" title="统计维度" id="group-fields" [(ngModel)]="selectedGroupByField"
+            name="group-fields">
+            <option *ngFor="let field of this.getGroupByFields()" value="{{field}}">{{field}}</option>
+          </select>
         </div>
-      </form>
+      </div>
+      <div class="col-md-3">
+        <div class=" form-group">
+          <select class="form-control" multiple title="计算维度" id="compute-fields" [(ngModel)]="selectedComputeFields"
+            name="compute-fields" (change)="onChangeComputeFields()">
+            <option *ngFor="let field of this.getComputeFields()" value="{{field}}">{{field}}</option>
+          </select>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class=" form-group">
+          <select class="form-control selectpicker" title="统计图计算维度" id="chart-compute-field" [(ngModel)]="selectedChartComputeField"
+            name="chart-compute-fields">
+            <option *ngFor="let field of (this.selectedComputeFields)" value="{{field}}">{{field}}</option>
+          </select>
+        </div>
+      </div>
     </div>
-  </div>
-  <div *ngIf="this.isStatisticsDataOK">
-    <ul class="nav nav-tabs">
+    <div class="row">
+      <div class="col-md-3">
+        <div class="form-group">
+          <button type="button" class="btn btn-primary btn-block" (click)="this.exportStatisticsReport()">
+            <span class="glyphicon glyphicon-stats"></span> 生成报表
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
+  <div>
+    <ul class="nav nav-tabs" *ngIf="this.isStatisticsDataOK">
       <li class="active">
         <a href="#graph" data-toggle="tab" (click)="createComponent('graph')">
           统计图

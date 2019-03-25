@@ -21,6 +21,8 @@ export class DataStatisticsOriginalDataComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
+    // if donot destroy table, it would not show
+    $('#statistics-table').bootstrapTable('destroy');
     // get headers from selected group by field
     // and selected compute fields
     let statisticsHeadersOrigin: string[] = [];
@@ -32,7 +34,7 @@ export class DataStatisticsOriginalDataComponent implements OnInit {
       statisticsHeaders.push(tempHeader);
     });
     // load header of table
-    $('#table').bootstrapTable({
+    $('#statistics-table').bootstrapTable({
       columns: statisticsHeaders,
       pagination: true,
       pageSize: this.dataStatisticsService.TOP_N,
@@ -42,7 +44,7 @@ export class DataStatisticsOriginalDataComponent implements OnInit {
     const statisticsData =
       this.convertAllStatisticsReportEntriesIntoData();
     // load data into table
-    $('#table').bootstrapTable('load', statisticsData);
+    $('#statistics-table').bootstrapTable('load', statisticsData);
   }
   // set statistics report entries
   public setStatisticsReportEntries(statisticsReportEntries: StatisticsReportEntry[]): void {
@@ -73,6 +75,7 @@ export class DataStatisticsOriginalDataComponent implements OnInit {
     statisticsReportEntry.getComputeValues().forEach(element => {
       oneStatisticsData[element.getComputeField()] = element.getComputeValue();
     });
+    return oneStatisticsData;
   }
   // set statistics service
   public setDataStatisticsService(dataStatisticsService: any): void {

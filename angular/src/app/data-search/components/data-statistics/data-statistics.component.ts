@@ -50,13 +50,13 @@ export class DataStatisticsComponent implements OnInit, AfterViewInit, AfterView
   // statistics report entries
   private statisticsReportEntries: StatisticsReportEntry[] = null;
 
-  private resolver: ComponentFactoryResolver;
   @ViewChild('statisticsContainer', { read: ViewContainerRef }) container: ViewContainerRef;
   componnetRefDataStatisticsGraph: ComponentRef<DataStatisticsGraphComponent>;
   componentRefDataStatisticsOriginalData: ComponentRef<DataStatisticsOriginalDataComponent>;
 
   constructor(private activeModal: NgbActiveModal,
-    private commonUtilities: CommonUtilitiesService) { }
+    private commonUtilities: CommonUtilitiesService,
+    private resolver: ComponentFactoryResolver) { }
 
   createComponent(type: string) {
     this.container.clear();
@@ -104,7 +104,6 @@ export class DataStatisticsComponent implements OnInit, AfterViewInit, AfterView
     this.statisticsReportEntries = statisticsReportEntries;
     // set data ok flag
     this.isStatisticsDataOK = true;
-    // create statistics graph component
     this.createComponent('graph');
   }
   // get group by fields
@@ -167,7 +166,7 @@ export class DataStatisticsComponent implements OnInit, AfterViewInit, AfterView
     this.options = options;
   }
   ngOnInit() {
-    // todo
+    // nothing to do
   }
   public close(): void {
     this.activeModal.close();
