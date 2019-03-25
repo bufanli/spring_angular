@@ -44,6 +44,8 @@ export class DataStatisticsComponent implements OnInit, AfterViewInit, AfterView
   // statistics data ng, threre are two sub status
   public isWaitingStatisticsInput = true;
   public isWaitingStatisticsReport = false;
+  // showing component name
+  private showingComponentName = 'graph';
 
   // statistics service
   private statisticsService: any = null;
@@ -61,6 +63,7 @@ export class DataStatisticsComponent implements OnInit, AfterViewInit, AfterView
   createComponent(type: string) {
     this.container.clear();
     if (type === 'graph') {
+      this.showingComponentName = 'graph';
       const factory = this.resolver.resolveComponentFactory(DataStatisticsGraphComponent);
       this.componnetRefDataStatisticsGraph = this.container.createComponent(factory);
       this.componnetRefDataStatisticsGraph.instance.setStatisticsReportEntries(this.statisticsReportEntries);
@@ -68,6 +71,7 @@ export class DataStatisticsComponent implements OnInit, AfterViewInit, AfterView
       this.componnetRefDataStatisticsGraph.instance.setDataStatisticsService(this.statisticsService);
       // this.componentRef.instance.output.subscribe((msg: string) => console.log(msg));
     } else if (type === 'original-data') {
+      this.showingComponentName = 'original-data';
       const factory = this.resolver.resolveComponentFactory(DataStatisticsOriginalDataComponent);
       this.componentRefDataStatisticsOriginalData = this.container.createComponent(factory);
       this.componentRefDataStatisticsOriginalData.instance.setStatisticsReportEntries(this.statisticsReportEntries);
@@ -104,7 +108,7 @@ export class DataStatisticsComponent implements OnInit, AfterViewInit, AfterView
     this.statisticsReportEntries = statisticsReportEntries;
     // set data ok flag
     this.isStatisticsDataOK = true;
-    this.createComponent('graph');
+    this.createComponent(this.showingComponentName);
   }
   // get group by fields
   public getGroupByFields(): string[] {
