@@ -14,7 +14,9 @@ export class DataStatisticsGraphComponent implements OnInit {
   private statisticsReportEntries: StatisticsReportEntry[] = null;
   // statistics chart compute field
   private chartComputeField: string = null;
-  constructor(private dataStatisticsService: DataStatisticsService) { }
+  // statistics service
+  private dataStatisticsService: any = null;
+  constructor() { }
 
   ngOnInit() {
     // convert statistics report entries to options
@@ -29,6 +31,10 @@ export class DataStatisticsGraphComponent implements OnInit {
   // set chart compute field
   public setChartComputeField(chartComputeField: string): void {
     this.chartComputeField = chartComputeField;
+  }
+  // set statistics service
+  public setDataStatisticsService(dataStatisticsService: any): void {
+    this.dataStatisticsService = dataStatisticsService;
   }
 
 }

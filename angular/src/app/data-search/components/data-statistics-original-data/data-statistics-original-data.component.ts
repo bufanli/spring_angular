@@ -16,7 +16,9 @@ export class DataStatisticsOriginalDataComponent implements OnInit {
   private selectedGroupbyField: string = null;
   // selected compute fields
   private selectedComputeFields: string[] = null;
-  constructor(private statisticsService: DataStatisticsService) { }
+  // data statistics service
+  private dataStatisticsService: DataStatisticsService = null;
+  constructor() { }
 
   ngOnInit() {
     // get headers from selected group by field
@@ -33,7 +35,7 @@ export class DataStatisticsOriginalDataComponent implements OnInit {
     $('#table').bootstrapTable({
       columns: statisticsHeaders,
       pagination: true,
-      pageSize: this.statisticsService.TOP_N,
+      pageSize: this.dataStatisticsService.TOP_N,
       pageList: [],
     });
     // convert statistics report entries into data
@@ -71,5 +73,9 @@ export class DataStatisticsOriginalDataComponent implements OnInit {
     statisticsReportEntry.getComputeValues().forEach(element => {
       oneStatisticsData[element.getComputeField()] = element.getComputeValue();
     });
+  }
+  // set statistics service
+  public setDataStatisticsService(dataStatisticsService: any): void {
+    this.dataStatisticsService = dataStatisticsService;
   }
 }

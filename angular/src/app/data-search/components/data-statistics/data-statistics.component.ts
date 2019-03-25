@@ -65,6 +65,7 @@ export class DataStatisticsComponent implements OnInit, AfterViewInit, AfterView
       this.componnetRefDataStatisticsGraph = this.container.createComponent(factory);
       this.componnetRefDataStatisticsGraph.instance.setStatisticsReportEntries(this.statisticsReportEntries);
       this.componnetRefDataStatisticsGraph.instance.setChartComputeField(this.selectedChartComputeField);
+      this.componnetRefDataStatisticsGraph.instance.setDataStatisticsService(this.statisticsService);
       // this.componentRef.instance.output.subscribe((msg: string) => console.log(msg));
     } else if (type === 'original-data') {
       const factory = this.resolver.resolveComponentFactory(DataStatisticsOriginalDataComponent);
@@ -72,6 +73,7 @@ export class DataStatisticsComponent implements OnInit, AfterViewInit, AfterView
       this.componentRefDataStatisticsOriginalData.instance.setStatisticsReportEntries(this.statisticsReportEntries);
       this.componentRefDataStatisticsOriginalData.instance.setSelectedGroupbyField(this.selectedGroupByField);
       this.componentRefDataStatisticsOriginalData.instance.setSelectedComputeFields(this.selectedComputeFields);
+      this.componentRefDataStatisticsOriginalData.instance.setDataStatisticsService(this.statisticsService);
       // this.componentRef.instance.output.subscribe((msg: string) => console.log(msg));
     }
   }
