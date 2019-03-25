@@ -7,10 +7,7 @@ import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;
 import com.example.eurasia.service.Util.Slf4jLogUtil;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFCellStyle;
-import org.apache.poi.xssf.usermodel.XSSFColor;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.usermodel.*;
 import org.apache.poi.xssf.usermodel.extensions.XSSFCellBorder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -24,6 +21,8 @@ import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+
+import static org.apache.poi.ss.usermodel.CellType.STRING;
 
 //@Slf4j
 /*@Transactional(readOnly = true)事物注解*/
@@ -51,19 +50,18 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
         }
 
         StringBuffer responseMsg = new StringBuffer();
-        int rowIndex =0;
         XSSFWorkbook wb = new XSSFWorkbook();
         try {
             XSSFSheet sheet = wb.createSheet(DataService.EXPORT_EXCEL_SHEET_NAME);
-            rowIndex = this.writeExcel(wb, sheet, colsNameList, dataList);
+            int rowIndex = this.writeExcel(wb, sheet, colsNameList, dataList);
 
             Date date = new Date(System.currentTimeMillis());
             DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd");
             String fileName = dateFormat.format(date);//导出文件名是当天日期
             this.buildExcelDocument(fileName, wb, response);
 
-            responseMsg.append("导出到文件的条目数：" + (rowIndex+1));
-            Slf4jLogUtil.get().info("导出到文件的条目数：{}",(rowIndex+1));
+            responseMsg.append("导出到文件的条目数：" + rowIndex);//包括title行
+            Slf4jLogUtil.get().info("导出到文件的条目数：{}",rowIndex);//包括title行
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_DATA_INFO_FAILED);
@@ -76,11 +74,10 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
 
     private int writeExcel(XSSFWorkbook wb, Sheet sheet, List<String> colsNameList, List<Data> rowList) {
 
-        int rowIndex = 0;
-        rowIndex = writeTitlesToExcel(wb, sheet, colsNameList);
-        rowIndex = writeRowsToExcel(wb, sheet, rowList, rowIndex);
+        int titleRowIndex = writeTitlesToExcel(wb, sheet, colsNameList);
+        int dataRowIndex = writeRowsToExcel(wb, sheet, rowList, titleRowIndex);
         autoSizeColumns(sheet, (colsNameList.size() + 1));
-        return rowIndex;
+        return (titleRowIndex + dataRowIndex);
     }
 
     private int writeTitlesToExcel(XSSFWorkbook wb, Sheet sheet, List<String> colsNameList) {
@@ -146,22 +143,50 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
                 cell.setCellStyle(dataStyle);
                 colIndex++;
             }
-            rowIndex++;
         }
-        return rowIndex;
+        return rowList.size();
     }
 
     private void autoSizeColumns(Sheet sheet, int columnNumber) {
 
         for (int i = 0; i < columnNumber; i++) {
             int orgWidth = sheet.getColumnWidth(i);
+            //autoSizeColumn方法可以把Excel设置为根据内容自动调整列宽，然而这个方法对中文并不起效，只对数字和字母有效
             sheet.autoSizeColumn(i, true);
-            int newWidth = (int) (sheet.getColumnWidth(i) + 100);
-            if (newWidth > orgWidth) {
-                sheet.setColumnWidth(i, newWidth);
+            int newWidth = sheet.getColumnWidth(i);
+            if (newWidth > 255 ) {
+                sheet.setColumnWidth(i, 255);
             } else {
-                sheet.setColumnWidth(i, orgWidth);
+                //sheet.setColumnWidth(i, newWidth);
+                sheet.setColumnWidth(i, (newWidth * 17 / 10));// 解决自动设置列宽中文失效的问题
             }
+        }
+    }
+
+    // 自适应宽度(中文支持)
+    private void setSizeColumn(XSSFSheet sheet, int size) {
+        for (int columnNum = 0; columnNum < size; columnNum++) {
+            int columnWidth = sheet.getColumnWidth(columnNum) / 256;
+            for (int rowNum = 0; rowNum < sheet.getLastRowNum(); rowNum++) {
+                XSSFRow currentRow;
+                //当前行未被使用过
+                if (sheet.getRow(rowNum) == null) {
+                    currentRow = sheet.createRow(rowNum);
+                } else {
+                    currentRow = sheet.getRow(rowNum);
+                }
+
+                if (currentRow.getCell(columnNum) != null) {
+                    Cell currentCell = currentRow.getCell(columnNum);
+                    if (currentCell.getCellTypeEnum() == STRING) {
+                        int length = currentCell.getStringCellValue().getBytes().length;
+                        if (columnWidth < length) {
+                            columnWidth = length;
+                        }
+                    }
+                }
+            }
+            sheet.setColumnWidth(columnNum, columnWidth * 256);
         }
     }
 
