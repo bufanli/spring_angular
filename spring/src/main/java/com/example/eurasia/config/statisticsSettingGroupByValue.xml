@@ -1,6 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mapping>
-    <column key="By1"             value="收货人" />
-    <column key="By2"             value="装货港" />
-    <column key="By3"             value="月份" />
+    <column key="By1"             value="日期" />
+    <column key="By2"             value="进出口" />
+    <column key="By3"             value="申报单位名称" />
+    <column key="By4"             value="货主单位名称" />
+    <column key="By5"             value="经营单位名称" />
+    <column key="By6"             value="经营单位代码" />
+    <column key="By7"             value="运输工具名称" />
+    <column key="By8"             value="提运单号" />
+    <column key="By9"             value="海关编码" />
+    <column key="By10"             value="商品名称" />
+    <column key="By11"             value="部位" />
+    <column key="By12"             value="包装规格" />
+    <column key="By13"             value="英文品名" />
+    <column key="By14"             value="品牌" />
+    <column key="By15"             value="加工厂号" />
+    <column key="By16"             value="加工企业名称" />
+    <column key="By17"             value="牛种" />
+    <column key="By18"             value="牛龄" />
+    <column key="By19"             value="级别" />
+    <column key="By20"             value="饲养方式" />
+    <column key="By21"             value="申报要素" />
+    <column key="By22"             value="成交方式" />
+    <column key="By23"             value="监管方式" />
+    <column key="By24"             value="运输方式" />
+    <column key="By25"             value="目的地" />
+    <column key="By26"             value="包装种类" />
+    <column key="By27"             value="主管关区" />
+    <column key="By28"             value="报关口岸" />
+    <column key="By29"             value="装货港" />
+    <column key="By30"             value="中转国" />
+    <column key="By31"             value="贸易国" />
+    <column key="By32"             value="企业性质" />
+    <column key="By33"             value="地址" />
+    <column key="By34"             value="手机" />
+    <column key="By35"             value="电话" />
+    <column key="By36"             value="传真" />
+    <column key="By37"             value="Email" />
+    <column key="By38"             value="法人" />
+    <column key="By39"             value="联系人" />
 </mapping>
