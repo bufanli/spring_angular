@@ -14,8 +14,10 @@ import javax.sql.DataSource;
 import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class CommonDao {
 
@@ -401,37 +403,19 @@ select PERIOD_DIFF(DATE_FORMAT(CURDATE(),'%Y%m'),DATE_FORMAT(日期,'%Y%m')) fro
      * convert query conditions to sql
      */
     protected StringBuffer convertStatisticsReportQueryDataToSQL(String tableName,
-                                                       String groupByField,
-                                                       ComputeField[] computeFields,
-                                                       QueryCondition[] queryConditionsArr) {
+                                                                 StringBuffer selectField,
+                                                                 StringBuffer groupByField,
+                                                                 ComputeField[] computeFields,
+                                                                 QueryCondition[] queryConditionsArr) {
 
         StringBuffer sql = new StringBuffer();
-        StringBuffer selectColSql = new StringBuffer();
-        StringBuffer groupBySql = new StringBuffer();
-        if (groupByField.equals("Y")) {
-            //报告类型是周期(年)的情况
-            selectColSql.append("日期");
-            groupBySql.append("date_format('日期','%Y')");
-        } else if (groupByField.equals("M")) {
-            //报告类型是周期(月)的情况
-            selectColSql.append("日期");
-            groupBySql.append("date_format('日期','%Y-%m')");
-        } else if (groupByField.equals("P")) {
-            //报告类型是周期(季度)的情况
-            selectColSql.append("日期");
-            groupBySql.append("concat(date_format('日期', '%Y'),FLOOR((date_format('日期', '%m')+2)/3))");
-        } else {
-            selectColSql.append(groupByField);
-            groupBySql.append(groupByField);
-        }
-
-        sql.append("select " + selectColSql + " ");
+        sql.append("select " + selectField + " ");
         for (ComputeField computeField:computeFields) {
             sql.append(computeField.toSql() + " ");
         }
         sql.append("from " + tableName);
         sql.append(convertWhereToSQL(queryConditionsArr));
-        sql.append(" group by " + groupBySql);
+        sql.append(" group by " + groupByField);
         return sql;
     }
 
@@ -542,6 +526,23 @@ select PERIOD_DIFF(DATE_FORMAT(CURDATE(),'%Y%m'),DATE_FORMAT(日期,'%Y%m')) fro
         if (haveCondition == false) {
             sql.delete((sql.length() - sqlWhere.length()), sql.length());
         }
+        return sql;
+    }
+
+    /**
+     * convert "order" to sql
+     */
+    protected StringBuffer convertOrderToSQL(Map<String, String> order) {
+
+        StringBuffer sql = new StringBuffer();
+        sql.append(" order by ");
+        Set<Map.Entry<String, String>> set = order.entrySet();
+        Iterator<Map.Entry<String, String>> it = set.iterator();
+        while (it.hasNext()) {
+            Map.Entry<String,String> entry = it.next();
+            sql.append(entry.getKey() + " " + entry.getValue() + CommonDao.COMMA);
+        }
+        sql.deleteCharAt(sql.length() - CommonDao.COMMA.length());
         return sql;
     }
 }
