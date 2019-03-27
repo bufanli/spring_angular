@@ -10,14 +10,15 @@
   <form role="form">
     <!-- <commnent> first row start </commnent> -->
     <div class="row">
-      <div class="col-md-3">
+      <div class="col-md-2">
         <div class=" form-group">
-          <select class="form-control selectpicker" title="统计图类型" id="statistics-type" [(ngModel)]="type" name="statistics-type">
+          <select class="form-control selectpicker" title="统计图类型" id="statistics-type" [(ngModel)]="type"
+            name="statistics-type">
             <option *ngFor="let type of this.getStatisticsTypes()" value="{{type}}">{{type}}</option>
           </select>
         </div>
       </div>
-      <div class="col-md-3">
+      <div class="col-md-2">
         <div class=" form-group">
           <select class="form-control selectpicker" title="统计维度" id="group-fields" [(ngModel)]="selectedGroupByField"
             name="group-fields">
@@ -25,25 +26,33 @@
           </select>
         </div>
       </div>
-      <div class="col-md-3">
+      <div class="col-md-2">
         <div class=" form-group">
-          <select class="form-control" multiple title="计算维度" id="compute-fields" [(ngModel)]="selectedComputeFields"
+          <select class="form-control selectpicker" title="详细日期维度" id="detail-date-fields" [(ngModel)]="selectedDetailDateField"
+            name="detail-date-field">
+            <option *ngFor="let field of this.getSelectableDetailDateFields()" value="{{field}}">{{field}}</option>
+          </select>
+        </div>
+      </div>
+      <div class="col-md-2">
+        <div class=" form-group">
+          <select class="form-control selectpicker" multiple title="计算维度" id="compute-fields" [(ngModel)]="selectedComputeFields"
             name="compute-fields" (change)="onChangeComputeFields()">
             <option *ngFor="let field of this.getComputeFields()" value="{{field}}">{{field}}</option>
           </select>
         </div>
       </div>
-      <div class="col-md-3">
+      <div class="col-md-2">
         <div class=" form-group">
-          <select class="form-control selectpicker" title="统计图计算维度" id="chart-compute-field" [(ngModel)]="selectedChartComputeField"
-            name="chart-compute-fields">
+          <select class="form-control selectpicker" title="统计图计算维度" id="chart-compute-field"
+            [(ngModel)]="selectedChartComputeField" name="chart-compute-fields">
             <option *ngFor="let field of (this.selectedComputeFields)" value="{{field}}">{{field}}</option>
           </select>
         </div>
       </div>
     </div>
     <div class="row">
-      <div class="col-md-3">
+      <div class="col-md-4">
         <div class="form-group">
           <button type="button" class="btn btn-primary btn-block" (click)="this.exportStatisticsReport()">
             <span class="glyphicon glyphicon-stats"></span> 生成报表

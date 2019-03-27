@@ -21,11 +21,15 @@ export class DataStatisticsComponent implements OnInit, AfterViewInit, AfterView
   public readonly LINE_CHART: string = '折线图';
   public readonly BAR_CHART: string = '柱状图';
   public readonly PIE_CHART: string = '饼状图';
-  public options: any;
+  // selectable detail date fields
+  public readonly SELECTABLE_DETAIL_DATE_FIELDS = ['年', '季度', '月'];
+
   // selected statistics type
   type: string = null;
   // selected group by field
   public selectedGroupByField: string = null;
+  // selected detail date field
+  public selectedDetailDateField: string = null;
   // statistics group by field
   public groupByFields: string[] = null;
   // selected compute fields
@@ -97,11 +101,6 @@ export class DataStatisticsComponent implements OnInit, AfterViewInit, AfterView
   public setStatisticsService(statisticsService: any): void {
     this.statisticsService = statisticsService;
   }
-  // set chart options
-  public setOptions(options: any): void {
-    this.isStatisticsDataOK = true;
-    this.options = options;
-  }
   // set statistics report entries
   public setStatisticsReportEntries(statisticsReportEntries: StatisticsReportEntry[]): void {
     // set statistics report entries
@@ -126,6 +125,8 @@ export class DataStatisticsComponent implements OnInit, AfterViewInit, AfterView
   public setComputeFields(computeFields: string[]) {
     this.computeFields = computeFields;
     this.setSelectOptions('#compute-fields', true);
+    // select all in advance
+    this.selectedComputeFields = computeFields;
   }
   // set query conditions
   public setQueryConditions(queryConditions: any) {
@@ -165,10 +166,6 @@ export class DataStatisticsComponent implements OnInit, AfterViewInit, AfterView
       return true;
     }
   }
-  // set statistics report options
-  public setStatisticsReportOptions(options: any): void {
-    this.options = options;
-  }
   ngOnInit() {
     // nothing to do
   }
@@ -185,6 +182,8 @@ export class DataStatisticsComponent implements OnInit, AfterViewInit, AfterView
     this.setSelectOptions('#group-fields', true);
     // compute fields
     this.setSelectOptions('#compute-fields', true);
+    // detail date fields
+    this.setSelectOptions('#detail-date-fields', false);
     // chart compute fields
     this.setSelectOptions('#chart-compute-field', false);
 
@@ -204,5 +203,9 @@ export class DataStatisticsComponent implements OnInit, AfterViewInit, AfterView
     });
     $(id).selectpicker('val', '');
     $(id).selectpicker('refresh');
+  }
+  // get selectable detail date fields
+  public getSelectableDetailDateFields(): string[] {
+    return this.SELECTABLE_DETAIL_DATE_FIELDS;
   }
 }
