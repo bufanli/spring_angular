@@ -131,10 +131,18 @@ public class SearchDataServiceImpl implements ISearchDataService {
 
     public ResponseResult getStatisticsSetting() throws Exception {
         StatisticsFields  statisticsFields = new StatisticsFields();
+        List<Data> statisticsTypesList = null;
         List<Data> groupByFieldsList = null;
-        List<Data> statisticsTypeList = null;
         List<Data> computeByFieldsList = null;
         try {
+
+            statisticsTypesList = dataService.getStatisticsSetting(DataService.TABLE_STATISTICS_SETTING_TYPE);
+            if (statisticsTypesList == null) {
+                return new ResponseResultUtil().error(ResponseCodeEnum.STATISTICS_SETTING_TYPE_FROM_SQL_NULL);
+            }
+            if (statisticsTypesList.size() != 1) {
+                return new ResponseResultUtil().error(ResponseCodeEnum.STATISTICS_SETTING_TYPE_FROM_SQL_SIZE_WRONG);
+            }
 
             groupByFieldsList = dataService.getStatisticsSetting(DataService.TABLE_STATISTICS_SETTING_GROUP_BY);
             if (groupByFieldsList == null) {
@@ -142,14 +150,6 @@ public class SearchDataServiceImpl implements ISearchDataService {
             }
             if (groupByFieldsList.size() != 1) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.STATISTICS_SETTING_GROUP_BY_FROM_SQL_SIZE_WRONG);
-            }
-
-            statisticsTypeList = dataService.getStatisticsSetting(DataService.TABLE_STATISTICS_SETTING_TYPE);
-            if (statisticsTypeList == null) {
-                return new ResponseResultUtil().error(ResponseCodeEnum.STATISTICS_SETTING_TYPE_FROM_SQL_NULL);
-            }
-            if (statisticsTypeList.size() != 1) {
-                return new ResponseResultUtil().error(ResponseCodeEnum.STATISTICS_SETTING_TYPE_FROM_SQL_SIZE_WRONG);
             }
 
             computeByFieldsList = dataService.getStatisticsSetting(DataService.TABLE_STATISTICS_SETTING_COMPUTE_BY);
@@ -160,16 +160,18 @@ public class SearchDataServiceImpl implements ISearchDataService {
                 return new ResponseResultUtil().error(ResponseCodeEnum.STATISTICS_SETTING_COMPUTE_BY_FROM_SQL_SIZE_WRONG);
             }
 
-
+            String[] statisticsTypes = statisticsTypesList.get(0).getValuesToArray();
             String[] groupByFields = groupByFieldsList.get(0).getValuesToArray();
             for (int i=0; i<groupByFields.length; i++) {
                 groupByFields[i] = groupByFields[i] + DataService.STATISTICS_REPORT_NAME_EX;
             }
-            String[] statisticsType = statisticsTypeList.get(0).getValuesToArray();
+            String[] groupBySubFields = {"年","月","季度"};//T.B.D
             String[] computeFields = computeByFieldsList.get(0).getValuesToArray();
+            statisticsFields.setStatisticsTypes(statisticsTypes);
             statisticsFields.setGroupByFields(groupByFields);
+            statisticsFields.setGroupBySubFields(groupBySubFields);
             statisticsFields.setComputeFields(computeFields);
-            statisticsFields.setStatisticsTypes(statisticsType);
+
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseResultUtil().error(ResponseCodeEnum.STATISTICS_SETTING_FROM_SQL_FAILED);

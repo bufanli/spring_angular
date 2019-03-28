@@ -5,6 +5,8 @@ public class StatisticsFields {
     private String[] statisticsTypes = null;
     // group by field
     private String[] groupByFields = null;
+    // group by sub field
+    private String[] groupBySubFields = null;
     // compute fields
     private String[] computeFields = null;
     // set statistics types
@@ -20,6 +22,12 @@ public class StatisticsFields {
     }
     public String[] getGroupByFields(){
         return this.groupByFields;
+    }
+    public void setGroupBySubFields(String[] groupBySubFields){
+        this.groupBySubFields = groupBySubFields;
+    }
+    public String[] getGroupBySubFields(){
+        return this.groupBySubFields;
     }
     public void setComputeFields(String[] computeFields){
         this.computeFields = computeFields;
