@@ -20,24 +20,24 @@
       </div>
       <div class="col-md-2">
         <div class=" form-group">
-          <select class="form-control selectpicker" title="统计维度" id="group-fields" [(ngModel)]="selectedGroupByField"
+          <select class="form-control selectpicker" title="统计列" id="group-fields" [(ngModel)]="selectedGroupByField"
             name="group-fields">
             <option *ngFor="let field of this.getGroupByFields()" value="{{field}}">{{field}}</option>
           </select>
         </div>
       </div>
-      <div class="col-md-2">
+      <div class="col-md-2" [hidden]="!this.isDateIsSelected()">
         <div class=" form-group">
-          <select class="form-control selectpicker" title="详细日期维度" id="detail-date-fields" [(ngModel)]="selectedDetailDateField"
-            name="detail-date-field">
+          <select class="form-control selectpicker" title="详细日期维度" id="detail-date-fields"
+            [(ngModel)]="selectedDetailDateField" name="detail-date-field">
             <option *ngFor="let field of this.getSelectableDetailDateFields()" value="{{field}}">{{field}}</option>
           </select>
         </div>
       </div>
       <div class="col-md-2">
         <div class=" form-group">
-          <select class="form-control selectpicker" multiple title="计算维度" id="compute-fields" [(ngModel)]="selectedComputeFields"
-            name="compute-fields" (change)="onChangeComputeFields()">
+          <select class="form-control selectpicker" multiple title="计算维度" id="compute-fields"
+            [(ngModel)]="selectedComputeFields" name="compute-fields" (change)="onChangeComputeFields()">
             <option *ngFor="let field of this.getComputeFields()" value="{{field}}">{{field}}</option>
           </select>
         </div>

@@ -14,7 +14,7 @@ import { StatisticsReportEntry } from '../../entities/statistics-report-entry';
 export class DataStatisticsComponent implements OnInit, AfterViewInit, AfterViewChecked {
 
   private readonly STATISTICS_PARAM_ERROR_TITLE = '统计报表参数选择错误';
-  public readonly WAIT_STATISTICS_INPUT = '请选择统计图类型，统计维度，计算维度，统计图计算维度';
+  public readonly WAIT_STATISTICS_INPUT = '请选择统计图类型，统计列，计算列，统计图计算列';
   public readonly WAIT_STATISTICS_REPORT = '正在计算统计数据，请稍后';
   private readonly STATISTICS_PARAM_ERROR_TYPE = 'warning';
   // statistics types
@@ -23,13 +23,16 @@ export class DataStatisticsComponent implements OnInit, AfterViewInit, AfterView
   public readonly PIE_CHART: string = '饼状图';
   // selectable detail date fields
   public readonly SELECTABLE_DETAIL_DATE_FIELDS = ['年', '季度', '月'];
+  public readonly DATAIL_DATE_YEAR = '年';
+  // date column name
+  public readonly DATE_COLUMN = '日期';
 
   // selected statistics type
   type: string = null;
   // selected group by field
   public selectedGroupByField: string = null;
   // selected detail date field
-  public selectedDetailDateField: string = null;
+  public selectedDetailDateField: string = this.DATAIL_DATE_YEAR;
   // statistics group by field
   public groupByFields: string[] = null;
   // selected compute fields
@@ -207,5 +210,13 @@ export class DataStatisticsComponent implements OnInit, AfterViewInit, AfterView
   // get selectable detail date fields
   public getSelectableDetailDateFields(): string[] {
     return this.SELECTABLE_DETAIL_DATE_FIELDS;
+  }
+  // tell if date is selected as group by field
+  public isDateIsSelected(): boolean {
+    if (this.selectedGroupByField === this.DATE_COLUMN) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }

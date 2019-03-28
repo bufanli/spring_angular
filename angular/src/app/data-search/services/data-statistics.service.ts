@@ -308,4 +308,9 @@ export class DataStatisticsService implements ProcessingDialogCallback {
     });
     return data;
   }
+  // get top N statistics report entries sort by graph compute field,
+  // if group by field is date, then just get top N without sort.
+  public getTopNStatisticsReportEntries(statisticsReportEntries: StatisticsReportEntry[]): StatisticsReportQueryData[] {
+    return null;
+  }
 }

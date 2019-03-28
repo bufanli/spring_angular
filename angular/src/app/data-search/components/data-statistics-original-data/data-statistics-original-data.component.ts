@@ -36,7 +36,7 @@ export class DataStatisticsOriginalDataComponent implements OnInit {
     // load header of table
     $('#statistics-table').bootstrapTable({
       columns: statisticsHeaders,
-      pagination: true,
+      pagination: false,
       pageSize: this.dataStatisticsService.TOP_N,
       pageList: [],
     });
