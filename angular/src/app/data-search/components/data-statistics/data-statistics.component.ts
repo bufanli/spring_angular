@@ -19,7 +19,6 @@ export class DataStatisticsComponent implements OnInit, AfterViewInit, AfterView
   private readonly STATISTICS_PARAM_ERROR_TYPE = 'warning';
   // date column name
   public readonly DATE_COLUMN = '日期';
-  public readonly REPORT_SUFFIX = '汇总报表';
 
   // selected statistics type
   type: string = null;
@@ -237,7 +236,7 @@ export class DataStatisticsComponent implements OnInit, AfterViewInit, AfterView
   }
   // tell if date is selected as group by field
   public isDateIsSelected(): boolean {
-    if (this.selectedGroupByField === (this.DATE_COLUMN + this.REPORT_SUFFIX)) {
+    if (this.selectedGroupByField === (this.DATE_COLUMN)) {
       return true;
     } else {
       return false;
