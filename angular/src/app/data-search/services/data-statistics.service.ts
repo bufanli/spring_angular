@@ -182,6 +182,16 @@ export class DataStatisticsService implements ProcessingDialogCallback {
     statisticsReport: StatisticsReportEntry[],
     chartComputeField: string,
     statisticsType: string): any {
+    // tooltip
+    const tooltip = {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'cross',
+        crossStyle: {
+          color: '#999'
+        }
+      }
+    };
     // tool box
     const dataView = {
       show: true,
@@ -217,10 +227,13 @@ export class DataStatisticsService implements ProcessingDialogCallback {
     statisticsReport.forEach(element => {
       xAxisData.push(element.getGroupByField());
     });
-
+    const axisPointer = {
+      type: 'shadow'
+    };
     const xAxis = {
       type: 'category',
       data: xAxisData,
+      axisPointer: axisPointer,
     };
     // yAxis
     const yAxis = [];
@@ -257,6 +270,7 @@ export class DataStatisticsService implements ProcessingDialogCallback {
     });
     // finally combine
     const option = {
+      tooltip: tooltip,
       toolBox: toolBox,
       legend: legend,
       xAxis: xAxis,
