@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mapping>
+    <column key="By1"             value="VARCHAR(50)" />
+    <column key="By2"             value="VARCHAR(50)" />
+    <column key="By3"             value="VARCHAR(50)" />
+    <column key="By4"             value="VARCHAR(50)" />
+    <column key="By5"             value="VARCHAR(50)" />
+    <column key="By6"             value="VARCHAR(50)" />
+    <column key="By7"             value="VARCHAR(50)" />
+    <column key="By8"             value="VARCHAR(50)" />
+    <column key="By9"             value="VARCHAR(50)" />
+    <column key="By10"             value="VARCHAR(50)" />
+    <column key="By11"             value="VARCHAR(50)" />
+    <column key="By12"             value="VARCHAR(50)" />
+    <column key="By13"             value="VARCHAR(50)" />
+    <column key="By14"             value="VARCHAR(50)" />
+    <column key="By15"             value="VARCHAR(50)" />
+    <column key="By16"             value="VARCHAR(50)" />
+    <column key="By17"             value="VARCHAR(50)" />
+    <column key="By18"             value="VARCHAR(50)" />
+    <column key="By19"             value="VARCHAR(50)" />
+    <column key="By20"             value="VARCHAR(50)" />
+    <column key="By21"             value="VARCHAR(50)" />
+    <column key="By22"             value="VARCHAR(50)" />
+    <column key="By23"             value="VARCHAR(50)" />
+    <column key="By24"             value="VARCHAR(50)" />
+    <column key="By25"             value="VARCHAR(50)" />
+    <column key="By26"             value="VARCHAR(50)" />
+    <column key="By27"             value="VARCHAR(50)" />
+    <column key="By28"             value="VARCHAR(50)" />
+    <column key="By29"             value="VARCHAR(50)" />
+    <column key="By30"             value="VARCHAR(50)" />
+    <column key="By31"             value="VARCHAR(50)" />
+    <column key="By32"             value="VARCHAR(50)" />
+    <column key="By33"             value="VARCHAR(50)" />
+    <column key="By34"             value="VARCHAR(50)" />
+    <column key="By35"             value="VARCHAR(50)" />
+    <column key="By36"             value="VARCHAR(50)" />
+    <column key="By37"             value="VARCHAR(50)" />
+    <column key="By38"             value="VARCHAR(50)" />
+    <column key="By39"             value="VARCHAR(50)" />
+</mapping>

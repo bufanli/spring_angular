@@ -6,10 +6,7 @@ import com.example.eurasia.entity.Data.QueryCondition;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Repository
 public class DataDao extends CommonDao {
@@ -276,14 +273,8 @@ StringUtils.isWhitespace(null); // false
      */
     public List<Data> queryListForObject(String tableName, QueryCondition[] queryConditionsArr, long offset, long limit, Map<String, String> order) {
         StringBuffer sql = convertQueryConditionsToSQL(tableName,queryConditionsArr,false);
-        sql.append(" order by ");
-        Set<Map.Entry<String, String>> set = order.entrySet();
-        Iterator<Map.Entry<String, String>> it = set.iterator();
-        while (it.hasNext()) {
-            Map.Entry<String,String> entry = it.next();
-            sql.append(entry.getKey() + " " + entry.getValue() + CommonDao.COMMA);
-        }
-        sql.deleteCharAt(sql.length() - CommonDao.COMMA.length());
+        StringBuffer sqlOrder = convertOrderToSQL(order);
+        sql.append(sqlOrder);
         sql.append(" LIMIT " + String.valueOf(offset) + "," + String.valueOf(limit));
 /*
 Mysql limit offset示例
@@ -333,7 +324,38 @@ Mysql limit offset示例
                                             String groupByField,
                                             ComputeField[] computeFields,
                                             QueryCondition[] queryConditionsArr) throws Exception {
-        StringBuffer sql = convertQueryConditionsToSQL(tableName,groupByField,computeFields,queryConditionsArr);
+        StringBuffer selectFieldSql = new StringBuffer();
+        StringBuffer groupByFieldSql = new StringBuffer();
+        Map<String, String> order = new LinkedHashMap<>();
+        StringBuffer sqlOrder = new StringBuffer();
+
+        if (groupByField.equals("年")) {
+            //报告类型是周期(年)的情况
+            selectFieldSql.append("日期");
+            groupByFieldSql.append("date_format('日期','%Y')");
+
+            order.put("日期","desc");
+            sqlOrder.append(convertOrderToSQL(order));
+        } else if (groupByField.equals("月")) {
+            //报告类型是周期(月)的情况
+            selectFieldSql.append("日期");
+            groupByFieldSql.append("date_format('日期','%Y-%m')");
+
+            order.put("日期","desc");
+            sqlOrder.append(convertOrderToSQL(order));
+        } else if (groupByField.equals("季度")) {
+            //报告类型是周期(季度)的情况
+            selectFieldSql.append("日期");
+            groupByFieldSql.append("concat(date_format('日期', '%Y'),FLOOR((date_format('日期', '%m')+2)/3))");
+
+            order.put("日期","desc");
+            sqlOrder.append(convertOrderToSQL(order));
+        } else {
+            selectFieldSql.append(groupByField);
+            groupByFieldSql.append(groupByField);
+        }
+        StringBuffer sql = convertStatisticsReportQueryDataToSQL(tableName,selectFieldSql,groupByFieldSql,computeFields,queryConditionsArr);
+        sql.append(sqlOrder);
 
         List<Data> dataList = getJdbcTemplate().query(sql.toString(), new DataMapper());
         return dataList;

@@ -92,36 +92,36 @@ public enum ResponseCodeEnum {
     USER_ADD_HEADER_WIDTH_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "添加用户可显示的表头宽度成功"),
     USER_ADD_HEADER_WIDTH_FAILED(ResponseCode.RESPONSE_CODE_NG, "添加用户可显示的表头宽度失败"),
     USER_ADD_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "添加用户成功"),
-    USER_ADD_FAILED(ResponseCode.RESPONSE_CODE_NG, "添加用户失败"),
+    USER_ADD_FAILED(ResponseCode.RESPONSE_CODE_USER_ADD_NG, "添加用户失败"),
     USER_UPDATE_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "更新用户成功"),
-    USER_UPDATE_FAILED(ResponseCode.RESPONSE_CODE_NG, "更新用户失败"),
-    USER_CHECK_INFO_FAILED(ResponseCode.RESPONSE_CODE_NG, "请检查带*的信息是否都已填写,或者用户、电话号码是否已注册！"),
-    USER_ADD_ID_IS_NULL(ResponseCode.RESPONSE_CODE_NG, "添加用户ID为空。"),
-    USER_ADD_ID_IS_EXIST(ResponseCode.RESPONSE_CODE_NG, "添加用户ID已存在。"),
-    USER_ADD_NAME_IS_NULL(ResponseCode.RESPONSE_CODE_NG, "添加用户名为空。"),
-    USER_ADD_PHONE_IS_NULL(ResponseCode.RESPONSE_CODE_NG, "添加用户手机号码为空。"),
-    USER_ADD_PHONE_IS_EXIST(ResponseCode.RESPONSE_CODE_NG, "添加用户手机号码已存在。"),
-    USER_ADD_PHONE_FORMAT_ERROR(ResponseCode.RESPONSE_CODE_NG, "添加用户手机号码格式不正确。"),
-    USER_ADD_VALID_FORMAT_ERROR(ResponseCode.RESPONSE_CODE_NG, "添加用户有效期格式不正确。"),
-    USER_ADD_VALID_FROM_DATE_IS_NULL(ResponseCode.RESPONSE_CODE_NG, "添加用户起始有效期为空。"),
-    USER_ADD_VALID_TO_DATE_IS_NULL(ResponseCode.RESPONSE_CODE_NG, "添加用户结束有效期为空。"),
-    USER_ADD_PRODUCT_DATE_FORMAT_ERROR(ResponseCode.RESPONSE_CODE_NG, "添加可访问的日期范围格式不正确。"),
-    USER_ADD_PRODUCT_DATE_FROM_DATE_IS_NULL(ResponseCode.RESPONSE_CODE_NG, "添加可访问的日期范围的起始有效期为空。"),
-    USER_ADD_PRODUCT_DATE_TO_DATE_IS_NULL(ResponseCode.RESPONSE_CODE_NG, "添加可访问的日期范围的结束有效期为空。"),
-    USER_ADD_PRODUCT_NUMBER_IS_NULL(ResponseCode.RESPONSE_CODE_NG, "添加可访问的海关/商品编码为空。"),
-    USER_UPDATE_ID_IS_NULL(ResponseCode.RESPONSE_CODE_NG, "更新用户ID为空。"),
-    USER_UPDATE_ID_IS_EXIST(ResponseCode.RESPONSE_CODE_NG, "更新用户ID已存在。"),
-    USER_UPDATE_NAME_IS_NULL(ResponseCode.RESPONSE_CODE_NG, "更新用户名为空。"),
-    USER_UPDATE_PHONE_IS_NULL(ResponseCode.RESPONSE_CODE_NG, "更新用户手机号码为空。"),
-    USER_UPDATE_PHONE_IS_EXIST(ResponseCode.RESPONSE_CODE_NG, "更新用户手机号码已存在。"),
-    USER_UPDATE_PHONE_FORMAT_ERROR(ResponseCode.RESPONSE_CODE_NG, "更新用户手机号码格式不正确。"),
-    USER_UPDATE_VALID_FORMAT_ERROR(ResponseCode.RESPONSE_CODE_NG, "更新用户有效期格式不正确。"),
-    USER_UPDATE_VALID_FROM_DATE_IS_NULL(ResponseCode.RESPONSE_CODE_NG, "更新用户起始有效期为空。"),
-    USER_UPDATE_VALID_TO_DATE_IS_NULL(ResponseCode.RESPONSE_CODE_NG, "更新用户结束有效期为空。"),
-    USER_UPDATE_PRODUCT_DATE_FORMAT_ERROR(ResponseCode.RESPONSE_CODE_NG, "更新可访问的日期范围格式不正确。"),
-    USER_UPDATE_PRODUCT_DATE_FROM_DATE_IS_NULL(ResponseCode.RESPONSE_CODE_NG, "更新可访问的日期范围的起始有效期为空。"),
-    USER_UPDATE_PRODUCT_DATE_TO_DATE_IS_NULL(ResponseCode.RESPONSE_CODE_NG, "更新可访问的日期范围的结束有效期为空。"),
-    USER_UPDATE_PRODUCT_NUMBER_IS_NULL(ResponseCode.RESPONSE_CODE_NG, "更新可访问的海关/商品编码为空。"),
+    USER_UPDATE_FAILED(ResponseCode.RESPONSE_CODE_USER_UPDATE_NG, "更新用户失败"),
+    USER_CHECK_INFO_FAILED(ResponseCode.RESPONSE_CODE_USER_CHECK_INFO_FAILED, "请检查带*的信息是否都已填写,或者用户、电话号码是否已注册！"),
+    USER_ADD_ID_IS_NULL(ResponseCode.RESPONSE_CODE_USER_ADD_CHECK_NG, "添加用户ID为空。"),
+    USER_ADD_ID_IS_EXIST(ResponseCode.RESPONSE_CODE_USER_ADD_CHECK_NG, "添加用户ID已存在。"),
+    USER_ADD_NAME_IS_NULL(ResponseCode.RESPONSE_CODE_USER_ADD_CHECK_NG, "添加用户名为空。"),
+    USER_ADD_PHONE_IS_NULL(ResponseCode.RESPONSE_CODE_USER_ADD_CHECK_NG, "添加用户手机号码为空。"),
+    USER_ADD_PHONE_IS_EXIST(ResponseCode.RESPONSE_CODE_USER_ADD_CHECK_NG, "添加用户手机号码已存在。"),
+    USER_ADD_PHONE_FORMAT_ERROR(ResponseCode.RESPONSE_CODE_USER_ADD_CHECK_NG, "添加用户手机号码格式不正确。"),
+    USER_ADD_VALID_FORMAT_ERROR(ResponseCode.RESPONSE_CODE_USER_ADD_CHECK_NG, "添加用户有效期格式不正确。"),
+    USER_ADD_VALID_FROM_DATE_IS_NULL(ResponseCode.RESPONSE_CODE_USER_ADD_CHECK_NG, "添加用户起始有效期为空。"),
+    USER_ADD_VALID_TO_DATE_IS_NULL(ResponseCode.RESPONSE_CODE_USER_ADD_CHECK_NG, "添加用户结束有效期为空。"),
+    USER_ADD_PRODUCT_DATE_FORMAT_ERROR(ResponseCode.RESPONSE_CODE_USER_ADD_CHECK_NG, "添加可访问的日期范围格式不正确。"),
+    USER_ADD_PRODUCT_DATE_FROM_DATE_IS_NULL(ResponseCode.RESPONSE_CODE_USER_ADD_CHECK_NG, "添加可访问的日期范围的起始有效期为空。"),
+    USER_ADD_PRODUCT_DATE_TO_DATE_IS_NULL(ResponseCode.RESPONSE_CODE_USER_ADD_CHECK_NG, "添加可访问的日期范围的结束有效期为空。"),
+    USER_ADD_PRODUCT_NUMBER_IS_NULL(ResponseCode.RESPONSE_CODE_USER_ADD_CHECK_NG, "添加可访问的海关/商品编码为空。"),
+    USER_UPDATE_ID_IS_NULL(ResponseCode.RESPONSE_CODE_USER_UPDATE_CHECK_NG, "更新用户ID为空。"),
+    USER_UPDATE_ID_IS_EXIST(ResponseCode.RESPONSE_CODE_USER_UPDATE_CHECK_NG, "更新用户ID已存在。"),
+    USER_UPDATE_NAME_IS_NULL(ResponseCode.RESPONSE_CODE_USER_UPDATE_CHECK_NG, "更新用户名为空。"),
+    USER_UPDATE_PHONE_IS_NULL(ResponseCode.RESPONSE_CODE_USER_UPDATE_CHECK_NG, "更新用户手机号码为空。"),
+    USER_UPDATE_PHONE_IS_EXIST(ResponseCode.RESPONSE_CODE_USER_UPDATE_CHECK_NG, "更新用户手机号码已存在。"),
+    USER_UPDATE_PHONE_FORMAT_ERROR(ResponseCode.RESPONSE_CODE_USER_UPDATE_CHECK_NG, "更新用户手机号码格式不正确。"),
+    USER_UPDATE_VALID_FORMAT_ERROR(ResponseCode.RESPONSE_CODE_USER_UPDATE_CHECK_NG, "更新用户有效期格式不正确。"),
+    USER_UPDATE_VALID_FROM_DATE_IS_NULL(ResponseCode.RESPONSE_CODE_USER_UPDATE_CHECK_NG, "更新用户起始有效期为空。"),
+    USER_UPDATE_VALID_TO_DATE_IS_NULL(ResponseCode.RESPONSE_CODE_USER_UPDATE_CHECK_NG, "更新用户结束有效期为空。"),
+    USER_UPDATE_PRODUCT_DATE_FORMAT_ERROR(ResponseCode.RESPONSE_CODE_USER_UPDATE_CHECK_NG, "更新可访问的日期范围格式不正确。"),
+    USER_UPDATE_PRODUCT_DATE_FROM_DATE_IS_NULL(ResponseCode.RESPONSE_CODE_USER_UPDATE_CHECK_NG, "更新可访问的日期范围的起始有效期为空。"),
+    USER_UPDATE_PRODUCT_DATE_TO_DATE_IS_NULL(ResponseCode.RESPONSE_CODE_USER_UPDATE_CHECK_NG, "更新可访问的日期范围的结束有效期为空。"),
+    USER_UPDATE_PRODUCT_NUMBER_IS_NULL(ResponseCode.RESPONSE_CODE_USER_UPDATE_CHECK_NG, "更新可访问的海关/商品编码为空。"),
 
     /* 取得表头 */
     HEADER_GET_ALL_INFO_FROM_SQL_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "从数据库取得表头信息成功"),
@@ -143,10 +143,18 @@ public enum ResponseCodeEnum {
     SEARCH_DATA_QUERY_CONDITION_ACCESS_ERROR(ResponseCode.RESPONSE_CODE_NG, "查询数据的查询条件不在许可范围内。"),
 
     /* 数据统计 */
-    STATISTICS_REPORT_FROM_SQL_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "从数据库取得数据信息成功"),
-    STATISTICS_REPORT_FROM_SQL_FAILED(ResponseCode.RESPONSE_CODE_NG, "从数据库取得数据信息失败"),
-    STATISTICS_REPORT_FROM_SQL_NULL(ResponseCode.RESPONSE_CODE_NULL, "从数据库取得数据信息为NULL"),
-    STATISTICS_REPORT_FROM_SQL_ZERO(ResponseCode.RESPONSE_CODE_OK, "从数据库取得数据信息为0"),
+    STATISTICS_SETTING_FROM_SQL_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "从数据库取得数据统计设置信息成功"),
+    STATISTICS_SETTING_FROM_SQL_FAILED(ResponseCode.RESPONSE_CODE_OK, "从数据库取得数据统计设置信息失败"),
+    STATISTICS_SETTING_GROUP_BY_FROM_SQL_NULL(ResponseCode.RESPONSE_CODE_NULL, "从数据库取得数据统计设置信息为NULL"),
+    STATISTICS_SETTING_GROUP_BY_FROM_SQL_SIZE_WRONG(ResponseCode.RESPONSE_CODE_OK, "从数据库取得数据统计设置信息数目不对"),
+    STATISTICS_SETTING_TYPE_FROM_SQL_NULL(ResponseCode.RESPONSE_CODE_NULL, "从数据库取得数据统计设置信息为NULL"),
+    STATISTICS_SETTING_TYPE_FROM_SQL_SIZE_WRONG(ResponseCode.RESPONSE_CODE_OK, "从数据库取得数据统计设置信息数目不对"),
+    STATISTICS_SETTING_COMPUTE_BY_FROM_SQL_NULL(ResponseCode.RESPONSE_CODE_NULL, "从数据库取得数据统计设置信息为NULL"),
+    STATISTICS_SETTING_COMPUTE_BY_FROM_SQL_SIZE_WRONG(ResponseCode.RESPONSE_CODE_OK, "从数据库取得数据统计设置信息数目不对"),
+    STATISTICS_REPORT_FROM_SQL_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "从数据库取得数据统计信息成功"),
+    STATISTICS_REPORT_FROM_SQL_FAILED(ResponseCode.RESPONSE_CODE_NG, "从数据库取得数据统计信息失败"),
+    STATISTICS_REPORT_FROM_SQL_NULL(ResponseCode.RESPONSE_CODE_NULL, "从数据库取得数据统计信息为NULL"),
+    STATISTICS_REPORT_FROM_SQL_ZERO(ResponseCode.RESPONSE_CODE_OK, "从数据库取得数据统计信息为0"),
     STATISTICS_REPORT_QUERY_CONDITION_ERROR(ResponseCode.RESPONSE_CODE_NG, "数据统计的查询条件错误"),
     STATISTICS_REPORT_QUERY_CONDITION_FORMAT_ERROR(ResponseCode.RESPONSE_CODE_NG, "数据统计的查询条件的格式错误。"),
     STATISTICS_REPORT_QUERY_CONDITION_ACCESS_ERROR(ResponseCode.RESPONSE_CODE_NG, "数据统计的查询条件不在许可范围内。"),
@@ -159,7 +167,7 @@ public enum ResponseCodeEnum {
     QUERY_CONDITION_FROM_SQL_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "从数据库取得查询条件成功"),
     QUERY_CONDITION_FROM_SQL_FAILED(ResponseCode.RESPONSE_CODE_NG, "从数据库取得查询条件失败"),
     QUERY_CONDITION_FROM_SQL_NULL(ResponseCode.RESPONSE_CODE_NULL, "从数据库取得查询条件为NULL"),
-    QUERY_CONDITION_FROM_SQL_ZERO(ResponseCode.RESPONSE_CODE_OK, "从数据库取得查询条件为0"),
+    QUERY_CONDITION_FROM_SQL_SIZE_WRONG(ResponseCode.RESPONSE_CODE_OK, "从数据库取得查询条件数目不对"),
     QUERY_CONDITION_DATE_DEFAULT_VALUE_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "从数据库取得日期默认值成功"),
     QUERY_CONDITION_DATE_DEFAULT_VALUE_FAILED(ResponseCode.RESPONSE_CODE_NG, "从数据库取得日期默认值失败"),
     QUERY_CONDITION_DATE_DEFAULT_VALUE_NULL(ResponseCode.RESPONSE_CODE_NULL, "从数据库取得日期默认值为NULL"),
@@ -217,8 +225,13 @@ public enum ResponseCodeEnum {
     private static class ResponseCode {
         private static final Integer RESPONSE_CODE_END = 000;
         private static final Integer RESPONSE_CODE_OK = 200;
-        private static final Integer RESPONSE_CODE_NG = 201;
+        private static final Integer RESPONSE_CODE_NG = 201;//Session Timeout
         private static final Integer RESPONSE_CODE_NULL = 202;
+        private static final Integer RESPONSE_CODE_USER_ADD_CHECK_NG = 203;//添加用户时，信息判断
+        private static final Integer RESPONSE_CODE_USER_ADD_NG = 204;//添加用户失败
+        private static final Integer RESPONSE_CODE_USER_UPDATE_CHECK_NG = 204;//更新用户时，信息判断
+        private static final Integer RESPONSE_CODE_USER_UPDATE_NG = 205;//更新用户失败
+        private static final Integer RESPONSE_CODE_USER_CHECK_INFO_FAILED = 206;
         private static final Integer RESPONSE_CODE_ING = 300;
         private static final Integer RESPONSE_CODE_NOT_ING = 301;
         private static final Integer RESPONSE_CODE_INVALID = 302;

@@ -45,7 +45,20 @@ export class UserAddInputComponent implements OnInit, OnDestroy, CommonDialogCal
   }
   // set userBasicInfo
   public setUserBasicInfo(userBasicInfo: UserBasicInfo) {
-    this.currentUserBasicInfo = userBasicInfo;
+    // this.currentUserBasicInfo = userBasicInfo;
+    this.currentUserBasicInfo = new UserBasicInfo();
+    this.currentUserBasicInfo['userID'] = userBasicInfo['userID'];
+    this.currentUserBasicInfo['名字'] = userBasicInfo['名字'];
+    this.currentUserBasicInfo['国家'] = userBasicInfo['国家'];
+    this.currentUserBasicInfo['地址'] = userBasicInfo['地址'];
+    this.currentUserBasicInfo['城市'] = userBasicInfo['城市'];
+    this.currentUserBasicInfo['密码'] = userBasicInfo['密码'];
+    this.currentUserBasicInfo['年龄'] = userBasicInfo['年龄'];
+    this.currentUserBasicInfo['性别'] = userBasicInfo['性别'];
+    this.currentUserBasicInfo['昵称'] = userBasicInfo['昵称'];
+    this.currentUserBasicInfo['电子邮件'] = userBasicInfo['电子邮件'];
+    this.currentUserBasicInfo['电话号码'] = userBasicInfo['电话号码'];
+    this.currentUserBasicInfo['省份'] = userBasicInfo['省份'];
   }
   // set user access authorities
   public setUserAccessAuthorites(userAccessAuthorities: UserAccessAuthorities) {

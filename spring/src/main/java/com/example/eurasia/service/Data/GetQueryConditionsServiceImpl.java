@@ -49,8 +49,8 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
             if (allQueryConditionsList == null) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.QUERY_CONDITION_FROM_SQL_NULL);
             }
-            if (allQueryConditionsList.size() == 0) {
-                return new ResponseResultUtil().error(ResponseCodeEnum.QUERY_CONDITION_FROM_SQL_ZERO);
+            if (allQueryConditionsList.size() != 1) {
+                return new ResponseResultUtil().error(ResponseCodeEnum.QUERY_CONDITION_FROM_SQL_SIZE_WRONG);
             }
 
             queryConditions = new QueryCondition[allQueryConditionsList.get(0).getKeyValue().size()];
@@ -91,8 +91,8 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
             if (allQueryConditionsList == null) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.QUERY_CONDITION_FROM_SQL_NULL);
             }
-            if (allQueryConditionsList.size() == 0) {
-                return new ResponseResultUtil().error(ResponseCodeEnum.QUERY_CONDITION_FROM_SQL_ZERO);
+            if (allQueryConditionsList.size() != 1) {
+                return new ResponseResultUtil().error(ResponseCodeEnum.QUERY_CONDITION_FROM_SQL_SIZE_WRONG);
             }
 
             // 取得该用户可显示的查询条件

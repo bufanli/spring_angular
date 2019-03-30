@@ -75,6 +75,30 @@
           init-method="init">
         <property name="filePath" value="com/example/eurasia/config/userQueryConditionDisplay.xml" />
     </bean>
+    <bean id="statisticsSettingGroupByName" class="com.example.eurasia.entity.Data.DataXMLReader"
+          init-method="init">
+        <property name="filePath" value="com/example/eurasia/config/statisticsSettingGroupByName.xml" />
+    </bean>
+    <bean id="statisticsSettingGroupByValue" class="com.example.eurasia.entity.Data.DataXMLReader"
+          init-method="init">
+        <property name="filePath" value="com/example/eurasia/config/statisticsSettingGroupByValue.xml" />
+    </bean>
+    <bean id="statisticsSettingTypeName" class="com.example.eurasia.entity.Data.DataXMLReader"
+          init-method="init">
+        <property name="filePath" value="com/example/eurasia/config/statisticsSettingTypeName.xml" />
+    </bean>
+    <bean id="statisticsSettingTypeValue" class="com.example.eurasia.entity.Data.DataXMLReader"
+          init-method="init">
+        <property name="filePath" value="com/example/eurasia/config/statisticsSettingTypeValue.xml" />
+    </bean>
+    <bean id="statisticsSettingComputeByName" class="com.example.eurasia.entity.Data.DataXMLReader"
+          init-method="init">
+        <property name="filePath" value="com/example/eurasia/config/statisticsSettingComputeByName.xml" />
+    </bean>
+    <bean id="statisticsSettingComputeByValue" class="com.example.eurasia.entity.Data.DataXMLReader"
+          init-method="init">
+        <property name="filePath" value="com/example/eurasia/config/statisticsSettingComputeByValue.xml" />
+    </bean>
 
     <!--
     依赖注入
