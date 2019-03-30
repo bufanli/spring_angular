@@ -176,7 +176,6 @@ export class DataStatisticsService implements ProcessingDialogCallback {
       chartComputeField,
       chartType
     );
-    return null;
   }
   // convert statistics report data to chart opitons
   private convertStatisticsReportToChartOptions(
