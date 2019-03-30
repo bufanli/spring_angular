@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<mapping>
-    <column key="By1"             value="重量(千克)" />
-    <column key="By2"             value="数量" />
-    <column key="By3"             value="件数" />
-</mapping>

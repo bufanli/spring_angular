@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<mapping>
-    <column key="Type1"             value="VARCHAR(50)" />
-    <column key="Type2"             value="VARCHAR(50)" />
-    <column key="Type3"             value="VARCHAR(50)" />
-</mapping>
