@@ -36,6 +36,12 @@ export class DataStatisticsService implements ProcessingDialogCallback {
   private statisticsType: string;
   // top N
   public readonly TOP_N = 10;
+  // chart name to chart type
+  public readonly CHART_NAME_TO_CHART_TYPE_TABLE: any = {
+    '折线图': 'line',
+    '柱状图': 'bar',
+    '饼状图': 'pie',
+  };
 
   constructor(private commonUtilitiesService: CommonUtilitiesService,
     private http: HttpClient,
@@ -164,22 +170,19 @@ export class DataStatisticsService implements ProcessingDialogCallback {
   // convert statistics report data to data statistics component's options
   public convertStatisticsReportToOptions(statisticsReport: StatisticsReportEntry[],
     chartComputeField: string): any {
-    if (this.statisticsType === this.dataStatisticsComponent.LINE_CHART) {
-      // line chart
-      return this.convertStatisticsReportToLineChartOptions(statisticsReport, chartComputeField);
-    } else if (this.statisticsType === this.dataStatisticsComponent.PIE_CHART) {
-      // pie chart
-      return this.convertStatisticsReportToPieChartOptions(statisticsReport);
-    } else if (this.statisticsType === this.dataStatisticsComponent.BAR_CHART) {
-      // bar chart
-      return this.convertStatisticsReportToBarChartOptions(statisticsReport);
-    } else {
-      // nothing to do
-    }
+    const chartType: string = this.convertChartNameToChartType(this.statisticsType);
+    return this.convertStatisticsReportToChartOptions(
+      statisticsReport,
+      chartComputeField,
+      chartType
+    );
     return null;
   }
-  // convert statistics report data to line chart opitons
-  private convertStatisticsReportToLineChartOptions(statisticsReport: StatisticsReportEntry[], chartComputeField: string): any {
+  // convert statistics report data to chart opitons
+  private convertStatisticsReportToChartOptions(
+    statisticsReport: StatisticsReportEntry[],
+    chartComputeField: string,
+    statisticsType: string): any {
     // tool box
     const dataView = {
       show: true,
@@ -247,7 +250,7 @@ export class DataStatisticsService implements ProcessingDialogCallback {
       if (computeField.getFieldName() === chartComputeField) {
         const seriesEntry = {
           name: computeField.getFieldName(),
-          type: 'line',
+          type: statisticsType,
           data: this.convertComputeValueToDataArray(statisticsReport, computeField.getFieldName()),
         };
         series.push(seriesEntry);
@@ -263,14 +266,7 @@ export class DataStatisticsService implements ProcessingDialogCallback {
     };
     return option;
   }
-  // convert statistics report data to pie chart opitons
-  private convertStatisticsReportToPieChartOptions(statisticsReport: StatisticsReportEntry[]): any {
-    return null;
-  }
-  // convert statistics report data to bar chart opitons
-  private convertStatisticsReportToBarChartOptions(statisticsReport: StatisticsReportEntry[]): any {
-    return null;
-  }
+  // min compute value
   private minComputeValue(statisticsReport: StatisticsReportEntry[], computeField: string): Number {
     let result: number = Number.MAX_VALUE;
     statisticsReport.forEach(element => {
@@ -285,6 +281,7 @@ export class DataStatisticsService implements ProcessingDialogCallback {
     });
     return result;
   }
+  // max compute value
   private maxComputeValue(statisticsReport: StatisticsReportEntry[], computeField: string): Number {
     let result = Number.MIN_VALUE;
     statisticsReport.forEach(element => {
@@ -338,5 +335,9 @@ export class DataStatisticsService implements ProcessingDialogCallback {
     // get top N statistics report entries
     const ret: StatisticsReportEntry[] = statisticsReportEntries.slice(0, this.TOP_N);
     return ret;
+  }
+  // convert chart name to chart type
+  private convertChartNameToChartType(chartName: string): string {
+    return this.CHART_NAME_TO_CHART_TYPE_TABLE[chartName];
   }
 }
