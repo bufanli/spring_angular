@@ -157,25 +157,24 @@ export class DataStatisticsComponent implements OnInit, AfterViewInit, AfterView
         this.WAIT_STATISTICS_INPUT,
         this.STATISTICS_PARAM_ERROR_TYPE);
     } else {
-      // convert detail date field to selected group by field
-      // if selectable group by field is DATE_COLUMN
-      this.convertDateGroupByField();
       // call service to get statistics report
       this.statisticsService.statisticsReport(
         this.type,
         this.queryConditions,
-        this.selectedGroupByField,
+        // convert detail date field to selected group by field
+        // if selectable group by field is DATE_COLUMN
+        this.convertDateGroupByField(),
         this.selectedComputeFields
       );
     }
   }
   // if selectable group by field is date,
   // convert group by field to selectable group by field
-  private convertDateGroupByField(): void {
+  private convertDateGroupByField(): string {
     if (this.selectedGroupByField === this.DATE_COLUMN) {
-      this.selectedGroupByField = this.selectedDetailDateField;
+      return this.selectedDetailDateField;
     } else {
-      // nothing to do
+      return this.selectedGroupByField;
     }
   }
 
