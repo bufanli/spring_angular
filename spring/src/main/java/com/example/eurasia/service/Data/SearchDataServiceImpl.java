@@ -162,9 +162,6 @@ public class SearchDataServiceImpl implements ISearchDataService {
 
             String[] statisticsTypes = statisticsTypesList.get(0).getValuesToArray();
             String[] groupByFields = groupByFieldsList.get(0).getValuesToArray();
-            for (int i=0; i<groupByFields.length; i++) {
-                groupByFields[i] = groupByFields[i] + DataService.STATISTICS_REPORT_NAME_EX;
-            }
             String[] groupBySubFields = {"年","月","季度"};//T.B.D
             String[] computeFields = computeByFieldsList.get(0).getValuesToArray();
             statisticsFields.setStatisticsTypes(statisticsTypes);

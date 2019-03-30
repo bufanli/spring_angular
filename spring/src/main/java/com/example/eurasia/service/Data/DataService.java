@@ -61,25 +61,33 @@ public class DataService {
      */
     public void dataServiceInit() throws Exception {
         try {
-            this.createTable(DataService.TABLE_DATA,DataService.BEAN_NAME_COLUMNS_DEFAULT_NAME);
-            this.createTable(DataService.TABLE_QUERY_CONDITION_TYPE,DataService.BEAN_NAME_QUERY_CONDITION_TYPE_NAME);
-            this.createTable(DataService.TABLE_STATISTICS_SETTING_GROUP_BY,DataService.BEAN_NAME_STATISTICS_SETTING_GROUP_BY_NAME);
-            this.createTable(DataService.TABLE_STATISTICS_SETTING_TYPE,DataService.BEAN_NAME_STATISTICS_SETTING_TYPE_NAME);
-            this.createTable(DataService.TABLE_STATISTICS_SETTING_COMPUTE_BY,DataService.BEAN_NAME_STATISTICS_SETTING_COMPUTE_BY_NAME);
-
             ApplicationContext context = new ClassPathXmlApplicationContext("com/example/eurasia/config/applicationContext.xml");
-            DataXMLReader dataXMLReader = (DataXMLReader) context.getBean(DataService.BEAN_NAME_QUERY_CONDITION_TYPE_VALUE);
-            Data queryConditionTypeValue = new Data(dataXMLReader.getKeyValue());
-            getDataDao().addData(DataService.TABLE_QUERY_CONDITION_TYPE,queryConditionTypeValue);
-            dataXMLReader = (DataXMLReader) context.getBean(DataService.BEAN_NAME_STATISTICS_SETTING_GROUP_BY_VALUE);
-            Data statisticsSettingGroupByValue = new Data(dataXMLReader.getKeyValue());
-            getDataDao().addData(DataService.TABLE_STATISTICS_SETTING_GROUP_BY,statisticsSettingGroupByValue);
-            dataXMLReader = (DataXMLReader) context.getBean(DataService.BEAN_NAME_STATISTICS_SETTING_TYPE_VALUE);
-            Data statisticsSettingTypeValue = new Data(dataXMLReader.getKeyValue());
-            getDataDao().addData(DataService.TABLE_STATISTICS_SETTING_TYPE,statisticsSettingTypeValue);
-            dataXMLReader = (DataXMLReader) context.getBean(DataService.BEAN_NAME_STATISTICS_SETTING_COMPUTE_BY_VALUE);
-            Data statisticsSettingComputeByValue = new Data(dataXMLReader.getKeyValue());
-            getDataDao().addData(DataService.TABLE_STATISTICS_SETTING_COMPUTE_BY,statisticsSettingComputeByValue);
+            DataXMLReader dataXMLReader = null;
+            Data dataValue = null;
+            if (this.createTable(DataService.TABLE_DATA,DataService.BEAN_NAME_COLUMNS_DEFAULT_NAME) == true) {
+
+            }
+            if (this.createTable(DataService.TABLE_QUERY_CONDITION_TYPE,DataService.BEAN_NAME_QUERY_CONDITION_TYPE_NAME) == true) {
+                dataXMLReader = (DataXMLReader) context.getBean(DataService.BEAN_NAME_QUERY_CONDITION_TYPE_VALUE);
+                dataValue = new Data(dataXMLReader.getKeyValue());
+                getDataDao().addData(DataService.TABLE_QUERY_CONDITION_TYPE,dataValue);
+            }
+            if (this.createTable(DataService.TABLE_STATISTICS_SETTING_GROUP_BY,DataService.BEAN_NAME_STATISTICS_SETTING_GROUP_BY_NAME) == true) {
+                dataXMLReader = (DataXMLReader) context.getBean(DataService.BEAN_NAME_STATISTICS_SETTING_GROUP_BY_VALUE);
+                dataValue = new Data(dataXMLReader.getKeyValue());
+                getDataDao().addData(DataService.TABLE_STATISTICS_SETTING_GROUP_BY,dataValue);
+            }
+            if (this.createTable(DataService.TABLE_STATISTICS_SETTING_TYPE,DataService.BEAN_NAME_STATISTICS_SETTING_TYPE_NAME) == true) {
+                dataXMLReader = (DataXMLReader) context.getBean(DataService.BEAN_NAME_STATISTICS_SETTING_TYPE_VALUE);
+                dataValue = new Data(dataXMLReader.getKeyValue());
+                getDataDao().addData(DataService.TABLE_STATISTICS_SETTING_TYPE,dataValue);
+            }
+            if (this.createTable(DataService.TABLE_STATISTICS_SETTING_COMPUTE_BY,DataService.BEAN_NAME_STATISTICS_SETTING_COMPUTE_BY_NAME) == true) {
+                dataXMLReader = (DataXMLReader) context.getBean(DataService.BEAN_NAME_STATISTICS_SETTING_COMPUTE_BY_VALUE);
+                dataValue = new Data(dataXMLReader.getKeyValue());
+                getDataDao().addData(DataService.TABLE_STATISTICS_SETTING_COMPUTE_BY,dataValue);
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
