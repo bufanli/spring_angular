@@ -1,7 +1,5 @@
 package com.example.eurasia.controller;
 
-import com.example.eurasia.entity.Data.ComputeValue;
-import com.example.eurasia.entity.Data.StatisticReportValue;
 import com.example.eurasia.entity.Data.StatisticsReportQueryData;
 import com.example.eurasia.service.Data.ISearchDataService;
 import com.example.eurasia.service.Response.ResponseCodeEnum;
@@ -79,80 +77,7 @@ public class StatisticsReportController {
                 if (statisticsReportQueryData.getQueryConditions() == null) {
                     responseResult = new ResponseResultUtil().error(ResponseCodeEnum.STATISTICS_REPORT_QUERY_CONDITION_ERROR);
                 } else {
-                   // responseResult = searchDataService.statisticsReport(userID, statisticsReportQueryData);
-                    StatisticReportValue[] statisticReportValues = new StatisticReportValue[4];
-                    StatisticReportValue entry = new StatisticReportValue();
-                    entry.setGroupByField("MARATHON PETROLEUM COMPANY LLC");
-                    ComputeValue[] computeValues = new ComputeValue[4];
-                    computeValues[0] = new ComputeValue();
-                    computeValues[1] = new ComputeValue();
-                    computeValues[2] = new ComputeValue();
-                    computeValues[3] = new ComputeValue();
-                    computeValues[0].setFieldName("重量(千克) ");
-                    computeValues[0].setComputeValue("346,517,289,000.00");
-                    computeValues[1].setFieldName("数量");
-                    computeValues[1].setComputeValue("5.00");
-                    computeValues[2].setFieldName("件数");
-                    computeValues[2].setComputeValue("5.00");
-                    computeValues[3].setFieldName("票数");
-                    computeValues[3].setComputeValue("5");
-                    entry.setComputeValues(computeValues);
-                    statisticReportValues[0] = entry;
-
-                    //entry = new StatisticReportValue();
-                    entry.setGroupByField("EXXONMOBIL SALES & SUPPLY LLC");
-                    computeValues = new ComputeValue[4];
-                    computeValues[0] = new ComputeValue();
-                    computeValues[1] = new ComputeValue();
-                    computeValues[2] = new ComputeValue();
-                    computeValues[3] = new ComputeValue();
-                    computeValues[0].setFieldName("重量(千克) ");
-                    computeValues[0].setComputeValue("216,153,357,000.00");
-                    computeValues[1].setFieldName("数量");
-                    computeValues[1].setComputeValue("3.00");
-                    computeValues[2].setFieldName("件数");
-                    computeValues[2].setComputeValue("3.00");
-                    computeValues[3].setFieldName("票数");
-                    computeValues[3].setComputeValue("3");
-                    entry.setComputeValues(computeValues);
-                    statisticReportValues[1] = entry;
-
-                    entry = new StatisticReportValue();
-                    entry.setGroupByField("PAR HAWAII REFINING LLC");
-                    computeValues = new ComputeValue[4];
-                    computeValues[0] = new ComputeValue();
-                    computeValues[1] = new ComputeValue();
-                    computeValues[2] = new ComputeValue();
-                    computeValues[3] = new ComputeValue();
-                    computeValues[0].setFieldName("重量(千克) ");
-                    computeValues[0].setComputeValue("132,746,600,000.00");
-                    computeValues[1].setFieldName("数量");
-                    computeValues[1].setComputeValue("1.00");
-                    computeValues[2].setFieldName("件数");
-                    computeValues[2].setComputeValue("1.00");
-                    computeValues[3].setFieldName("票数");
-                    computeValues[3].setComputeValue("1");
-                    entry.setComputeValues(computeValues);
-                    statisticReportValues[2] = entry;
-
-                    entry = new StatisticReportValue();
-                    entry.setGroupByField("PAULSBORO REFINING COMPANY");
-                    computeValues = new ComputeValue[4];
-                    computeValues[0] = new ComputeValue();
-                    computeValues[1] = new ComputeValue();
-                    computeValues[2] = new ComputeValue();
-                    computeValues[3] = new ComputeValue();
-                    computeValues[0].setFieldName("重量(千克) ");
-                    computeValues[0].setComputeValue("75,971,048,000.00");
-                    computeValues[1].setFieldName("数量");
-                    computeValues[1].setComputeValue("3.00");
-                    computeValues[2].setFieldName("件数");
-                    computeValues[2].setComputeValue("3.00");
-                    computeValues[3].setFieldName("票数");
-                    computeValues[3].setComputeValue("1");
-                    entry.setComputeValues(computeValues);
-                    statisticReportValues[3] = entry;
-                    responseResult = new ResponseResultUtil().success(statisticReportValues);
+                    responseResult = searchDataService.statisticsReport(userID, statisticsReportQueryData);
                 }
             }
         } catch (Exception e) {

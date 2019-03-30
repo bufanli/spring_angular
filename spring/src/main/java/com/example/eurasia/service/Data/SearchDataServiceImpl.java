@@ -110,17 +110,6 @@ public class SearchDataServiceImpl implements ISearchDataService {
                 return new ResponseResultUtil().error(ResponseCodeEnum.STATISTICS_REPORT_FROM_SQL_ZERO);
             }
 
-            // Just For Test
-//            StatisticReportValue statisticReportValue = new StatisticReportValue();
-//            statisticReportValue.setGroupByField("收货人");//groupByField
-//            ComputeValue computeValue = new ComputeValue();
-//            computeValue.setFieldName("重量");
-//            computeValue.setComputeValue("100.25");
-//            ComputeValue[] computeValues = new ComputeValue[1];
-//            computeValues[0] = computeValue;
-//            statisticReportValue.setComputeValues(computeValues);//computeFields
-//            statisticReportValues[0] = statisticReportValue;
-
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseResultUtil().error(ResponseCodeEnum.STATISTICS_REPORT_FROM_SQL_FAILED);
