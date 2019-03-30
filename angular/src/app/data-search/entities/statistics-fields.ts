@@ -3,6 +3,8 @@ export class StatisticsFields {
   private statisticsTypes: string[] = null;
   // selectable group by fields
   private groupByFields: string[] = null;
+  // selectable sub group by fields
+  private groupBySubFields: string[] = null;
   // selectable compute fields
   private computeFields: string[] = null;
   // getter
@@ -19,6 +21,13 @@ export class StatisticsFields {
   }
   public setGroupByFields(groupByFields: string[]) {
     this.groupByFields = groupByFields;
+  }
+  // getter
+  public getGroupBySubFields(): string[] {
+    return this.groupBySubFields;
+  }
+  public setGroupBySubFields(groupBySubFields: string[]) {
+    this.groupBySubFields = groupBySubFields;
   }
   // getter
   public getComputeFields(): string[] {

@@ -15,4 +15,17 @@ export class StatisticsReportEntry {
   public getComputeValues(): ComputeValue[] {
     return this.computeValues;
   }
+  // get specified field's value of statistics report entry
+  public getComputeValueOfSpecifiedComputeField(
+    specifiedComputeField: string): number {
+    let ret = 0;
+    this.getComputeValues().forEach(element => {
+      if (element.getComputeField() === specifiedComputeField) {
+        ret = element.getComputeValue();
+      } else {
+        // go to next
+      }
+    });
+    return ret;
+  }
 }

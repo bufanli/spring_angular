@@ -11,6 +11,7 @@ import { StatisticsFields } from '../entities/statistics-fields';
 import { StatisticsReportEntry } from '../entities/statistics-report-entry';
 import { ComputeValue } from '../entities/compute-value';
 import { CurrentUserContainerService } from 'src/app/common/services/current-user-container.service';
+import { NEXT } from '@angular/core/src/render3/interfaces/view';
 
 // json header for post
 const httpOptions = {
@@ -66,6 +67,7 @@ export class DataStatisticsService implements ProcessingDialogCallback {
     const statisticsFields: StatisticsFields = new StatisticsFields();
     statisticsFields.setComputeFields(httpResponse.data.computeFields);
     statisticsFields.setGroupByFields(httpResponse.data.groupByFields);
+    statisticsFields.setGroupBySubFields(httpResponse.data.groupBySubFields);
     statisticsFields.setStatisticsTypes(httpResponse.data.statisticsTypes);
     // close processing dialog
     this.commonUtilitiesService.closeProcessingDialog();
@@ -76,6 +78,7 @@ export class DataStatisticsService implements ProcessingDialogCallback {
     // set statistics fields to statistics component
     modalRef.componentInstance.setComputeFields(statisticsFields.getComputeFields());
     modalRef.componentInstance.setGroupByFields(statisticsFields.getGroupByFields());
+    modalRef.componentInstance.setGroupBySubFields(statisticsFields.getGroupBySubFields());
     modalRef.componentInstance.setStatisticsTypes(statisticsFields.getStatisticsTypes());
     // set query conditions
     modalRef.componentInstance.setQueryConditions(this.queryConditions);
@@ -310,7 +313,30 @@ export class DataStatisticsService implements ProcessingDialogCallback {
   }
   // get top N statistics report entries sort by graph compute field,
   // if group by field is date, then just get top N without sort.
-  public getTopNStatisticsReportEntries(statisticsReportEntries: StatisticsReportEntry[]): StatisticsReportQueryData[] {
-    return null;
+  public getTopNStatisticsReportEntries(
+    statisticsReportEntries: StatisticsReportEntry[],
+    selectedChartComputeField: string): StatisticsReportEntry[] {
+    // if selected chart compute field is not date, sort by selected chart compute field
+    if (selectedChartComputeField !== this.dataStatisticsComponent.DATE_COLUMN) {
+      statisticsReportEntries.sort(function (a: StatisticsReportEntry,
+        b: StatisticsReportEntry): any {
+        // dsc sort
+        if (a.getComputeValueOfSpecifiedComputeField(selectedChartComputeField) ===
+          b.getComputeValueOfSpecifiedComputeField(selectedChartComputeField)) {
+          return 0;
+        } else if (a.getComputeValueOfSpecifiedComputeField(selectedChartComputeField) >
+          b.getComputeValueOfSpecifiedComputeField(selectedChartComputeField)) {
+          return -1;
+        } else {
+          return 1;
+        }
+      });
+    } else {
+      // if selected chart compute field is not date,
+      // sorted in spring, so nothing to do
+    }
+    // get top N statistics report entries
+    const ret: StatisticsReportEntry[] = statisticsReportEntries.slice(0, this.TOP_N);
+    return ret;
   }
 }

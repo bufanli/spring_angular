@@ -17,24 +17,20 @@ export class DataStatisticsComponent implements OnInit, AfterViewInit, AfterView
   public readonly WAIT_STATISTICS_INPUT = '请选择统计图类型，统计列，计算列，统计图计算列';
   public readonly WAIT_STATISTICS_REPORT = '正在计算统计数据，请稍后';
   private readonly STATISTICS_PARAM_ERROR_TYPE = 'warning';
-  // statistics types
-  public readonly LINE_CHART: string = '折线图';
-  public readonly BAR_CHART: string = '柱状图';
-  public readonly PIE_CHART: string = '饼状图';
-  // selectable detail date fields
-  public readonly SELECTABLE_DETAIL_DATE_FIELDS = ['年', '季度', '月'];
-  public readonly DATAIL_DATE_YEAR = '年';
   // date column name
   public readonly DATE_COLUMN = '日期';
+  public readonly REPORT_SUFFIX = '汇总报表';
 
   // selected statistics type
   type: string = null;
   // selected group by field
   public selectedGroupByField: string = null;
   // selected detail date field
-  public selectedDetailDateField: string = this.DATAIL_DATE_YEAR;
+  public selectedDetailDateField: string = null;
   // statistics group by field
   public groupByFields: string[] = null;
+  // statistics group by sub field
+  public groupBySubFields: string[] = null;
   // selected compute fields
   public selectedComputeFields: string[] = null;
   public seletcedComputeFieldsChanged = false;
@@ -73,7 +69,13 @@ export class DataStatisticsComponent implements OnInit, AfterViewInit, AfterView
       this.showingComponentName = 'graph';
       const factory = this.resolver.resolveComponentFactory(DataStatisticsGraphComponent);
       this.componnetRefDataStatisticsGraph = this.container.createComponent(factory);
-      this.componnetRefDataStatisticsGraph.instance.setStatisticsReportEntries(this.statisticsReportEntries);
+      // get top N statistics report entries
+      const topNStatisticsReportEntries: StatisticsReportEntry[]
+        = this.statisticsService.getTopNStatisticsReportEntries(
+          this.statisticsReportEntries,
+          this.selectedChartComputeField
+        );
+      this.componnetRefDataStatisticsGraph.instance.setStatisticsReportEntries(topNStatisticsReportEntries);
       this.componnetRefDataStatisticsGraph.instance.setChartComputeField(this.selectedChartComputeField);
       this.componnetRefDataStatisticsGraph.instance.setDataStatisticsService(this.statisticsService);
       // this.componentRef.instance.output.subscribe((msg: string) => console.log(msg));
@@ -120,6 +122,15 @@ export class DataStatisticsComponent implements OnInit, AfterViewInit, AfterView
     this.groupByFields = groupByFields;
     this.setSelectOptions('#group-fields', true);
   }
+  // set group by sub fields
+  public setGroupBySubFields(groupBySubFields: string[]): void {
+    this.selectedDetailDateField = groupBySubFields[0];
+    this.groupBySubFields = groupBySubFields;
+  }
+  // get group by sub fields
+  public getGroupBySubFields(): string[] {
+    return this.groupBySubFields;
+  }
   // get compute fields
   public getComputeFields(): string[] {
     return this.computeFields;
@@ -147,6 +158,9 @@ export class DataStatisticsComponent implements OnInit, AfterViewInit, AfterView
         this.WAIT_STATISTICS_INPUT,
         this.STATISTICS_PARAM_ERROR_TYPE);
     } else {
+      // convert detail date field to selected group by field
+      // if selectable group by field is DATE_COLUMN
+      this.convertDateGroupByField();
       // call service to get statistics report
       this.statisticsService.statisticsReport(
         this.type,
@@ -156,6 +170,16 @@ export class DataStatisticsComponent implements OnInit, AfterViewInit, AfterView
       );
     }
   }
+  // if selectable group by field is date,
+  // convert group by field to selectable group by field
+  private convertDateGroupByField(): void {
+    if (this.selectedGroupByField === this.DATE_COLUMN) {
+      this.selectedGroupByField = this.selectedDetailDateField;
+    } else {
+      // nothing to do
+    }
+  }
+
   // check statistics parameters
   private checkStatisticsParameters(): boolean {
     // necessary parameter is not selected
@@ -209,11 +233,11 @@ export class DataStatisticsComponent implements OnInit, AfterViewInit, AfterView
   }
   // get selectable detail date fields
   public getSelectableDetailDateFields(): string[] {
-    return this.SELECTABLE_DETAIL_DATE_FIELDS;
+    return this.getGroupBySubFields();
   }
   // tell if date is selected as group by field
   public isDateIsSelected(): boolean {
-    if (this.selectedGroupByField === this.DATE_COLUMN) {
+    if (this.selectedGroupByField === (this.DATE_COLUMN + this.REPORT_SUFFIX)) {
       return true;
     } else {
       return false;

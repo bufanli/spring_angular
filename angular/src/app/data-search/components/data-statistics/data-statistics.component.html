@@ -22,7 +22,7 @@
         <div class=" form-group">
           <select class="form-control selectpicker" title="统计列" id="group-fields" [(ngModel)]="selectedGroupByField"
             name="group-fields">
-            <option *ngFor="let field of this.getGroupByFields()" value="{{field}}">{{field}}</option>
+            <option *ngFor="let field of this.getGroupByFields()" value="{{field}} + '汇总报表'">{{field}}</option>
           </select>
         </div>
       </div>
