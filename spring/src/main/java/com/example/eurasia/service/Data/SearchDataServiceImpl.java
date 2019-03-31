@@ -118,8 +118,8 @@ public class SearchDataServiceImpl implements ISearchDataService {
                 ComputeValue[] computeValues = new ComputeValue[computeFields.length];
                 for (int j=0; j<computeFields.length; j++) {
                     computeValues[j] = new ComputeValue();
-                    computeValues[j].setFieldName(computeFields[i].getFieldName());//e.g."件数"
-                    computeValues[j].setComputeValue(keyValue.get(computeFields[i].toSql()));//e.g."SUM(件数)"的Value
+                    computeValues[j].setFieldName(computeFields[j].getFieldName());//e.g."件数"
+                    computeValues[j].setComputeValue(keyValue.get(computeFields[j].toSql()));//e.g."SUM(件数)"的Value
                 }
                 statisticReportValues[i] = new StatisticReportValue();
                 statisticReportValues[i].setGroupByField(groupByValue);
@@ -131,7 +131,7 @@ public class SearchDataServiceImpl implements ISearchDataService {
             return new ResponseResultUtil().error(ResponseCodeEnum.STATISTICS_REPORT_FROM_SQL_FAILED);
         }
 
-        return new ResponseResultUtil().success(ResponseCodeEnum.STATISTICS_REPORT_FROM_SQL_SUCCESS, dataList);
+        return new ResponseResultUtil().success(ResponseCodeEnum.STATISTICS_REPORT_FROM_SQL_SUCCESS, statisticReportValues);
     }
 
     public ResponseResult getStatisticsSetting() throws Exception {
