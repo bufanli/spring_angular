@@ -45,6 +45,23 @@ sbf = new StringBuffer("");//重新new
     }
 
     /**
+     * 添加数据
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-09-20 00:00:00
+     */
+    public int addData(String tableName, String columnName, String columnValue) throws Exception {
+
+        StringBuffer sql = new StringBuffer();
+        sql.append("insert into " + tableName + "(" + columnName + ") values (?)");
+
+        int num = getJdbcTemplate().update(sql.toString(),columnValue);
+        return num;//大于0，插入成功。返回影响的行数。
+    }
+
+    /**
      * 批处理添加数据
      * @param
      * @return
@@ -373,6 +390,28 @@ Mysql limit offset示例
         StringBuffer sql = new StringBuffer();
         sql.append("select * from " + tableName);
         return getJdbcTemplate().query(sql.toString(), new DataMapper());
+    }
+
+    /**
+     * 查询并返回List集合
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-10-27 00:00:00
+     */
+    public List<Map<String, Object>> queryListForColumns(String tableName, String[] selectColumns) throws Exception {
+        StringBuffer sql = new StringBuffer();
+        sql.append("select ");
+        for (String selectColumn : selectColumns) {
+            sql.append(selectColumn + CommonDao.COMMA);
+        }
+        sql.deleteCharAt(sql.length() - CommonDao.COMMA.length());
+        sql.append(" from " + tableName);
+
+        List<Map<String, Object>> colsNameList = getJdbcTemplate().queryForList(sql.toString());
+
+        return colsNameList;
     }
 
     /**

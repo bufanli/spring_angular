@@ -13,9 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 //@Slf4j
 /*@Transactional(readOnly = true)事物注解*/
@@ -120,39 +118,33 @@ public class SearchDataServiceImpl implements ISearchDataService {
 
     public ResponseResult getStatisticsSetting() throws Exception {
         StatisticsFields  statisticsFields = new StatisticsFields();
-        List<Data> statisticsTypesList = null;
-        List<Data> groupByFieldsList = null;
-        List<Data> computeByFieldsList = null;
+        List<Map<String, Object>> statisticsTypesList = null;
+        List<Map<String, Object>> groupByFieldsList = null;
+        List<Map<String, Object>> computeByFieldsList = null;
         try {
 
-            statisticsTypesList = dataService.getStatisticsSetting(DataService.TABLE_STATISTICS_SETTING_TYPE);
+            statisticsTypesList = dataService.getStatisticsSetting(DataService.TABLE_STATISTICS_SETTING_TYPE,
+                    new String[]{DataService.STATISTICS_SETTING_TYPE_COLUMN_NAME});
             if (statisticsTypesList == null) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.STATISTICS_SETTING_TYPE_FROM_SQL_NULL);
             }
-            if (statisticsTypesList.size() != 1) {
-                return new ResponseResultUtil().error(ResponseCodeEnum.STATISTICS_SETTING_TYPE_FROM_SQL_SIZE_WRONG);
-            }
 
-            groupByFieldsList = dataService.getStatisticsSetting(DataService.TABLE_STATISTICS_SETTING_GROUP_BY);
+            groupByFieldsList = dataService.getStatisticsSetting(DataService.TABLE_STATISTICS_SETTING_GROUP_BY,
+                    new String[]{DataService.STATISTICS_SETTING_GROUP_BY_COLUMN_NAME});
             if (groupByFieldsList == null) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.STATISTICS_SETTING_GROUP_BY_FROM_SQL_NULL);
             }
-            if (groupByFieldsList.size() != 1) {
-                return new ResponseResultUtil().error(ResponseCodeEnum.STATISTICS_SETTING_GROUP_BY_FROM_SQL_SIZE_WRONG);
-            }
 
-            computeByFieldsList = dataService.getStatisticsSetting(DataService.TABLE_STATISTICS_SETTING_COMPUTE_BY);
+            computeByFieldsList = dataService.getStatisticsSetting(DataService.TABLE_STATISTICS_SETTING_COMPUTE_BY,
+                    new String[]{DataService.STATISTICS_SETTING_COMPUTE_BY_COLUMN_NAME});
             if (computeByFieldsList == null) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.STATISTICS_SETTING_COMPUTE_BY_FROM_SQL_NULL);
             }
-            if (computeByFieldsList.size() != 1) {
-                return new ResponseResultUtil().error(ResponseCodeEnum.STATISTICS_SETTING_COMPUTE_BY_FROM_SQL_SIZE_WRONG);
-            }
 
-            String[] statisticsTypes = statisticsTypesList.get(0).getValuesToArray();
-            String[] groupByFields = groupByFieldsList.get(0).getValuesToArray();
+            String[] statisticsTypes = this.getListMapValue(statisticsTypesList);
+            String[] groupByFields = this.getListMapValue(groupByFieldsList);
             String[] groupBySubFields = {"年","月","季度"};//T.B.D
-            String[] computeFields = computeByFieldsList.get(0).getValuesToArray();
+            String[] computeFields = this.getListMapValue(computeByFieldsList);
             statisticsFields.setStatisticsTypes(statisticsTypes);
             statisticsFields.setGroupByFields(groupByFields);
             statisticsFields.setGroupBySubFields(groupBySubFields);
@@ -245,5 +237,18 @@ public class SearchDataServiceImpl implements ISearchDataService {
             userMax = dataService.queryTableRows(DataService.TABLE_DATA);
         }
         return userMax;
+    }
+
+    private String[] getListMapValue(List<Map<String, Object>> listMap) {
+        String[] valueArr = new String[listMap.size()];
+        for (int i = 0; i < listMap.size(); i++) {
+            Map<String, Object> map = listMap.get(i);
+            Iterator iterator = map.keySet().iterator();
+            while (iterator.hasNext()) {
+                String key = (String) iterator.next();
+                valueArr[i] = (String) map.get(key);
+            }
+        }
+        return valueArr;
     }
 }

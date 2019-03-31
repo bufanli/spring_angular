@@ -11,10 +11,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class DataService {
@@ -40,12 +37,9 @@ public class DataService {
     public static final String BEAN_NAME_COLUMNS_DEFAULT_NAME = "columnDefaultName";
     public static final String BEAN_NAME_QUERY_CONDITION_TYPE_NAME = "queryConditionTypeName";
     public static final String BEAN_NAME_QUERY_CONDITION_TYPE_VALUE = "queryConditionTypeValue";
-    public static final String BEAN_NAME_STATISTICS_SETTING_GROUP_BY_NAME = "statisticsSettingGroupByName";
-    public static final String BEAN_NAME_STATISTICS_SETTING_TYPE_NAME = "statisticsSettingTypeName";
-    public static final String BEAN_NAME_STATISTICS_SETTING_COMPUTE_BY_NAME = "statisticsSettingComputeByName";
-    public static final String BEAN_NAME_STATISTICS_SETTING_GROUP_BY_VALUE = "statisticsSettingGroupByValue";
-    public static final String BEAN_NAME_STATISTICS_SETTING_TYPE_VALUE = "statisticsSettingTypeValue";
-    public static final String BEAN_NAME_STATISTICS_SETTING_COMPUTE_BY_VALUE = "statisticsSettingComputeByValue";
+    public static final String STATISTICS_SETTING_GROUP_BY_COLUMN_NAME = "GroupByName";
+    public static final String STATISTICS_SETTING_TYPE_COLUMN_NAME = "Type";
+    public static final String STATISTICS_SETTING_COMPUTE_BY_COLUMN_NAME = "ComputeByName";
 
     public static final String EXPORT_EXCEL_SHEET_NAME = "统计表";
     public static final String STATISTICS_REPORT_NAME_EX = "汇总报表";
@@ -72,20 +66,32 @@ public class DataService {
                 dataValue = new Data(dataXMLReader.getKeyValue());
                 getDataDao().addData(DataService.TABLE_QUERY_CONDITION_TYPE,dataValue);
             }
-            if (this.createTable(DataService.TABLE_STATISTICS_SETTING_GROUP_BY,DataService.BEAN_NAME_STATISTICS_SETTING_GROUP_BY_NAME) == true) {
-                dataXMLReader = (DataXMLReader) context.getBean(DataService.BEAN_NAME_STATISTICS_SETTING_GROUP_BY_VALUE);
-                dataValue = new Data(dataXMLReader.getKeyValue());
-                getDataDao().addData(DataService.TABLE_STATISTICS_SETTING_GROUP_BY,dataValue);
+            Map<String, String> groupByNameType = new LinkedHashMap<String, String>();
+            groupByNameType.put(DataService.STATISTICS_SETTING_GROUP_BY_COLUMN_NAME,"VARCHAR(255)");
+            if (this.createTable(DataService.TABLE_STATISTICS_SETTING_GROUP_BY,groupByNameType) == true) {
+                String[] groupByArr = {"进出口","申报单位名称","货主单位名称","经营单位名称","经营单位代码","运输工具名称","提运单号","海关编码","商品名称",
+                                        "部位","包装规格","英文品名","品牌","加工厂号","加工企业名称","牛种","牛龄","级别","饲养方式","申报要素","成交方式",
+                                        "监管方式","运输方式","目的地","包装种类","主管关区","报关口岸","装货港","中转国","贸易国","企业性质","地址",
+                                        "手机","电话","传真","Email","法人","联系人"};
+                for (int i=0; i<groupByArr.length; i++) {
+                    getDataDao().addData(DataService.TABLE_STATISTICS_SETTING_GROUP_BY,DataService.STATISTICS_SETTING_GROUP_BY_COLUMN_NAME,groupByArr[i]);
+                }
             }
-            if (this.createTable(DataService.TABLE_STATISTICS_SETTING_TYPE,DataService.BEAN_NAME_STATISTICS_SETTING_TYPE_NAME) == true) {
-                dataXMLReader = (DataXMLReader) context.getBean(DataService.BEAN_NAME_STATISTICS_SETTING_TYPE_VALUE);
-                dataValue = new Data(dataXMLReader.getKeyValue());
-                getDataDao().addData(DataService.TABLE_STATISTICS_SETTING_TYPE,dataValue);
+            Map<String, String> typeNameType = new LinkedHashMap<String, String>();
+            typeNameType.put(DataService.STATISTICS_SETTING_TYPE_COLUMN_NAME,"VARCHAR(50)");
+            if (this.createTable(DataService.TABLE_STATISTICS_SETTING_TYPE,typeNameType) == true) {
+                String[] typeArr = {"柱状图","饼状图","折线图"};
+                for (int i=0; i<typeArr.length; i++) {
+                    getDataDao().addData(DataService.TABLE_STATISTICS_SETTING_TYPE,DataService.STATISTICS_SETTING_TYPE_COLUMN_NAME,typeArr[i]);
+                }
             }
-            if (this.createTable(DataService.TABLE_STATISTICS_SETTING_COMPUTE_BY,DataService.BEAN_NAME_STATISTICS_SETTING_COMPUTE_BY_NAME) == true) {
-                dataXMLReader = (DataXMLReader) context.getBean(DataService.BEAN_NAME_STATISTICS_SETTING_COMPUTE_BY_VALUE);
-                dataValue = new Data(dataXMLReader.getKeyValue());
-                getDataDao().addData(DataService.TABLE_STATISTICS_SETTING_COMPUTE_BY,dataValue);
+            Map<String, String> computeByNameType = new LinkedHashMap<String, String>();
+            computeByNameType.put(DataService.STATISTICS_SETTING_COMPUTE_BY_COLUMN_NAME,"VARCHAR(50)");
+            if (this.createTable(DataService.TABLE_STATISTICS_SETTING_COMPUTE_BY,computeByNameType) == true) {
+                String[] computeByArr = {"法定重量","申报数量","件数"};
+                for (int i=0; i<computeByArr.length; i++) {
+                    getDataDao().addData(DataService.TABLE_STATISTICS_SETTING_COMPUTE_BY,DataService.STATISTICS_SETTING_COMPUTE_BY_COLUMN_NAME,computeByArr[i]);
+                }
             }
 
         } catch (Exception e) {
@@ -221,12 +227,12 @@ public class DataService {
      * @author FuJia
      * @Time 2019-03-10 00:00:00
      */
-    public List<Data> getStatisticsSetting(String tableName) throws Exception {
-        if (StringUtils.isEmpty(tableName)) {
+    public List<Map<String, Object>> getStatisticsSetting(String tableName, String[] selectColumns) throws Exception {
+        if (StringUtils.isEmpty(tableName) || selectColumns == null || selectColumns.length == 0) {
             return null;
         }
 
-        return getDataDao().queryListForAllObject(tableName);
+        return getDataDao().queryListForColumns(tableName,selectColumns);
     }
 
     /**
@@ -301,6 +307,27 @@ public class DataService {
 
         try {
             return getDataDao().createTable(tableName,beanName);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
+     * 根据表名称创建一张表
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-09-20 00:00:00
+     */
+    public boolean createTable(String tableName, Map<String, String> columnNameType) throws Exception {
+        if (StringUtils.isEmpty(tableName) || columnNameType == null || columnNameType.isEmpty()) {
+            return false;
+        }
+
+        try {
+            return getDataDao().createTable(tableName,columnNameType);
         } catch (Exception e) {
             e.printStackTrace();
         }

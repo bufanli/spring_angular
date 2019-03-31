@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<mapping>
-    <column key="Type1"             value="柱状图" />
-    <column key="Type2"             value="饼状图" />
-    <column key="Type3"             value="折线图" />
-</mapping>

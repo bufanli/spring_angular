@@ -100,19 +100,35 @@ SELECT information_schema.SCHEMATA.SCHEMA_NAME FROM information_schema.SCHEMATA 
             } else {
                 ApplicationContext context = new ClassPathXmlApplicationContext("com/example/eurasia/config/applicationContext.xml");
                 DataXMLReader dataXMLReader = (DataXMLReader) context.getBean(beanName);
-                Map<String, String> map = dataXMLReader.getKeyValue();
+                Map<String, String> columnNameType = dataXMLReader.getKeyValue();
 
-                StringBuffer sql = new StringBuffer();
-                sql.append("CREATE TABLE `" + tableName + "` (");
-                sql.append(" `id` int(11) NOT NULL AUTO_INCREMENT,");
-                for (Map.Entry<String, String> entry : map.entrySet()) {
-                    sql.append("`" + entry.getKey() + "` " + entry.getValue() + " NOT NULL,");//key字段名 value字段类型
-                }
-                sql.append(" PRIMARY KEY (`id`)");
-                sql.append(") ENGINE=InnoDB DEFAULT CHARSET=gbk;");
-//MyISAM适合：(1)做很多count 的计算；(2)插入不频繁，查询非常频繁；(3)没有事务。
-//InnoDB适合：(1)可靠性要求比较高，或者要求事务；(2)表更新和查询都相当的频繁，并且行锁定的机会比较大的情况
+                StringBuffer sql = convertCreatingTableWithPrimaryKeyToSQL(tableName,columnNameType);
+                int count = getJdbcTemplate().update(sql.toString());
+                return true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 
+    /**
+     * 根据表名称创建一张表
+     *
+     * @param tableName
+     * @return
+     * @throws
+     * @author FuJia
+     * @Time 2018-09-20 00:00:00
+     */
+    public boolean createTable(String tableName, Map<String, String> columnNameType) throws Exception {
+        try {
+            // 判断数据库是否已经存在这个名称的表，如果有某表，直接返回；否则动态创建表之后再返回
+            if (isExistTableName(tableName)) {
+                return false;
+            } else {
+
+                StringBuffer sql = convertCreatingTableWithPrimaryKeyToSQL(tableName,columnNameType);
                 int count = getJdbcTemplate().update(sql.toString());
                 return true;
             }
@@ -543,6 +559,23 @@ select PERIOD_DIFF(DATE_FORMAT(CURDATE(),'%Y%m'),DATE_FORMAT(日期,'%Y%m')) fro
             sql.append(entry.getKey() + " " + entry.getValue() + CommonDao.COMMA);
         }
         sql.deleteCharAt(sql.length() - CommonDao.COMMA.length());
+        return sql;
+    }
+
+    /**
+     * convert creating table with "id" primary key to sql
+     */
+    protected StringBuffer convertCreatingTableWithPrimaryKeyToSQL(String tableName, Map<String, String> columnNameType) {
+        StringBuffer sql = new StringBuffer();
+        sql.append("CREATE TABLE `" + tableName + "` (");
+        sql.append(" `id` int(11) NOT NULL AUTO_INCREMENT,");
+        for (Map.Entry<String, String> entry : columnNameType.entrySet()) {
+            sql.append("`" + entry.getKey() + "` " + entry.getValue() + " NOT NULL,");//key字段名 value字段类型
+        }
+        sql.append(" PRIMARY KEY (`id`)");
+        sql.append(") ENGINE=InnoDB DEFAULT CHARSET=gbk;");
+//MyISAM适合：(1)做很多count 的计算；(2)插入不频繁，查询非常频繁；(3)没有事务。
+//InnoDB适合：(1)可靠性要求比较高，或者要求事务；(2)表更新和查询都相当的频繁，并且行锁定的机会比较大的情况
         return sql;
     }
 }
