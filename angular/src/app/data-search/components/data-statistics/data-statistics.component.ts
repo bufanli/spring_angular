@@ -77,6 +77,7 @@ export class DataStatisticsComponent implements OnInit, AfterViewInit, AfterView
       this.componnetRefDataStatisticsGraph.instance.setStatisticsReportEntries(topNStatisticsReportEntries);
       this.componnetRefDataStatisticsGraph.instance.setChartComputeField(this.selectedChartComputeField);
       this.componnetRefDataStatisticsGraph.instance.setDataStatisticsService(this.statisticsService);
+      this.componnetRefDataStatisticsGraph.instance.setGroupByField(this.convertDateGroupByField());
       // this.componentRef.instance.output.subscribe((msg: string) => console.log(msg));
     } else if (type === 'original-data') {
       this.showingComponentName = 'original-data';

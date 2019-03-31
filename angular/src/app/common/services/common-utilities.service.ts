@@ -249,4 +249,13 @@ export class CommonUtilitiesService {
     }
     return result;
   }
+  ellipsis(src: string, length: number): string {
+    let len = src.length;
+    if (len && len > length) {
+      len = length;
+      return src.substring(0, len) + '...';
+    } else {
+      return src;
+    }
+  }
 }

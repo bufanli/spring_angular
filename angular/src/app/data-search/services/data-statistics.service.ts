@@ -42,6 +42,7 @@ export class DataStatisticsService implements ProcessingDialogCallback {
     '柱状图': 'bar',
     '饼状图': 'pie',
   };
+  private readonly MAX_GROUPBY_FIELD_LENGTH = 10;
 
   constructor(private commonUtilitiesService: CommonUtilitiesService,
     private http: HttpClient,
@@ -168,20 +169,38 @@ export class DataStatisticsService implements ProcessingDialogCallback {
     return result;
   }
   // convert statistics report data to data statistics component's options
-  public convertStatisticsReportToOptions(statisticsReport: StatisticsReportEntry[],
+  public convertStatisticsReportToOptions(
+    statisticsReport: StatisticsReportEntry[],
+    groupByField: string,
     chartComputeField: string): any {
     const chartType: string = this.convertChartNameToChartType(this.statisticsType);
-    return this.convertStatisticsReportToChartOptions(
-      statisticsReport,
-      chartComputeField,
-      chartType
-    );
+    if (chartType === 'line') {
+      return this.convertStatisticsReportToLineChartOptions(
+        statisticsReport,
+        groupByField,
+        chartComputeField
+      );
+    } else if (chartType === 'pie') {
+      return this.convertStatisticsReportToPieChartOptions(
+        statisticsReport,
+        groupByField,
+        chartComputeField
+      );
+    } else if (chartType === 'bar') {
+      return this.convertStatisticsReportToBarChartOptions(
+        statisticsReport,
+        groupByField,
+        chartComputeField
+      );
+    } else {
+      // nothing to do
+    }
   }
   // convert statistics report data to chart opitons
-  private convertStatisticsReportToChartOptions(
+  private convertStatisticsReportToLineChartOptions(
     statisticsReport: StatisticsReportEntry[],
-    chartComputeField: string,
-    statisticsType: string): any {
+    groupByField: string,
+    chartComputeField: string): any {
     // tooltip
     const tooltip = {
       trigger: 'axis',
@@ -225,7 +244,8 @@ export class DataStatisticsService implements ProcessingDialogCallback {
     // xAxis
     const xAxisData = [];
     statisticsReport.forEach(element => {
-      xAxisData.push(element.getGroupByField());
+      xAxisData.push(
+        this.commonUtilitiesService.ellipsis(element.getGroupByField(), this.MAX_GROUPBY_FIELD_LENGTH));
     });
     const axisPointer = {
       type: 'shadow'
@@ -262,7 +282,7 @@ export class DataStatisticsService implements ProcessingDialogCallback {
       if (computeField.getFieldName() === chartComputeField) {
         const seriesEntry = {
           name: computeField.getFieldName(),
-          type: statisticsType,
+          type: 'line',
           data: this.convertComputeValueToDataArray(statisticsReport, computeField.getFieldName()),
         };
         series.push(seriesEntry);
@@ -279,7 +299,191 @@ export class DataStatisticsService implements ProcessingDialogCallback {
     };
     return option;
   }
-  // min compute value
+  // convert statistics report data to chart opitons
+  private convertStatisticsReportToPieChartOptions(
+    statisticsReport: StatisticsReportEntry[],
+    groupByField: string,
+    chartComputeField: string): any {
+    // title
+    const title = {
+      text: groupByField + '汇总报表',
+      subtext: chartComputeField,
+      x: 'center'
+    };
+    // tooltip
+    const tooltip = {
+      trigger: 'item',
+      formatter: '{a} <br/>{b} : {c} ({d}%)'
+    };
+    // tool box
+    const dataView = {
+      show: true,
+      readOnly: true,
+    };
+    const restore = {
+      show: false,
+    };
+    const saveAsImage = {
+      show: true,
+    };
+    const feature = {
+      dataView: dataView,
+      restore: restore,
+      saveAsImage: saveAsImage,
+    };
+    const toolBox = {
+      feature: feature,
+    };
+    // legend
+    const legendData = [];
+    this.statisticsReportQueryData.getComputeFields().forEach(element => {
+      // push selected chart field  into legend
+      if (element.getFieldName() === chartComputeField) {
+        legendData.push(element.getFieldName());
+      }
+    });
+    const legend = {
+      bottom: 10,
+      data: legendData,
+    };
+    // series
+    const data = [];
+    statisticsReport.forEach(statisticsReportEntry => {
+      statisticsReportEntry.getComputeValues().forEach(element => {
+        if (element.getComputeField() === chartComputeField) {
+          const dataEntry = {
+            value: element.getComputeValue(),
+            name: statisticsReportEntry.getGroupByField(),
+          };
+          data.push(dataEntry);
+        }
+      });
+    });
+    const series = {
+      name: groupByField,
+      type: 'pie',
+      data: data,
+      itemStyle: {
+        emphasis: {
+          shadowBlur: 10,
+          shadowOffsetX: 0,
+          shadowColor: 'rgba(0, 0, 0, 0.5)'
+        },
+      }
+    };
+    // finally combine
+    const option = {
+      title: title,
+      tooltip: tooltip,
+      toolBox: toolBox,
+      legend: legend,
+      series: series,
+    };
+    return option;
+  }
+  // convert statistics report data to bar chart opitons
+  private convertStatisticsReportToBarChartOptions(
+    statisticsReport: StatisticsReportEntry[],
+    groupByField: string,
+    chartComputeField: string): any {
+    // tooltip
+    const tooltip = {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'cross',
+        crossStyle: {
+          color: '#999'
+        }
+      }
+    };
+    // tool box
+    const dataView = {
+      show: true,
+      readOnly: true,
+    };
+    const restore = {
+      show: false,
+    };
+    const saveAsImage = {
+      show: true,
+    };
+    const feature = {
+      dataView: dataView,
+      restore: restore,
+      saveAsImage: saveAsImage,
+    };
+    const toolBox = {
+      feature: feature,
+    };
+    // legend
+    const legendData = [];
+    this.statisticsReportQueryData.getComputeFields().forEach(element => {
+      // push selected chart field  into legend
+      if (element.getFieldName() === chartComputeField) {
+        legendData.push(element.getFieldName());
+      }
+    });
+    const legend = {
+      data: legendData,
+    };
+    // xAxis
+    const xAxisData = [];
+    statisticsReport.forEach(element => {
+      xAxisData.push(
+        this.commonUtilitiesService.ellipsis(element.getGroupByField(), this.MAX_GROUPBY_FIELD_LENGTH));
+    });
+    const axisPointer = {
+      type: 'shadow'
+    };
+    const xAxis = {
+      type: 'category',
+      data: xAxisData,
+      axisPointer: axisPointer,
+    };
+    // yAxis
+    const yAxis = [];
+    const computeFields = this.statisticsReportQueryData.getComputeFields();
+    computeFields.forEach(element => {
+      if (element.getFieldName() === chartComputeField) {
+        const yAxisEntry = {
+          type: 'value',
+          name: element.getFieldName(),
+          min: this.minComputeValue(statisticsReport, element.getFieldName()),
+          max: this.maxComputeValue(statisticsReport, element.getFieldName()),
+          position: 'left',
+          axisLine: {
+            lineStyle: {}
+          },
+          axisLabel: {
+            formatter: '{value}'
+          }
+        };
+        yAxis.push(yAxisEntry);
+      }
+    });
+    // series
+    const series = [];
+    computeFields.forEach(computeField => {
+      if (computeField.getFieldName() === chartComputeField) {
+        const seriesEntry = {
+          name: computeField.getFieldName(),
+          type: 'bar',
+          data: this.convertComputeValueToDataArray(statisticsReport, computeField.getFieldName()),
+        };
+        series.push(seriesEntry);
+      }
+    });
+    // finally combine
+    const option = {
+      tooltip: tooltip,
+      toolBox: toolBox,
+      legend: legend,
+      xAxis: xAxis,
+      yAxis: yAxis,
+      series: series,
+    };
+    return option;
+  }// min compute value
   private minComputeValue(statisticsReport: StatisticsReportEntry[], computeField: string): Number {
     let result: number = Number.MAX_VALUE;
     statisticsReport.forEach(element => {

@@ -16,12 +16,16 @@ export class DataStatisticsGraphComponent implements OnInit {
   private chartComputeField: string = null;
   // statistics service
   private dataStatisticsService: any = null;
+  // group by field
+  private groupByField: string = null;
   constructor() { }
 
   ngOnInit() {
     // convert statistics report entries to options
     this.options = this.dataStatisticsService.
-      convertStatisticsReportToOptions(this.statisticsReportEntries,
+      convertStatisticsReportToOptions(
+        this.statisticsReportEntries,
+        this.groupByField,
         this.chartComputeField);
   }
   // set statistics report entries
@@ -35,6 +39,10 @@ export class DataStatisticsGraphComponent implements OnInit {
   // set statistics service
   public setDataStatisticsService(dataStatisticsService: any): void {
     this.dataStatisticsService = dataStatisticsService;
+  }
+  // set group by field
+  public setGroupByField(groupByField: string): void {
+    this.groupByField = groupByField;
   }
 
 }
