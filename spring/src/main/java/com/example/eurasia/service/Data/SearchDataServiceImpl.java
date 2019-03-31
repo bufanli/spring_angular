@@ -119,7 +119,7 @@ public class SearchDataServiceImpl implements ISearchDataService {
                 for (int j=0; j<computeFields.length; j++) {
                     computeValues[j] = new ComputeValue();
                     computeValues[j].setFieldName(computeFields[j].getFieldName());//e.g."件数"
-                    computeValues[j].setComputeValue(keyValue.get(computeFields[j].toSql()));//e.g."SUM(件数)"的Value
+                    computeValues[j].setComputeValue(keyValue.get(computeFields[j].toSql().toString()));//e.g."SUM(件数)"的Value
                 }
                 statisticReportValues[i] = new StatisticReportValue();
                 statisticReportValues[i].setGroupByField(groupByValue);
