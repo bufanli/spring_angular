@@ -425,7 +425,7 @@ select PERIOD_DIFF(DATE_FORMAT(CURDATE(),'%Y%m'),DATE_FORMAT(日期,'%Y%m')) fro
                                                                  QueryCondition[] queryConditionsArr) {
 
         StringBuffer sql = new StringBuffer();
-        sql.append("select " + selectField + " ");
+        sql.append("select " + selectField + CommonDao.COMMA);
         for (ComputeField computeField:computeFields) {
             sql.append(computeField.toSql() + CommonDao.COMMA);
         }
