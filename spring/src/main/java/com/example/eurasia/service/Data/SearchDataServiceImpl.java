@@ -117,9 +117,11 @@ public class SearchDataServiceImpl implements ISearchDataService {
                 String groupByValue = keyValue.get(groupByField);//e.g."申报单位的名称"的Value
                 ComputeValue[] computeValues = new ComputeValue[computeFields.length];
                 for (int j=0; j<computeFields.length; j++) {
+                    computeValues[j] = new ComputeValue();
                     computeValues[j].setFieldName(computeFields[i].getFieldName());//e.g."件数"
                     computeValues[j].setComputeValue(keyValue.get(computeFields[i].toSql()));//e.g."SUM(件数)"的Value
                 }
+                statisticReportValues[i] = new StatisticReportValue();
                 statisticReportValues[i].setGroupByField(groupByValue);
                 statisticReportValues[i].setComputeValues(computeValues);
             }
