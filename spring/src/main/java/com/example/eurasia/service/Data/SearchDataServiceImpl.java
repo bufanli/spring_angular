@@ -76,7 +76,7 @@ public class SearchDataServiceImpl implements ISearchDataService {
 
     public ResponseResult statisticsReport(String userID, StatisticsReportQueryData statisticsReportQueryData) throws Exception {
 
-        StatisticReportValue[] statisticReportValues = new StatisticReportValue[1];
+        StatisticReportValue[] statisticReportValues = null;
         List<Data> dataList = null;
         String groupByField = statisticsReportQueryData.getGroupByField();
         ComputeField[] computeFields = statisticsReportQueryData.getComputeFields();
@@ -106,6 +106,22 @@ public class SearchDataServiceImpl implements ISearchDataService {
             }
             if (dataList.size() <= 0) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.STATISTICS_REPORT_FROM_SQL_ZERO);
+            }
+
+            //sql结果List，转成StatisticReportValue
+            statisticReportValues = new StatisticReportValue[dataList.size()];
+            for (int i=0; i<dataList.size(); i++) {
+                Data data = dataList.get(i);
+                Map<String, String> keyValue = data.getKeyValue();
+
+                String groupByValue = keyValue.get(groupByField);//e.g."申报单位的名称"的Value
+                ComputeValue[] computeValues = new ComputeValue[computeFields.length];
+                for (int j=0; j<computeFields.length; j++) {
+                    computeValues[j].setFieldName(computeFields[i].getFieldName());//e.g."件数"
+                    computeValues[j].setComputeValue(keyValue.get(computeFields[i].toSql()));//e.g."SUM(件数)"的Value
+                }
+                statisticReportValues[i].setGroupByField(groupByValue);
+                statisticReportValues[i].setComputeValues(computeValues);
             }
 
         } catch (Exception e) {

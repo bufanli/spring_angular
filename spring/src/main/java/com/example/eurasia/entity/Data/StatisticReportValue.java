@@ -2,23 +2,23 @@ package com.example.eurasia.entity.Data;
 
 public class StatisticReportValue implements Cloneable {
     // group by field
-    private String groupByField;
+    private String groupByValue;
     // compute fields
     private ComputeValue[] computeValues;
 
     public StatisticReportValue () {
     }
 
-    public StatisticReportValue (String groupByField, ComputeValue[] computeValues) {
-        this.groupByField = groupByField;
+    public StatisticReportValue (String groupByValue, ComputeValue[] computeValues) {
+        this.groupByValue = groupByValue;
         this.computeValues = computeValues.clone();//浅拷贝
     }
 
     public void setGroupByField(String groupByField) {
-        this.groupByField = groupByField;
+        this.groupByValue = groupByField;
     }
     public String getGroupByField(){
-        return this.groupByField;
+        return this.groupByValue;
     }
     public void setComputeValues(ComputeValue[] computeValues) {
         this.computeValues = computeValues.clone();//浅拷贝
