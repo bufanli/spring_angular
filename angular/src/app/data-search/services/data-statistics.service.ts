@@ -42,7 +42,7 @@ export class DataStatisticsService implements ProcessingDialogCallback {
     '柱状图': 'bar',
     '饼状图': 'pie',
   };
-  private readonly MAX_GROUPBY_FIELD_LENGTH = 10;
+  private readonly MAX_GROUPBY_FIELD_LENGTH = 8;
 
   constructor(private commonUtilitiesService: CommonUtilitiesService,
     private http: HttpClient,
@@ -250,10 +250,21 @@ export class DataStatisticsService implements ProcessingDialogCallback {
     const axisPointer = {
       type: 'shadow'
     };
+    const axisLabel = {
+      interval: 0,
+      rotate: 40,
+    };
+    const grid = {
+      x: 80,
+      y: 15,
+      x2: 30,
+      y2: 80,
+    };
     const xAxis = {
       type: 'category',
       data: xAxisData,
       axisPointer: axisPointer,
+      axisLabel: axisLabel,
     };
     // yAxis
     const yAxis = [];
@@ -292,8 +303,8 @@ export class DataStatisticsService implements ProcessingDialogCallback {
     const option = {
       tooltip: tooltip,
       toolBox: toolBox,
-      legend: legend,
       xAxis: xAxis,
+      grid: grid,
       yAxis: yAxis,
       series: series,
     };
@@ -435,10 +446,21 @@ export class DataStatisticsService implements ProcessingDialogCallback {
     const axisPointer = {
       type: 'shadow'
     };
+    const axisLabel = {
+      interval: 0,
+      rotate: 40,
+    };
+    const grid = {
+      x: 80,
+      y: 15,
+      x2: 30,
+      y2: 80,
+    };
     const xAxis = {
       type: 'category',
       data: xAxisData,
       axisPointer: axisPointer,
+      axisLabel: axisLabel,
     };
     // yAxis
     const yAxis = [];
@@ -477,7 +499,7 @@ export class DataStatisticsService implements ProcessingDialogCallback {
     const option = {
       tooltip: tooltip,
       toolBox: toolBox,
-      legend: legend,
+      grid: grid,
       xAxis: xAxis,
       yAxis: yAxis,
       series: series,
