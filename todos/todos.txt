@@ -49,6 +49,8 @@
 
 22. 第二个sheet页空的时候会抛出异常（userMode）。
 
+23.如果分辨率大（1920*1080）的PC上面，微信二维码显示不全。
+
 【finished】
 
 1. 对HTTP增加拦截器，保证Session过期之后重定向.（Spring代码push了，没有注入Annotation） 4 OK
