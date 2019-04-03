@@ -9,24 +9,16 @@
 <div class="content">
   <div class="container">
     <div class="login-client-page">
-      <div class="slides" id="slides">
-        <div class="viewport" id="viewport">
-          <div class="page-view">
-            <div class="view-container"><img src="../../assets/img/slide2.png">
-              <div class="title">先进信息咨询网</div>
-              <div class="content">坚持做信息咨询的高效管理</div>
-            </div>
-          </div>
-        </div>
+      <div class="login-wrap slides">
+        <img class="adjust-image" src="../../assets/img/slide2.png" />
+        <div class="title">先进信息咨询网</div>
+        <div class="my-content">坚持做信息咨询的高效管理</div>
       </div>
       <div class="login-wrap">
         <form class="form-horizontal">
           <div id="bar-code">
           </div>
         </form>
-        <!-- <div style="text-align: center">
-          <a class="btn btn-primary glyphicon glyphicon-leaf" (click)="dummyLogin()" role="button">&nbsp;登录（微信未对应）</a>
-        </div> -->
         <div class="alert alert-danger login-error" *ngIf="isUserNotInDB">该用户尚未注册</div>
         <div class="alert alert-danger login-error" *ngIf="isUserRefused">该用户拒绝登陆</div>
       </div>
