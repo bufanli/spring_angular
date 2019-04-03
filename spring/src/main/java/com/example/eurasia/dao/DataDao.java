@@ -346,26 +346,33 @@ Mysql limit offset示例
         Map<String, String> order = new LinkedHashMap<>();
         StringBuffer sqlOrder = new StringBuffer();
 
+/*
+as不是给表里的字段取别名，而是给查询的结果字段取别名。
+其目的是让查询的结果展现更符合人们观看习惯,在多张表查询的时候可以直接的区别多张表的同名的字段。
+ */
         if (groupByField.equals("年")) {
             //报告类型是周期(年)的情况
-            selectFieldSql.append("日期");
-            groupByFieldSql.append("date_format('日期','%Y')");
+            String yearFormat = "date_format(日期,'%Y')";
+            selectFieldSql.append(yearFormat + " as 日期");
+            groupByFieldSql.append(yearFormat);
 
-            order.put("日期","desc");
+            order.put(yearFormat,"desc");
             sqlOrder.append(convertOrderToSQL(order));
         } else if (groupByField.equals("月")) {
             //报告类型是周期(月)的情况
-            selectFieldSql.append("日期");
-            groupByFieldSql.append("date_format('日期','%Y-%m')");
+            String monthFormat = "date_format(日期,'%Y-%m')";
+            selectFieldSql.append(monthFormat + " as 日期");
+            groupByFieldSql.append(monthFormat);
 
-            order.put("日期","desc");
+            order.put(monthFormat,"desc");
             sqlOrder.append(convertOrderToSQL(order));
         } else if (groupByField.equals("季度")) {
             //报告类型是周期(季度)的情况
-            selectFieldSql.append("日期");
-            groupByFieldSql.append("concat(date_format('日期', '%Y'),FLOOR((date_format('日期', '%m')+2)/3))");
+            String quarterFormat = "concat(date_format(日期, '%Y'),FLOOR((date_format(日期, '%m')+2)/3))";
+            selectFieldSql.append(quarterFormat + " as 日期");
+            groupByFieldSql.append(quarterFormat);
 
-            order.put("日期","desc");
+            order.put(quarterFormat,"desc");
             sqlOrder.append(convertOrderToSQL(order));
         } else {
             selectFieldSql.append(groupByField);
