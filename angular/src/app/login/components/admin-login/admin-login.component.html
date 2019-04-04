@@ -9,17 +9,12 @@
 <div class="content">
   <div class="container">
     <div class="login-client-page">
-      <div class="slides" id="slides">
-        <div class="viewport" id="viewport">
-          <div class="page-view">
-            <div class="view-container"><img src="../../assets/img/slide2.png">
-              <div class="title">先进信息咨询网</div>
-              <div class="content">坚持做信息咨询的高效管理</div>
-            </div>
-          </div>
-        </div>
+      <div class="login-wrap slides" id="slides">
+        <img class="adjust-image" src="../../assets/img/slide2.png" />
+        <div class="title">先进信息咨询网</div>
+        <div class="my-content">坚持做信息咨询的高效管理</div>
       </div>
-      <div class="login-wrap">
+      <div class="login-wrap login-form">
         <div class="panel panel-primary admin-login">
           <div class="panel-heading">
             <h4 class="panel-title">管理员登录</h4>
@@ -29,15 +24,15 @@
               <div class="form-group">
                 <label class="col-md-3 control-label">用户名</label>
                 <div class="col-md-9">
-                  <input class="form-control" id="admin_name" [(ngModel)]="name" type="text"
-                  placeholder="请输入用户名" name="admin_name" (focus)="onChangeInput()">
+                  <input class="form-control" id="admin_name" [(ngModel)]="name" type="text" placeholder="请输入用户名"
+                    name="admin_name" (focus)="onChangeInput()">
                 </div>
               </div>
               <div class="form-group">
                 <label class="col-md-3 control-label">密码</label>
                 <div class="col-md-9">
-                  <input class="form-control" id="admin_password" [(ngModel)]="password" type="password" placeholder="请输入密码"
-                    name="admin_password" (focus)="onChangeInput()">
+                  <input class="form-control" id="admin_password" [(ngModel)]="password" type="password"
+                    placeholder="请输入密码" name="admin_password" (focus)="onChangeInput()">
                 </div>
               </div>
               <div class="form-group">
@@ -54,3 +49,4 @@
       </div>
     </div>
   </div>
+</div>
