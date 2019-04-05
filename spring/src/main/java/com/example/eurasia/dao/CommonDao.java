@@ -549,7 +549,7 @@ select PERIOD_DIFF(DATE_FORMAT(CURDATE(),'%Y%m'),DATE_FORMAT(日期,'%Y%m')) fro
     /**
      * convert "order" to sql
      */
-    protected StringBuffer convertOrderToSQL(Map<String, String> order) {
+    public StringBuffer convertOrderToSQL(Map<String, String> order) {
 
         StringBuffer sql = new StringBuffer();
         sql.append(" order by ");

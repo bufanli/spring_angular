@@ -108,6 +108,15 @@ public class SearchDataServiceImpl implements ISearchDataService {
                 return new ResponseResultUtil().error(ResponseCodeEnum.STATISTICS_REPORT_FROM_SQL_ZERO);
             }
 
+            if (groupByField.equals(DataService.STATISTICS_REPORT_PRODUCT_DATE_YEAR) ||
+                    groupByField.equals(DataService.STATISTICS_REPORT_PRODUCT_DATE_MONTH) ||
+                    groupByField.equals(DataService.STATISTICS_REPORT_PRODUCT_DATE_QUARTER)) {
+                //报告类型是周期(年,月,季度)的情况
+                groupByField =DataService.STATISTICS_REPORT_PRODUCT_DATE;
+            } else {
+
+            }
+
             //sql结果List，转成StatisticReportValue
             statisticReportValues = new StatisticReportValue[dataList.size()];
             for (int i=0; i<dataList.size(); i++) {
