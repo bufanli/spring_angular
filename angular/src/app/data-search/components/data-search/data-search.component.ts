@@ -193,8 +193,9 @@ export class DataSearchComponent implements OnInit,
     $('#table').bootstrapTable({
       columns: headers,
       method: 'post',
-      // contentType: 'application/x-www-form-urlencoded',
       url: that.searchUrl,
+      // 60 px is for pagination
+      height: $(window).height() * 0.5 - 60,
       striped: true,
       pageNumber: 1,
       queryParamsType: 'limit',
@@ -295,6 +296,14 @@ export class DataSearchComponent implements OnInit,
       // hook the event handler for gray to black font color
       $(this).datepicker().on('changeDate', function (this) {
         $(this).css('color', 'black');
+      });
+      // reset data search table when window's height changes
+      // tslint:disable-next-line: deprecation
+      $(window).resize(function () {
+        $('#table').bootstrapTable('resetView', {
+          // 60 px is for pagination
+          height: $(window).height() * 0.5 - 60,
+        });
       });
     });
 
