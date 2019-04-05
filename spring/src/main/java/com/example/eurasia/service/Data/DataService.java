@@ -41,6 +41,11 @@ public class DataService {
     public static final String STATISTICS_SETTING_TYPE_COLUMN_NAME = "Type";
     public static final String STATISTICS_SETTING_COMPUTE_BY_COLUMN_NAME = "ComputeByName";
 
+    public static final String STATISTICS_REPORT_PRODUCT_DATE = "日期";
+    public static final String STATISTICS_REPORT_PRODUCT_DATE_YEAR = "年";
+    public static final String STATISTICS_REPORT_PRODUCT_DATE_MONTH = "月";
+    public static final String STATISTICS_REPORT_PRODUCT_DATE_QUARTER = "季度";
+
     public static final String EXPORT_EXCEL_SHEET_NAME = "统计表";
     public static final String STATISTICS_REPORT_NAME_EX = "汇总报表";
     public static final String BR = "<br/>";
@@ -217,8 +222,44 @@ public class DataService {
         if (StringUtils.isEmpty(tableName) || StringUtils.isEmpty(groupByField) || computeFields == null || queryConditionsArr == null) {
             return null;
         }
+        StringBuffer selectFieldSql = new StringBuffer();
+        StringBuffer groupByFieldSql = new StringBuffer();
+        Map<String, String> order = new LinkedHashMap<>();
+        StringBuffer orderSql = new StringBuffer();
+        /*
+as不是给表里的字段取别名，而是给查询的结果字段取别名。
+其目的是让查询的结果展现更符合人们观看习惯,在多张表查询的时候可以直接的区别多张表的同名的字段。
+ */
+        if (groupByField.equals(DataService.STATISTICS_REPORT_PRODUCT_DATE_YEAR)) {
+            //报告类型是周期(年)的情况
+            String yearFormat = "date_format(" + DataService.STATISTICS_REPORT_PRODUCT_DATE + ",'%Y')";
+            selectFieldSql.append(yearFormat + " as " + DataService.STATISTICS_REPORT_PRODUCT_DATE);
+            groupByFieldSql.append(yearFormat);
 
-        return getDataDao().queryListForAllObject(tableName,groupByField,computeFields,queryConditionsArr);
+            order.put(yearFormat,"desc");
+            orderSql.append(getDataDao().convertOrderToSQL(order));
+        } else if (groupByField.equals(DataService.STATISTICS_REPORT_PRODUCT_DATE_MONTH)) {
+            //报告类型是周期(月)的情况
+            String monthFormat = "date_format(" + DataService.STATISTICS_REPORT_PRODUCT_DATE + ",'%Y-%m')";
+            selectFieldSql.append(monthFormat + " as " + DataService.STATISTICS_REPORT_PRODUCT_DATE);
+            groupByFieldSql.append(monthFormat);
+
+            order.put(monthFormat,"desc");
+            orderSql.append(getDataDao().convertOrderToSQL(order));
+        } else if (groupByField.equals(DataService.STATISTICS_REPORT_PRODUCT_DATE_QUARTER)) {
+            //报告类型是周期(季度)的情况
+            String quarterFormat = "concat(date_format(" + DataService.STATISTICS_REPORT_PRODUCT_DATE + ", '%Y')," +
+                    "FLOOR((date_format(" + DataService.STATISTICS_REPORT_PRODUCT_DATE + ", '%m')+2)/3))";
+            selectFieldSql.append(quarterFormat + " as " + DataService.STATISTICS_REPORT_PRODUCT_DATE);
+            groupByFieldSql.append(quarterFormat);
+
+            order.put(quarterFormat,"desc");
+            orderSql.append(getDataDao().convertOrderToSQL(order));
+        } else {
+            selectFieldSql.append(groupByField);
+            groupByFieldSql.append(groupByField);
+        }
+        return getDataDao().queryListForAllObject(tableName,selectFieldSql,groupByFieldSql,orderSql,computeFields,queryConditionsArr);
     }
 
     /**
