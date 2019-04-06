@@ -56,7 +56,15 @@ export class UserListComponent implements OnInit, AfterViewChecked {
       columns: this.userListHeaders,
       pagination: true,
       pageSize: 8,
+      height: $(window).height() * 0.8 - 60,
       pageList: [],
+    });
+    // tslint:disable-next-line: deprecation
+    $(window).resize(function () {
+      $('#table').bootstrapTable('resetView', {
+        // 60 px is for pagination
+        height: $(window).height() * 0.8 - 60,
+      });
     });
     // bind user edit handler for every page
     $('#table').on('page-change.bs.table', this, this.bindUserEditEventHandler);
