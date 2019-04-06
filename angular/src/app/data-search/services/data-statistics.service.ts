@@ -36,6 +36,9 @@ export class DataStatisticsService implements ProcessingDialogCallback {
   private statisticsType: string;
   // top N
   public readonly TOP_N = 10;
+  // quarter group by field
+  public readonly QUARTER_GROUP_BY_FIELD = '季度';
+  public readonly YEAR = '年';
   // chart name to chart type
   public readonly CHART_NAME_TO_CHART_TYPE_TABLE: any = {
     '折线图': 'line',
@@ -152,7 +155,7 @@ export class DataStatisticsService implements ProcessingDialogCallback {
       const element = data[i];
       const entry: StatisticsReportEntry = new StatisticsReportEntry();
       // group by field
-      entry.setGroupByField(element.groupByField);
+      entry.setGroupByField(this.convertQuarterGroupByField(element.groupByField));
       // compute values
       const computeValues: any = element.computeValues;
       const finalComputeValues: ComputeValue[] = new Array<ComputeValue>(computeValues.length);
@@ -167,6 +170,17 @@ export class DataStatisticsService implements ProcessingDialogCallback {
       result[i] = entry;
     }
     return result;
+  }
+  // convert group by field if it is quarter, from spring, the group by
+  // field is passed as 20191, change it to 2019年1季度
+  private convertQuarterGroupByField(groupByField: string): string {
+    if (this.statisticsReportQueryData.getGroupByField() === this.QUARTER_GROUP_BY_FIELD) {
+      const year: string = groupByField.substring(0, 4);
+      const quarter: string = groupByField.substring(4, 5);
+      return year + this.YEAR + quarter + this.QUARTER_GROUP_BY_FIELD;
+    } else {
+      return groupByField;
+    }
   }
   // convert statistics report data to data statistics component's options
   public convertStatisticsReportToOptions(

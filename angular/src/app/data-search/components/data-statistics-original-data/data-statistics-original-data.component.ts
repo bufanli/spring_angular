@@ -39,6 +39,14 @@ export class DataStatisticsOriginalDataComponent implements OnInit {
       pagination: false,
       pageSize: this.dataStatisticsService.TOP_N,
       pageList: [],
+      height: $(window).height() * 0.5 - 60,
+    });
+    // tslint:disable-next-line: deprecation
+    $(window).resize(function () {
+      $('#statistics-table').bootstrapTable('resetView', {
+        // 60 px is for pagination
+        height: $(window).height() * 0.5 - 60,
+      });
     });
     // convert statistics report entries into data
     const statisticsData =
