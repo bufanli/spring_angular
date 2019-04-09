@@ -13,11 +13,11 @@ export const loginRoutes: Routes = [
     pathMatch: 'full',
   },
   {
-    path: 'internal',
+    path: 'external',
     component: LoginComponent
   },
   {
-    path: 'external',
+    path: 'internal',
     component: AdminLoginComponent,
   }
 ];

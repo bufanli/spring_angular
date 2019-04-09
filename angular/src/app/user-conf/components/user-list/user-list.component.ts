@@ -24,7 +24,7 @@ export class UserListComponent implements OnInit, AfterViewChecked {
   private isShowLastPage = false;
 
   private userListHeaders: Header[] = [
-    new Header('userID', 'userID', false),
+    new Header('userID', 'userID', true),
     new Header('昵称', '昵称', true),
     new Header('性别', '性别', true),
     new Header('名字', '名字', true),
