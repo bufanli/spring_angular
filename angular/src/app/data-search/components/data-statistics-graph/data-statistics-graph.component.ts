@@ -27,10 +27,10 @@ export class DataStatisticsGraphComponent implements OnInit {
         this.groupByField,
         this.chartComputeField);
     // register resize function to echarts
-    $('#echarts').height($(window).height() * 0.5);
+    $('#echarts').height($(window).height() * 0.45);
     // tslint:disable-next-line: deprecation
     $(window).resize(function () {
-      $('#echarts').height($(window).height() * 0.5);
+      $('#echarts').height($(window).height() * 0.45);
     });
   }
   // set statistics report entries

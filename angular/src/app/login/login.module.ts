@@ -9,15 +9,15 @@ import { CommonModule } from '@angular/common';
 export const loginRoutes: Routes = [
   {
     path: '',
-    redirectTo: 'user',
+    redirectTo: 'internal',
     pathMatch: 'full',
   },
   {
-    path: 'user',
+    path: 'internal',
     component: LoginComponent
   },
   {
-    path: 'admin',
+    path: 'external',
     component: AdminLoginComponent,
   }
 ];
