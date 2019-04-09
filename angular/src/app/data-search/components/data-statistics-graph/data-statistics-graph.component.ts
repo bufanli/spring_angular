@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { StatisticsReportEntry } from '../../entities/statistics-report-entry';
-import { DataStatisticsService } from '../../services/data-statistics.service';
 
 @Component({
   selector: 'app-data-statistics-graph',
@@ -27,6 +26,12 @@ export class DataStatisticsGraphComponent implements OnInit {
         this.statisticsReportEntries,
         this.groupByField,
         this.chartComputeField);
+    // register resize function to echarts
+    $('#echarts').height($(window).height() * 0.5);
+    // tslint:disable-next-line: deprecation
+    $(window).resize(function () {
+      $('#echarts').height($(window).height() * 0.5);
+    });
   }
   // set statistics report entries
   public setStatisticsReportEntries(statisticsReportEntries: StatisticsReportEntry[]): void {
