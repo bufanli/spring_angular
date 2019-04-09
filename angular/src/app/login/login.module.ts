@@ -9,7 +9,7 @@ import { CommonModule } from '@angular/common';
 export const loginRoutes: Routes = [
   {
     path: '',
-    redirectTo: 'internal',
+    redirectTo: 'external',
     pathMatch: 'full',
   },
   {
