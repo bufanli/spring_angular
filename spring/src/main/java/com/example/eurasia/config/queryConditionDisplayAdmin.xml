@@ -9,7 +9,7 @@
     <column key="经营单位代码" value="FALSE" />
     <column key="运输工具名称" value="FALSE" />
     <column key="提运单号" value="FALSE" />
-    <column key="海关编码" value="FALSE" />
+    <column key="海关编码" value="TRUE" />
     <column key="附加码" value="FALSE" />
     <column key="商品名称" value="TRUE" />
     <column key="部位" value="FALSE" />
@@ -23,17 +23,17 @@
     <column key="级别" value="FALSE" />
     <column key="饲养方式" value="FALSE" />
     <column key="申报要素" value="FALSE" />
-    <column key="成交方式" value="TRUE" />
-    <column key="申报单价" value="TRUE" />
-    <column key="申报总价" value="TRUE" />
+    <column key="成交方式" value="FALSE" />
+    <column key="申报单价" value="FALSE" />
+    <column key="申报总价" value="FALSE" />
     <column key="申报币制" value="FALSE" />
-    <column key="美元单价" value="TRUE" />
-    <column key="美元总价" value="TRUE" />
+    <column key="美元单价" value="FALSE" />
+    <column key="美元总价" value="FALSE" />
     <column key="美元币制" value="FALSE" />
     <column key="统计人民币价" value="FALSE" />
     <column key="申报数量" value="FALSE" />
     <column key="申报数量单位" value="FALSE" />
-    <column key="法定重量" value="TRUE" />
+    <column key="法定重量" value="FALSE" />
     <column key="法定单位" value="FALSE" />
     <column key="毛重" value="FALSE" />
     <column key="净重" value="FALSE" />
