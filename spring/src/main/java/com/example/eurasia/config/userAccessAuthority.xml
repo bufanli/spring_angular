@@ -16,4 +16,5 @@
     <column key="导出透视图可否" value="VARCHAR(50)" />
     <column key="查看数据图可否" value="VARCHAR(50)" />
     <column key="导出数据图可否" value="VARCHAR(50)" />
+    <column key="显示查询条件数" value="VARCHAR(50)" />
 </mapping>

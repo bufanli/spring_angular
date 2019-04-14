@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mapping>
     <column key="userID" value="VARCHAR(50)" />
-    <column key="日期" value="VARCHAR(10)" />
+    <column key="日期" value="VARCHAR(10)" /><!--必显示-->
     <column key="进出口" value="VARCHAR(10)" />
     <column key="申报单位名称" value="VARCHAR(10)" />
     <column key="货主单位名称" value="VARCHAR(10)" />
@@ -9,7 +9,7 @@
     <column key="经营单位代码" value="VARCHAR(10)" />
     <column key="运输工具名称" value="VARCHAR(10)" />
     <column key="提运单号" value="VARCHAR(10)" />
-    <column key="海关编码" value="VARCHAR(10)" />
+    <column key="海关编码" value="VARCHAR(10)" /><!--必显示-->
     <column key="附加码" value="VARCHAR(10)" />
     <column key="商品名称" value="VARCHAR(10)" />
     <column key="部位" value="VARCHAR(10)" />

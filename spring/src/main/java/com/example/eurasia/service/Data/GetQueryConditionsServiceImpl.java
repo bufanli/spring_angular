@@ -86,7 +86,7 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
         QueryCondition[] queryConditions;
 
         try {
-            // 取得所以的查询条件(Data的Map-key是查询条件的key，Data的Map-value是查询条件的type)
+            // 取得所有的查询条件(Data的Map-key是查询条件的key，Data的Map-value是查询条件的type)
             List<Data> allQueryConditionsList = dataService.getAllQueryConditions();
             if (allQueryConditionsList == null) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.QUERY_CONDITION_FROM_SQL_NULL);
@@ -135,12 +135,9 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
 
         String queryConditionValue = null;
         switch (type) {
-            case QueryCondition.QUERY_CONDITION_TYPE_STRING:
-                queryConditionValue = "";
-                break;
             case QueryCondition.QUERY_CONDITION_TYPE_DATE:
                 if (key.equals(UserService.MUST_PRODUCT_DATE)) {
-                    queryConditionValue = this.getDateDefaultValue(userID);
+                    queryConditionValue = this.getUserTheLastMonth(userID);//T.B.D
                 } else {
                     queryConditionValue = QueryCondition.QUERY_CONDITION_SPLIT;
                 }
@@ -155,9 +152,10 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
                             UserService.MUST_PRODUCT_NUMBER,
                             userID);
                 } else {
-                    queryConditionValue = QueryCondition.QUERY_CONDITION_SPLIT;
+                    queryConditionValue = QueryCondition.QUERY_CONDITION_SPLIT;//T.B.D
                 }
                 break;
+            case QueryCondition.QUERY_CONDITION_TYPE_STRING:
             default:
                 queryConditionValue = "";
                 break;
@@ -173,7 +171,7 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
      * @author FuJia
      * @Time 2018-11-22 00:00:00
      */
-    private String getDateDefaultValue(String userID) throws Exception {
+    private String getUserTheLastMonth(String userID) throws Exception {
 
         String[] dateArr = null;
         try {
