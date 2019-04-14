@@ -73,6 +73,7 @@ public class UserService {
     public static final String MUST_PRODUCT_DATE = "日期";
     public static final String MUST_PRODUCT_NUMBER = "海关编码";//海关/商品编码
     public static final String MUST_SEARCH_COUNT = "看的条数";
+    public static final String MUST_CONDITION_DISPLAY_COUNT = "显示查询条件数";
 
     //登陆用字段
     public static final String LOGIN_USER_ID = "用户名";
@@ -663,7 +664,7 @@ public class UserService {
     }
 
     /**
-     * 取得用户可显示的查询条件
+     * 取得用户的所有的查询条件(包括可显示和不可显示的)
      * @param
      * @return
      * @exception
@@ -750,7 +751,7 @@ public class UserService {
     }
 
     /**
-     * 取得可显示的表头
+     * 取得用户的所有的表头(包括可显示和不可显示的)
      * @param
      * @return
      * @exception

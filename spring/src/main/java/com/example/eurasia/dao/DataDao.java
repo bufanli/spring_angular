@@ -373,14 +373,41 @@ Mysql limit offset示例
      * @author FuJia
      * @Time 2018-10-27 00:00:00
      */
-    public List<Map<String, Object>> queryListForColumns(String tableName, String[] selectColumns) throws Exception {
+    public List<Map<String, Object>> queryListForColumns(String tableName, String[] columnNames) throws Exception {
         StringBuffer sql = new StringBuffer();
         sql.append("select ");
-        for (String selectColumn : selectColumns) {
-            sql.append(selectColumn + CommonDao.COMMA);
+        for (String columnName : columnNames) {
+            sql.append(columnName + CommonDao.COMMA);
         }
         sql.deleteCharAt(sql.length() - CommonDao.COMMA.length());
         sql.append(" from " + tableName);
+
+        List<Map<String, Object>> colsNameList = getJdbcTemplate().queryForList(sql.toString());
+
+        return colsNameList;
+    }
+
+    /**
+     * 查询并返回List集合
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-10-27 00:00:00
+     */
+    public List<Map<String, Object>> queryListForColumnValues(String tableName, String[] columnNames) throws Exception {
+        StringBuffer sql = new StringBuffer();
+        sql.append("select ");
+        for (String columnName : columnNames) {
+            sql.append(columnName + CommonDao.COMMA);
+        }
+        sql.deleteCharAt(sql.length() - CommonDao.COMMA.length());
+        sql.append(" from " + tableName);
+        sql.append(" group by  " + tableName);
+        for (String columnName : columnNames) {
+            sql.append(columnName + CommonDao.COMMA);
+        }
+        sql.deleteCharAt(sql.length() - CommonDao.COMMA.length());
 
         List<Map<String, Object>> colsNameList = getJdbcTemplate().queryForList(sql.toString());
 
