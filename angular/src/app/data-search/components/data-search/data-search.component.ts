@@ -386,6 +386,7 @@ export class DataSearchComponent implements OnInit,
     const options: NgbModalOptions = new NgbModalConfig();
     options.backdrop = false;
     options.windowClass = 'modal fade in';
+    options.size = 'lg';
     return options;
   }
   // get start and end time for querying

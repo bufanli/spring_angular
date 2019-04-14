@@ -4,7 +4,7 @@
       <div class="input-group">
         <span class="input-group-addon" id="product-time">商品有效期间</span>
         <input type="text" class="form-control datepicker" aria-describedby="product-time"
-        name="product-start-time{{this.componentID}}" id="product-start-time{{this.componentID}}" autocomplete="off">
+          name="product-start-time{{this.componentID}}" id="product-start-time{{this.componentID}}" autocomplete="off">
         <div class="input-group-addon">到</div>
         <input type="text" class="form-control datepicker" id="product-to-time{{this.componentID}}" autocomplete="off">
       </div>
@@ -28,7 +28,7 @@
   <div class="col-md-12">
     <div class="form-group">
       <div class="input-group">
-        <span class="input-group-addon" id="product-code{{this.componentID}}">海关编码</span>
+        <span class="input-group-addon" id="product-code">海关编码</span>
         <input type="text" [(ngModel)]="productCodes" name="product-code{{this.componentID}}" class="form-control"
           placeholder="请输入海关编码" aria-describedby="product-code">
       </div>
@@ -36,21 +36,31 @@
   </div>
 </div>
 <div class="row" *ngIf="currentUserAccessAuthorities">
-  <div class="col-md-6">
+  <div class="col-md-4">
     <div class="form-group">
       <div class="input-group">
-        <span class="input-group-addon" id="lookup-times-label{{this.componentID}}">查看详细频度(每分钟)</span>
-        <input disabled="disabled" type="number" [(ngModel)]="currentUserAccessAuthorities['查看详细频度']" name="lookup-times{{this.componentID}}"
-          class="form-control" aria-describedby="lookup-times-label">
+        <span class="input-group-addon" id="lookup-times-label">查看详细频度(每分钟)</span>
+        <input disabled="disabled" type="number" [(ngModel)]="currentUserAccessAuthorities['查看详细频度']"
+          name="lookup-times{{this.componentID}}" class="form-control" aria-describedby="lookup-times-label">
       </div>
     </div>
   </div>
-  <div class="col-md-6">
+  <div class="col-md-4">
     <div class="form-group">
       <div class="input-group">
-        <span class="input-group-addon" id="data-limit-rows-label{{this.componentID}}">看的条数</span>
-        <input type="number" [(ngModel)]="currentUserAccessAuthorities['看的条数']" name="data-limit-rows{{this.componentID}}"
-          class="form-control" aria-describedby="data-limit-rows-label">
+        <span class="input-group-addon" id="data-limit-rows-label">看的条数</span>
+        <input type="number" [(ngModel)]="currentUserAccessAuthorities['看的条数']"
+          name="data-limit-rows{{this.componentID}}" class="form-control" aria-describedby="data-limit-rows-label">
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="form-group">
+      <div class="input-group">
+        <span class="input-group-addon" id="limit-query-conditions">显示查询条件数</span>
+        <input type="number" [(ngModel)]="currentUserAccessAuthorities['显示查询条件数']"
+          name="limit-query-conditions{{this.componentID}}" class="form-control"
+          aria-describedby="limit-query-conditions">
       </div>
     </div>
   </div>
@@ -60,7 +70,8 @@
     <div class="form-group">
       <div class="checkbox">
         <label>
-          <input disabled="disabled" type="checkbox" [(ngModel)]="currentUserAccessAuthorities['复制数据可否']" name="data-copy">复制数据可否
+          <input disabled="disabled" type="checkbox" [(ngModel)]="currentUserAccessAuthorities['复制数据可否']"
+            name="data-copy">复制数据可否
         </label>
       </div>
     </div>

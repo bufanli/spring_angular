@@ -31,7 +31,6 @@ export class UserEditComponent implements OnInit, OnDestroy, CommonDialogCallbac
   // TODO this will be replace to entity class in future from any type
   public currentUserHeaderDisplay: UserQueryConditionHeader = null;
   // user query condition display
-  // TODO this will be replace to entity class in future from any type
   public currentUserQueryConditionDisplay: UserQueryConditionHeader = null;
   // user basic info
   public currentUser: UserBasicInfo = null;
@@ -66,6 +65,7 @@ export class UserEditComponent implements OnInit, OnDestroy, CommonDialogCallbac
       const factory = this.resolver.resolveComponentFactory(UserQueryConditionsComponent);
       this.componentRefQueryConditionDisplays = this.container.createComponent(factory);
       this.componentRefQueryConditionDisplays.instance.setQueryConditionDisplays(this.currentUserQueryConditionDisplay);
+      this.componentRefQueryConditionDisplays.instance.setUserAccessAuthorities(this.currentUserAccessAuthorities);
       // this.componentRef.instance.output.subscribe((msg: string) => console.log(msg));
     }
 

@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 import { CommonDialogCallback } from 'src/app/common/interfaces/common-dialog-callback';
 import { CommonUtilitiesService } from 'src/app/common/services/common-utilities.service';
 import { CurrentUserContainerService } from 'src/app/common/services/current-user-container.service';
+import { UserQueryConditionsComponent } from '../user-query-conditions/user-query-conditions.component';
 
 @Component({
   selector: 'app-user-add-input',
@@ -35,6 +36,7 @@ export class UserAddInputComponent implements OnInit, OnDestroy, CommonDialogCal
   @ViewChild('userEditContainer', { read: ViewContainerRef }) container: ViewContainerRef;
   componentRefBasicInfo: ComponentRef<UserBasicInfoComponent>;
   componentRefAccessAuthorities: ComponentRef<UserAccessAuthoritiesComponent>;
+  componentRefQueryConditionDisplays: ComponentRef<UserQueryConditionsComponent>;
 
   private openID: string = null;
   constructor(private userInfoService: UserInfoService,
@@ -99,7 +101,13 @@ export class UserAddInputComponent implements OnInit, OnDestroy, CommonDialogCal
       this.currentUserAccessAuthorities.userID = this.openID;
       this.componentRefAccessAuthorities.instance.setCurrentUserAccessAuthorities(
         this.currentUserAccessAuthorities);
-      // this.componentRef.instance.output.subscribe((msg: string) => console.log(msg));
+    } else if (type === 'query-condition-displays') {
+      const factory = this.resolver.resolveComponentFactory(UserQueryConditionsComponent);
+      this.componentRefQueryConditionDisplays = this.container.createComponent(factory);
+      this.currentUserQueryConditionDisplays.userID = this.openID;
+      this.componentRefQueryConditionDisplays.instance.setQueryConditionDisplays(
+        this.currentUserQueryConditionDisplays);
+      this.componentRefQueryConditionDisplays.instance.setUserAccessAuthorities(this.currentUserAccessAuthorities);
     }
   }
   // add user info to spring
@@ -119,13 +127,21 @@ export class UserAddInputComponent implements OnInit, OnDestroy, CommonDialogCal
     } else {
       accessAuthorities = this.currentUserAccessAuthorities;
     }
+    // query condition displays
+    let queryConditionDisplays = null;
+    if (this.componentRefQueryConditionDisplays !== undefined) {
+      queryConditionDisplays = this.componentRefQueryConditionDisplays
+        .instance.getQueryCondtionDisplays();
+    } else {
+      queryConditionDisplays = this.currentUserQueryConditionDisplays;
+    }
     // call service
     this.userInfoService.addUserInfo(
       this,
       basicInfo,
       accessAuthorities,
       this.currentUserHeaderDisplays,
-      this.currentUserQueryConditionDisplays);
+      queryConditionDisplays);
   }
   // callback to add user
   public addUserInfoCallback(httpResponse: HttpResponse): void {

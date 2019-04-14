@@ -16,7 +16,7 @@ export class UserAccessAuthoritiesComponent implements AfterViewInit {
   // so we have to define a uuid as component's unique id.
   public componentID: string = null;
 
-  @Input() currentUserAccessAuthorities: UserAccessAuthorities;
+  private currentUserAccessAuthorities: UserAccessAuthorities;
   // product codes which is shown as , seperator
   public productCodes: string = null;
   public limitDate: string = null;

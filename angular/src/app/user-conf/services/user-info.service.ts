@@ -31,6 +31,7 @@ export const UserAccessAuthoritiesDictionary = [
   '导出透视图可否',
   '查看数据图可否',
   '导出数据图可否',
+  '显示查询条件数',
 ];
 export const UserBaiscInfosDictionary = [
   'id',

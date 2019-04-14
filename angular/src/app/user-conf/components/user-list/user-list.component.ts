@@ -139,6 +139,7 @@ export class UserListComponent implements OnInit, AfterViewChecked {
     const options: NgbModalOptions = new NgbModalConfig();
     options.backdrop = false;
     options.windowClass = 'modal fade in';
+    options.size = 'lg';
     return options;
   }
   // show modal for user setting
