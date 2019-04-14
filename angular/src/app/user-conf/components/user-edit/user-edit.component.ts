@@ -12,6 +12,7 @@ import { EventEmitter } from '@angular/core';
 import { CommonUtilitiesService } from 'src/app/common/services/common-utilities.service';
 import { CommonDialogCallback } from 'src/app/common/interfaces/common-dialog-callback';
 import { CurrentUserContainerService } from 'src/app/common/services/current-user-container.service';
+import { UserQueryConditionsComponent } from '../user-query-conditions/user-query-conditions.component';
 
 @Component({
   selector: 'app-user-edit',
@@ -38,6 +39,7 @@ export class UserEditComponent implements OnInit, OnDestroy, CommonDialogCallbac
   @ViewChild('userEditContainer', { read: ViewContainerRef }) container: ViewContainerRef;
   componentRefBasicInfo: ComponentRef<UserBasicInfoComponent>;
   componentRefAccessAuthorities: ComponentRef<UserAccessAuthoritiesComponent>;
+  componentRefQueryConditionDisplays: ComponentRef<UserQueryConditionsComponent>;
 
   @Output() notifyClose: EventEmitter<string> = new EventEmitter<string>();
 
@@ -60,7 +62,13 @@ export class UserEditComponent implements OnInit, OnDestroy, CommonDialogCallbac
       this.componentRefAccessAuthorities = this.container.createComponent(factory);
       this.componentRefAccessAuthorities.instance.setCurrentUserAccessAuthorities(this.currentUserAccessAuthorities);
       // this.componentRef.instance.output.subscribe((msg: string) => console.log(msg));
+    } else if (type === 'query-condition-displays') {
+      const factory = this.resolver.resolveComponentFactory(UserQueryConditionsComponent);
+      this.componentRefQueryConditionDisplays = this.container.createComponent(factory);
+      this.componentRefQueryConditionDisplays.instance.setQueryConditionDisplays(this.currentUserQueryConditionDisplay);
+      // this.componentRef.instance.output.subscribe((msg: string) => console.log(msg));
     }
+
   }
   ngOnInit() {
     this.userInfoService.getUserDetailedInfo(
@@ -101,13 +109,21 @@ export class UserEditComponent implements OnInit, OnDestroy, CommonDialogCallbac
     } else {
       accessAuthorities = this.currentUserAccessAuthorities;
     }
+    let queryConditionDisplays: any = null;
+    // query condition displays
+    if (this.componentRefQueryConditionDisplays !== undefined) {
+      queryConditionDisplays = this.componentRefQueryConditionDisplays
+        .instance.getQueryCondtionDisplays();
+    } else {
+      queryConditionDisplays = this.currentUserQueryConditionDisplay;
+    }
     // call service
     this.userInfoService.updateUserInfo(
       this,
       basicInfo,
       accessAuthorities,
       this.currentUserHeaderDisplay,
-      this.currentUserQueryConditionDisplay);
+      queryConditionDisplays);
   }
   public updateUserInfoCallback(httpResponse: HttpResponse): void {
     if (httpResponse.code === 200) {

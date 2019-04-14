@@ -23,7 +23,7 @@ export class MainGuardService implements CanActivate, CanActivateChild {
   private loginCheck(): Observable<boolean> {
     return this.loginCheckImpl().pipe(map(httpResponse => {
       if (httpResponse.code === 301) {
-        this.router.navigate(['/web/login/user']);
+        this.router.navigate(['/web/login/external']);
         return false;
       } else {
         // save user info to user container

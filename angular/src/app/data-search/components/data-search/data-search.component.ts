@@ -31,9 +31,11 @@ const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' })
 };
 // json header for download post
+// tslint:disable-next-line: deprecation
 const head = new Headers({ 'Content-Type': 'application/json' });
 const httpDownloadOptions = {
   headers: head,
+// tslint:disable-next-line: deprecation
   responseType: ResponseContentType.Blob,
 };
 // json header for download post

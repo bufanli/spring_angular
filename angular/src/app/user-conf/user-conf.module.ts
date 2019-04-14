@@ -12,6 +12,7 @@ import { UserBasicInfoComponent } from './components/user-basic-info/user-basic-
 import { UserAccessAuthoritiesComponent } from './components/user-access-authorities/user-access-authorities.component';
 import { UserAddInputComponent } from './components/user-add-input/user-add-input.component';
 import { UserAddBarcodeComponent } from './components/user-add-barcode/user-add-barcode.component';
+import { UserQueryConditionsComponent } from './components/user-query-conditions/user-query-conditions.component';
 
 const userConfRoutes: Routes = [
   {
@@ -40,6 +41,7 @@ const userConfRoutes: Routes = [
     UserAccessAuthoritiesComponent,
     UserAddInputComponent,
     UserAddBarcodeComponent,
+    UserQueryConditionsComponent,
   ],
   entryComponents: [
     UserEditComponent,
@@ -47,6 +49,7 @@ const userConfRoutes: Routes = [
     UserAccessAuthoritiesComponent,
     UserAddBarcodeComponent,
     UserAddInputComponent,
+    UserQueryConditionsComponent,
   ],
 })
 export class UserConfModule { }

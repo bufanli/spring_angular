@@ -13,9 +13,10 @@ import { Router } from '@angular/router';
   providedIn: 'root'
 })
 export class CurrentUserContainerService {
-  public SESSEION_TIME_URL_USER = '/web/login/user';
-  public SESSEION_TIME_URL_ADMIN = '/web/login/admin';
+  public SESSEION_TIME_URL_EXTERNAL = '/web/login/external';
+  public SESSEION_TIME_URL_INTERNAL = '/web/login/internal';
   public ADMIN_USER = 'sinoshuju_admin';
+  public DEFAULT_USER = 'sinoshuju_default';
 
   private openID: string = null;
 
@@ -64,12 +65,13 @@ export class CurrentUserContainerService {
       QueryConditionHeaderDictionary, userInfo.userDetailedInfos.userHeaderDisplays);
     this.userHeaderDisplays = headerDisplays;
   }
-  // when session timeout, navigate /web/login/user
+  // when session timeout, navigate /web/login/external
   public sessionTimeout(): void {
-    if (this.openID === this.ADMIN_USER) {
-      this.router.navigate([this.SESSEION_TIME_URL_ADMIN]);
+    if (this.openID === this.ADMIN_USER ||
+      this.openID === this.DEFAULT_USER) {
+      this.router.navigate([this.SESSEION_TIME_URL_INTERNAL]);
     } else {
-      this.router.navigate([this.SESSEION_TIME_URL_USER]);
+      this.router.navigate([this.SESSEION_TIME_URL_EXTERNAL]);
     }
   }
 }
