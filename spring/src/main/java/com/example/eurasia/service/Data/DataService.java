@@ -270,12 +270,12 @@ as不是给表里的字段取别名，而是给查询的结果字段取别名。
      * @author FuJia
      * @Time 2019-03-10 00:00:00
      */
-    public List<Map<String, Object>> getStatisticsSetting(String tableName, String[] selectColumns) throws Exception {
-        if (StringUtils.isEmpty(tableName) || selectColumns == null || selectColumns.length == 0) {
+    public List<Map<String, Object>> getStatisticsSetting(String tableName, String[] columnNames) throws Exception {
+        if (StringUtils.isEmpty(tableName) || columnNames == null || columnNames.length == 0) {
             return null;
         }
 
-        return getDataDao().queryListForColumns(tableName,selectColumns);
+        return getDataDao().queryListForColumns(tableName,columnNames);
     }
 
     /**
@@ -420,5 +420,19 @@ as不是给表里的字段取别名，而是给查询的结果字段取别名。
     public long queryTableRows(String tableName,
                                QueryCondition[] queryConditions) throws Exception {
         return getDataDao().queryTableRows(tableName,queryConditions).longValue();
+    }
+
+
+    /**
+     * 取得指定列的所有的值
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-09-20 00:00:00
+     */
+    public List<Map<String, Object>> getColumnAllValues(String tableName,String columnName) throws Exception {
+
+        return getDataDao().queryListForColumnValues(tableName,new String[]{columnName});
     }
 }

@@ -104,6 +104,14 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
                 return new ResponseResultUtil().error(ResponseCodeEnum.QUERY_CONDITION_DISPLAY_FROM_SQL_ZERO);
             }
 
+            // 取得该用户可显示的查询条件数
+            String strConditionDisplayCount = userService.getOneUserCustom(UserService.TABLE_USER_ACCESS_AUTHORITY,
+                    UserService.MUST_CONDITION_DISPLAY_COUNT,
+                    userID);
+            if (userQueryConditionDisplayList.size() != Integer.parseInt(strConditionDisplayCount)) {
+                return new ResponseResultUtil().error(ResponseCodeEnum.QUERY_CONDITION_DISPLAY_FROM_SQL_FAILED);
+            }
+
             // 重新组合成数组返回
             int i = 0;
             queryConditions = new QueryCondition[userQueryConditionDisplayList.size()];
@@ -152,7 +160,13 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
                             UserService.MUST_PRODUCT_NUMBER,
                             userID);
                 } else {
-                    queryConditionValue = QueryCondition.QUERY_CONDITION_SPLIT;//T.B.D
+                    queryConditionValue = QueryCondition.QUERY_CONDITION_SPLIT;
+                }
+
+                // 如果是 QueryCondition.QUERY_CONDITION_SPLIT 的话，返回该列所有的元素
+                if (queryConditionValue.equals(QueryCondition.QUERY_CONDITION_SPLIT)) {
+                    List<Map<String, Object>> listMaps = dataService.getColumnAllValues(DataService.TABLE_DATA,key);
+                    queryConditionValue = getListMapValue(listMaps);
                 }
                 break;
             case QueryCondition.QUERY_CONDITION_TYPE_STRING:
@@ -189,5 +203,18 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
 
         String defaultValue = dateArr[0] + QueryCondition.QUERY_CONDITION_SPLIT + dateArr[1] ;
         return defaultValue;
+    }
+
+    private String getListMapValue(List<Map<String, Object>> listMaps) {
+        StringBuffer values = new StringBuffer();
+        for (Map<String, Object> map : listMaps) {
+            for (Map.Entry<String, Object> m : map.entrySet()) {
+                //System.out.print(m.getKey());
+                //System.out.println(m.getValue());
+                values.append(m.getValue() + QueryCondition.QUERY_CONDITION_SPLIT);
+            }
+        }
+        values.deleteCharAt(values.length() - QueryCondition.QUERY_CONDITION_SPLIT.length());
+        return values.toString();
     }
 }

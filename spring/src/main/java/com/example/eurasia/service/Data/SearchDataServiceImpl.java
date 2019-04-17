@@ -266,10 +266,10 @@ public class SearchDataServiceImpl implements ISearchDataService {
         return userMax;
     }
 
-    private String[] getListMapValue(List<Map<String, Object>> listMap) {
-        String[] valueArr = new String[listMap.size()];
-        for (int i = 0; i < listMap.size(); i++) {
-            Map<String, Object> map = listMap.get(i);
+    private String[] getListMapValue(List<Map<String, Object>> listMaps) {
+        String[] valueArr = new String[listMaps.size()];
+        for (int i = 0; i < listMaps.size(); i++) {
+            Map<String, Object> map = listMaps.get(i);
             Iterator iterator = map.keySet().iterator();
             while (iterator.hasNext()) {
                 String key = (String) iterator.next();
