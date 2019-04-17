@@ -1,4 +1,7 @@
-<div class="container">
+<div *ngIf="!this.queryConditionsOK" class="container">
+  <div class="well">正在查询检索条件,请稍候</div>
+</div>
+<div *ngIf="this.queryConditionsOK" class="container">
   <div class="panel panel-default">
     <div class="panel-heading">
       <h3 class="panel-title">
@@ -8,80 +11,39 @@
     <div class="panel-body">
       <form role="form" (ngSubmit)="onSearch()">
         <!-- <commnent> first row</commnent> -->
-        <div class="row">
-          <div class="col-md-4">
-            <div class="form-group">
-              <div class="input-group input-daterange">
-                <span class="input-group-addon" id="date">日期</span>
-                <input type="text" class="form-control" aria-describedby="date" id="start-time" style="color:gray"
-                  autocomplete="off">
-                <div class="input-group-addon">到</div>
-                <input type="text" class="form-control" id="end-time" style="color:gray" autocomplete="off">
-              </div>
+        <div *ngFor="let queryCondition of this.queryCondtions" class="col-md-4">
+          <div class="form-group" *ngIf="queryCondition.getType() === 'Date'">
+            <div class="input-group input-daterange">
+              <span class="input-group-addon">{{queryCondition.getKey()}}</span>
+              <input type="text" class="form-control" id="{{queryCondition.getKey()}}{{queryCondition.getUUID()}}_from"
+                class="grey-input" autocomplete="off">
+              <div class="input-group-addon">{{this.TO}}</div>
+              <input type="text" class="form-control" id="{{queryCondition.getUUID()}}_to" class="grey-input"
+                autocomplete="off">
             </div>
           </div>
-          <div class="col-md-4">
-            <div class="form-group">
-              <div class="input-group">
-                <span class="input-group-addon" id="manufacturer">加工厂号</span>
-                <input type="text" [(ngModel)]="this.manufacturerFactory" name="product-name" class="form-control"
-                  placeholder="请输入加工厂号" aria-describedby="manufacturer">
-              </div>
+          <div class="form-group" *ngIf="queryCondition.getType() === 'String'">
+            <div class="input-group">
+              <span class="input-group-addon">{{queryCondition.getKey()}}</span>
+              <input type="text" [(ngModel)]="this.queryConditionInputModel[queryCondition.getUUID()]"
+                name="{{queryCondition.getUUID()}}" class="form-control"
+                placeholder="{{this.PLEASE_INPUT}}{{queryCondition.getKey()}}">
             </div>
           </div>
-          <div class="col-md-4">
-            <div class=" form-group">
-              <select class="form-control selectpicker" multiple title="请选择贸易国" id="ori-country" [(ngModel)]="oriCountries"
-                name="ori-country">
-                <option *ngFor="let oriCountry of this.dataSearchConstListService.getOriCountries()" value="{{oriCountry}}">{{oriCountry}}</option>
-              </select>
-            </div>
+          <div class="form-group" *ngIf="queryCondition.getType() === 'List'">
+            <select class="form-control selectpicker" multiple
+              title="{{this.PLEASE_SELECT}}{{queryCondition.getValue()}}" id="queryCondition.getUUID()"
+              [(ngModel)]="this.queryConditionInputModel[queryCondition.getKey()]" name="queryCondition.getUUID()">
+              <option *ngFor="let selection of queryCondition.getValue()" value="{{selection}}">
+                {{selection}}</option>
+            </select>
           </div>
-        </div>
-        <!-- <commnent> second row</commnent> -->
-        <div class="row">
-          <div class="col-md-4">
-            <div class="form-group">
-              <select class="form-control selectpicker" multiple title="请选择申报单位名称" id="apply-companies" [(ngModel)]="applyCompanies"
-                name="apply-companies">
-                <option *ngFor="let applyCompany of this.dataSearchConstListService.getApplyCompanies()" value="{{applyCompany}}">{{applyCompany}}</option>
-              </select>
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="form-group">
-              <select class="form-control selectpicker" multiple title="请选择货主单位名称" id="owner-companies" [(ngModel)]="ownerCompanies"
-                name="owner-units">
-                <option *ngFor="let ownerCompany of this.dataSearchConstListService.getOwnerCompanies()" value="{{ownerCompany}}">{{ownerCompany}}</option>
-              </select>
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="form-group">
-              <select class="form-control selectpicker" multiple title="请选择经营单位名称" id="operation-companies" [(ngModel)]="operationCompanies"
-                name="owner-units">
-                <option *ngFor="let operationCompany of this.dataSearchConstListService.getOperationCompanies()" value="{{operationCompany}}">{{operationCompany}}</option>
-              </select>
-            </div>
-          </div>
-        </div>
-        <!-- <commnent> third row</commnent> -->
-        <div class="row">
-          <div class="col-md-4">
-            <div class="form-group">
-              <select class="form-control selectpicker" multiple title="请选择主管关区" id="major-manage-customs" [(ngModel)]="majorManageCustoms"
-                name="major-manage-customs">
-                <option *ngFor="let majorManageCustom of this.dataSearchConstListService.getMajorManageCustoms()" value="{{majorManageCustom}}">{{majorManageCustom}}</option>
-              </select>
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="form-group">
-              <div class="input-group">
-                <span class="input-group-addon" id="product-name">商品名称</span>
-                <input type="text" [(ngModel)]="this.productName" name="product-name" class="form-control" placeholder="请输入商品名称"
-                  aria-describedby="product-name">
-              </div>
+          <div class="form-group" *ngIf="queryCondition.getType() === 'Money' || queryCondition.getType() === 'Amount'">
+            <div class="input-group">
+              <span class="input-group-addon">{{queryCondition.getKey()}}</span>
+              <input type="text" class="form-control" id="{{queryCondition.getKey()}}{{queryCondition.getUUID()}}_from">
+              <div class="input-group-addon">{{this.TO}}</div>
+              <input type="text" class="form-control" id="{{queryCondition.getUUID()}}_to">
             </div>
           </div>
         </div>
@@ -95,7 +57,8 @@
           </div>
           <div class="col-md-2">
             <div class="form-group">
-              <button type="button" class="btn btn-default btn-block" [disabled]="!exportEnabled" (click)="onDownloadFile()">
+              <button type="button" class="btn btn-default btn-block" [disabled]="!exportEnabled"
+                (click)="onDownloadFile()">
                 <span class="glyphicon glyphicon-export"></span> 导出
               </button>
             </div>
@@ -113,8 +76,8 @@
   </div>
   <div class="row">
     <div class="col-md-12">
-      <table id="table" data-toggle="table"  data-url="" data-unique-id="id" data-pagination="true"
-        data-striped="true" data-side-pagination="client" data-page-list="[5, 10, 20, 50, 100, 200]">
+      <table id="table" data-toggle="table" data-url="" data-unique-id="id" data-pagination="true" data-striped="true"
+        data-side-pagination="client" data-page-list="[5, 10, 20, 50, 100, 200]">
       </table>
     </div>
   </div>

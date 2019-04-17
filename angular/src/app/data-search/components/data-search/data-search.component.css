@@ -7,3 +7,7 @@
 .table {
   table-layout: fixed;
 }
+
+.grey-input {
+  color: gray;
+}

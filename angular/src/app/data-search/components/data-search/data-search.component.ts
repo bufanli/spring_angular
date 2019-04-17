@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewChecked, AfterViewInit } from '@angular/core';
+import { Component, OnInit, AfterViewChecked, AfterViewInit, Query } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Http, Headers, RequestOptions, Response, ResponseContentType } from '@angular/http';
 import { URLSearchParams } from '@angular/http';
@@ -25,6 +25,8 @@ import { StatisticsReportQueryData } from '../../entities/statistics-report-quer
 import { ComputeField } from '../../entities/compute-field';
 import { ProcessingDialogCallback } from 'src/app/common/interfaces/processing-dialog-callback';
 import { DataStatisticsService } from '../../services/data-statistics.service';
+import { QueryCondition } from '../../entities/query-condition';
+import { UUID } from 'angular2-uuid';
 
 // json header for post
 const httpOptions = {
@@ -35,7 +37,7 @@ const httpOptions = {
 const head = new Headers({ 'Content-Type': 'application/json' });
 const httpDownloadOptions = {
   headers: head,
-// tslint:disable-next-line: deprecation
+  // tslint:disable-next-line: deprecation
   responseType: ResponseContentType.Blob,
 };
 // json header for download post
@@ -45,9 +47,7 @@ const httpDownloadOptions = {
   templateUrl: './data-search.component.html',
   styleUrls: ['./data-search.component.css']
 })
-export class DataSearchComponent implements OnInit,
-  AfterViewChecked,
-  AfterViewInit {
+export class DataSearchComponent implements OnInit, AfterViewChecked {
 
   // sequence field and title
   private static readonly SEQUENCE_FIELD = 'seq';
@@ -56,14 +56,22 @@ export class DataSearchComponent implements OnInit,
   private static readonly OPERATIONS_FIELD = 'operations';
   private static readonly OPERATIONS_TITLE = '操作';
   private static readonly DATA_DETAIL_TITLE = '查看详细';
+  public readonly TO = '到';
+  public readonly PLEASE_INPUT = '请输入';
+  public readonly PLEASE_SELECT = '请选择';
   // api urls
   private searchUrl = 'api/searchData';  // URL to web api
   private exportUrl = 'api/downloadFile';  // URL to web api
   private headersUrl = 'api/getHeaders';  // URL to web api
+  private getQueryConditionsUrl = 'api/getQueryConditions';  // URL to web api
 
   // this id is just for compiling pass
   private id: string = null;
   // search parameters
+  public queryCondtions: QueryCondition[] = null;
+  // query condition input model
+  public queryConditionInputModel = {};
+
   searchParam = [
     { key: '起始日期', value: '', type: 'Date' },
     { key: '结束日期', value: '', type: 'Date' },
@@ -89,6 +97,8 @@ export class DataSearchComponent implements OnInit,
   public manufacturerFactory = '';
   // product name
   public productName = '';
+  // query conditions ok flag
+  public queryConditionsOK = false;
 
   // user access authorities definition
   // 1. export button
@@ -131,7 +141,7 @@ export class DataSearchComponent implements OnInit,
     this.searchParam[8].value = this.productName;
   }
   // get query conditions
-  private getQueryConditions(): any {
+  private getQueryConditionsPrev(): any {
     this.convertSelection();
     return this.getQueryTime();
   }
@@ -147,7 +157,7 @@ export class DataSearchComponent implements OnInit,
 
   // download data to file
   async downloadFile(): Promise<void> {
-    const queryConditions: any = this.getQueryConditions();
+    const queryConditions: any = this.getQueryConditionsPrev();
     const searchParamJson = JSON.stringify(queryConditions);
     return this.downloadHttp.post(this.exportUrl, searchParamJson, httpDownloadOptions).toPromise().then(
       res => {
@@ -173,9 +183,9 @@ export class DataSearchComponent implements OnInit,
     private route: Router,
     public dataSearchConstListService: DataSearchConstListService,
     private dataStatisticsService: DataStatisticsService) {
-
   }
 
+  // notification for getting header of table
   getHeadersNotification(httpResponse: HttpResponse) {
     if (httpResponse.code === 201) {
       this.currentUserContainer.sessionTimeout();
@@ -191,6 +201,7 @@ export class DataSearchComponent implements OnInit,
 
   // init data table
   private initDataTable(headers: Header[]): void {
+    $('#table').bootstrapTable({ toggle: 'table' });
     const that: any = this;
     $('#table').bootstrapTable({
       columns: headers,
@@ -238,7 +249,7 @@ export class DataSearchComponent implements OnInit,
   }
   // get query params
   private getQueryParams(params: any): any {
-    const queryConditions = this.getQueryConditions();
+    const queryConditions = this.getQueryConditionsPrev();
     return {
       limit: params.limit,
       offset: params.offset,
@@ -281,54 +292,8 @@ export class DataSearchComponent implements OnInit,
   }
 
   ngOnInit() {
-    // init table at first
-    $('#table').bootstrapTable({ toggle: 'table' });
-    // get headers from in memory api
-    this.getHeaders().subscribe(headersResponse =>
-      this.getHeadersNotification(headersResponse));
-    // set date picker's formatter
-    $('.input-daterange input').each(function () {
-      $(this).datepicker({
-        format: 'yyyy/mm/dd',
-        autoclose: true,
-        todayBtn: 'linked',
-        language: 'zh-CN',
-        enableOnReadonly: false,
-      });
-      // hook the event handler for gray to black font color
-      $(this).datepicker().on('changeDate', function (this) {
-        $(this).css('color', 'black');
-      });
-      // reset data search table when window's height changes
-      // tslint:disable-next-line: deprecation
-      $(window).resize(function () {
-        $('#table').bootstrapTable('resetView', {
-          // 60 px is for pagination
-          height: $(window).height() * 0.5 - 60,
-        });
-      });
-    });
-
-    // set initial date to datepicker
-    $('.input-daterange input').each(function () {
-      $(this).datepicker('update', new Date());
-    });
-
-    // init access authorities
-    this.initAccessAuthorites();
-    // bind data detail button on page change event
-    $('#table').on('page-change.bs.table', this, this.bindDataDetailEventHandler);
-  }
-
-  // just for select picker
-  ngAfterViewInit(): void {
-    // if call selectpicker in ngOnInit, select control will not be shown for some reason
-    // but call selectpicker can resolve this issue in ngAfterViewInit
-    this.setSelectOptions('#ori-country');
-    this.setSelectOptions('#apply-companies');
-    this.setSelectOptions('#owner-companies');
-    this.setSelectOptions('#operation-companies');
-    this.setSelectOptions('#major-manage-customs');
+    // get query conditions
+    this.getQueryConditions();
   }
 
   private setSelectOptions(id: string): void {
@@ -452,8 +417,111 @@ export class DataSearchComponent implements OnInit,
   // statistic report
   public onStatisticsReport(): void {
     // query conditions
-    const queryConditions: any = this.getQueryConditions();
+    const queryConditions: any = this.getQueryConditionsPrev();
     this.dataStatisticsService.statisticsSetting(queryConditions);
   }
+  // get query conditions caller
+  private getQueryConditions(): void {
+    this.getQueryConditionsImpl().subscribe(
+      httpResponse => this.getQueryConditionsNotification(httpResponse));
+  }
+  // get query conditions implementation
+  private getQueryConditionsImpl(): Observable<HttpResponse> {
+    return this.http.get<HttpResponse>(this.getQueryConditionsUrl);
+  }
 
+  // get query conditions notification
+  private getQueryConditionsNotification(httpResponse: HttpResponse): void {
+    if (httpResponse.code === 201) {
+      this.currentUserContainer.sessionTimeout();
+    } else {
+      // get query condition correctly
+      this.queryCondtions = this.convertHttpResponseToQueryConditions
+        (httpResponse.data);
+      this.setUUIDToQueryConditions();
+      // TODO set it into user container service
+      // set query condition flag to ok
+      this.queryConditionsOK = true;
+      // init query condition form
+      this.initQueryConditionForm();
+    }
+  }
+  // initial query condition form
+  private initQueryConditionForm(): void {
+    // get headers from in memory api
+    this.getHeaders().subscribe(headersResponse =>
+      this.getHeadersNotification(headersResponse));
+    // set date type query conditions
+    this.setDateTypeQueryConditions();
+    // set list type query conditions
+    this.setListTypeQueryConditions();
+    // init access authorities
+    this.initAccessAuthorites();
+    // resize data table
+    this.bindResizeDataTableEvent();
+    // bind page change event to data table
+    this.bindDataTablePageChangeEvent();
+  }
+  // init data table
+  private bindDataTablePageChangeEvent(): void {
+    $('#table').on('page-change.bs.table', this, this.bindDataDetailEventHandler);
+  }
+  // set date type query conditions
+  private setDateTypeQueryConditions(): void {
+    this.queryCondtions.forEach(element => {
+      $('#' + element.getUUID).each(function () {
+        $(this).datepicker({
+          format: 'yyyy/mm/dd',
+          autoclose: true,
+          todayBtn: 'linked',
+          language: 'zh-CN',
+          enableOnReadonly: false,
+        });
+        // set date picker's formatter
+        // hook the event handler for gray to black font color
+        $(this).datepicker().on('changeDate', function (this) {
+          $(this).css('color', 'black');
+        });
+        // TODO this will be changed to recent one month
+        $(this).datepicker('update', new Date());
+      });
+    });
+  }
+  // set list type query conditions
+  private setListTypeQueryConditions(): void {
+    this.queryCondtions.forEach(element => {
+      if (element.getType() === 'List') {
+        this.setSelectOptions('#' + element.getUUID());
+      }
+    });
+  }
+  // resize data table
+  private bindResizeDataTableEvent(): void {
+    // reset data search table when window's height changes
+    // tslint:disable-next-line: deprecation
+    $(window).resize(function () {
+      $('#table').bootstrapTable('resetView', {
+        // 60 px is for pagination
+        height: $(window).height() * 0.5 - 60,
+      });
+    });
+  }
+  // convert http response to query conditions
+  private convertHttpResponseToQueryConditions(data: any): QueryCondition[] {
+    const queyrConditions: QueryCondition[] = [];
+    if (data === undefined || data.length === 1) {
+      return queyrConditions;
+    } else {
+      data.forEach(element => {
+        const queryCondition: QueryCondition =
+          new QueryCondition(element.key, element.value, element.type);
+      });
+    }
+  }
+  // set uuid to query conditions
+  private setUUIDToQueryConditions(): void {
+    this.queryCondtions.forEach(element => {
+      element.setUUID(UUID.UUID());
+    });
+  }
 }
