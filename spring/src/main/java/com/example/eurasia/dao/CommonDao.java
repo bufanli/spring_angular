@@ -378,7 +378,7 @@ select PERIOD_DIFF(DATE_FORMAT(CURDATE(),'%Y%m'),DATE_FORMAT(日期,'%Y%m')) fro
  */
 
         StringBuffer sql = new StringBuffer();
-        sql.append("SELECT top 1 " + dateColumnName + " FROM " + tableName);
+        sql.append("SELECT " + dateColumnName + " FROM " + tableName);
         sql.append(" WHERE DATE_SUB(CURDATE(), INTERVAL 1 MONTH) <= date(now()) order by " + dateColumnName);
 
         StringBuffer sqlAsc = new StringBuffer();
@@ -387,13 +387,21 @@ select PERIOD_DIFF(DATE_FORMAT(CURDATE(),'%Y%m'),DATE_FORMAT(日期,'%Y%m')) fro
         StringBuffer sqlDesc = new StringBuffer();
         sqlDesc.append(" desc");
 
-        List<Map<String, Object>> dateAscList = getJdbcTemplate().queryForList(sql.append(sqlAsc).toString());
+        StringBuffer sqlLimit = new StringBuffer();
+        sqlLimit.append(" limit 0,1");
 
-        List<Map<String, Object>> dateDescList = getJdbcTemplate().queryForList(sql.append(sqlDesc).toString());
+        sql.append(sqlAsc);
+        //sql.append(sqlLimit);
+        List<Map<String, Object>> dateAscList = getJdbcTemplate().queryForList(sql.toString());
+
+        //sql.append(sqlDesc);
+        //sql.append(sqlLimit);
+        //List<Map<String, Object>> dateDescList = getJdbcTemplate().queryForList(sql.toString());
 
         String[] dateArr = new String[2];
         dateArr[0] = dateAscList.get(0).get(dateColumnName).toString();
-        dateArr[1] = dateDescList.get(0).get(dateColumnName).toString();
+        //dateArr[1] = dateDescList.get(0).get(dateColumnName).toString();
+        dateArr[1] = dateAscList.get(dateAscList.size()-1).get(dateColumnName).toString();
         return dateArr;
     }
 

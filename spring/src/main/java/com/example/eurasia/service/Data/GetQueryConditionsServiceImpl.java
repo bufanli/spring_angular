@@ -104,12 +104,12 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
                 return new ResponseResultUtil().error(ResponseCodeEnum.QUERY_CONDITION_DISPLAY_FROM_SQL_ZERO);
             }
 
-            // 取得该用户可显示的查询条件数
+            // 取得该用户可显示的查询条件的最大数
             String strConditionDisplayCount = userService.getOneUserCustom(UserService.TABLE_USER_ACCESS_AUTHORITY,
                     UserService.MUST_CONDITION_DISPLAY_COUNT,
                     userID);
-            if (userQueryConditionDisplayList.size() != Integer.parseInt(strConditionDisplayCount)) {
-                return new ResponseResultUtil().error(ResponseCodeEnum.QUERY_CONDITION_DISPLAY_FROM_SQL_FAILED);
+            if (userQueryConditionDisplayList.size() > Integer.parseInt(strConditionDisplayCount)) {
+                return new ResponseResultUtil().error(ResponseCodeEnum.QUERY_CONDITION_DISPLAY_MAXSIZE_FROM_SQL_FAILED);
             }
 
             // 重新组合成数组返回
@@ -122,13 +122,14 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
 
                 for (String userQueryConditionDisplay:userQueryConditionDisplayList) {
                     if (entry.getKey().equals(userQueryConditionDisplay)) {
+                        queryConditions[i] = new QueryCondition();
                         queryConditions[i].setKey(entry.getKey());
                         queryConditions[i].setValue(getQueryConditionDisplayValue(userID,entry.getKey(),entry.getValue()));
                         queryConditions[i].setType(entry.getValue());
+                        i++;
                         break;
                     }
                 }
-                i++;
             }
 
         } catch (Exception e) {
@@ -145,7 +146,7 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
         switch (type) {
             case QueryCondition.QUERY_CONDITION_TYPE_DATE:
                 if (key.equals(UserService.MUST_PRODUCT_DATE)) {
-                    queryConditionValue = this.getUserTheLastMonth(userID);//T.B.D
+                    queryConditionValue = this.getUserTheLastMonth(userID);
                 } else {
                     queryConditionValue = QueryCondition.QUERY_CONDITION_SPLIT;
                 }
@@ -214,7 +215,9 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
                 values.append(m.getValue() + QueryCondition.QUERY_CONDITION_SPLIT);
             }
         }
-        values.deleteCharAt(values.length() - QueryCondition.QUERY_CONDITION_SPLIT.length());
+        if (values.indexOf(QueryCondition.QUERY_CONDITION_SPLIT) >= 0) {
+            values.delete((values.length() - QueryCondition.QUERY_CONDITION_SPLIT.length()),values.length());
+        }
         return values.toString();
     }
 }
