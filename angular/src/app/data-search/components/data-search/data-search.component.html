@@ -1,7 +1,7 @@
-<div *ngIf="!this.queryConditionsOK" class="container">
+<div *ngIf="false" class="container">
   <div class="well">正在查询检索条件,请稍候</div>
 </div>
-<div *ngIf="this.queryConditionsOK" class="container">
+<div *ngIf="true" class="container">
   <div class="panel panel-default">
     <div class="panel-heading">
       <h3 class="panel-title">
@@ -15,7 +15,7 @@
           <div class="form-group" *ngIf="queryCondition.getType() === 'Date'">
             <div class="input-group input-daterange">
               <span class="input-group-addon">{{queryCondition.getKey()}}</span>
-              <input type="text" class="form-control" id="{{queryCondition.getKey()}}{{queryCondition.getUUID()}}_from"
+              <input type="text" class="form-control" id="{{queryCondition.getUUID()}}_from"
                 class="grey-input" autocomplete="off">
               <div class="input-group-addon">{{this.TO}}</div>
               <input type="text" class="form-control" id="{{queryCondition.getUUID()}}_to" class="grey-input"
@@ -41,7 +41,7 @@
           <div class="form-group" *ngIf="queryCondition.getType() === 'Money' || queryCondition.getType() === 'Amount'">
             <div class="input-group">
               <span class="input-group-addon">{{queryCondition.getKey()}}</span>
-              <input type="text" class="form-control" id="{{queryCondition.getKey()}}{{queryCondition.getUUID()}}_from">
+              <input type="text" class="form-control" id="{{queryCondition.getUUID()}}_from">
               <div class="input-group-addon">{{this.TO}}</div>
               <input type="text" class="form-control" id="{{queryCondition.getUUID()}}_to">
             </div>

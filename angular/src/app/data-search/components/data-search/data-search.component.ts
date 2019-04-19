@@ -27,6 +27,7 @@ import { ProcessingDialogCallback } from 'src/app/common/interfaces/processing-d
 import { DataStatisticsService } from '../../services/data-statistics.service';
 import { QueryCondition } from '../../entities/query-condition';
 import { UUID } from 'angular2-uuid';
+import { FLAGS } from '@angular/core/src/render3/interfaces/view';
 
 // json header for post
 const httpOptions = {
@@ -71,6 +72,8 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
   public queryCondtions: QueryCondition[] = null;
   // query condition input model
   public queryConditionInputModel = {};
+  // initialized flag
+  private initialized = false;
 
   searchParam = [
     { key: '起始日期', value: '', type: 'Date' },
@@ -294,6 +297,8 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
   ngOnInit() {
     // get query conditions
     this.getQueryConditions();
+    // init access authorities
+    this.initAccessAuthorites();
   }
 
   private setSelectOptions(id: string): void {
@@ -399,9 +404,17 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
 
   // show tooltip when completing to upload file
   ngAfterViewChecked() {
-    $('[data-toggle="tooltip"]').each(function () {
-      $(this).tooltip();
-    });
+    // $('[data-toggle="tooltip"]').each(function () {
+    //   $(this).tooltip();
+    // });
+    // init query condition form
+    if (!this.initialized) {
+      if (!this.initQueryConditionForm()) {
+        this.initialized = false;
+      } else {
+        this.initialized = true;
+      }
+    }
   }
   // tell if current user has data detail access authority
   private hasDataDetailAccessAuthority(): boolean {
@@ -442,34 +455,47 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
       // TODO set it into user container service
       // set query condition flag to ok
       this.queryConditionsOK = true;
-      // init query condition form
-      this.initQueryConditionForm();
     }
   }
   // initial query condition form
-  private initQueryConditionForm(): void {
-    // get headers from in memory api
-    this.getHeaders().subscribe(headersResponse =>
-      this.getHeadersNotification(headersResponse));
+  private initQueryConditionForm(): boolean {
     // set date type query conditions
-    this.setDateTypeQueryConditions();
+    if (!this.setDateTypeQueryConditions()) {
+      return false;
+    }
     // set list type query conditions
-    this.setListTypeQueryConditions();
-    // init access authorities
-    this.initAccessAuthorites();
+    if (!this.setListTypeQueryConditions()) {
+      return false;
+    }
     // resize data table
     this.bindResizeDataTableEvent();
     // bind page change event to data table
     this.bindDataTablePageChangeEvent();
+    // get headers from in memory api
+    this.getHeaders().subscribe(headersResponse =>
+      this.getHeadersNotification(headersResponse));
+    // return true if succeesful
+    return true;
   }
   // init data table
   private bindDataTablePageChangeEvent(): void {
     $('#table').on('page-change.bs.table', this, this.bindDataDetailEventHandler);
   }
   // set date type query conditions
-  private setDateTypeQueryConditions(): void {
+  private setDateTypeQueryConditions(): boolean {
+    if (this.queryCondtions === undefined ||
+      this.queryCondtions === null) {
+      return false;
+    }
     this.queryCondtions.forEach(element => {
-      $('#' + element.getUUID).each(function () {
+      $('#' + element.getUUID() + '_from').each(function () {
+        $(this).datepicker({
+          format: 'yyyy/mm/dd',
+          autoclose: true,
+          todayBtn: 'linked',
+          language: 'zh-CN',
+          enableOnReadonly: false,
+        });
         $(this).datepicker({
           format: 'yyyy/mm/dd',
           autoclose: true,
@@ -485,15 +511,44 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
         // TODO this will be changed to recent one month
         $(this).datepicker('update', new Date());
       });
+      $('#' + element.getUUID() + '_to').each(function () {
+        $(this).datepicker({
+          format: 'yyyy/mm/dd',
+          autoclose: true,
+          todayBtn: 'linked',
+          language: 'zh-CN',
+          enableOnReadonly: false,
+        });
+        $(this).datepicker({
+          format: 'yyyy/mm/dd',
+          autoclose: true,
+          todayBtn: 'linked',
+          language: 'zh-CN',
+          enableOnReadonly: false,
+        });
+        // set date picker's formatter
+        // hook the event handler for gray to black font color
+        $(this).datepicker().on('changeDate', function (this) {
+          $(this).css('color', 'black');
+        });
+        // TODO this will be changed to recent one month
+        $(this).datepicker('update', new Date());
+      });
+      return true;
     });
   }
   // set list type query conditions
-  private setListTypeQueryConditions(): void {
+  private setListTypeQueryConditions(): boolean {
+    if (this.queryCondtions === undefined ||
+      this.queryCondtions === null) {
+      return false;
+    }
     this.queryCondtions.forEach(element => {
       if (element.getType() === 'List') {
         this.setSelectOptions('#' + element.getUUID());
       }
     });
+    return true;
   }
   // resize data table
   private bindResizeDataTableEvent(): void {
@@ -508,18 +563,24 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
   }
   // convert http response to query conditions
   private convertHttpResponseToQueryConditions(data: any): QueryCondition[] {
-    const queyrConditions: QueryCondition[] = [];
+    const queryConditions: QueryCondition[] = [];
     if (data === undefined || data.length === 1) {
-      return queyrConditions;
+      return queryConditions;
     } else {
       data.forEach(element => {
         const queryCondition: QueryCondition =
           new QueryCondition(element.key, element.value, element.type);
+        queryConditions.push(queryCondition);
       });
+      return queryConditions;
     }
   }
   // set uuid to query conditions
   private setUUIDToQueryConditions(): void {
+    if (this.queryCondtions === undefined
+      || this.queryCondtions === null) {
+      return null;
+    }
     this.queryCondtions.forEach(element => {
       element.setUUID(UUID.UUID());
     });
