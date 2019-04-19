@@ -73,7 +73,7 @@ public class UserService {
     public static final String MUST_PRODUCT_DATE = "日期";
     public static final String MUST_PRODUCT_NUMBER = "海关编码";//海关/商品编码
     public static final String MUST_SEARCH_COUNT = "看的条数";
-    public static final String MUST_CONDITION_DISPLAY_COUNT = "显示查询条件数";
+    public static final String MUST_CONDITION_DISPLAY_COUNT = "显示查询条件最大数";
 
     //登陆用字段
     public static final String LOGIN_USER_ID = "用户名";

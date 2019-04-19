@@ -164,6 +164,7 @@ public enum ResponseCodeEnum {
     QUERY_CONDITION_DISPLAY_FROM_SQL_FAILED(ResponseCode.RESPONSE_CODE_NG, "从数据库取得查询条件显示可否失败"),
     QUERY_CONDITION_DISPLAY_FROM_SQL_NULL(ResponseCode.RESPONSE_CODE_NULL, "从数据库取得查询条件显示可否为NULL"),
     QUERY_CONDITION_DISPLAY_FROM_SQL_ZERO(ResponseCode.RESPONSE_CODE_OK, "从数据库取得查询条件显示可否为0"),
+    QUERY_CONDITION_DISPLAY_MAXSIZE_FROM_SQL_FAILED(ResponseCode.RESPONSE_CODE_NG, "从数据库取得可显示的查询条件数大于最大数"),
     QUERY_CONDITION_FROM_SQL_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "从数据库取得查询条件成功"),
     QUERY_CONDITION_FROM_SQL_FAILED(ResponseCode.RESPONSE_CODE_NG, "从数据库取得查询条件失败"),
     QUERY_CONDITION_FROM_SQL_NULL(ResponseCode.RESPONSE_CODE_NULL, "从数据库取得查询条件为NULL"),

@@ -403,7 +403,7 @@ Mysql limit offset示例
         }
         sql.deleteCharAt(sql.length() - CommonDao.COMMA.length());
         sql.append(" from " + tableName);
-        sql.append(" group by  " + tableName);
+        sql.append(" group by ");
         for (String columnName : columnNames) {
             sql.append(columnName + CommonDao.COMMA);
         }
