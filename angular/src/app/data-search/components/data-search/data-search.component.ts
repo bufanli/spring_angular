@@ -28,6 +28,7 @@ import { DataStatisticsService } from '../../services/data-statistics.service';
 import { QueryCondition } from '../../entities/query-condition';
 import { UUID } from 'angular2-uuid';
 import { FLAGS } from '@angular/core/src/render3/interfaces/view';
+import { QueryConditionRow } from '../../entities/query-conditions-row';
 
 // json header for post
 const httpOptions = {
@@ -60,6 +61,7 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
   public readonly TO = '到';
   public readonly PLEASE_INPUT = '请输入';
   public readonly PLEASE_SELECT = '请选择';
+  public readonly QUERY_CONDITIONS_NUMBER_EACH_ROW = 3;
   // api urls
   private searchUrl = 'api/searchData';  // URL to web api
   private exportUrl = 'api/downloadFile';  // URL to web api
@@ -74,6 +76,8 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
   public queryConditionInputModel = {};
   // initialized flag
   private initialized = false;
+  // query condition rows
+  public queryConditionRows: QueryConditionRow[] = null;
 
   searchParam = [
     { key: '起始日期', value: '', type: 'Date' },
@@ -404,9 +408,9 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
 
   // show tooltip when completing to upload file
   ngAfterViewChecked() {
-    // $('[data-toggle="tooltip"]').each(function () {
-    //   $(this).tooltip();
-    // });
+    $('[data-toggle="tooltip"]').each(function () {
+      $(this).tooltip();
+    });
     // init query condition form
     if (!this.initialized) {
       if (!this.initQueryConditionForm()) {
@@ -452,6 +456,8 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
       this.queryCondtions = this.convertHttpResponseToQueryConditions
         (httpResponse.data);
       this.setUUIDToQueryConditions();
+      // reshape query conditions into rows
+      this.reshapeQueryConditionsIntoRows();
       // TODO set it into user container service
       // set query condition flag to ok
       this.queryConditionsOK = true;
@@ -534,8 +540,8 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
         // TODO this will be changed to recent one month
         $(this).datepicker('update', new Date());
       });
-      return true;
     });
+    return true;
   }
   // set list type query conditions
   private setListTypeQueryConditions(): boolean {
@@ -564,7 +570,7 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
   // convert http response to query conditions
   private convertHttpResponseToQueryConditions(data: any): QueryCondition[] {
     const queryConditions: QueryCondition[] = [];
-    if (data === undefined || data.length === 1) {
+    if (data === undefined || data.length === 0) {
       return queryConditions;
     } else {
       data.forEach(element => {
@@ -585,4 +591,24 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
       element.setUUID(UUID.UUID());
     });
   }
+  // reshape query condition into row
+  private reshapeQueryConditionsIntoRows(): void {
+    // rows amount
+    let rowsNumber = Math.floor(this.queryCondtions.length / this.QUERY_CONDITIONS_NUMBER_EACH_ROW);
+    const extra = this.queryCondtions.length % this.QUERY_CONDITIONS_NUMBER_EACH_ROW;
+    if (extra > 0) {
+      rowsNumber = rowsNumber + 1;
+    }
+    // prepare query condition row
+    this.queryConditionRows = [];
+    for (let i = 0; i < rowsNumber; i++) {
+      this.queryConditionRows[i] = new QueryConditionRow();
+    }
+    // put every query condition into ervery fix row
+    for (let i = 0; i < this.queryCondtions.length; i++) {
+      const row = i / this.QUERY_CONDITIONS_NUMBER_EACH_ROW;
+      this.queryConditionRows[row].pushQueryCondition(this.queryCondtions[i]);
+    }
+  }
+
 }

@@ -11,40 +11,49 @@
     <div class="panel-body">
       <form role="form" (ngSubmit)="onSearch()">
         <!-- <commnent> first row</commnent> -->
-        <div *ngFor="let queryCondition of this.queryCondtions" class="col-md-4">
-          <div class="form-group" *ngIf="queryCondition.getType() === 'Date'">
-            <div class="input-group input-daterange">
-              <span class="input-group-addon">{{queryCondition.getKey()}}</span>
-              <input type="text" class="form-control" id="{{queryCondition.getUUID()}}_from"
-                class="grey-input" autocomplete="off">
-              <div class="input-group-addon">{{this.TO}}</div>
-              <input type="text" class="form-control" id="{{queryCondition.getUUID()}}_to" class="grey-input"
-                autocomplete="off">
+        <div *ngFor="let queryConditionRow of this.queryConditionRows" class="row">
+          <div *ngFor="let queryCondition of this.queryCondtions" class="col-md-4">
+            <div class="form-group" *ngIf="queryCondition.getType() === 'Date' else notDate">
+              <div class="input-group input-daterange">
+                <span class="input-group-addon" id="date">{{queryCondition.getKey()}}</span>
+                <input type="text" class="form-control" id="{{queryCondition.getUUID()}}_from" class="grey-input"
+                  autocomplete="off" aria-describedby="date">
+                <div class="input-group-addon" id="date">{{this.TO}}</div>
+                <input type="text" class="form-control" id="{{queryCondition.getUUID()}}_to" class="grey-input"
+                  autocomplete="off" aria-describedby="date">
+              </div>
             </div>
-          </div>
-          <div class="form-group" *ngIf="queryCondition.getType() === 'String'">
-            <div class="input-group">
-              <span class="input-group-addon">{{queryCondition.getKey()}}</span>
-              <input type="text" [(ngModel)]="this.queryConditionInputModel[queryCondition.getUUID()]"
-                name="{{queryCondition.getUUID()}}" class="form-control"
-                placeholder="{{this.PLEASE_INPUT}}{{queryCondition.getKey()}}">
-            </div>
-          </div>
-          <div class="form-group" *ngIf="queryCondition.getType() === 'List'">
-            <select class="form-control selectpicker" multiple
-              title="{{this.PLEASE_SELECT}}{{queryCondition.getValue()}}" id="queryCondition.getUUID()"
-              [(ngModel)]="this.queryConditionInputModel[queryCondition.getKey()]" name="queryCondition.getUUID()">
-              <option *ngFor="let selection of queryCondition.getValue()" value="{{selection}}">
-                {{selection}}</option>
-            </select>
-          </div>
-          <div class="form-group" *ngIf="queryCondition.getType() === 'Money' || queryCondition.getType() === 'Amount'">
-            <div class="input-group">
-              <span class="input-group-addon">{{queryCondition.getKey()}}</span>
-              <input type="text" class="form-control" id="{{queryCondition.getUUID()}}_from">
-              <div class="input-group-addon">{{this.TO}}</div>
-              <input type="text" class="form-control" id="{{queryCondition.getUUID()}}_to">
-            </div>
+            <ng-template #notDate>
+              <div class="form-group" *ngIf="queryCondition.getType() === 'String' else notString">
+                <div class="input-group">
+                  <span class="input-group-addon">{{queryCondition.getKey()}}</span>
+                  <input type="text" [(ngModel)]="this.queryConditionInputModel[queryCondition.getUUID()]"
+                    name="{{queryCondition.getUUID()}}" class="form-control"
+                    placeholder="{{this.PLEASE_INPUT}}{{queryCondition.getKey()}}">
+                </div>
+              </div>
+            </ng-template>
+            <ng-template #notString>
+              <div class="form-group" *ngIf="queryCondition.getType() === 'List' else notList">
+                <select class="form-control selectpicker" multiple
+                  title="{{this.PLEASE_SELECT}}{{queryCondition.getValue()}}" id="queryCondition.getUUID()"
+                  [(ngModel)]="this.queryConditionInputModel[queryCondition.getKey()]" name="queryCondition.getUUID()">
+                  <option *ngFor="let selection of queryCondition.getValue()" value="{{selection}}">
+                    {{selection}}</option>
+                </select>
+              </div>
+            </ng-template>
+            <ng-template #notList>
+              <div class="form-group"
+                *ngIf="queryCondition.getType() === 'Money' || queryCondition.getType() === 'Amount'">
+                <div class="input-group">
+                  <span class="input-group-addon">{{queryCondition.getKey()}}</span>
+                  <input type="text" class="form-control" id="{{queryCondition.getUUID()}}_from">
+                  <div class="input-group-addon">{{this.TO}}</div>
+                  <input type="text" class="form-control" id="{{queryCondition.getUUID()}}_to">
+                </div>
+              </div>
+            </ng-template>
           </div>
         </div>
         <div class="row">
