@@ -36,8 +36,8 @@
             <ng-template #notString>
               <div class="form-group" *ngIf="queryCondition.getType() === 'List' else notList">
                 <select class="form-control selectpicker" multiple
-                  title="{{this.PLEASE_SELECT}}{{queryCondition.getValue()}}" id="queryCondition.getUUID()"
-                  [(ngModel)]="this.queryConditionInputModel[queryCondition.getKey()]" name="queryCondition.getUUID()">
+                  title="{{this.PLEASE_SELECT}}{{queryCondition.getKey()}}" id="{{queryCondition.getUUID()}}"
+                  [(ngModel)]="this.queryConditionInputModel[queryCondition.getKey()]" name="{{queryCondition.getUUID()}}">
                   <option *ngFor="let selection of queryCondition.getValue()" value="{{selection}}">
                     {{selection}}</option>
                 </select>
