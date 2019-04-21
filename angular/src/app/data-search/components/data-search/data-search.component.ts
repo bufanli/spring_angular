@@ -494,52 +494,54 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
       return false;
     }
     this.queryCondtions.forEach(element => {
-      $('#' + element.getUUID() + '_from').each(function () {
-        $(this).datepicker({
-          format: 'yyyy/mm/dd',
-          autoclose: true,
-          todayBtn: 'linked',
-          language: 'zh-CN',
-          enableOnReadonly: false,
+      if (element.getType() === 'Date') {
+        $('#' + element.getUUID() + '_from').each(function () {
+          $(this).datepicker({
+            format: 'yyyy/mm/dd',
+            autoclose: true,
+            todayBtn: 'linked',
+            language: 'zh-CN',
+            enableOnReadonly: false,
+          });
+          $(this).datepicker({
+            format: 'yyyy/mm/dd',
+            autoclose: true,
+            todayBtn: 'linked',
+            language: 'zh-CN',
+            enableOnReadonly: false,
+          });
+          // set date picker's formatter
+          // hook the event handler for gray to black font color
+          $(this).datepicker().on('changeDate', function (this) {
+            $(this).css('color', 'black');
+          });
+          // TODO this will be changed to recent one month
+          $(this).datepicker('update', new Date());
         });
-        $(this).datepicker({
-          format: 'yyyy/mm/dd',
-          autoclose: true,
-          todayBtn: 'linked',
-          language: 'zh-CN',
-          enableOnReadonly: false,
+        $('#' + element.getUUID() + '_to').each(function () {
+          $(this).datepicker({
+            format: 'yyyy/mm/dd',
+            autoclose: true,
+            todayBtn: 'linked',
+            language: 'zh-CN',
+            enableOnReadonly: false,
+          });
+          $(this).datepicker({
+            format: 'yyyy/mm/dd',
+            autoclose: true,
+            todayBtn: 'linked',
+            language: 'zh-CN',
+            enableOnReadonly: false,
+          });
+          // set date picker's formatter
+          // hook the event handler for gray to black font color
+          $(this).datepicker().on('changeDate', function (this) {
+            $(this).css('color', 'black');
+          });
+          // TODO this will be changed to recent one month
+          $(this).datepicker('update', new Date());
         });
-        // set date picker's formatter
-        // hook the event handler for gray to black font color
-        $(this).datepicker().on('changeDate', function (this) {
-          $(this).css('color', 'black');
-        });
-        // TODO this will be changed to recent one month
-        $(this).datepicker('update', new Date());
-      });
-      $('#' + element.getUUID() + '_to').each(function () {
-        $(this).datepicker({
-          format: 'yyyy/mm/dd',
-          autoclose: true,
-          todayBtn: 'linked',
-          language: 'zh-CN',
-          enableOnReadonly: false,
-        });
-        $(this).datepicker({
-          format: 'yyyy/mm/dd',
-          autoclose: true,
-          todayBtn: 'linked',
-          language: 'zh-CN',
-          enableOnReadonly: false,
-        });
-        // set date picker's formatter
-        // hook the event handler for gray to black font color
-        $(this).datepicker().on('changeDate', function (this) {
-          $(this).css('color', 'black');
-        });
-        // TODO this will be changed to recent one month
-        $(this).datepicker('update', new Date());
-      });
+      }
     });
     return true;
   }

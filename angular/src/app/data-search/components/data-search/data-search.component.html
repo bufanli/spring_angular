@@ -12,7 +12,7 @@
       <form role="form" (ngSubmit)="onSearch()">
         <!-- <commnent> first row</commnent> -->
         <div *ngFor="let queryConditionRow of this.queryConditionRows" class="row">
-          <div *ngFor="let queryCondition of this.queryCondtions" class="col-md-4">
+          <div *ngFor="let queryCondition of queryConditionRow.getQueryConditions()" class="col-md-4">
             <div class="form-group" *ngIf="queryCondition.getType() === 'Date' else notDate">
               <div class="input-group input-daterange">
                 <span class="input-group-addon" id="date">{{queryCondition.getKey()}}</span>
