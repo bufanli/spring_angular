@@ -28,6 +28,7 @@ import { DataStatisticsService } from '../../services/data-statistics.service';
 import { QueryCondition } from '../../entities/query-condition';
 import { UUID } from 'angular2-uuid';
 import { QueryConditionRow } from '../../entities/query-conditions-row';
+import { UserQueryConditionsComponent } from 'src/app/user-conf/components/user-query-conditions/user-query-conditions.component';
 
 // json header for post
 const httpOptions = {
@@ -78,34 +79,6 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
   // query condition rows
   public queryConditionRows: QueryConditionRow[] = null;
 
-  searchParam = [
-    { key: '起始日期', value: '', type: 'Date' },
-    { key: '结束日期', value: '', type: 'Date' },
-    { key: '加工厂号', value: '', type: 'List' },
-    { key: '贸易国', value: '', type: 'List' },
-    { key: '申报单位名称', value: '', type: 'List' },
-    { key: '货主单位名称', value: '', type: 'List' },
-    { key: '经营单位名称', value: '', type: 'List' },
-    { key: '主管关区', value: '', type: 'List' },
-    { key: '商品名称', value: '', type: 'String' },
-  ];
-  // ori countries
-  public oriCountries: string[] = [];
-  // owner companies
-  public ownerCompanies: string[] = [];
-  // operation companies
-  public operationCompanies: string[] = [];
-  // apply units
-  public applyCompanies: string[] = [];
-  // major manage customs
-  public majorManageCustoms: string[] = [];
-  // manufacturer factory
-  public manufacturerFactory = '';
-  // product name
-  public productName = '';
-  // query conditions ok flag
-  public queryConditionsOK = false;
-
   // user access authorities definition
   // 1. export button
   public exportEnabled = true;
@@ -124,34 +97,6 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
     }
   }
 
-  private convertSelection(): void {
-    // 1. manufacturer factory
-    this.searchParam[2].value =
-      this.commonUtilitiesService.convertStringCommaSeperatorToDash(this.manufacturerFactory);
-    // 2. ori countries
-    this.searchParam[3].value =
-      this.commonUtilitiesService.convertArrayCommaSeperatorToDash(this.oriCountries);
-    // 3. apply companies
-    this.searchParam[4].value =
-      this.commonUtilitiesService.convertArrayCommaSeperatorToDash(this.applyCompanies);
-    // 4. convert owner companies
-    this.searchParam[5].value =
-      this.commonUtilitiesService.convertArrayCommaSeperatorToDash(this.ownerCompanies);
-    // 5. operation companies
-    this.searchParam[6].value =
-      this.commonUtilitiesService.convertArrayCommaSeperatorToDash(this.operationCompanies);
-    // 6.major manange customs
-    this.searchParam[7].value =
-      this.commonUtilitiesService.convertArrayCommaSeperatorToDash(this.majorManageCustoms);
-    // product name
-    this.searchParam[8].value = this.productName;
-  }
-  // get query conditions
-  private getQueryConditionsPrev(): any {
-    this.convertSelection();
-    return this.getQueryTime();
-  }
-
   // download file when exporting data
   onDownloadFile(): void {
     this.downloadFile();
@@ -163,7 +108,7 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
 
   // download data to file
   async downloadFile(): Promise<void> {
-    const queryConditions: any = this.getQueryConditionsPrev();
+    const queryConditions: any = this.abstractInputQueryConditionsIntoParams();
     const searchParamJson = JSON.stringify(queryConditions);
     return this.downloadHttp.post(this.exportUrl, searchParamJson, httpDownloadOptions).toPromise().then(
       res => {
@@ -255,7 +200,7 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
   }
   // get query params
   private getQueryParams(params: any): any {
-    const queryConditions = this.getQueryConditionsPrev();
+    const queryConditions = this.abstractInputQueryConditionsIntoParams();
     return {
       limit: params.limit,
       offset: params.offset,
@@ -362,40 +307,7 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
     options.size = 'lg';
     return options;
   }
-  // get start and end time for querying
-  getQueryTime(): any {
-    // start time
-    if (this.isFontGray('#start-time') === false) {
-      const time = $('#start-time').datepicker('getDate');
-      this.searchParam[0].value = this.commonUtilitiesService.convertDateToLocalString(time);
-    } else {
-      this.searchParam[0].value = '';
-    }
-    // end time
-    if (this.isFontGray('#end-time') === false) {
-      const time = $('#end-time').datepicker('getDate');
-      this.searchParam[1].value = this.commonUtilitiesService.convertDateToLocalString(time);
-    } else {
-      this.searchParam[1].value = '';
-    }
-    // copy searchParam to another
-    const queryContiditons: any = this.searchParam.slice();
-    // date query parameter
-    const queryTimeValue = queryContiditons[0].value + '~~' + queryContiditons[1].value;
-    const queryTime = { key: '日期', value: queryTimeValue, type: 'Date' };
-    queryContiditons.splice(0, 1); // from index=1, delete 1 element
-    queryContiditons.splice(0, 1); // from index=1, delete 1 element
-    queryContiditons.push(queryTime);
-    return queryContiditons;
-  }
-  // tell whether the font color is gray or not
-  isFontGray(id: string): boolean {
-    if ($(id).css('color') === 'rgb(128, 128, 128)') {
-      return true;
-    } else {
-      return false;
-    }
-  }
+
   // set visible to false for some hidden columns
   filterColumns(headers: Header[]) {
     for (const header of headers) {
@@ -433,7 +345,7 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
   // statistic report
   public onStatisticsReport(): void {
     // query conditions
-    const queryConditions: any = this.getQueryConditionsPrev();
+    const queryConditions: any = this.abstractInputQueryConditionsIntoParams();
     this.dataStatisticsService.statisticsSetting(queryConditions);
   }
   // get query conditions caller
@@ -458,8 +370,6 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
       // reshape query conditions into rows
       this.reshapeQueryConditionsIntoRows();
       // TODO set it into user container service
-      // set query condition flag to ok
-      this.queryConditionsOK = true;
     }
   }
   // initial query condition form
@@ -621,6 +531,10 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
         this.abstractInputQueryConditionWithStringType(queryParams, element);
       } else if (element.getType() === 'List') {
         this.abstractInputQueryConditionWithListType(queryParams, element);
+      } else if (element.getType() === 'Amount' || element.getType() === 'Money') {
+        this.abstractInputQueryConditionWithAmountTypeOrMoneyType(queryParams, element);
+      } else {
+        // it is impossible here
       }
     });
     return queryParams;
@@ -659,9 +573,46 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
       queryParams.push(inputQueryCondition);
     }
   }
+  // abstract input query condition of list type
   private abstractInputQueryConditionWithListType(
     queryParams: QueryCondition[],
-    queryCondition: QueryCondition) {
-
+    queryCondition: QueryCondition): void {
+    // if nothing is selected, then do not put into query params
+    let selections = this.queryConditionInputModel[queryCondition.getUUID()];
+    if (selections === '') {
+      return;
+    } else {
+      // convert selection from comma to dash
+      selections = this.commonUtilitiesService.convertArrayCommaSeperatorToDash(selections);
+      const inputQueryCondition = queryCondition.clone();
+      inputQueryCondition.setValue(selections);
+    }
+  }
+  // abstract input query condition of amount type or money type
+  private abstractInputQueryConditionWithAmountTypeOrMoneyType(
+    queryParams: QueryCondition[],
+    queryCondition: QueryCondition): void {
+    // if nothing is input, then do not put into query params
+    // get from value
+    let from = this.queryConditionInputModel[queryCondition.getUUID() + '_from'];
+    let to = this.queryConditionInputModel[queryCondition.getUUID() + '_to'];
+    if (from === '' && to === '') {
+      return;
+    } else {
+      // if type is amount, then get integer only
+      if (queryCondition.getType() === 'Amount') {
+        if (from !== '') {
+          from = Math.floor(from);
+        }
+        if (to !== '') {
+          to = Math.floor(to);
+        }
+      }
+      // contenate from and to with dash
+      const value = from + '~~' + to;
+      const inputQueryCondition = queryCondition.clone();
+      inputQueryCondition.setValue(value);
+      queryParams.push(inputQueryCondition);
+    }
   }
 }

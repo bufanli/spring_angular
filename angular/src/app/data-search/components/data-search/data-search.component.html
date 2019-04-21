@@ -1,7 +1,4 @@
-<div *ngIf="false" class="container">
-  <div class="well">正在查询检索条件,请稍候</div>
-</div>
-<div *ngIf="true" class="container">
+<div class="container">
   <div class="panel panel-default">
     <div class="panel-heading">
       <h3 class="panel-title">
@@ -36,7 +33,8 @@
               <div class="form-group" *ngIf="queryCondition.getType() === 'List' else notList">
                 <select class="form-control selectpicker" multiple
                   title="{{this.PLEASE_SELECT}}{{queryCondition.getKey()}}" id="{{queryCondition.getUUID()}}"
-                  [(ngModel)]="this.queryConditionInputModel[queryCondition.getKey()]" name="{{queryCondition.getUUID()}}">
+                  [(ngModel)]="this.queryConditionInputModel[queryCondition.getUUID()]"
+                  name="{{queryCondition.getUUID()}}">
                   <option *ngFor="let selection of queryCondition.getValue()" value="{{selection}}">
                     {{selection}}</option>
                 </select>
@@ -47,9 +45,11 @@
                 *ngIf="queryCondition.getType() === 'Money' || queryCondition.getType() === 'Amount'">
                 <div class="input-group">
                   <span class="input-group-addon">{{queryCondition.getKey()}}</span>
-                  <input type="text" class="form-control" id="{{queryCondition.getUUID()}}_from">
+                  <input type="number" class="form-control" id="{{queryCondition.getUUID()}}_from"
+                    [(ngModel)]="this.queryConditionInputModel[queryCondition.getUUID()+'_from']">
                   <div class="input-group-addon">{{this.TO}}</div>
-                  <input type="text" class="form-control" id="{{queryCondition.getUUID()}}_to">
+                  <input type="number" class="form-control" id="{{queryCondition.getUUID()}}_to"
+                    [(ngModel)]="this.queryConditionInputModel[queryCondition.getUUID()+'_to']">
                 </div>
               </div>
             </ng-template>
@@ -84,8 +84,7 @@
   </div>
   <div class="row">
     <div class="col-md-12">
-      <table id="table" data-toggle="table" data-url="" data-unique-id="id" data-pagination="true" data-striped="true"
-        data-side-pagination="client" data-page-list="[5, 10, 20, 50, 100, 200]">
+      <table id="table" data-toggle="table">
       </table>
     </div>
   </div>
