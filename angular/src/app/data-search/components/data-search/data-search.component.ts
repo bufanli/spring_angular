@@ -602,11 +602,11 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
     // prepare query condition row
     this.queryConditionRows = [];
     for (let i = 0; i < rowsNumber; i++) {
-      this.queryConditionRows[i] = new QueryConditionRow();
+      this.queryConditionRows.push(new QueryConditionRow());
     }
     // put every query condition into ervery fix row
     for (let i = 0; i < this.queryCondtions.length; i++) {
-      const row = i / this.QUERY_CONDITIONS_NUMBER_EACH_ROW;
+      const row = Math.floor(i / this.QUERY_CONDITIONS_NUMBER_EACH_ROW);
       this.queryConditionRows[row].pushQueryCondition(this.queryCondtions[i]);
     }
   }

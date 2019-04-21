@@ -16,11 +16,11 @@
             <div class="form-group" *ngIf="queryCondition.getType() === 'Date' else notDate">
               <div class="input-group input-daterange">
                 <span class="input-group-addon" id="date">{{queryCondition.getKey()}}</span>
-                <input type="text" class="form-control" id="{{queryCondition.getUUID()}}_from" class="grey-input"
+                <input type="text" class="form-control grey-input" id="{{queryCondition.getUUID()}}_from"
                   autocomplete="off" aria-describedby="date">
-                <div class="input-group-addon" id="date">{{this.TO}}</div>
-                <input type="text" class="form-control" id="{{queryCondition.getUUID()}}_to" class="grey-input"
-                  autocomplete="off" aria-describedby="date">
+                <div class="input-group-addon">{{this.TO}}</div>
+                <input type="text" class="form-control grey-input" id="{{queryCondition.getUUID()}}_to"
+                  autocomplete="off">
               </div>
             </div>
             <ng-template #notDate>
