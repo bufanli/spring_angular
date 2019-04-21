@@ -45,4 +45,10 @@ export class QueryCondition {
   public getUUID(): string {
     return this.uuid;
   }
+  // clone query condition to another query condition
+  // but not includes uuid for sending reuqest to spring
+  public clone(): QueryCondition {
+    const cloned = new QueryCondition(this.key, '', this.type);
+    return cloned;
+  }
 }

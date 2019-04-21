@@ -27,7 +27,6 @@ import { ProcessingDialogCallback } from 'src/app/common/interfaces/processing-d
 import { DataStatisticsService } from '../../services/data-statistics.service';
 import { QueryCondition } from '../../entities/query-condition';
 import { UUID } from 'angular2-uuid';
-import { FLAGS } from '@angular/core/src/render3/interfaces/view';
 import { QueryConditionRow } from '../../entities/query-conditions-row';
 
 // json header for post
@@ -612,5 +611,57 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
       this.queryConditionRows[row].pushQueryCondition(this.queryCondtions[i]);
     }
   }
+  // abstract input query condition into query condition parameters
+  private abstractInputQueryConditionsIntoParams(): QueryCondition[] {
+    const queryParams: QueryCondition[] = [];
+    this.queryCondtions.forEach(element => {
+      if (element.getType() === 'Date') {
+        this.abstractInputQueryConditionWithDateType(queryParams, element);
+      } else if (element.getType() === 'String') {
+        this.abstractInputQueryConditionWithStringType(queryParams, element);
+      } else if (element.getType() === 'List') {
+        this.abstractInputQueryConditionWithListType(queryParams, element);
+      }
+    });
+    return queryParams;
+  }
+  // abstract date type input query condition
+  private abstractInputQueryConditionWithDateType(
+    queryParams: QueryCondition[],
+    queryCondition: QueryCondition): void {
+    const inputQueryCondition = queryCondition.clone();
+    // get start time
+    const startTimeID = '#' + queryCondition.getUUID() + '_from';
+    const startTime = $(startTimeID).datepicker('getDate');
+    const startTimeStr = this.commonUtilitiesService.convertDateToLocalString(startTime);
+    // get end time
+    const endTimeID = '#' + queryCondition.getUUID() + '_to';
+    const endTime = $(endTimeID).datepicker('getDate');
+    const endTimeStr = this.commonUtilitiesService.convertDateToLocalString(endTime);
+    // concatenate start time and end time into one time string
+    const timeStr = startTimeStr + '~~' + endTimeStr;
+    inputQueryCondition.setValue(timeStr);
+    // push input query condition into query params
+    queryParams.push(inputQueryCondition);
+  }
+  // abstract string type input query condition
+  private abstractInputQueryConditionWithStringType(
+    queryParams: QueryCondition[],
+    queryCondition: QueryCondition): void {
+    // if no text input, then nothing is input into query params
+    const queryString = this.queryConditionInputModel[queryCondition.getUUID()];
+    if (queryString === undefined || queryString === '') {
+      return;
+    } else {
+      const inputQueryCondition = queryCondition.clone();
+      inputQueryCondition.setValue(queryString);
+      // push input query condition into query params
+      queryParams.push(inputQueryCondition);
+    }
+  }
+  private abstractInputQueryConditionWithListType(
+    queryParams: QueryCondition[],
+    queryCondition: QueryCondition) {
 
+  }
 }

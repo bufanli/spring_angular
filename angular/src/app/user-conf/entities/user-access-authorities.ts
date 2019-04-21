@@ -15,5 +15,5 @@ export class UserAccessAuthorities {
   public 导出透视图可否: boolean;
   public 查看数据图可否: boolean;
   public 导出数据图可否: boolean;
-  public 显示查询条件数: number;
+  public 显示查询条件最大数: number;
 }

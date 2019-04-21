@@ -10,7 +10,6 @@
     </div>
     <div class="panel-body">
       <form role="form" (ngSubmit)="onSearch()">
-        <!-- <commnent> first row</commnent> -->
         <div *ngFor="let queryConditionRow of this.queryConditionRows" class="row">
           <div *ngFor="let queryCondition of queryConditionRow.getQueryConditions()" class="col-md-4">
             <div class="form-group" *ngIf="queryCondition.getType() === 'Date' else notDate">
