@@ -2,7 +2,7 @@ export class QueryCondition {
   // key of query condition
   private key: string = null;
   // value of query condition
-  private value: string[] = [];
+  private value: any = null;
   // type of query condition
   private type: string = null;
   // uuid
@@ -20,6 +20,10 @@ export class QueryCondition {
   // set value
   public setValue(value: String): void {
     this.value = value.split('~~');
+  }
+  // set string value
+  public setStringValue(value: String): void {
+    this.value = value;
   }
   // get type
   public getType(): string {

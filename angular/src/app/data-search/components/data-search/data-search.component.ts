@@ -366,6 +366,8 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
       this.queryCondtions = this.convertHttpResponseToQueryConditions
         (httpResponse.data);
       this.setUUIDToQueryConditions();
+      // set model for each query condition
+      this.setModelForEachQueryCondition();
       // reshape query conditions into rows
       this.reshapeQueryConditionsIntoRows();
       // TODO set it into user container service
@@ -461,6 +463,7 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
     }
     this.queryCondtions.forEach(element => {
       if (element.getType() === 'List') {
+        // initialize select options
         this.setSelectOptions('#' + element.getUUID());
       }
     });
@@ -553,7 +556,7 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
     const endTimeStr = this.commonUtilitiesService.convertDateToLocalString(endTime);
     // concatenate start time and end time into one time string
     const timeStr = startTimeStr + '~~' + endTimeStr;
-    inputQueryCondition.setValue(timeStr);
+    inputQueryCondition.setStringValue(timeStr);
     // push input query condition into query params
     queryParams.push(inputQueryCondition);
   }
@@ -567,7 +570,7 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
       return;
     } else {
       const inputQueryCondition = queryCondition.clone();
-      inputQueryCondition.setValue(queryString);
+      inputQueryCondition.setStringValue(queryString);
       // push input query condition into query params
       queryParams.push(inputQueryCondition);
     }
@@ -584,7 +587,7 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
       // convert selection from comma to dash
       selections = this.commonUtilitiesService.convertArrayCommaSeperatorToDash(selections);
       const inputQueryCondition = queryCondition.clone();
-      inputQueryCondition.setValue(selections);
+      inputQueryCondition.setStringValue(selections);
     }
   }
   // abstract input query condition of amount type or money type
@@ -610,8 +613,14 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
       // contenate from and to with dash
       const value = from + '~~' + to;
       const inputQueryCondition = queryCondition.clone();
-      inputQueryCondition.setValue(value);
+      inputQueryCondition.setStringValue(value);
       queryParams.push(inputQueryCondition);
     }
+  }
+  // set model for each query condition
+  private setModelForEachQueryCondition(): void {
+    this.queryCondtions.forEach(element => {
+      this.queryConditionInputModel[element.getUUID()] = '';
+    });
   }
 }
