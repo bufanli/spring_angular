@@ -152,7 +152,6 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
 
   // init data table
   private initDataTable(headers: Header[]): void {
-    $('#table').bootstrapTable({ toggle: 'table' });
     const that: any = this;
     $('#table').bootstrapTable({
       columns: headers,
