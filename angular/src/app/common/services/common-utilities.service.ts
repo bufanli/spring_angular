@@ -258,4 +258,18 @@ export class CommonUtilitiesService {
       return src;
     }
   }
+  // convert date string to date
+  // for example, 2019/01/01 to date
+  public convertDateStringToDate(dateString: string): Date {
+    // get year of date string
+    const year = Number.parseInt(dateString.substring(0, 4));
+    // get month of date string
+    const month = Number.parseInt(dateString.substring(5, 7));
+    // get day of date string
+    const day = Number.parseInt(dateString.substring(8, 10));
+    // return date
+    const ret = new Date();
+    ret.setUTCFullYear(year, month, day);
+    return ret;
+  }
 }

@@ -405,6 +405,13 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
     }
     this.queryCondtions.forEach(element => {
       if (element.getType() === 'Date') {
+        // from day
+        let fromDate = null;
+        if (element.getValue()[0] === '' || element.getValue()[0] === undefined) {
+          fromDate = new Date();
+        } else {
+          fromDate = this.commonUtilitiesService.convertDateStringToDate(element.getValue()[0]);
+        }
         $('#' + element.getUUID() + '_from').each(function () {
           $(this).datepicker({
             format: 'yyyy/mm/dd',
@@ -425,9 +432,18 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
           $(this).datepicker().on('changeDate', function (this) {
             $(this).css('color', 'black');
           });
-          // TODO this will be changed to recent one month
-          $(this).datepicker('update', new Date());
+          // set to from date
+          $(this).datepicker('update', fromDate);
+          // set foreground color to black
+          $(this).css('color', 'black');
         });
+        // to day
+        let toDate = null;
+        if (element.getValue()[1] === '' || element.getValue()[1] === undefined) {
+          toDate = new Date();
+        } else {
+          toDate = this.commonUtilitiesService.convertDateStringToDate(element.getValue()[1]);
+        }
         $('#' + element.getUUID() + '_to').each(function () {
           $(this).datepicker({
             format: 'yyyy/mm/dd',
@@ -448,8 +464,9 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
           $(this).datepicker().on('changeDate', function (this) {
             $(this).css('color', 'black');
           });
-          // TODO this will be changed to recent one month
-          $(this).datepicker('update', new Date());
+          // set to date
+          $(this).datepicker('update', toDate);
+          // set foreground to black
         });
       }
     });
