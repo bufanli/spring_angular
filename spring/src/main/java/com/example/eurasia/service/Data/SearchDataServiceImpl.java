@@ -70,7 +70,7 @@ public class SearchDataServiceImpl implements ISearchDataService {
             } else {
                 count = dataList.size();
             }
-            searchedData = new SearchedData(count,dataList.subList(0,(count-1)));
+            searchedData = new SearchedData(count,dataList.subList(0,(count)));
 
         } catch (Exception e) {
             e.printStackTrace();
