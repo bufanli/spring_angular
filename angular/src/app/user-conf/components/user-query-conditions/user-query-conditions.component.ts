@@ -68,13 +68,14 @@ export class UserQueryConditionsComponent implements OnInit {
         const queryCondition = row[that.QUERY_CONDITION_FIELD];
         const maxNumber = that.currentUserAccessAuthorities['显示查询条件最大数'];
         if (that.hasBeyondMaxNumber(maxNumber)) {
+          $element[0].checked = false;
           that.commonUtilitiesService.showSimpleDialog(
             that.BEYOND_MAX_QUERY_CONDITIONS_ERROR_TITLE,
             that.BEYOND_MAX_QUERY_CONDITIONS_ERROR_BODY + maxNumber,
             that.BEYOND_MAX_QUERY_CONDITIONS_ERROR_TYPE);
-          $element[0].checked = false;
+        } else {
+          that.queryConditionDisplays[queryCondition] = true;
         }
-        that.queryConditionDisplays[queryCondition] = true;
       },
       onUncheck: function (row: any, $element: any): void {
         const queryCondition = row[that.QUERY_CONDITION_FIELD];
