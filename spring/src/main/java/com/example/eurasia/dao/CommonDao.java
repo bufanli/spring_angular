@@ -412,11 +412,16 @@ select PERIOD_DIFF(DATE_FORMAT(CURDATE(),'%Y%m'),DATE_FORMAT(日期,'%Y%m')) fro
             return null;
         }
 
+        SimpleDateFormat sdf = new SimpleDateFormat(QueryCondition.PRODUCT_DATE_FORMAT);
+        Date date = null;
         String[] dateArr = new String[2];
         dateArr[0] = dataList.get(0).getKeyValue().get("max(" + dateColumnName + ")");
-
-        SimpleDateFormat sdf = new SimpleDateFormat(QueryCondition.PRODUCT_DATE_FORMAT);
-        Date date = sdf.parse(dateArr[0]);
+        if (dateArr[0] == null) {
+            //数据库中没有数据的话，取今天日期。
+            date = new Date();
+        } else {
+            date = sdf.parse(dateArr[0]);
+        }
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
         calendar.add(Calendar.MONTH, -1);//当前时间前去一个月，即一个月前的时间    
