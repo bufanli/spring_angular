@@ -269,7 +269,8 @@ export class CommonUtilitiesService {
     const day = Number.parseInt(dateString.substring(8, 10));
     // return date
     const ret = new Date();
-    ret.setUTCFullYear(year, month, day);
+    // month is based from 0 to 11
+    ret.setUTCFullYear(year, month - 1, day);
     return ret;
   }
 }
