@@ -415,18 +415,18 @@ select PERIOD_DIFF(DATE_FORMAT(CURDATE(),'%Y%m'),DATE_FORMAT(日期,'%Y%m')) fro
         SimpleDateFormat sdf = new SimpleDateFormat(QueryCondition.PRODUCT_DATE_FORMAT);
         Date date = null;
         String[] dateArr = new String[2];
-        dateArr[0] = dataList.get(0).getKeyValue().get("max(" + dateColumnName + ")");
-        if (dateArr[0] == null) {
+        dateArr[1] = dataList.get(0).getKeyValue().get("max(" + dateColumnName + ")");
+        if (dateArr[1] == null) {
             //数据库中没有数据的话，取今天日期。
             date = new Date();
         } else {
-            date = sdf.parse(dateArr[0]);
+            date = sdf.parse(dateArr[1]);
         }
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
         calendar.add(Calendar.MONTH, -1);//当前时间前去一个月，即一个月前的时间    
         Date dateMouth = calendar.getTime();
-        dateArr[1] = sdf.format(dateMouth);
+        dateArr[0] = sdf.format(dateMouth);
         return dateArr;
     }
 
