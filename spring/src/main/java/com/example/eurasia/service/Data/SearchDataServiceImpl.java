@@ -64,7 +64,13 @@ public class SearchDataServiceImpl implements ISearchDataService {
                 return new ResponseResultUtil().error(ResponseCodeEnum.SEARCH_DATA_INFO_FROM_SQL_ZERO);
             }
 
-            searchedData = new SearchedData(userMax,dataList);
+            int count = 0;
+            if (userMax < dataList.size()) {
+                count = (int)userMax;//T.B.D数据类型
+            } else {
+                count = dataList.size();
+            }
+            searchedData = new SearchedData(count,dataList.subList(0,(count-1)));
 
         } catch (Exception e) {
             e.printStackTrace();
