@@ -1,6 +1,7 @@
 package com.example.eurasia.dao;
 
 import com.example.eurasia.entity.Data.ComputeField;
+import com.example.eurasia.entity.Data.Data;
 import com.example.eurasia.entity.Data.DataXMLReader;
 import com.example.eurasia.entity.Data.QueryCondition;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +15,8 @@ import javax.sql.DataSource;
 import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.Date;
+import java.util.*;
 
 public class CommonDao {
 
@@ -291,7 +290,7 @@ CREATE TABLE SPRING_SESSION_ATTRIBUTES (
     public String convertDateToNewFormat(String dateFromAngular) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat(QueryCondition.PRODUCT_DATE_FORMAT);
-            java.util.Date tempDateEnd = sdf.parse(dateFromAngular);
+            Date tempDateEnd = sdf.parse(dateFromAngular);
             return sdf.format(tempDateEnd);
         } catch (ParseException e) {
             e.printStackTrace();
@@ -376,7 +375,7 @@ CREATE TABLE SPRING_SESSION_ATTRIBUTES (
 /* 测试用表
 select PERIOD_DIFF(DATE_FORMAT(CURDATE(),'%Y%m'),DATE_FORMAT(日期,'%Y%m')) from dual;
  */
-
+/*
         StringBuffer sql = new StringBuffer();
         sql.append("SELECT " + dateColumnName + " FROM " + tableName);
         sql.append(" WHERE DATE_SUB(CURDATE(), INTERVAL 1 MONTH) <= date(now()) order by " + dateColumnName);
@@ -402,6 +401,27 @@ select PERIOD_DIFF(DATE_FORMAT(CURDATE(),'%Y%m'),DATE_FORMAT(日期,'%Y%m')) fro
         dateArr[0] = dateAscList.get(0).get(dateColumnName).toString();
         //dateArr[1] = dateDescList.get(0).get(dateColumnName).toString();
         dateArr[1] = dateAscList.get(dateAscList.size()-1).get(dateColumnName).toString();
+*/
+        StringBuffer sql = new StringBuffer();
+        sql.append("select max(" + dateColumnName + ") from " + tableName);
+        List<Data> dataList = getJdbcTemplate().query(sql.toString(), new DataMapper());
+        if (dataList.size() != 1) {
+            return null;
+        }
+        if (dataList.get(0).getKeyValue().size() != 1) {
+            return null;
+        }
+
+        String[] dateArr = new String[2];
+        dateArr[0] = dataList.get(0).getKeyValue().get("max(" + dateColumnName + ")");
+
+        SimpleDateFormat sdf = new SimpleDateFormat(QueryCondition.PRODUCT_DATE_FORMAT);
+        Date date = sdf.parse(dateArr[0]);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.MONTH, -1);//当前时间前去一个月，即一个月前的时间    
+        Date dateMouth = calendar.getTime();
+        dateArr[1] = sdf.format(dateMouth);
         return dateArr;
     }
 
