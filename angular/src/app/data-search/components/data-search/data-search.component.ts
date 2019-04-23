@@ -467,6 +467,7 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
           // set to date
           $(this).datepicker('update', toDate);
           // set foreground to black
+          $(this).css('color', 'black');
         });
       }
     });
