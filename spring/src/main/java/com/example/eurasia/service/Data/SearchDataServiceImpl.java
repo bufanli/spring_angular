@@ -34,7 +34,6 @@ public class SearchDataServiceImpl implements ISearchDataService {
     public ResponseResult searchData(String userID, DataSearchParam dataSearchParam) throws Exception {
 
         SearchedData searchedData = null;
-        List<Data> dataList = null;
         QueryCondition[] queryConditionsArr = dataSearchParam.getQueryConditions();
         long userOffset = dataSearchParam.getOffset();
         long userLimit = dataSearchParam.getLimit();
@@ -55,22 +54,18 @@ public class SearchDataServiceImpl implements ISearchDataService {
             Map<String, String> order = new LinkedHashMap<>();
             order.put("id","asc");//T.B.D
 
-            dataList = dataService.searchData(DataService.TABLE_DATA,queryConditionsArr,userOffset,userLimit,order);
+            searchedData = dataService.searchData(DataService.TABLE_DATA,queryConditionsArr,userOffset,userLimit,order);
 
-            if (dataList == null) {
+            if (searchedData.getDataList() == null) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.SEARCH_DATA_INFO_FROM_SQL_NULL);
             }
-            if (dataList.size() <= 0) {
+            if (searchedData.getDataList().size() < 0) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.SEARCH_DATA_INFO_FROM_SQL_ZERO);
             }
 
-            int count = 0;
-            if (userMax < dataList.size()) {
-                count = (int)userMax;//T.B.D数据类型
-            } else {
-                count = dataList.size();
+            if (userMax < searchedData.getCount()) {
+                searchedData.setCount(userMax);
             }
-            searchedData = new SearchedData(count,dataList.subList(0,(count)));
 
         } catch (Exception e) {
             e.printStackTrace();
