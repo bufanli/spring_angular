@@ -1,17 +1,17 @@
 package com.example.eurasia.service.Data;
 
 import com.example.eurasia.dao.DataDao;
-import com.example.eurasia.entity.Data.ComputeField;
-import com.example.eurasia.entity.Data.Data;
-import com.example.eurasia.entity.Data.DataXMLReader;
-import com.example.eurasia.entity.Data.QueryCondition;
+import com.example.eurasia.entity.Data.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class DataService {
@@ -170,12 +170,15 @@ public class DataService {
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
-    public List<Data> searchData(String tableName, QueryCondition[] queryConditionsArr, long offset, long limit, Map<String, String> order) throws Exception {
+    public SearchedData searchData(String tableName, QueryCondition[] queryConditionsArr, long offset, long limit, Map<String, String> order) throws Exception {
         if (StringUtils.isEmpty(tableName) || queryConditionsArr == null) {
             return null;
         }
 
-        return getDataDao().queryListForObject(tableName,queryConditionsArr,offset,limit,order);
+        long count = queryTableRows(tableName,queryConditionsArr);
+        List<Data> dataList = getDataDao().queryListForObject(tableName,queryConditionsArr,offset,limit,order);
+
+        return new SearchedData(count,dataList);
     }
 
     /**
