@@ -327,4 +327,29 @@ public class UserInfoController {
         return responseResult;
     }
 
+    /**
+     * @author
+     * @date 2019-04-25
+     * @description 取得字段的所有值
+     */
+    @RequestMapping(value="/getCategoryList", method = RequestMethod.GET)
+    public @ResponseBody
+    ResponseResult getCategoryList(HttpServletRequest request,@RequestBody String[] categories) {
+        ResponseResult responseResult;
+        try {
+            Slf4jLogUtil.get().info("取得字段的所有值开始");
+            String userID = userInfoServiceImpl.getLoginUserID(request);
+            if (StringUtils.isEmpty(userID)) {
+                responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
+            } else {
+                responseResult = userInfoServiceImpl.getCategoryList(categories);
+            }
+            Slf4jLogUtil.get().info("取得字段的所有值结束");
+        } catch (Exception e) {
+            e.printStackTrace();
+            responseResult = new ResponseResultUtil().error();
+        }
+        return responseResult;
+    }
+
 }

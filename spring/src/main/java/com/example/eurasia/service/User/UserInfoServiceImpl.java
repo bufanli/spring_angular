@@ -206,6 +206,45 @@ public class UserInfoServiceImpl {
         return new ResponseResultUtil().success(ResponseCodeEnum.USER_GET_ACCESS_AUTHORITY_FROM_SQL_SUCCESS, userAccessAuthoritiesList);
     }
 
+    public ResponseResult getCategoryList(String[] key) throws Exception {
+/*
+        String queryConditionValue = null;
+        switch (type) {
+            case QueryCondition.QUERY_CONDITION_TYPE_DATE:
+                if (key.equals(UserService.MUST_PRODUCT_DATE)) {
+                    queryConditionValue = this.getUserTheLastMonth(userID);
+                } else {
+                    queryConditionValue = QueryCondition.QUERY_CONDITION_SPLIT;
+                }
+                break;
+            case QueryCondition.QUERY_CONDITION_TYPE_MONEY:
+            case QueryCondition.QUERY_CONDITION_TYPE_AMOUNT:
+                queryConditionValue = QueryCondition.QUERY_CONDITION_SPLIT;
+                break;
+            case QueryCondition.QUERY_CONDITION_TYPE_LIST:
+                if (key.equals(UserService.MUST_PRODUCT_NUMBER)) {
+                    queryConditionValue = userService.getOneUserCustom(UserService.TABLE_USER_ACCESS_AUTHORITY,
+                            UserService.MUST_PRODUCT_NUMBER,
+                            userID);
+                } else {
+                    queryConditionValue = QueryCondition.QUERY_CONDITION_SPLIT;
+                }
+
+                // 如果是 QueryCondition.QUERY_CONDITION_SPLIT 的话，返回该列所有的元素
+                if (queryConditionValue.equals(QueryCondition.QUERY_CONDITION_SPLIT)) {
+                    List<Map<String, Object>> listMaps = dataService.getColumnAllValues(DataService.TABLE_DATA,ew String[]{key});
+                    queryConditionValue = getListMapValue(listMaps);
+                }
+                break;
+            case QueryCondition.QUERY_CONDITION_TYPE_STRING:
+            default:
+                queryConditionValue = "";
+                break;
+        }
+        return queryConditionValue;*/
+        return new ResponseResultUtil().success();
+    }
+
     /**
      * 用户登陆时，检查账号的有效期
      * @param

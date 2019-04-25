@@ -434,8 +434,8 @@ as不是给表里的字段取别名，而是给查询的结果字段取别名。
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
-    public List<Map<String, Object>> getColumnAllValues(String tableName,String columnName) throws Exception {
+    public List<Map<String, Object>> getColumnAllValues(String tableName,String[] columnNames) throws Exception {
 
-        return getDataDao().queryListForColumnValues(tableName,new String[]{columnName});
+        return getDataDao().queryListForColumnValues(tableName,columnNames);
     }
 }

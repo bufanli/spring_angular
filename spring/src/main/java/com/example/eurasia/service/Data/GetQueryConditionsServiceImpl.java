@@ -166,7 +166,7 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
 
                 // 如果是 QueryCondition.QUERY_CONDITION_SPLIT 的话，返回该列所有的元素
                 if (queryConditionValue.equals(QueryCondition.QUERY_CONDITION_SPLIT)) {
-                    List<Map<String, Object>> listMaps = dataService.getColumnAllValues(DataService.TABLE_DATA,key);
+                    List<Map<String, Object>> listMaps = dataService.getColumnAllValues(DataService.TABLE_DATA,new String[]{key});
                     queryConditionValue = getListMapValue(listMaps);
                 }
                 break;
