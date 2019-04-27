@@ -273,4 +273,12 @@ export class CommonUtilitiesService {
     ret.setUTCFullYear(year, month - 1, day);
     return ret;
   }
+  // init select picker
+  public setSelectOptions(id: string, liveSearch: boolean): void {
+    $(id).selectpicker({
+      'liveSearch': liveSearch,
+    });
+    $(id).selectpicker('val', '');
+    $(id).selectpicker('refresh');
+  }
 }

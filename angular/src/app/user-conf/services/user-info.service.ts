@@ -8,6 +8,8 @@ import { UserBasicInfo } from '../entities/user-basic-info';
 import { UserAccessAuthorities } from '../entities/user-access-authorities';
 import { UserQueryConditionHeader } from '../entities/user-query-condition-header';
 import { UserAddInputComponent } from '../components/user-add-input/user-add-input.component';
+import { UserAccessAuthoritiesComponent } from '../components/user-access-authorities/user-access-authorities.component';
+import { CategorySelections } from '../entities/category-selections';
 
 // json header for post
 const httpOptions = {
@@ -124,8 +126,12 @@ export class UserInfoService {
   private getDefaultUserDetailedInfoUrl = 'api/getUserDefaultDetailedInfos';  // URL to get user's detailed info
   private updateUserInfoUrl = 'api/updateUser';  // URL to update user
   private addUserInfoUrl = 'api/addUser';  // URL to add user
+  private getCategoryListUrl = 'api/getCategoryList';  // URL to get category list
   private userEditComponent: UserEditComponent = null;
   private userAddInputComponent: UserAddInputComponent = null;
+  private userAccessAuthoritiesComponent: UserAccessAuthoritiesComponent = null;
+  // hs code catetory name
+  private readonly HS_CODE_CATETORY_NAME = '海关编码';
 
   constructor(private http: HttpClient,
     private commonUtilityService: CommonUtilitiesService) { }
@@ -343,5 +349,52 @@ export class UserInfoService {
     userAddInputComponent: UserAddInputComponent,
     httpResponse: HttpResponse) {
     userAddInputComponent.addUserInfoCallback(httpResponse);
+  }
+
+  // get hs code selections
+  public getHsCodeSelections(userAccessAuthoritiesComponent: UserAccessAuthoritiesComponent): void {
+    this.userAccessAuthoritiesComponent = userAccessAuthoritiesComponent;
+    this.getHsCodeSelectionsImpl().subscribe(httpResponse =>
+      this.getHsCodeSelectionsNotification(httpResponse));
+  }
+  // get hs code selections implementation
+  private getHsCodeSelectionsImpl(): Observable<HttpResponse> {
+    // categories
+    const categories: string[] = [this.HS_CODE_CATETORY_NAME];
+    // revoke api to get catetory selections
+    return this.http.post<HttpResponse>(this.getCategoryListUrl, categories);
+  }
+  // get category list notification
+  private getHsCodeSelectionsNotification(httpResponse: HttpResponse): void {
+    if (httpResponse.data === null) {
+      return;
+    } else {
+      const categorySelectionsEntries: CategorySelections[] =
+        this.convertHttpResponseToCategorySelections(httpResponse.data);
+      categorySelectionsEntries.forEach(element => {
+        if (element.getCategory() === this.HS_CODE_CATETORY_NAME) {
+          this.userAccessAuthoritiesComponent.setHsCodeSelections(
+            element.getSelections());
+          return;
+        }
+      });
+      // not found
+      return;
+    }
+  }
+  // convert http response to category selections
+  private convertHttpResponseToCategorySelections(data: any): CategorySelections[] {
+    const categorySelections: CategorySelections[] = [];
+    data.forEach(element => {
+      // create category selections entry
+      const categorySelectionsEntry: CategorySelections
+        = new CategorySelections(element.category);
+      element.selections.forEach(elementInner => {
+        categorySelectionsEntry.pushSelection(elementInner);
+        // push it into array
+        categorySelections.push(categorySelectionsEntry);
+      });
+    });
+    return categorySelections;
   }
 }

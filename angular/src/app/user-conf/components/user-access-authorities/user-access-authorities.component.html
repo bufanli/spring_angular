@@ -6,7 +6,8 @@
         <input type="text" class="form-control datepicker required" aria-describedby="product-time"
           name="product-start-time{{this.componentID}}" id="product-start-time{{this.componentID}}" autocomplete="off">
         <div class="input-group-addon">到</div>
-        <input type="text" class="form-control datepicker required" id="product-to-time{{this.componentID}}" autocomplete="off">
+        <input type="text" class="form-control datepicker required" id="product-to-time{{this.componentID}}"
+          autocomplete="off">
       </div>
     </div>
   </div>
@@ -19,7 +20,8 @@
         <input type="text" class="form-control datepicker required" aria-describedby="user-time"
           name="user-start-time{{this.componentID}}" id="user-start-time{{this.componentID}}" autocomplete="off">
         <div class="input-group-addon">到</div>
-        <input type="text" class="form-control datepicker required" id="user-to-time{{this.componentID}}" autocomplete="off">
+        <input type="text" class="form-control datepicker required" id="user-to-time{{this.componentID}}"
+          autocomplete="off">
       </div>
     </div>
   </div>
@@ -27,11 +29,11 @@
 <div class="row" *ngIf="currentUserAccessAuthorities">
   <div class="col-md-12">
     <div class="form-group">
-      <div class="input-group">
-        <span class="input-group-addon" id="product-code">海关编码</span>
-        <input type="text" [(ngModel)]="productCodes" name="product-code{{this.componentID}}" class="form-control required"
-          placeholder="请输入海关编码" aria-describedby="product-code">
-      </div>
+      <select class="form-control selectpicker" multiple title="请选择海关编码" id="hs_code_{{this.componentID}}"
+        [(ngModel)]="this.selectedHsCodes" name="hs_code_{{this.componentID}}">
+        <option *ngFor="let hsCode of this.hsCodes" value="{{hsCode}}">
+          {{hsCode}}</option>
+      </select>
     </div>
   </div>
 </div>

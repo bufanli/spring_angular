@@ -2,13 +2,15 @@ import { Component, OnInit, Input, AfterViewInit, AfterViewChecked } from '@angu
 import { UserAccessAuthorities } from '../../entities/user-access-authorities';
 import { CommonUtilitiesService } from 'src/app/common/services/common-utilities.service';
 import { UUID } from 'angular2-uuid';
+import { CurrentUserContainerService } from 'src/app/common/services/current-user-container.service';
+import { UserInfoService } from '../../services/user-info.service';
 
 @Component({
   selector: 'app-user-access-authorities',
   templateUrl: './user-access-authorities.component.html',
   styleUrls: ['./user-access-authorities.component.css']
 })
-export class UserAccessAuthoritiesComponent implements AfterViewInit {
+export class UserAccessAuthoritiesComponent implements OnInit, AfterViewInit {
 
   // because user add input component and
   // user edit component share the user basic info component and
@@ -20,10 +22,27 @@ export class UserAccessAuthoritiesComponent implements AfterViewInit {
   // product codes which is shown as , seperator
   public productCodes: string = null;
   public limitDate: string = null;
-  constructor(private commonUtilitiesService: CommonUtilitiesService) {
+  // hs code(海关编码) selections
+  public hsCodes: string[] = null;
+  public selectedHsCodes: string[] = null;
+
+  constructor(private commonUtilitiesService: CommonUtilitiesService,
+    private currentUserContainerService: CurrentUserContainerService,
+    private userInfoService: UserInfoService) {
     this.componentID = UUID.UUID();
   }
 
+  // set hs code selections
+  public setHsCodeSelections(hsCodeSelections: string[]): void {
+    this.hsCodes = hsCodeSelections;
+  }
+
+  // check session timeout
+  public checkSessionTimeout(httpResponse: any): void {
+    if (httpResponse.code === 201) {
+      this.currentUserContainerService.sessionTimeout();
+    }
+  }
   public setCurrentUserAccessAuthorities(userAccessAuthorities: UserAccessAuthorities) {
     this.currentUserAccessAuthorities = userAccessAuthorities;
     this.setQueryProducts();
@@ -31,6 +50,12 @@ export class UserAccessAuthoritiesComponent implements AfterViewInit {
   }
   ngAfterViewInit() {
     this.setDatePickerValue();
+    // initialize hs code selections
+    this.commonUtilitiesService.setSelectOptions('hs_code_' + this.componentID, true);
+  }
+  // ngOnInit
+  ngOnInit() {
+    this.userInfoService.getHsCodeSelections(this);
   }
   // init date picker
   setDatePickerValue() {

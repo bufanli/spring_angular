@@ -332,7 +332,7 @@ public class UserInfoController {
      * @date 2019-04-25
      * @description 取得字段的所有值
      */
-    @RequestMapping(value="/getCategoryList", method = RequestMethod.GET)
+    @RequestMapping(value="/getCategoryList", method = RequestMethod.POST)
     public @ResponseBody
     ResponseResult getCategoryList(HttpServletRequest request,@RequestBody String[] categories) {
         ResponseResult responseResult;
