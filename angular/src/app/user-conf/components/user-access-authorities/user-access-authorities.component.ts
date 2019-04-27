@@ -10,7 +10,7 @@ import { UserInfoService } from '../../services/user-info.service';
   templateUrl: './user-access-authorities.component.html',
   styleUrls: ['./user-access-authorities.component.css']
 })
-export class UserAccessAuthoritiesComponent implements OnInit, AfterViewInit {
+export class UserAccessAuthoritiesComponent implements OnInit, AfterViewInit, AfterViewChecked {
 
   // because user add input component and
   // user edit component share the user basic info component and
@@ -19,11 +19,10 @@ export class UserAccessAuthoritiesComponent implements OnInit, AfterViewInit {
   public componentID: string = null;
 
   public currentUserAccessAuthorities: UserAccessAuthorities;
-  // product codes which is shown as , seperator
-  public productCodes: string = null;
   public limitDate: string = null;
   // hs code(海关编码) selections
   public hsCodes: string[] = null;
+  public hsCodesChanged = false;
   public selectedHsCodes: string[] = null;
 
   constructor(private commonUtilitiesService: CommonUtilitiesService,
@@ -35,6 +34,7 @@ export class UserAccessAuthoritiesComponent implements OnInit, AfterViewInit {
   // set hs code selections
   public setHsCodeSelections(hsCodeSelections: string[]): void {
     this.hsCodes = hsCodeSelections;
+    this.hsCodesChanged = true;
   }
 
   // check session timeout
@@ -51,11 +51,18 @@ export class UserAccessAuthoritiesComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     this.setDatePickerValue();
     // initialize hs code selections
-    this.commonUtilitiesService.setSelectOptions('hs_code_' + this.componentID, true);
+    this.commonUtilitiesService.setSelectOptions('#hs_code_' + this.componentID, true);
   }
   // ngOnInit
   ngOnInit() {
     this.userInfoService.getHsCodeSelections(this);
+  }
+  // if hs code changed, refresh hs code selections
+  ngAfterViewChecked(): void {
+    if (this.hsCodesChanged === true) {
+      $('#hs_code_' + this.componentID).selectpicker('refresh');
+      this.hsCodesChanged = false;
+    }
   }
   // init date picker
   setDatePickerValue() {
@@ -124,41 +131,18 @@ export class UserAccessAuthoritiesComponent implements OnInit, AfterViewInit {
 
   // set initial product codes
   setQueryProducts() {
-    const products = this.currentUserAccessAuthorities['海关编码'].split(
+    this.selectedHsCodes = this.currentUserAccessAuthorities['海关编码'].split(
       this.commonUtilitiesService.DATA_COMMON_SEPERATOR);
-    if (products.length > 1) {
-      this.productCodes = products.join(this.commonUtilitiesService.VIEW_COMMON_SEPERATOR);
-    } else {
-      this.productCodes = this.currentUserAccessAuthorities['海关编码'];
-    }
-    // get rid of first view common seperator
-    if (this.productCodes.startsWith(this.commonUtilitiesService.VIEW_COMMON_SEPERATOR)) {
-      this.productCodes = this.productCodes.slice(1, this.productCodes.length - 1);
-    }
-    // get rid of last view common seperator
-    if (this.productCodes.endsWith(this.commonUtilitiesService.VIEW_COMMON_SEPERATOR)) {
-      this.productCodes = this.productCodes.slice(0, this.productCodes.length - 1);
-    }
   }
   // get current user access authorities
   getCurrentUserAccessAuthorities(): UserAccessAuthorities {
-    if (this.productCodes === null) {
+    if (this.selectedHsCodes === null || this.selectedHsCodes.length === 0) {
       // no product limit
       this.currentUserAccessAuthorities['海关编码'] = this.commonUtilitiesService.DATA_COMMON_SEPERATOR;
     } else {
       // convert product codes
-      const productsArray = this.productCodes.split(this.commonUtilitiesService.VIEW_COMMON_SEPERATOR);
-      if (productsArray.length > 1) {
-        this.currentUserAccessAuthorities['海关编码'] = productsArray.join(
-          this.commonUtilitiesService.DATA_COMMON_SEPERATOR);
-      } else if (productsArray.length === 1) {
-        // only one product is permitted
-        this.currentUserAccessAuthorities['海关编码'] =
-          productsArray[0] + this.commonUtilitiesService.DATA_COMMON_SEPERATOR;
-      } else {
-        // no product limit
-        this.currentUserAccessAuthorities['海关编码'] = this.commonUtilitiesService.DATA_COMMON_SEPERATOR;
-      }
+      this.currentUserAccessAuthorities['海关编码'] =
+        this.commonUtilitiesService.convertArrayCommaSeperatorToDash(this.selectedHsCodes);
     }
     return this.currentUserAccessAuthorities;
   }

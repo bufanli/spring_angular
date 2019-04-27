@@ -391,9 +391,9 @@ export class UserInfoService {
         = new CategorySelections(element.category);
       element.selections.forEach(elementInner => {
         categorySelectionsEntry.pushSelection(elementInner);
-        // push it into array
-        categorySelections.push(categorySelectionsEntry);
       });
+      // push it into array
+      categorySelections.push(categorySelectionsEntry);
     });
     return categorySelections;
   }
