@@ -128,15 +128,17 @@ export class CommonUtilitiesService {
       if (data[dicElement] !== undefined) {
         const elementRet: any = {};
         elementRet.key = dicElement;
+        let elementValue: any = null;
         // convert boolean to string boolean
         if (data[dicElement] === true) {
-          data[dicElement] = 'TRUE';
+          elementValue = 'TRUE';
         } else if (data[dicElement] === false) {
-          data[dicElement] = 'FALSE';
+          elementValue = 'FALSE';
         } else {
-          // do nothing
+          // if it is not a boolean, then copy it as is
+          elementValue = data[dicElement];
         }
-        elementRet.value = data[dicElement];
+        elementRet.value = elementValue;
         result.push(elementRet);
       }
     });
