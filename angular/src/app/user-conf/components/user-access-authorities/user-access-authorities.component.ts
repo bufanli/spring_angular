@@ -131,8 +131,14 @@ export class UserAccessAuthoritiesComponent implements OnInit, AfterViewInit, Af
 
   // set initial product codes
   setQueryProducts() {
-    this.selectedHsCodes = this.currentUserAccessAuthorities['海关编码'].split(
+    this.selectedHsCodes = [];
+    const hsCodeTemp = this.currentUserAccessAuthorities['海关编码'].split(
       this.commonUtilitiesService.DATA_COMMON_SEPERATOR);
+    hsCodeTemp.forEach(element => {
+      if (element !== null && element !== '') {
+        this.selectedHsCodes.push(element);
+      }
+    });
   }
   // get current user access authorities
   getCurrentUserAccessAuthorities(): UserAccessAuthorities {

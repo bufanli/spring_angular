@@ -10,8 +10,8 @@ export class QueryCondition {
   // constructor
   public constructor(key: string, value: string, type: string) {
     this.key = key;
-    this.value = value.split('~~');
     this.type = type;
+    this.setValue(value);
   }
   // get value
   public getValue(): string[] {
@@ -19,7 +19,17 @@ export class QueryCondition {
   }
   // set value
   public setValue(value: String): void {
-    this.value = value.split('~~');
+    this.value = [];
+    const valuesTemp = value.split('~~');
+    valuesTemp.forEach(element => {
+      if (this.type === 'List') {
+        if (element !== null && element !== '') {
+          this.value.push(element);
+        }
+      } else {
+        this.value.push(element);
+      }
+    });
   }
   // set string value
   public setStringValue(value: String): void {
