@@ -1,8 +1,10 @@
 package com.example.eurasia.service.User;
 
+import com.example.eurasia.entity.Data.CategorySelections;
 import com.example.eurasia.entity.Data.Data;
 import com.example.eurasia.entity.Data.QueryCondition;
 import com.example.eurasia.entity.User.UserDetailedInfos;
+import com.example.eurasia.service.Data.DataService;
 import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;
@@ -17,8 +19,7 @@ import org.springframework.util.StringUtils;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 //@Slf4j
 /*@Transactional(readOnly = true)事物注解*/
@@ -26,7 +27,11 @@ import java.util.List;
 @Component
 public class UserInfoServiceImpl {
 
-    //UserService
+    //注入DataService服务对象
+    @Qualifier("dataService")
+    @Autowired
+    private DataService dataService;
+    //注入UserService服务对象
     @Qualifier("userService")
     @Autowired
     private UserService userService;
@@ -206,43 +211,56 @@ public class UserInfoServiceImpl {
         return new ResponseResultUtil().success(ResponseCodeEnum.USER_GET_ACCESS_AUTHORITY_FROM_SQL_SUCCESS, userAccessAuthoritiesList);
     }
 
-    public ResponseResult getCategoryList(String[] key) throws Exception {
-/*
-        String queryConditionValue = null;
-        switch (type) {
-            case QueryCondition.QUERY_CONDITION_TYPE_DATE:
-                if (key.equals(UserService.MUST_PRODUCT_DATE)) {
-                    queryConditionValue = this.getUserTheLastMonth(userID);
-                } else {
-                    queryConditionValue = QueryCondition.QUERY_CONDITION_SPLIT;
-                }
-                break;
-            case QueryCondition.QUERY_CONDITION_TYPE_MONEY:
-            case QueryCondition.QUERY_CONDITION_TYPE_AMOUNT:
-                queryConditionValue = QueryCondition.QUERY_CONDITION_SPLIT;
-                break;
-            case QueryCondition.QUERY_CONDITION_TYPE_LIST:
-                if (key.equals(UserService.MUST_PRODUCT_NUMBER)) {
-                    queryConditionValue = userService.getOneUserCustom(UserService.TABLE_USER_ACCESS_AUTHORITY,
-                            UserService.MUST_PRODUCT_NUMBER,
-                            userID);
-                } else {
-                    queryConditionValue = QueryCondition.QUERY_CONDITION_SPLIT;
-                }
+    public ResponseResult getCategoryList(String[] categories) throws Exception {
+        ArrayList<CategorySelections> categorySelectionsList = new ArrayList();
+        try {
+            // 取得所以的查询条件(Data的Map-key是查询条件的key，Data的Map-value是查询条件的type)
+            List<Data> allQueryConditionsList = dataService.getAllQueryConditions();
+            if (allQueryConditionsList == null) {
+                return new ResponseResultUtil().error(ResponseCodeEnum.QUERY_CONDITION_FROM_SQL_NULL);
+            }
+            if (allQueryConditionsList.size() != 1) {
+                return new ResponseResultUtil().error(ResponseCodeEnum.QUERY_CONDITION_FROM_SQL_SIZE_WRONG);
+            }
 
-                // 如果是 QueryCondition.QUERY_CONDITION_SPLIT 的话，返回该列所有的元素
-                if (queryConditionValue.equals(QueryCondition.QUERY_CONDITION_SPLIT)) {
-                    List<Map<String, Object>> listMaps = dataService.getColumnAllValues(DataService.TABLE_DATA,ew String[]{key});
-                    queryConditionValue = getListMapValue(listMaps);
+            for (String category:categories) {
+                if (!StringUtils.isEmpty(category)) {
+                    Set<Map.Entry<String, String>> set = allQueryConditionsList.get(0).getKeyValue().entrySet();
+                    Iterator<Map.Entry<String, String>> it = set.iterator();
+                    while (it.hasNext()) {
+                        Map.Entry<String,String> entry = it.next();
+                        if (entry.getKey().equals(category) ) {
+                            String[] queryConditionValues = null;
+                            switch (entry.getValue()) {
+                                case QueryCondition.QUERY_CONDITION_TYPE_LIST:
+                                    // 如果是 QueryCondition.QUERY_CONDITION_SPLIT 的话，返回该列所有的元素
+                                    List<Map<String, Object>> listMaps = dataService.getColumnAllValues(DataService.TABLE_DATA,new String[]{category});
+                                    queryConditionValues = this.getMapValues(listMaps);
+                                break;
+                                case QueryCondition.QUERY_CONDITION_TYPE_DATE:
+                                case QueryCondition.QUERY_CONDITION_TYPE_MONEY:
+                                case QueryCondition.QUERY_CONDITION_TYPE_AMOUNT:
+                                case QueryCondition.QUERY_CONDITION_TYPE_STRING:
+                                default:
+                                    queryConditionValues = new String[]{};
+                                    break;
+                            }
+                            CategorySelections categorySelections = new CategorySelections(category,queryConditionValues);
+                            categorySelectionsList.add(categorySelections);
+                        } else {
+
+                        }
+                    }
+                } else {
+
                 }
-                break;
-            case QueryCondition.QUERY_CONDITION_TYPE_STRING:
-            default:
-                queryConditionValue = "";
-                break;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseResultUtil().error(ResponseCodeEnum.USER_CATEGORY_SELECTIONS_FAILED);
         }
-        return queryConditionValue;*/
-        return new ResponseResultUtil().success();
+
+        return new ResponseResultUtil().success(ResponseCodeEnum.USER_CATEGORY_SELECTIONS_SUCCESS, categorySelectionsList.toArray());
     }
 
     /**
@@ -306,5 +324,20 @@ public class UserInfoServiceImpl {
         }
         Slf4jLogUtil.get().info("用户密码不正确");
         return false;
+    }
+
+    private String[] getMapValues(List<Map<String, Object>> listMaps) {
+        String[] values = new String[listMaps.size()];
+        int i = 0;
+        for (Map<String, Object> map : listMaps) {
+            for (Map.Entry<String, Object> m : map.entrySet()) {
+                //System.out.print(m.getKey());
+                //System.out.println(m.getValue());
+                values[i] = new String();
+                values[i] = (String) m.getValue();
+                i++;
+            }
+        }
+        return values;
     }
 }

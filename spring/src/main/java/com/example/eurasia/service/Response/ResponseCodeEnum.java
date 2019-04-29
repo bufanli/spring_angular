@@ -122,6 +122,8 @@ public enum ResponseCodeEnum {
     USER_UPDATE_PRODUCT_DATE_FROM_DATE_IS_NULL(ResponseCode.RESPONSE_CODE_USER_UPDATE_CHECK_NG, "更新可访问的日期范围的起始有效期为空。"),
     USER_UPDATE_PRODUCT_DATE_TO_DATE_IS_NULL(ResponseCode.RESPONSE_CODE_USER_UPDATE_CHECK_NG, "更新可访问的日期范围的结束有效期为空。"),
     USER_UPDATE_PRODUCT_NUMBER_IS_NULL(ResponseCode.RESPONSE_CODE_USER_UPDATE_CHECK_NG, "更新可访问的海关/商品编码为空。"),
+    USER_CATEGORY_SELECTIONS_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "取得字段分组值成功"),
+    USER_CATEGORY_SELECTIONS_FAILED(ResponseCode.RESPONSE_CODE_NG, "取得字段分组值失败"),
 
     /* 取得表头 */
     HEADER_GET_ALL_INFO_FROM_SQL_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "从数据库取得表头信息成功"),
