@@ -606,6 +606,7 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
       selections = this.commonUtilitiesService.convertArrayCommaSeperatorToDash(selections);
       const inputQueryCondition = queryCondition.clone();
       inputQueryCondition.setStringValue(selections);
+      queryParams.push(inputQueryCondition);
     }
   }
   // abstract input query condition of amount type or money type
