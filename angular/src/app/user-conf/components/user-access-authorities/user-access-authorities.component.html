@@ -28,7 +28,7 @@
 </div>
 <div class="row" *ngIf="currentUserAccessAuthorities">
   <div class="col-md-12">
-    <div class="form-group">
+    <div class="form-group required">
       <select class="form-control selectpicker" multiple title="请选择海关编码" id="hs_code_{{this.componentID}}"
         [(ngModel)]="this.selectedHsCodes" name="hs_code_{{this.componentID}}">
         <option *ngFor="let hsCode of this.hsCodes" value="{{hsCode}}">
