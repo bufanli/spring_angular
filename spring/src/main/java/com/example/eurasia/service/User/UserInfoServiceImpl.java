@@ -212,7 +212,7 @@ public class UserInfoServiceImpl {
     }
 
     public ResponseResult getCategoryList(String[] categories) throws Exception {
-        ArrayList<CategorySelections> categorySelectionsList = new ArrayList();
+        ArrayList<CategorySelections> categorySelectionsList = new ArrayList<>();
         try {
             // 取得所以的查询条件(Data的Map-key是查询条件的key，Data的Map-value是查询条件的type)
             List<Data> allQueryConditionsList = dataService.getAllQueryConditions();

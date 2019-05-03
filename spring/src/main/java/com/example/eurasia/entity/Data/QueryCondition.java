@@ -1,6 +1,5 @@
 package com.example.eurasia.entity.Data;
 
-import com.example.eurasia.service.User.UserService;
 import com.example.eurasia.service.Util.Slf4jLogUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.util.StringUtils;
@@ -154,8 +153,6 @@ public class QueryCondition implements Cloneable {
                 if (entry.getValue().equals(this.getType())) {
                     /* 在java的1.7之后的jdk版本，java中的switch里面表达式的类型可以是string类型。*/
                     switch (this.getType()) {
-                        case QueryCondition.QUERY_CONDITION_TYPE_STRING:
-                            break;
                         case QueryCondition.QUERY_CONDITION_TYPE_DATE:
                         case QueryCondition.QUERY_CONDITION_TYPE_MONEY:
                         case QueryCondition.QUERY_CONDITION_TYPE_AMOUNT:
@@ -165,6 +162,7 @@ public class QueryCondition implements Cloneable {
                                 return false;
                             }
                             break;
+                        case QueryCondition.QUERY_CONDITION_TYPE_STRING:
                         default:
                             break;
                     }

@@ -187,7 +187,7 @@ public class SearchDataServiceImpl implements ISearchDataService {
     }
 
     private String checkQueryConditions(String userID, QueryCondition[] queryConditionsArr) throws Exception {
-        StringBuffer ret = new StringBuffer("");
+        StringBuffer ret = new StringBuffer();
 
         ApplicationContext context = new ClassPathXmlApplicationContext("com/example/eurasia/config/applicationContext.xml");
         DataXMLReader dataXMLReader = (DataXMLReader) context.getBean(DataService.BEAN_NAME_QUERY_CONDITION_TYPE_VALUE);
@@ -216,7 +216,7 @@ public class SearchDataServiceImpl implements ISearchDataService {
                                 ret.append(UserService.BR);
                             }
                         }
-                    } else {//"～～"的场合，是没有限制
+                    } else {//"～～"的场合，1.没有限制 2.没有输入
 
                     }
                     break;
@@ -249,6 +249,19 @@ public class SearchDataServiceImpl implements ISearchDataService {
                         dateArr[1] = dateArrFromSql[1];
                     }
                     queryCondition.setArrToQueryCondition(dateArr);
+                }
+            } else if (queryCondition.getKey().equals(UserService.MUST_PRODUCT_NUMBER)) {
+                if (queryCondition.equals(QueryCondition.QUERY_CONDITION_SPLIT)) {
+                    //"～～"的场合，从该用户的权限设定中获取属于他的海关/商品编码范围
+                    queryConditionValueFromSql = userService.getOneUserCustom(UserService.TABLE_USER_ACCESS_AUTHORITY,
+                            UserService.MUST_PRODUCT_NUMBER,
+                            userID);
+                    if (queryConditionValueFromSql.equals(QueryCondition.QUERY_CONDITION_SPLIT)) {
+                        //该用户的海关/商品编码访问没有限制
+                    } else {
+                        String dateArrFromSql[] = queryConditionValueFromSql.split(QueryCondition.QUERY_CONDITION_SPLIT,-1);
+                        queryCondition.setArrToQueryCondition(dateArrFromSql);
+                    }
                 }
             }
         }
