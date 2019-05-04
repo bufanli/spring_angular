@@ -251,7 +251,7 @@ public class SearchDataServiceImpl implements ISearchDataService {
                     queryCondition.setArrToQueryCondition(dateArr);
                 }
             } else if (queryCondition.getKey().equals(UserService.MUST_PRODUCT_NUMBER)) {
-                if (queryCondition.equals(QueryCondition.QUERY_CONDITION_SPLIT)) {
+                if (queryCondition.getValue().equals(QueryCondition.QUERY_CONDITION_SPLIT)) {
                     //"～～"的场合，从该用户的权限设定中获取属于他的海关/商品编码范围
                     queryConditionValueFromSql = userService.getOneUserCustom(UserService.TABLE_USER_ACCESS_AUTHORITY,
                             UserService.MUST_PRODUCT_NUMBER,

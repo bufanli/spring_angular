@@ -599,15 +599,11 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
     queryCondition: QueryCondition): void {
     // if nothing is selected, then do not put into query params
     let selections = this.queryConditionInputModel[queryCondition.getUUID()];
-    if (selections === '') {
-      return;
-    } else {
-      // convert selection from comma to dash
-      selections = this.commonUtilitiesService.convertArrayCommaSeperatorToDash(selections);
-      const inputQueryCondition = queryCondition.clone();
-      inputQueryCondition.setStringValue(selections);
-      queryParams.push(inputQueryCondition);
-    }
+    // convert selection from comma to dash
+    selections = this.commonUtilitiesService.convertArrayCommaSeperatorToDash(selections);
+    const inputQueryCondition = queryCondition.clone();
+    inputQueryCondition.setStringValue(selections);
+    queryParams.push(inputQueryCondition);
   }
   // abstract input query condition of amount type or money type
   private abstractInputQueryConditionWithAmountTypeOrMoneyType(
@@ -617,24 +613,20 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
     // get from value
     let from = this.queryConditionInputModel[queryCondition.getUUID() + '_from'];
     let to = this.queryConditionInputModel[queryCondition.getUUID() + '_to'];
-    if (from === '' && to === '') {
-      return;
-    } else {
-      // if type is amount, then get integer only
-      if (queryCondition.getType() === 'Amount') {
-        if (from !== '') {
-          from = Math.floor(from);
-        }
-        if (to !== '') {
-          to = Math.floor(to);
-        }
+    // if type is amount, then get integer only
+    if (queryCondition.getType() === 'Amount') {
+      if (from !== '') {
+        from = Math.floor(from);
       }
-      // contenate from and to with dash
-      const value = from + '~~' + to;
-      const inputQueryCondition = queryCondition.clone();
-      inputQueryCondition.setStringValue(value);
-      queryParams.push(inputQueryCondition);
+      if (to !== '') {
+        to = Math.floor(to);
+      }
     }
+    // contenate from and to with dash
+    const value = from + '~~' + to;
+    const inputQueryCondition = queryCondition.clone();
+    inputQueryCondition.setStringValue(value);
+    queryParams.push(inputQueryCondition);
   }
   // set model for each query condition
   private setModelForEachQueryCondition(): void {
