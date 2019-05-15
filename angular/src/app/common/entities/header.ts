@@ -5,6 +5,8 @@ export class Header {
   formatter: Function;
   class: string;
   width: number;
+  sortable: boolean;
+  order: string;
   constructor(field: string, title: string, visible = true) {
     this.field = field;
     this.title = title;
