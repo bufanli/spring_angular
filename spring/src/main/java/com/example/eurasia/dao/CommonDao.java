@@ -4,6 +4,7 @@ import com.example.eurasia.entity.Data.ComputeField;
 import com.example.eurasia.entity.Data.Data;
 import com.example.eurasia.entity.Data.DataXMLReader;
 import com.example.eurasia.entity.Data.QueryCondition;
+import com.example.eurasia.service.Util.Slf4jLogUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -350,7 +351,6 @@ CREATE TABLE SPRING_SESSION_ATTRIBUTES (
 
     /**
      * 查询数据库中的最近一个月
-     *
      * @param tableName
      * @return
      * @throws
@@ -416,9 +416,11 @@ select PERIOD_DIFF(DATE_FORMAT(CURDATE(),'%Y%m'),DATE_FORMAT(日期,'%Y%m')) fro
         Date date = null;
         String[] dateArr = new String[2];
         dateArr[1] = dataList.get(0).getKeyValue().get("max(" + dateColumnName + ")");
-        if (dateArr[1] == null) {
+        Slf4jLogUtil.get().info("从数据库中取出的日期最大值是:" + dateArr[1]);
+        if (StringUtils.isEmpty(dateArr[1])) {
             //数据库中没有数据的话，取今天日期。
             date = new Date();
+            dateArr[1] = sdf.format(date);
         } else {
             date = sdf.parse(dateArr[1]);
         }
