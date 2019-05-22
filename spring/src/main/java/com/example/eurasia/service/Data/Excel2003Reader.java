@@ -1,6 +1,5 @@
 package com.example.eurasia.service.Data;
 
-import com.example.eurasia.entity.Data.Data;
 import com.example.eurasia.entity.Data.QueryCondition;
 import com.example.eurasia.service.Util.Slf4jLogUtil;
 import org.apache.poi.hssf.eventusermodel.*;
@@ -333,10 +332,9 @@ public class Excel2003Reader implements HSSFListener {
 
                 //前一个Sheet页内容
                 if (this.sheetIndex > -1) {
-                    List<Data> dataList = this.rowReader.getDataList();
                     int addDataNum = 0;
                     try {
-                        addDataNum = this.rowReader.saveDataToSQL(DataService.TABLE_DATA, dataList);//导入数据。
+                        addDataNum = this.rowReader.saveDataToSQL(DataService.TABLE_DATA);//导入数据。
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

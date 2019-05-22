@@ -71,6 +71,10 @@ public class ImportExcelRowReader {
         this.dataList.clear();
     }
 
+    public int saveDataToSQL(String tableName) throws Exception {
+        return this.saveDataToSQL(tableName, this.getDataList());
+    }
+
     public int saveDataToSQL(String tableName, List<Data> dataList) throws Exception {
         int addDataNum = 0;
         int deleteNum = 0;

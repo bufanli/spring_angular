@@ -45,8 +45,20 @@ public class Excel2007Reader {
 
     private int sheetIndex = -1;
 
+    //信息接收器
+    private StringBuffer message;
+
     @Autowired
     private ImportExcelRowReader rowReader;//必须是static，否则匿名内部类中引用时会报空指针异常
+
+    Excel2007Reader() {
+        //信息接收器
+        message = new StringBuffer();
+    }
+
+    public StringBuffer getMessage() {
+        return this.message;
+    }
 
     public void processOneSheet(InputStream inputStream) throws Exception {
         OPCPackage pkg = OPCPackage.open(inputStream);
@@ -65,6 +77,13 @@ public class Excel2007Reader {
             try {
                 // 解析sheet: com.sun.org.apache.xerces.internal.jaxp.SAXParserImpl:522
                 parser.parse(sheetSource);
+
+                int addDataNum = this.rowReader.saveDataToSQL(DataService.TABLE_DATA);//导入数据。
+                Slf4jLogUtil.get().info("导入成功，共{}条数据！",addDataNum);
+                this.message.append("导入成功，共" + addDataNum + "条数据！");
+                //清空保存前一个Sheet页内容用的List
+                this.rowReader.clearDataList();
+
             } finally {
                 sheet.close();
             }
@@ -96,6 +115,13 @@ public class Excel2007Reader {
                 try {
                     // 解析sheet: com.sun.org.apache.xerces.internal.jaxp.SAXParserImpl:522
                     parser.parse(sheetSource);
+
+                    int addDataNum = this.rowReader.saveDataToSQL(DataService.TABLE_DATA);//导入数据。
+                    Slf4jLogUtil.get().info("导入成功，共{}条数据！",addDataNum);
+                    this.message.append("导入成功，共" + addDataNum + "条数据！");
+                    //清空保存前一个Sheet页内容用的List
+                    this.rowReader.clearDataList();
+
                 } finally {
                     sheet.close();
                 }
