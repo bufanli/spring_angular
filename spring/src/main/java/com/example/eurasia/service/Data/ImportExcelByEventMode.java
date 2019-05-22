@@ -29,8 +29,10 @@ public class ImportExcelByEventMode {
 
             if (ImportExcelUtils.isExcel2003(file.toString())) {
                 excel2003Reader.process(inputStream);
+                msg = excel2003Reader.getMessage();
             } else if (ImportExcelUtils.isExcel2007(file.toString())) {
                 excel2007Reader.processAllSheets(inputStream);
+                msg = excel2007Reader.getMessage();
             }
 
         } catch (IOException e) {
