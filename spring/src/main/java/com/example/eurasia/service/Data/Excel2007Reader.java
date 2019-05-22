@@ -261,7 +261,7 @@ public class Excel2007Reader {
                 }
                 //补全一行尾部可能缺失的单元格
                 if (this.maxRef != null) {
-                    int len = countNullCell(maxRef, ref);
+                    int len = countNullCell(maxRef, this.preRef);
                     for (int i = 0; i <= len; i++) {
                         this.curCol++;
                         this.rowList.add(this.curCol, "");
