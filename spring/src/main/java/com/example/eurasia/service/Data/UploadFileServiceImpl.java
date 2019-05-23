@@ -1,5 +1,6 @@
 package com.example.eurasia.service.Data;
 
+import com.example.eurasia.entity.Data.ColumnsDictionary;
 import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;
@@ -178,4 +179,19 @@ public class UploadFileServiceImpl implements IUploadFileService {
         return responseResult;
     }
 
+    @Override
+    public ResponseResult getColumnsDictionary() throws Exception {
+        ResponseResult responseResult;
+        //T.B.D
+        responseResult = new ResponseResultUtil().success();
+        return responseResult;
+    }
+
+    @Override
+    public ResponseResult saveColumnsDictionary(ColumnsDictionary[] columnsDictionary) throws Exception {
+        ResponseResult responseResult;
+        //T.B.D
+        responseResult = new ResponseResultUtil().success();
+        return responseResult;
+    }
 }
