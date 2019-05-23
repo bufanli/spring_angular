@@ -37,6 +37,8 @@
 
 22. 第二个sheet页空的时候会抛出异常（userMode）。
 
+23. war文件重启Service之后，不能生效，必须重启电脑，要解决。
+
 【finished】
 
 1. 对HTTP增加拦截器，保证Session过期之后重定向.（Spring代码push了，没有注入Annotation） 4 OK
