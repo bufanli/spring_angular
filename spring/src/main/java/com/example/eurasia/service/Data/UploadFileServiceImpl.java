@@ -183,15 +183,16 @@ public class UploadFileServiceImpl implements IUploadFileService {
     public ResponseResult getColumnsDictionary() throws Exception {
         ResponseResult responseResult;
         //T.B.D
-        responseResult = new ResponseResultUtil().success();
+        ColumnsDictionary[] columnsDictionary = new ColumnsDictionary[1];
+        responseResult = new ResponseResultUtil().success(ResponseCodeEnum.GET_COLUMNS_DICTIONARY_SUCCESS, columnsDictionary);
         return responseResult;
     }
 
     @Override
-    public ResponseResult saveColumnsDictionary(ColumnsDictionary[] columnsDictionary) throws Exception {
+    public ResponseResult setColumnsDictionary(ColumnsDictionary[] columnsDictionary) throws Exception {
         ResponseResult responseResult;
         //T.B.D
-        responseResult = new ResponseResultUtil().success();
+        responseResult = new ResponseResultUtil().success(ResponseCodeEnum.SET_COLUMNS_DICTIONARY_SUCCESS);
         return responseResult;
     }
 }

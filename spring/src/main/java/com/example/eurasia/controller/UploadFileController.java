@@ -136,9 +136,9 @@ public class UploadFileController {
      * @date 2019-05-23
      * @description 保存数据字段的词典
      */
-    @RequestMapping(value="/saveColumnsDictionary", method = RequestMethod.POST)
+    @RequestMapping(value="/setColumnsDictionary", method = RequestMethod.POST)
     public @ResponseBody
-    ResponseResult saveColumnsDictionary(HttpServletRequest request,@RequestBody ColumnsDictionary[] columnsDictionary) {
+    ResponseResult setColumnsDictionary(HttpServletRequest request,@RequestBody ColumnsDictionary[] columnsDictionary) {
         ResponseResult responseResult;
         try {
             Slf4jLogUtil.get().info("保存数据字段的词典开始");
@@ -146,7 +146,7 @@ public class UploadFileController {
             if (StringUtils.isEmpty(userID)) {
                 responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
             } else {
-                responseResult = uploadFileService.saveColumnsDictionary(columnsDictionary);
+                responseResult = uploadFileService.setColumnsDictionary(columnsDictionary);
             }
             Slf4jLogUtil.get().info("保存数据字段的词典结束");
         } catch (Exception e) {

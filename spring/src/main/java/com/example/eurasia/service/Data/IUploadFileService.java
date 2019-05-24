@@ -10,5 +10,5 @@ public interface IUploadFileService {
     ResponseResult batchUpload(File uploadDir, MultipartFile[] files) throws Exception;
     ResponseResult readFile(File uploadDir) throws Exception;
     ResponseResult getColumnsDictionary() throws Exception;
-    ResponseResult saveColumnsDictionary(ColumnsDictionary[] columnsDictionary) throws Exception;
+    ResponseResult setColumnsDictionary(ColumnsDictionary[] columnsDictionary) throws Exception;
 }

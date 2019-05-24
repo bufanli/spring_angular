@@ -75,6 +75,10 @@
           init-method="init">
         <property name="filePath" value="com/example/eurasia/config/userQueryConditionDisplay.xml" />
     </bean>
+    <bean id="columnsDictionaryName" class="com.example.eurasia.entity.Data.DataXMLReader"
+          init-method="init">
+        <property name="filePath" value="com/example/eurasia/config/columnsDictionaryName.xml" />
+    </bean>
 
     <!--
     依赖注入
