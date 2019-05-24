@@ -1,3 +1,15 @@
-<p>
-  edit-dictionary works!
-</p>
+<div class="container">
+  <div class="row">
+    <div class="col-md-6">
+      <div *ngFor="let originalColumn of this.originalColumns" class="row">
+        <table data-toggle="table" id="table">
+          <thead>
+            <tr>
+              <th data-field="originalColumn" data-events="operateEvents">{{originalColumn}}</th>
+            </tr>
+          </thead>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
