@@ -33,10 +33,12 @@ public class DataService {
     public static final String TABLE_STATISTICS_SETTING_GROUP_BY = "statisticsSettingGroupByTable";
     public static final String TABLE_STATISTICS_SETTING_TYPE = "statisticsSettingTypeTable";
     public static final String TABLE_STATISTICS_SETTING_COMPUTE_BY = "statisticsSettingComputeByTable";
+    public static final String TABLE_COLUMNS_DICTIONARY_TABLE = "columnsDictionaryTable";
 
     public static final String BEAN_NAME_COLUMNS_DEFAULT_NAME = "columnDefaultName";
     public static final String BEAN_NAME_QUERY_CONDITION_TYPE_NAME = "queryConditionTypeName";
     public static final String BEAN_NAME_QUERY_CONDITION_TYPE_VALUE = "queryConditionTypeValue";
+    public static final String BEAN_NAME_COLUMNS_DICTIONARY_NAME = "columnsDictionaryName";
     public static final String STATISTICS_SETTING_GROUP_BY_COLUMN_NAME = "GroupByName";
     public static final String STATISTICS_SETTING_TYPE_COLUMN_NAME = "Type";
     public static final String STATISTICS_SETTING_COMPUTE_BY_COLUMN_NAME = "ComputeByName";
@@ -99,6 +101,9 @@ public class DataService {
                 for (int i=0; i<computeByArr.length; i++) {
                     getDataDao().addData(DataService.TABLE_STATISTICS_SETTING_COMPUTE_BY,DataService.STATISTICS_SETTING_COMPUTE_BY_COLUMN_NAME,computeByArr[i]);
                 }
+            }
+            if (this.createTable(DataService.TABLE_COLUMNS_DICTIONARY_TABLE,DataService.BEAN_NAME_COLUMNS_DICTIONARY_NAME) == true) {
+
             }
 
         } catch (Exception e) {

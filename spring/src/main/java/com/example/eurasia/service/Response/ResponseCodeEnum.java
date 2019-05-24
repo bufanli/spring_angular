@@ -202,6 +202,12 @@ public enum ResponseCodeEnum {
     EXPORT_DATA_INFO_FAILED(ResponseCode.RESPONSE_CODE_NG, "导出数据成功"),
     EXPORT_DATA_FILE_NAME_NULL(ResponseCode.RESPONSE_CODE_NG, "导出文件名字为NULL"),
 
+    /* 数据字段的词典 */
+    GET_COLUMNS_DICTIONARY_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "取得数据字段的词典成功"),
+    GET_COLUMNS_DICTIONARY_FAILED(ResponseCode.RESPONSE_CODE_NG, "取得数据字段的词典失败"),
+    SET_COLUMNS_DICTIONARY_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "保存数据字段的词典成功"),
+    SET_COLUMNS_DICTIONARY_FAILED(ResponseCode.RESPONSE_CODE_NG, "保存数据字段的词典失败"),
+
     /* 取得查询条件 */
 
     /* 创建表 */
