@@ -138,7 +138,7 @@ public class UploadFileServiceImpl implements IUploadFileService {
 
                 try {
                     if (ImportExcelUtils.isExcelFileValidata(files[i]) == true) {
-                        //responseRead = importExcelByUserMode.readExcelFile(files[i]);
+                        //responseRead = importExcelByUserMode.readExcelFile(files[i]);//T.B.D UserMode，没有check列名的同义词
                         responseRead = importExcelByEventMode.readExcelFile(files[i]);
                     } else {
                         fileNGNum++;
@@ -200,7 +200,7 @@ public class UploadFileServiceImpl implements IUploadFileService {
         }
 
         // 取得数据字典表指定列的所有值
-        List<Map<String, Object>> colNamesListMap = dataService.getColumnAllValues(DataService.TABLE_COLUMNS_DICTIONARY_TABLE,
+        List<Map<String, Object>> colNamesListMap = dataService.getColumnAllValues(DataService.TABLE_COLUMNS_DICTIONARY,
                 new String[]{DataService.COLUMNS_DICTIONARY_SYNONYM, DataService.COLUMNS_DICTIONARY_COLUMN_NAME});
 
         // 组成数据字典实例数组
@@ -251,7 +251,7 @@ public class UploadFileServiceImpl implements IUploadFileService {
 //                }
             }
         }
-        int addDataNum = dataService.saveDataToSQL(DataService.TABLE_COLUMNS_DICTIONARY_TABLE, dataList);
+        int addDataNum = dataService.saveDataToSQL(DataService.TABLE_COLUMNS_DICTIONARY, dataList);
         Slf4jLogUtil.get().info("导入数据词典成功，共{}条数据！",addDataNum);
 
         responseResult = new ResponseResultUtil().success(ResponseCodeEnum.SET_COLUMNS_DICTIONARY_SUCCESS);

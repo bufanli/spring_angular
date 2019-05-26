@@ -8,10 +8,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class DataService {
@@ -33,7 +30,7 @@ public class DataService {
     public static final String TABLE_STATISTICS_SETTING_GROUP_BY = "statisticsSettingGroupByTable";
     public static final String TABLE_STATISTICS_SETTING_TYPE = "statisticsSettingTypeTable";
     public static final String TABLE_STATISTICS_SETTING_COMPUTE_BY = "statisticsSettingComputeByTable";
-    public static final String TABLE_COLUMNS_DICTIONARY_TABLE = "columnsDictionaryTable";
+    public static final String TABLE_COLUMNS_DICTIONARY = "columnsDictionaryTable";
 
     public static final String BEAN_NAME_COLUMNS_DEFAULT_NAME = "columnDefaultName";
     public static final String BEAN_NAME_QUERY_CONDITION_TYPE_NAME = "queryConditionTypeName";
@@ -109,7 +106,7 @@ public class DataService {
             Map<String, String> columnsDictionary = new LinkedHashMap<String, String>();
             columnsDictionary.put(DataService.COLUMNS_DICTIONARY_SYNONYM,"VARCHAR(255)");
             columnsDictionary.put(DataService.COLUMNS_DICTIONARY_COLUMN_NAME,"VARCHAR(255)");
-            if (this.createTable(DataService.TABLE_COLUMNS_DICTIONARY_TABLE,columnsDictionary) == true) {
+            if (this.createTable(DataService.TABLE_COLUMNS_DICTIONARY,columnsDictionary) == true) {
 
             }
 
@@ -154,6 +151,14 @@ public class DataService {
         return deleteNum;
     }
 
+    /**
+     * 保存数据
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-09-20 00:00:00
+     */
     public int saveDataToSQL(String tableName, List<Data> dataList) throws Exception {
         int addDataNum = 0;
         int deleteNum = 0;
@@ -169,6 +174,61 @@ public class DataService {
         } else {
             return 0;
         }
+    }
+
+    /**
+     * 判断数据字段名或同义词，是否存在
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-09-20 00:00:00
+     */
+    public List<String> isTitleExist(List<String> titleList) throws Exception {
+
+        boolean isInTableData = false;
+        boolean isInTableColsDicData = false;
+
+        List<String> titleIsNotExistList = new ArrayList<>();
+
+        // 取得数据表的所有列名
+        List<String> colsNameList = this.getAllColumnNames(DataService.TABLE_DATA);
+
+        // 取得数据字典表指定列的所有值
+        List<Map<String, Object>> colNamesListMap = this.getColumnAllValues(DataService.TABLE_COLUMNS_DICTIONARY,
+                new String[]{DataService.COLUMNS_DICTIONARY_SYNONYM, DataService.COLUMNS_DICTIONARY_COLUMN_NAME});
+
+        for (int i=0; i<titleList.size(); i++) {
+
+            for (String columnName : colsNameList) {
+                if (columnName.equals(titleList.get(i))) {//在数据表中找到该字段
+                    isInTableData = true;
+                    break;
+                }
+            }
+
+            if (isInTableData == false) {
+                for (Map<String, Object> map : colNamesListMap) {//在数据字典表中找该字段
+                    String synonymValue = (String) map.get(DataService.COLUMNS_DICTIONARY_SYNONYM);
+                    if (synonymValue.equals(titleList.get(i))) {//在数据字典表的同义词里找到该字段
+                        isInTableColsDicData = true;
+                        String colNameValue = (String) map.get(DataService.COLUMNS_DICTIONARY_COLUMN_NAME);
+                        //替换同义词
+                        titleList.set(i, colNameValue);
+                        break;
+                    }
+                }
+
+                if (isInTableColsDicData == false) {
+                    //不存在的字段
+                    titleIsNotExistList.add(titleList.get(i));
+                }
+
+            }
+
+        }
+
+        return titleIsNotExistList;
     }
 
     /**

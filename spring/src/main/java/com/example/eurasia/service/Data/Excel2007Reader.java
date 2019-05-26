@@ -89,11 +89,18 @@ public class Excel2007Reader implements IExcelReaderByEventMode {
                 // 解析sheet: com.sun.org.apache.xerces.internal.jaxp.SAXParserImpl:522
                 parser.parse(sheetSource);
 
-                int addDataNum = this.rowReader.saveDataToSQL(DataService.TABLE_DATA);//导入数据。
-                Slf4jLogUtil.get().info("导入成功，共{}条数据！", addDataNum);
-                this.message.append("导入成功，共" + addDataNum + "条数据！");
-                //清空保存前一个Sheet页内容用的List
-                this.rowReader.clearDataList();
+                if (this.rowReader.getTitleIsNotExistList().size() == 0) {
+                    int addDataNum = this.rowReader.saveDataToSQL(DataService.TABLE_DATA);//导入数据。
+                    Slf4jLogUtil.get().info("导入成功，共{}条数据！",addDataNum);
+                    this.message.append("导入成功，共" + addDataNum + "条数据！");
+
+                    //清空保存前一个Sheet页内容用的List
+                    this.rowReader.clearDataList();
+                } else {
+                    String titleIsNotExist = this.rowReader.titleIsNotExistListToString();
+                    Slf4jLogUtil.get().info("导入失败，{}在数据库中不存在！",titleIsNotExist);
+                    this.message.append("导入失败，" + titleIsNotExist + "在数据库中不存在！");
+                }
 
             }
         } catch (Exception e) {
@@ -141,7 +148,7 @@ public class Excel2007Reader implements IExcelReaderByEventMode {
         private boolean nullRowFlag = true;
 
         //行数据保存
-        private List<String> rowList = new ArrayList<String>();;
+        private List<String> rowList = new ArrayList<String>();
 
         private int curRow = -1;
         private int curCol = -1;
