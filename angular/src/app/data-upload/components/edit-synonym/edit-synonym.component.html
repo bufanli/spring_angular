@@ -1,34 +1,41 @@
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">
-      请编辑同义词
-    </h3>
-  </div>
-  <div class="panel-body">
-    <div *ngIf="this.errorExist" class="alert alert-danger">{{this.errorMsg}}</div>
-    <div *ngIf="this.infoExist" class="alert alert-info">{{this.infoMsg}}</div>
-    <form role="form" (ngSubmit)="onEditSynonym()">
-      <div class="row">
-        <div class="col-md-6">
-          <div class="input-group">
-            <span class="input-group-addon">{{this.SYNONYM_NAME}}</span>
-            <input type="text" class="form-control" id="synonym" [(ngModel)]="this.synonym" (keyup)="onEneterSynonym($event)>
-          </div>
+<div class="modal-header bg-primary">
+  <button type="button" class="close" data-dismiss="modal" aria-hidden="true" (click)="close()">
+    &times;
+  </button>
+  <h4 class="modal-title" id="myModalLabel">
+    {{this.SYNONYM_EDIT_TITLE}}
+  </h4>
+</div>
+<div class="modal-body">
+  <div *ngIf="this.errorExist" class="alert alert-danger">{{this.errorMsg}}</div>
+  <div *ngIf="this.infoExist" class="alert alert-info">{{this.infoMsg}}</div>
+  <form role="form">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="input-group">
+          <span class="input-group-addon">{{this.SYNONYM_NAME}}</span>
+          <input type="text" class="form-control" id="synonym" [(ngModel)]="this.synonym"
+            (keyup)="onEnterSynonym($event)">
         </div>
-        <div class=" col-md-6">
-            <div class="input-group">
-              <span class="input-group-addon">{{this.COLUMN_NAME}}</span>
-              <input disabled="disabled" type="text" class="form-control" id="column" [(ngModel)]="this.column">
-            </div>
-          </div>
+      </div>
+      <div class=" col-md-6">
+        <div class="input-group">
+          <span class="input-group-addon">{{this.COLUMN_NAME}}</span>
+          <input disabled="disabled" type="text" class="form-control" id="column" [(ngModel)]="this.column">
         </div>
-        <div class="row">
-          <div class="form-group">
-            <button type="submit" class="btn btn-default btn-block">
-              <span class="glyphicon glyphicon-edit"></span> 编辑
-            </button>
-          </div>
-        </div>
-    </form>
+      </div>
+    </div>
+  </form>
+</div>
+<div class="modal-footer">
+  <div class="form-group">
+    <button type="button" class="btn btn-default btn-block" (click)="this.onSaveSynonyms()">
+      <span class="glyphicon glyphicon-edit"></span> 保存
+    </button>
+    <div class="form-group">
+      <button type="submit" class="btn btn-default btn-block" (click)="this.close()">
+        <span class="glyphicon glyphicon-remove"></span> 关闭
+      </button>
+    </div>
   </div>
 </div>

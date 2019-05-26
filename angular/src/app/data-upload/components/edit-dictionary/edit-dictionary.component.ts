@@ -6,22 +6,28 @@ import { CurrentUserContainerService } from 'src/app/common/services/current-use
 import { ColumnsDictionary } from '../../entities/columns-dictionary';
 import { NgbModal, NgbModalOptions, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
 import { EditSynonymComponent } from '../edit-synonym/edit-synonym.component';
+import { SaveColumnDictionaryCallback } from '../../interfaces/save-column-dictionary-callback';
+import { EditSynonymBase } from '../../interfaces/edit-synonym-base';
+import { SaveColumnSynonymsService } from '../../services/save-column-synonyms.service';
 
 @Component({
   selector: 'app-edit-dictionary',
   templateUrl: './edit-dictionary.component.html',
   styleUrls: ['./edit-dictionary.component.css']
 })
-export class EditDictionaryComponent implements OnInit, AfterViewChecked {
-  private readonly getColumnsDictionaryURl = 'api/getColumnsDictionary';
+export class EditDictionaryComponent extends EditSynonymBase implements OnInit, AfterViewChecked, SaveColumnDictionaryCallback {
   public readonly fieldName = 'synonym';
+  private readonly getColumnDictionaryURL = 'api/getColumnsDictionary';
   public columnsDictionaries: ColumnsDictionary[] = null;
   private columnsDictionariesLoaded = false;
   // id is a dummy attribute, just for compilation
   private id: any;
   constructor(private http: HttpClient,
-    private currentUserContainer: CurrentUserContainerService,
-    public modalService: NgbModal) { }
+    protected currentUserContainer: CurrentUserContainerService,
+    protected saveColumnSynonymsService: SaveColumnSynonymsService,
+    public modalService: NgbModal) {
+    super(currentUserContainer, saveColumnSynonymsService)
+  }
 
   ngOnInit() {
     // get columns and synonyms
@@ -30,7 +36,7 @@ export class EditDictionaryComponent implements OnInit, AfterViewChecked {
   }
   // get columns from server implementation
   private getColumnsDictionaryImpl(): Observable<HttpResponse> {
-    return this.http.get<HttpResponse>(this.getColumnsDictionaryURl);
+    return this.http.get<HttpResponse>(this.getColumnDictionaryURL);
   }
   private getColumnsDictionaryNotification(httpResponse: HttpResponse): void {
     if (httpResponse.code === 200) {
@@ -112,7 +118,7 @@ export class EditDictionaryComponent implements OnInit, AfterViewChecked {
   }
   // callback of edit synonym closed
   private callbackOfEditSynonymClosed(repsonse: string): void {
-
+    // nothing to do
   }
   // adjust modal options
   // if don't adjust modal options, modal will not be shown correctly
@@ -159,5 +165,9 @@ export class EditDictionaryComponent implements OnInit, AfterViewChecked {
       }); // end get synonyms
     }); // end columnsDictionaries
     return '';
+  }
+  // update synonym dictionaries
+  protected updateColumnDictionaries(): void {
+    // todo
   }
 }

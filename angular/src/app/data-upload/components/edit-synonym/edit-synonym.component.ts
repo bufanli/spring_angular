@@ -1,37 +1,34 @@
 import { Component, OnInit, EventEmitter, Output } from '@angular/core';
 import { ColumnsDictionary } from '../../entities/columns-dictionary';
+import { HttpResponse } from 'src/app/common/entities/http-response';
+import { Observable } from 'rxjs';
+import { CurrentUserContainerService } from 'src/app/common/services/current-user-container.service';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { SaveColumnSynonymsService } from '../../services/save-column-synonyms.service';
+import { SaveColumnDictionaryCallback } from '../../interfaces/save-column-dictionary-callback';
+import { EditSynonymBase } from '../../interfaces/edit-synonym-base';
+
+
 
 @Component({
   selector: 'app-edit-synonym',
   templateUrl: './edit-synonym.component.html',
   styleUrls: ['./edit-synonym.component.css']
 })
-export class EditSynonymComponent implements OnInit {
-  public readonly SYNONYM_NAME = '同义词';
-  public readonly COLUMN_NAME = '原词';
-  public readonly SYNONYM_IS_EMPTY = '同义词为空,请输入同义词';
-  public readonly SYNONYM_IS_DUPLICATED = '该同义词已经定义,原词为 ';
-  public readonly SYNONYM_IS_SAVED = '该同义词保存';
-  // column dictionaries
-  private columnsDictionaries: ColumnsDictionary[] = null;
+export class EditSynonymComponent extends EditSynonymBase implements OnInit, SaveColumnDictionaryCallback {
   // edit synonym index
   private editSynonymIndex = 0;
   // uuid
   private uuid = null;
-  // synonym
-  public synonym: string = null;
-  // column
-  public column: string = null;
-  // synonym error
-  public errorExist = false;
-  public errorMsg: string = null;
-  // synonym error
-  public infoExist = false;
-  public infoMsg: string = null;
 
   @Output() notifyClose: EventEmitter<string> = new EventEmitter<string>();
 
-  constructor() { }
+  constructor(
+    protected currentUserContainer: CurrentUserContainerService,
+    private activeModal: NgbActiveModal,
+    protected saveColumnSynonymService: SaveColumnSynonymsService) {
+    super(currentUserContainer, saveColumnSynonymService);
+  }
 
   ngOnInit() {
   }
@@ -47,36 +44,12 @@ export class EditSynonymComponent implements OnInit {
   public setUUID(uuid: string): void {
     this.uuid = uuid;
   }
-  // on edit synonym
-  public onEditSynonym(): void {
-    // clear error and info
-    this.clearErrorMsg();
-    this.clearInfoMsg();
-    // error check
-    if (this.synonym === '') {
-      this.errorMsg = this.SYNONYM_IS_EMPTY;
-      this.errorExist = true;
-      return;
-    } else {
-      const column = this.synonymExist(this.synonym);
-      if (column !== null) {
-        this.errorExist = true;
-        this.errorMsg = this.SYNONYM_IS_DUPLICATED + column;
-        return;
-      } else {
-        // no duplicated synonym exists
-        this.updateColumnDictionaries();
-        // save synonym dictionaries
-        this.saveColumnDictionaries();
-      }
-    }
-  }
-  // save synonym dictionaries
-  private saveColumnDictionaries(): void {
-    // todo
+  // close modal
+  public close(): void {
+    this.activeModal.close();
   }
   // update synonym dictionaries
-  private updateColumnDictionaries(): void {
+  protected updateColumnDictionaries(): void {
     // get synonym dictionary entry by uuid
     let columnsDictionary: ColumnsDictionary = null;
     this.columnsDictionaries.forEach(element => {
@@ -91,31 +64,5 @@ export class EditSynonymComponent implements OnInit {
       const synonyms: string[] = columnsDictionary.getSynonyms();
       synonyms[this.editSynonymIndex] = this.synonym;
     }
-  }
-  // tell whether synonym exist or not
-  private synonymExist(synonymInput: string): string {
-    this.columnsDictionaries.forEach(element => {
-      element.getSynonyms().forEach(synonym => {
-        if (synonymInput === synonym) {
-          return element;
-        }
-      });
-    });
-    return null;
-  }
-  // on entering synonym
-  public onEnterSynonym(event: any): void {
-    this.clearErrorMsg();
-    this.clearInfoMsg();
-  }
-  // clear info msg
-  private clearInfoMsg(): void {
-    this.infoExist = false;
-    this.infoMsg = '';
-  }
-  // clear error msg
-  private clearErrorMsg(): void {
-    this.errorExist = false;
-    this.errorMsg = '';
   }
 }
