@@ -373,18 +373,12 @@ Mysql limit offset示例
      * @author FuJia
      * @Time 2018-10-27 00:00:00
      */
-    public List<Map<String, Object>> queryListForColumns(String tableName, String[] columnNames) throws Exception {
-        StringBuffer sql = new StringBuffer();
-        sql.append("select ");
-        for (String columnName : columnNames) {
-            sql.append(columnName + CommonDao.COMMA);
-        }
-        sql.deleteCharAt(sql.length() - CommonDao.COMMA.length());
-        sql.append(" from " + tableName);
+    public List<Map<String, Object>> queryListForColumns(String tableName, String[] selectionCols) throws Exception {
+        StringBuffer sql = convertSelectionsToSQL(tableName, selectionCols);
 
-        List<Map<String, Object>> colsNameList = getJdbcTemplate().queryForList(sql.toString());
+        List<Map<String, Object>> selectionColsList = getJdbcTemplate().queryForList(sql.toString());
 
-        return colsNameList;
+        return selectionColsList;
     }
 
     /**
@@ -395,23 +389,16 @@ Mysql limit offset示例
      * @author FuJia
      * @Time 2018-10-27 00:00:00
      */
-    public List<Map<String, Object>> queryListForColumnValues(String tableName, String[] columnNames) throws Exception {
+    public List<Map<String, Object>> queryListForColumnValues(String tableName, String[] selectionCols) throws Exception {
         StringBuffer sql = new StringBuffer();
-        sql.append("select ");
-        for (String columnName : columnNames) {
-            sql.append(columnName + CommonDao.COMMA);
-        }
-        sql.deleteCharAt(sql.length() - CommonDao.COMMA.length());
-        sql.append(" from " + tableName);
-        sql.append(" group by ");
-        for (String columnName : columnNames) {
-            sql.append(columnName + CommonDao.COMMA);
-        }
-        sql.deleteCharAt(sql.length() - CommonDao.COMMA.length());
+        StringBuffer sqlSelections = convertSelectionsToSQL(tableName, selectionCols);
+        StringBuffer sqlGroupBys = convertGroupByToSQL(selectionCols);
+        sql.append(sqlSelections);
+        sql.append(sqlGroupBys);
 
-        List<Map<String, Object>> colsNameList = getJdbcTemplate().queryForList(sql.toString());
+        List<Map<String, Object>> selectionColsList = getJdbcTemplate().queryForList(sql.toString());
 
-        return colsNameList;
+        return selectionColsList;
     }
 
     /**
@@ -483,6 +470,27 @@ Mysql limit offset示例
         }
 */
         return colsNameList;
+    }
+
+    /**
+     * 查询并返回List集合
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-10-27 00:00:00
+     */
+    public List<Map<String, Object>> queryListForValuesIfs(String tableName,
+                                                           String[] selectionCols,
+                                                           String criterionCol,
+                                                           String criterionValue) throws Exception {
+        StringBuffer sql = convertSelectionsToSQL(tableName, selectionCols);
+        sql.append(" where ");
+        sql.append(criterionCol + " = '" + criterionValue + "'");
+
+        List<Map<String, Object>> selectionColsList = getJdbcTemplate().queryForList(sql.toString());
+
+        return selectionColsList;
     }
 }
 

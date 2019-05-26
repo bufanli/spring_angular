@@ -5,6 +5,7 @@ import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;
 import com.example.eurasia.service.User.UserService;
+import com.example.eurasia.service.Util.DataProcessingUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
@@ -13,7 +14,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 //@Slf4j
 /*@Transactional(readOnly = true)事物注解*/
@@ -169,10 +172,10 @@ public class SearchDataServiceImpl implements ISearchDataService {
                 return new ResponseResultUtil().error(ResponseCodeEnum.STATISTICS_SETTING_COMPUTE_BY_FROM_SQL_NULL);
             }
 
-            String[] statisticsTypes = this.getListMapValue(statisticsTypesList);
-            String[] groupByFields = this.getListMapValue(groupByFieldsList);
+            String[] statisticsTypes = DataProcessingUtil.getListMapValuesOfOneColumn(statisticsTypesList);
+            String[] groupByFields = DataProcessingUtil.getListMapValuesOfOneColumn(groupByFieldsList);
             String[] groupBySubFields = {"年","月","季度"};//T.B.D
-            String[] computeFields = this.getListMapValue(computeByFieldsList);
+            String[] computeFields = DataProcessingUtil.getListMapValuesOfOneColumn(computeByFieldsList);
             statisticsFields.setStatisticsTypes(statisticsTypes);
             statisticsFields.setGroupByFields(groupByFields);
             statisticsFields.setGroupBySubFields(groupBySubFields);
@@ -280,16 +283,4 @@ public class SearchDataServiceImpl implements ISearchDataService {
         return userMax;
     }
 
-    private String[] getListMapValue(List<Map<String, Object>> listMaps) {
-        String[] valueArr = new String[listMaps.size()];
-        for (int i = 0; i < listMaps.size(); i++) {
-            Map<String, Object> map = listMaps.get(i);
-            Iterator iterator = map.keySet().iterator();
-            while (iterator.hasNext()) {
-                String key = (String) iterator.next();
-                valueArr[i] = (String) map.get(key);
-            }
-        }
-        return valueArr;
-    }
 }

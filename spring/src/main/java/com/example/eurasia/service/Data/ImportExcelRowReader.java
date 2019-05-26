@@ -17,6 +17,7 @@ public class ImportExcelRowReader {
 
     private List<String> titleList;
     private List<Data> dataList;
+    private List<String> titleIsNotExistList;
 
     ImportExcelRowReader () {
         dataList = new ArrayList<Data>();
@@ -39,6 +40,12 @@ public class ImportExcelRowReader {
         */
 
         if (row == 0) {
+            try {
+                titleIsNotExistList = dataService.isTitleExist(rowList);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
             this.titleList = new ArrayList<String>(Arrays.asList(new String[rowList.size()]));
             Collections.copy(this.titleList, rowList);
             //this.titleList.addAll(rowList);//addAll实现的是浅拷贝
@@ -48,7 +55,7 @@ public class ImportExcelRowReader {
             然而进行copy()时候，首先做的是将desc的size和src的size大小进行比较，
             只有当desc的 size 大于或者等于src的size时才进行拷贝，否则抛出IndexOutOfBoundsException异常；
              */
-        } else if (row > 0) {
+        } else if (row > 0 && titleIsNotExistList.size() == 0) {
             Map<String, String> keyValue = new LinkedHashMap<>();
             for (int i=0; i<this.titleList.size(); i++) {
                 keyValue.put(this.titleList.get(i), rowList.get(i));//首行(表头)值，单元格值
@@ -56,7 +63,6 @@ public class ImportExcelRowReader {
             Data data = new Data(keyValue);
             this.dataList.add(data);
         }
-
     }
 
     public List<Data> getDataList() {
@@ -71,25 +77,16 @@ public class ImportExcelRowReader {
         this.dataList.clear();
     }
 
+    public List<String> getTitleIsNotExistList() {
+        return this.titleIsNotExistList;
+    }
+
     public int saveDataToSQL(String tableName) throws Exception {
-        return this.saveDataToSQL(tableName, this.getDataList());
+        return dataService.saveDataToSQL(tableName, this.getDataList());
     }
 
     public int saveDataToSQL(String tableName, List<Data> dataList) throws Exception {
-        int addDataNum = 0;
-        int deleteNum = 0;
-        if (dataList.size() > 0) {
-            for (Data data : dataList) {
-                addDataNum += dataService.addData(tableName, data);//导入一行数据。
-            }
-            if (addDataNum > 0) {
-                deleteNum = dataService.deleteSameData(tableName);
-            }
-            int num = addDataNum - deleteNum;//T.B.D
-            return (num < 0) ? 0 : num;
-        } else {
-            return 0;
-        }
+        return dataService.saveDataToSQL(tableName, dataList);
     }
 
     /**
@@ -107,5 +104,22 @@ public class ImportExcelRowReader {
             break;
         }
         return isNull;
+    }
+
+    /**
+     * 不存在的列名List转String
+     * @param
+     * @return
+     */
+    public String titleIsNotExistListToString() {
+        StringBuilder sb = new StringBuilder();
+
+        for (String title : this.getTitleIsNotExistList()) {
+            sb.append(title);
+            sb.append(",");
+        }
+
+        sb.deleteCharAt(sb.length() - ",".length());
+        return sb.toString();
     }
 }

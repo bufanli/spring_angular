@@ -205,6 +205,7 @@ public enum ResponseCodeEnum {
     /* 数据字段的词典 */
     GET_COLUMNS_DICTIONARY_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "取得数据字段的词典成功"),
     GET_COLUMNS_DICTIONARY_FAILED(ResponseCode.RESPONSE_CODE_NG, "取得数据字段的词典失败"),
+    GET_COLUMNS_DICTIONARY_GET_HEADER_INFO_FROM_SQL_NULL(ResponseCode.RESPONSE_CODE_NULL, "取得数据字段的词典时,从数据库取得表头信息为NULL"),
     SET_COLUMNS_DICTIONARY_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "保存数据字段的词典成功"),
     SET_COLUMNS_DICTIONARY_FAILED(ResponseCode.RESPONSE_CODE_NG, "保存数据字段的词典失败"),
 

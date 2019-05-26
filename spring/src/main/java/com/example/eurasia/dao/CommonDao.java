@@ -614,4 +614,35 @@ select PERIOD_DIFF(DATE_FORMAT(CURDATE(),'%Y%m'),DATE_FORMAT(日期,'%Y%m')) fro
 //InnoDB适合：(1)可靠性要求比较高，或者要求事务；(2)表更新和查询都相当的频繁，并且行锁定的机会比较大的情况
         return sql;
     }
+
+    /**
+     * convert selections to sql
+     */
+    protected StringBuffer convertSelectionsToSQL(String tableName, String[] selectionCols) {
+
+        StringBuffer sql = new StringBuffer();
+        sql.append("select ");
+        for (String selectionCol : selectionCols) {
+            sql.append(selectionCol + CommonDao.COMMA);
+        }
+        sql.deleteCharAt(sql.length() - CommonDao.COMMA.length());
+        sql.append(" from " + tableName);
+
+        return sql;
+    }
+
+    /**
+     * convert groupBys to sql
+     */
+    protected StringBuffer convertGroupByToSQL(String[] groupBys) {
+
+        StringBuffer sql = new StringBuffer();
+        sql.append(" group by ");
+        for (String groupBy : groupBys) {
+            sql.append(groupBy + CommonDao.COMMA);
+        }
+        sql.deleteCharAt(sql.length() - CommonDao.COMMA.length());
+
+        return sql;
+    }
 }

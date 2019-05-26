@@ -284,7 +284,7 @@ public class ImportExcelByUserMode {
         try {
             Slf4jLogUtil.get().info("文件上传，取得表头开始");
 
-            colsNameList = dataService.getAllHeaders();
+            colsNameList = dataService.getAllColumns();
             if (colsNameList == null) {
                 throw new Exception(ResponseCodeEnum.UPLOAD_GET_HEADER_INFO_FROM_SQL_NULL.getMessage());
             }

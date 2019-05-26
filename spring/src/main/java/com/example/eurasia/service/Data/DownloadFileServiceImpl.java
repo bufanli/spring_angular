@@ -227,7 +227,7 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
         try {
             Slf4jLogUtil.get().info("文件导出，取得表头开始");
 
-            colsNameList = dataService.getAllHeaderNames(tableName);
+            colsNameList = dataService.getAllColumnNames(tableName);
             if (colsNameList == null) {
                 throw new Exception(ResponseCodeEnum.EXPORT_GET_HEADER_INFO_FROM_SQL_NULL.getMessage());
             }

@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<mapping>
-    <column key="synonym" value="VARCHAR(255)" />
-    <column key="columnName" value="VARCHAR(255)" />
-</mapping>
