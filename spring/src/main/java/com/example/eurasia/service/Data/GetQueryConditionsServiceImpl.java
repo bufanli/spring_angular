@@ -6,6 +6,7 @@ import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;
 import com.example.eurasia.service.User.UserService;
+import com.example.eurasia.service.Util.DataProcessingUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -167,7 +168,7 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
                 // 如果是 QueryCondition.QUERY_CONDITION_SPLIT 的话，返回该列所有的元素
                 if (queryConditionValue.equals(QueryCondition.QUERY_CONDITION_SPLIT)) {
                     List<Map<String, Object>> listMaps = dataService.getColumnAllValues(DataService.TABLE_DATA,new String[]{key});
-                    queryConditionValue = this.getListMapValue(listMaps);
+                    queryConditionValue = DataProcessingUtil.getListMapValuesOfOneColumnWithQueryConditionSplit(listMaps);
                 }
                 break;
             case QueryCondition.QUERY_CONDITION_TYPE_STRING:
@@ -206,18 +207,4 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
         return defaultValue;
     }
 
-    private String getListMapValue(List<Map<String, Object>> listMaps) {
-        StringBuffer values = new StringBuffer();
-        for (Map<String, Object> map : listMaps) {
-            for (Map.Entry<String, Object> m : map.entrySet()) {
-                //System.out.print(m.getKey());
-                //System.out.println(m.getValue());
-                values.append(m.getValue() + QueryCondition.QUERY_CONDITION_SPLIT);
-            }
-        }
-        if (values.indexOf(QueryCondition.QUERY_CONDITION_SPLIT) >= 0) {
-            values.delete((values.length() - QueryCondition.QUERY_CONDITION_SPLIT.length()),values.length());
-        }
-        return values.toString();
-    }
 }

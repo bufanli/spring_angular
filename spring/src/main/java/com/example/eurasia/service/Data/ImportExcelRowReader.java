@@ -72,24 +72,11 @@ public class ImportExcelRowReader {
     }
 
     public int saveDataToSQL(String tableName) throws Exception {
-        return this.saveDataToSQL(tableName, this.getDataList());
+        return dataService.saveDataToSQL(tableName, this.getDataList());
     }
 
     public int saveDataToSQL(String tableName, List<Data> dataList) throws Exception {
-        int addDataNum = 0;
-        int deleteNum = 0;
-        if (dataList.size() > 0) {
-            for (Data data : dataList) {
-                addDataNum += dataService.addData(tableName, data);//导入一行数据。
-            }
-            if (addDataNum > 0) {
-                deleteNum = dataService.deleteSameData(tableName);
-            }
-            int num = addDataNum - deleteNum;//T.B.D
-            return (num < 0) ? 0 : num;
-        } else {
-            return 0;
-        }
+        return dataService.saveDataToSQL(tableName, dataList);
     }
 
     /**

@@ -89,7 +89,7 @@ public class GetHeadersServiceImpl implements IGetHeadersService {
     }
 
     private List<Map<String,String>> getAllHeadersFromSQL() throws Exception {
-        return dataService.getAllHeaders();
+        return dataService.getAllColumns();
     }
 
     private List<String> getHeaderDisplayFromSQL(String userID) throws Exception {

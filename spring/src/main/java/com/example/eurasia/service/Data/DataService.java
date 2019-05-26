@@ -39,9 +39,13 @@ public class DataService {
     public static final String BEAN_NAME_QUERY_CONDITION_TYPE_NAME = "queryConditionTypeName";
     public static final String BEAN_NAME_QUERY_CONDITION_TYPE_VALUE = "queryConditionTypeValue";
     public static final String BEAN_NAME_COLUMNS_DICTIONARY_NAME = "columnsDictionaryName";
+
     public static final String STATISTICS_SETTING_GROUP_BY_COLUMN_NAME = "GroupByName";
     public static final String STATISTICS_SETTING_TYPE_COLUMN_NAME = "Type";
     public static final String STATISTICS_SETTING_COMPUTE_BY_COLUMN_NAME = "ComputeByName";
+
+    public static final String COLUMNS_DICTIONARY_SYNONYM = "synonym";
+    public static final String COLUMNS_DICTIONARY_COLUMN_NAME = "columnName";
 
     public static final String STATISTICS_REPORT_PRODUCT_DATE = "日期";
     public static final String STATISTICS_REPORT_PRODUCT_DATE_YEAR = "年";
@@ -102,7 +106,10 @@ public class DataService {
                     getDataDao().addData(DataService.TABLE_STATISTICS_SETTING_COMPUTE_BY,DataService.STATISTICS_SETTING_COMPUTE_BY_COLUMN_NAME,computeByArr[i]);
                 }
             }
-            if (this.createTable(DataService.TABLE_COLUMNS_DICTIONARY_TABLE,DataService.BEAN_NAME_COLUMNS_DICTIONARY_NAME) == true) {
+            Map<String, String> columnsDictionary = new LinkedHashMap<String, String>();
+            columnsDictionary.put(DataService.COLUMNS_DICTIONARY_SYNONYM,"VARCHAR(255)");
+            columnsDictionary.put(DataService.COLUMNS_DICTIONARY_COLUMN_NAME,"VARCHAR(255)");
+            if (this.createTable(DataService.TABLE_COLUMNS_DICTIONARY_TABLE,columnsDictionary) == true) {
 
             }
 
@@ -145,6 +152,23 @@ public class DataService {
         int deleteNum = getDataDao().deleteSameData(tableName);//失败时，返回-1
 
         return deleteNum;
+    }
+
+    public int saveDataToSQL(String tableName, List<Data> dataList) throws Exception {
+        int addDataNum = 0;
+        int deleteNum = 0;
+        if (dataList.size() > 0) {
+            for (Data data : dataList) {
+                addDataNum += this.addData(tableName, data);//导入一行数据。
+            }
+            if (addDataNum > 0) {
+                deleteNum = this.deleteSameData(tableName);
+            }
+            int num = addDataNum - deleteNum;//T.B.D
+            return (num < 0) ? 0 : num;
+        } else {
+            return 0;
+        }
     }
 
     /**
@@ -294,17 +318,17 @@ as不是给表里的字段取别名，而是给查询的结果字段取别名。
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
-    public List<Map<String,String>> getAllHeaders() throws Exception {
-        List<Map<String,String>> headerList = new ArrayList<>();
+    public List<Map<String,String>> getAllColumns() throws Exception {
+        List<Map<String,String>> colsList = new ArrayList<>();
 
         List<Map<String, Object>> colsNameList = getDataDao().queryListForColumnName(DataService.TABLE_DATA);
         for(Map<String,Object> colsName: colsNameList) {
             Map<String,String> nameMap = new LinkedHashMap<String,String>();
             nameMap.put(colsName.get("ORDINAL_POSITION").toString(),colsName.get("COLUMN_NAME").toString());
-            headerList.add(nameMap);
+            colsList.add(nameMap);
         }
 
-        return headerList;
+        return colsList;
     }
 
     /**
@@ -315,19 +339,19 @@ as不是给表里的字段取别名，而是给查询的结果字段取别名。
      * @author FuJia
      * @Time 2018-11-06 00:00:00
      */
-    public List<String> getAllHeaderNames(String tableName) throws Exception {
+    public List<String> getAllColumnNames(String tableName) throws Exception {
         if (StringUtils.isEmpty(tableName)) {
             return null;
         }
 
-        List<String> headerList = new ArrayList<>();
+        List<String> colsList = new ArrayList<>();
 
         List<Map<String, Object>> colsNameList = getDataDao().queryListForColumnName(tableName);
         for (Map<String,Object> colsName: colsNameList) {
-            headerList.add(colsName.get("COLUMN_NAME").toString());
+            colsList.add(colsName.get("COLUMN_NAME").toString());
         }
 
-        return headerList;
+        return colsList;
     }
 
     /**
@@ -430,7 +454,6 @@ as不是给表里的字段取别名，而是给查询的结果字段取别名。
         return getDataDao().queryTableRows(tableName,queryConditions).longValue();
     }
 
-
     /**
      * 取得指定列的所有的值
      * @param
@@ -443,4 +466,21 @@ as不是给表里的字段取别名，而是给查询的结果字段取别名。
 
         return getDataDao().queryListForColumnValues(tableName,columnNames);
     }
+
+    /**
+     * 取得条件列条件值所对应指定列的所有的值
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-09-20 00:00:00
+     */
+    public List<Map<String, Object>> queryListForValuesIfs(String tableName,
+                                                           String[] selectionCols,
+                                                           String criterionCol,
+                                                           String criterionValue) throws Exception {
+
+        return getDataDao().queryListForValuesIfs(tableName, selectionCols, criterionCol, criterionValue);
+    }
+
 }
