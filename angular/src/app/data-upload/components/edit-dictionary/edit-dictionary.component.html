@@ -1,11 +1,11 @@
 <div class="container">
   <div class="row">
-    <div class="col-md-6">
-      <div *ngFor="let originalColumn of this.originalColumns" class="row">
-        <table data-toggle="table" id="table">
+    <div class="col-md-6 scrollable-container">
+      <div *ngFor="let columnsDictionary of this.columnsDictionaries" class="row">
+        <table data-toggle="table" id="{{columnsDictionary.getUUID()}}">
           <thead>
             <tr>
-              <th data-field="originalColumn" data-events="operateEvents">{{originalColumn}}</th>
+              <th data-field="synonym" data-formatter="this.operateFormatter" data-events="operateEvents">{{columnsDictionary.getColumnName()}}</th>
             </tr>
           </thead>
         </table>

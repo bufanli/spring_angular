@@ -10,3 +10,7 @@
 .item {
   margin-bottom: 20px;
 }
+.scrollable-container {
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
