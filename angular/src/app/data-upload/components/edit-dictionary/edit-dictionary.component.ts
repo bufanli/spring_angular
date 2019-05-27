@@ -54,6 +54,7 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
   }
   // convert column dictionary entries to columns array
   private convertColumnDictionariesToColumns(): void {
+    this.columns = [];
     this.columnsDictionaries.forEach(element => {
       this.columns.push(element.getColumnName());
     });
@@ -92,7 +93,7 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
         // bind click event to edit each synonym
         this.bindClickEventToSynonym();
         // setup column selection
-        this.setSelectOptions('column');
+        this.setSelectOptions('#column');
       });
     } else {
       // nothing to do

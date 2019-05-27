@@ -1,15 +1,15 @@
 import { TestBed, inject } from '@angular/core/testing';
 
-import { SaveColumnSynonymsServiceService } from './save-column-synonyms-service.service';
+import { SaveColumnSynonymsService } from './save-column-synonyms.service';
 
 describe('SaveColumnSynonymsServiceService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [SaveColumnSynonymsServiceService]
+      providers: [SaveColumnSynonymsService]
     });
   });
 
-  it('should be created', inject([SaveColumnSynonymsServiceService], (service: SaveColumnSynonymsServiceService) => {
+  it('should be created', inject([SaveColumnSynonymsService], (service: SaveColumnSynonymsService) => {
     expect(service).toBeTruthy();
   }));
 });

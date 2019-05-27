@@ -19,10 +19,6 @@
             {{column}}</option>
         </select>
       </div>
-      <div class="input-group">
-        <span class="input-group-addon">{{this.COLUMN_NAME}}</span>
-        <input disabled="disabled" type="text" class="form-control" id="column" [(ngModel)]="this.column">
-      </div>
     </div>
     <div class="col-md-4">
       <div class="form-group">
@@ -34,7 +30,7 @@
   </div>
   <div class="row">
     <div class="col-md-6 scrollable-container">
-      <div *ngFor="let columnsDictionary of this.columnsDictionaries" class="row">
+      <div *ngFor="let columnsDictionary of this.columnsDictionaries" class="row container">
         <table data-toggle="table" id="{{columnsDictionary.getUUID()}}">
           <thead>
             <tr>
