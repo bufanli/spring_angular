@@ -26,7 +26,7 @@ public class ColumnsDictionary implements Cloneable {
     public String getColumnName(){
         return this.columnName;
     }
-    public void setSynonyms(String[] selections) {
+    public void setSynonyms(String[] synonyms) {
         this.synonyms = synonyms.clone();//浅拷贝
     }
     public String[] getSynonyms(){
