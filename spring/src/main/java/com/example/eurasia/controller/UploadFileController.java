@@ -111,7 +111,7 @@ public class UploadFileController {
      * @date 2019-05-23
      * @description 取得数据字段的词典
      */
-    @RequestMapping(value="/getColumnsDictionary", method = RequestMethod.POST)
+    @RequestMapping(value="/getColumnsDictionary", method = RequestMethod.GET)
     public @ResponseBody
     ResponseResult getColumnsDictionary(HttpServletRequest request) {
         ResponseResult responseResult;
