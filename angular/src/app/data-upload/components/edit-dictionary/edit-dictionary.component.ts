@@ -94,6 +94,8 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
         this.bindClickEventToSynonym();
         // setup column selection
         this.setSelectOptions('#column');
+        // set back loaded flag to false
+        this.columnsDictionariesLoaded = false;
       });
     } else {
       // nothing to do
