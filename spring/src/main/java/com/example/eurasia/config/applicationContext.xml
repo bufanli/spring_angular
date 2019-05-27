@@ -75,11 +75,6 @@
           init-method="init">
         <property name="filePath" value="com/example/eurasia/config/userQueryConditionDisplay.xml" />
     </bean>
-    <bean id="columnsDictionaryName" class="com.example.eurasia.entity.Data.DataXMLReader"
-          init-method="init">
-        <property name="filePath" value="com/example/eurasia/config/columnsDictionaryName.xml" />
-    </bean>
-
     <!--
     依赖注入
     即：一个类中的属性（其他对象）不再需要手动new或者通过工厂方法进行创建，而是Spring容器在属性被使用的时候给予注入。
