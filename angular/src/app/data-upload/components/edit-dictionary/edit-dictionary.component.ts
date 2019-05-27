@@ -34,6 +34,13 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
     // get columns and synonyms
     this.getColumnsDictionaryImpl().subscribe(httpResponse =>
       this.getColumnsDictionaryNotification(httpResponse));
+    // set size of synonym container
+    // tslint:disable-next-line: deprecation
+    $(window).resize(function () {
+      $('#synonym-container').height($(window).height() * 0.7);
+    });
+    // set size of synonym container
+    $('#synonym-container').height($(window).height() * 0.7);
   }
   // get columns from server implementation
   private getColumnsDictionaryImpl(): Observable<HttpResponse> {
