@@ -206,6 +206,8 @@ public class UploadFileServiceImpl implements IUploadFileService {
         // 组成数据字典实例数组
         ColumnsDictionary[] columnsDictionary = new ColumnsDictionary[colsNameList.size()];
         for (int i=0; i<colsNameList.size(); i++) {
+            // init each column dictionary
+            columnsDictionary[i] = new ColumnsDictionary();
             String columnName = colsNameList.get(i);//原词(数据库字段名)
             List<String> synonymList = new ArrayList<>();
 
