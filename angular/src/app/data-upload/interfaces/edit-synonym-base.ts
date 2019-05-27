@@ -8,6 +8,7 @@ export abstract class EditSynonymBase {
   public readonly SYNONYM_EDIT_TITLE = '请编辑同义词';
   public readonly COLUMN_NAME = '原词';
   public readonly SYNONYM_IS_EMPTY = '同义词为空,请输入同义词';
+  public readonly COLUMN_IS_EMPTY = '原词为空,请选择原词';
   public readonly SYNONYM_IS_DUPLICATED = '该同义词已经定义,原词为 ';
   public readonly SYNONYM_IS_SAVED = '该同义词已经保存';
   // synonym
@@ -31,8 +32,12 @@ export abstract class EditSynonymBase {
     this.clearErrorMsg();
     this.clearInfoMsg();
     // error check
-    if (this.synonym === '') {
+    if (this.synonym === '' || this.synonym === null) {
       this.errorMsg = this.SYNONYM_IS_EMPTY;
+      this.errorExist = true;
+      return;
+    } else if (this.column === '' || this.column === null) {
+      this.errorMsg = this.COLUMN_IS_EMPTY;
       this.errorExist = true;
       return;
     } else {

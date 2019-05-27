@@ -19,6 +19,7 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
   public readonly fieldName = 'synonym';
   private readonly getColumnDictionaryURL = 'api/getColumnsDictionary';
   public columnsDictionaries: ColumnsDictionary[] = null;
+  public columns: string[] = null;
   private columnsDictionariesLoaded = false;
   // id is a dummy attribute, just for compilation
   private id: any;
@@ -43,11 +44,19 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
       // get columns dictionary ok
       const columnsDictionaries: any = httpResponse.data;
       this.convertHttpDataToColumnsDictionaries(columnsDictionaries);
+      // convert column dictionary entries to columns
+      this.convertColumnDictionariesToColumns();
       // set loaded flag
       this.columnsDictionariesLoaded = true;
     } else if (httpResponse.code === 201) {
       this.currentUserContainer.sessionTimeout();
     }
+  }
+  // convert column dictionary entries to columns array
+  private convertColumnDictionariesToColumns(): void {
+    this.columnsDictionaries.forEach(element => {
+      this.columns.push(element.getColumnName());
+    });
   }
   // convert http data to columns
   private convertHttpDataToColumnsDictionaries(httpData: any): void {
@@ -80,6 +89,10 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
         $('#' + element.getUUID()).bootstrapTable({
           data: this.abstractSynonymRowsByUUID(element.getUUID()),
         });
+        // bind click event to edit each synonym
+        this.bindClickEventToSynonym();
+        // setup column selection
+        this.setSelectOptions('column');
       });
     } else {
       // nothing to do
@@ -168,6 +181,18 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
   }
   // update synonym dictionaries
   protected updateColumnDictionaries(): void {
-    // todo
+    // find column dictionary entry
+    this.columnsDictionaries.forEach(element => {
+      if (element.getColumnName() === this.column) {
+        element.getSynonyms().push(this.synonym);
+      }
+    });
+  }
+  private setSelectOptions(id: string): void {
+    $(id).selectpicker({
+      'liveSearch': true,
+    });
+    $(id).selectpicker('val', '');
+    $(id).selectpicker('refresh');
   }
 }
