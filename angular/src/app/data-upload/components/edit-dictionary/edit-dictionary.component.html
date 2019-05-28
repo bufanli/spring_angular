@@ -1,7 +1,9 @@
 <div class="container">
   <div class="row">
-    <div *ngIf="this.errorExist" class="alert alert-danger">{{this.errorMsg}}</div>
-    <div *ngIf="this.infoExist" class="alert alert-info">{{this.infoMsg}}</div>
+    <div class="col-md-6">
+      <div *ngIf="this.errorExist" class="alert alert-danger">{{this.errorMsg}}</div>
+      <div *ngIf="this.infoExist" class="alert alert-info">{{this.infoMsg}}</div>
+    </div>
   </div>
   <div class="row">
     <div class="col-md-2">

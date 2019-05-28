@@ -37,10 +37,10 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
     // set size of synonym container
     // tslint:disable-next-line: deprecation
     $(window).resize(function () {
-      $('#synonym-container').height($(window).height() * 0.7);
+      $('#synonym-container').height($(window).height() * 0.6);
     });
     // set size of synonym container
-    $('#synonym-container').height($(window).height() * 0.7);
+    $('#synonym-container').height($(window).height() * 0.6);
   }
   // get columns from server implementation
   private getColumnsDictionaryImpl(): Observable<HttpResponse> {
