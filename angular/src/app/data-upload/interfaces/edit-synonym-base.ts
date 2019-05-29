@@ -6,7 +6,7 @@ import { HttpResponse } from 'src/app/common/entities/http-response';
 export abstract class EditSynonymBase {
   public readonly SYNONYM_NAME = '同义词';
   public readonly SYNONYM_EDIT_TITLE = '请编辑同义词';
-  public readonly COLUMN_NAME = '原词';
+  public readonly COLUMN_NAME = '请选择原词';
   public readonly SYNONYM_IS_EMPTY = '同义词为空,请输入同义词';
   public readonly COLUMN_IS_EMPTY = '原词为空,请选择原词';
   public readonly SYNONYM_IS_DUPLICATED = '该同义词已经定义,原词为 ';

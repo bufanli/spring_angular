@@ -9,6 +9,10 @@ import { EditSynonymComponent } from '../edit-synonym/edit-synonym.component';
 import { SaveColumnDictionaryCallback } from '../../interfaces/save-column-dictionary-callback';
 import { EditSynonymBase } from '../../interfaces/edit-synonym-base';
 import { SaveColumnSynonymsService } from '../../services/save-column-synonyms.service';
+import 'jquery';
+import 'bootstrap';
+import 'bootstrap-table';
+import 'bootstrap-select';
 
 @Component({
   selector: 'app-edit-dictionary',
@@ -97,13 +101,13 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
         $('#' + element.getUUID()).bootstrapTable({
           data: this.abstractSynonymRowsByUUID(element.getUUID()),
         });
-        // bind click event to edit each synonym
-        this.bindClickEventToSynonym();
-        // setup column selection
-        this.setSelectOptions('#column');
-        // set back loaded flag to false
-        this.columnsDictionariesLoaded = false;
       });
+      // bind click event to edit each synonym
+      this.bindClickEventToSynonym();
+      // setup column selection
+      this.setSelectOptions('#column');
+      // set back loaded flag to false
+      this.columnsDictionariesLoaded = false;
     } else {
       // nothing to do
     }
