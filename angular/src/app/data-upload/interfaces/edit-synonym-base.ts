@@ -61,6 +61,8 @@ export abstract class EditSynonymBase {
     this.saveColumnSynonymService.setColumnDictionaries(this.columnsDictionaries);
     // set save end callback
     this.saveColumnSynonymService.setCallback(this);
+    // save column dictionary
+    this.saveColumnSynonymService.saveColumnDictionaries();
   }
   // save column dictionary notification
   public callbackOnSaveEnd(httpResponse: HttpResponse): void {
@@ -77,14 +79,15 @@ export abstract class EditSynonymBase {
 
   // tell whether synonym exist or not
   private synonymExist(synonymInput: string): string {
+    let sameSynonym = null;
     this.columnsDictionaries.forEach(element => {
       element.getSynonyms().forEach(synonym => {
         if (synonymInput === synonym) {
-          return element;
+          sameSynonym = synonym;
         }
       });
     });
-    return null;
+    return sameSynonym;
   }
   // on entering synonym
   public onEnterSynonym(event: any): void {
