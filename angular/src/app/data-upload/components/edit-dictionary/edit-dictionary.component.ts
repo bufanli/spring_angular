@@ -96,14 +96,10 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
   }
   ngAfterViewChecked() {
     // load synonym tables
+    const that = this;
     if (this.columnsDictionariesLoaded === true) {
-      this.columnsDictionaries.forEach(element => {
-        $('#' + element.getUUID()).bootstrapTable({
-          data: this.abstractSynonymRowsByUUID(element.getUUID()),
-        });
-      });
-      // bind click event to edit each synonym
-      this.bindClickEventToSynonym();
+      // refresh synonym tables
+      this.refreshAllSynonymTables();
       // setup column selection
       this.setSelectOptions('#column');
       // set back loaded flag to false
@@ -112,18 +108,39 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
       // nothing to do
     }
   }
+  // show all synonym tables
+  private refreshAllSynonymTables(): void {
+    const that = this;
+    this.columnsDictionaries.forEach(element => {
+      // table header
+      const tableHeader = {
+        field: 'synonym',
+        title: element.getColumnName(),
+        formatter: function (value, row, index) { return that.operateFormatter(value, row, index); },
+      };
+      // show header
+      $('#' + element.getUUID()).bootstrapTable({
+        columns: [tableHeader],
+      });
+      // load data
+      $('#' + element.getUUID()).bootstrapTable('load', that.abstractSynonymRowsByUUID(element.getUUID()));
+      // bind event handler to modify and delete
+      // this.bindClickEventToSynonym();
+    });
+  }
   // bind click event to synonym row
   private bindClickEventToSynonym(): void {
     let index = 0;
+    const that = this;
     this.columnsDictionaries.forEach(element => {
       element.getSynonyms().forEach(synonym => {
         // generate id as %method%uuid%index
         const modifySynonymId = '#modify%' + element.getUUID() + '%' + index;
         const deleteSynonymId = '#delete%' + element.getUUID() + '%' + index;
         // bind modify synonym handler
-        $(modifySynonymId).on('click', this, this.modifySynonymHandler);
+        $(modifySynonymId).on('click', that, that.modifySynonymHandler);
         // bind delete synonym handler
-        $(deleteSynonymId).on('click', this, this.deleteSynonymHandler);
+        $(deleteSynonymId).on('click', that, that.deleteSynonymHandler);
       });
       index++;
     });
@@ -184,14 +201,18 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
   }
   // find uuid of synonyms
   private findUUIDOfSynonyms(synonymTarget: string): string {
-    this.columnsDictionaries.forEach(element => {
-      element.getSynonyms().forEach(synonym => {
-        if (synonym === synonymTarget) {
-          return element.getUUID();
+    let uuid = '';
+    for (let i = 0; i < this.columnsDictionaries.length; i++) {
+      const element = this.columnsDictionaries[i];
+      for (let ii = 0; ii < element.getSynonyms().length; ii++) {
+        const synonym = element.getSynonyms()[ii];
+        if (synonymTarget === synonym) {
+          uuid = element.getUUID();
+          break;
         }
-      }); // end get synonyms
-    }); // end columnsDictionaries
-    return '';
+      }
+    }
+    return uuid;
   }
   // update synonym dictionaries
   protected updateColumnDictionaries(): void {

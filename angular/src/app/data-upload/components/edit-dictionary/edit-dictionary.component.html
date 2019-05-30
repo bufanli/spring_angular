@@ -34,12 +34,6 @@
     <div class="col-md-6 scrollable-container" id="synonym-container">
       <table *ngFor="let columnsDictionary of this.columnsDictionaries" data-toggle="table"
         id="{{columnsDictionary.getUUID()}}">
-        <thead>
-          <tr>
-            <th data-field="synonym" data-formatter="this.operateFormatter" data-events="operateEvents">
-              {{columnsDictionary.getColumnName()}}</th>
-          </tr>
-        </thead>
       </table>
     </div>
   </div>

@@ -80,15 +80,19 @@ export abstract class EditSynonymBase {
   // tell whether synonym exist or not
   private synonymExist(synonymInput: string): string {
     let sameSynonym = null;
-    this.columnsDictionaries.forEach(element => {
-      element.getSynonyms().forEach(synonym => {
-        if (synonymInput === synonym) {
-          sameSynonym = synonym;
+    for (let i = 0; i < this.columnsDictionaries.length; i++) {
+      const element = this.columnsDictionaries[i];
+      for (let ii = 0; ii < element.getSynonyms().length; ii++) {
+        const synonyms = element.getSynonyms();
+        if (synonymInput === synonyms[ii]) {
+          sameSynonym = synonyms[ii];
+          break;
         }
-      });
-    });
+      }
+    }
     return sameSynonym;
   }
+
   // on entering synonym
   public onEnterSynonym(event: any): void {
     this.clearErrorMsg();
