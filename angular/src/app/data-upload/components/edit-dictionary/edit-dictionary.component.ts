@@ -189,11 +189,12 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
       const modifySynonymId = 'modify%' + uuid + '%' + index;
       const deleteSynonymId = 'delete%' + uuid + '%' + index;
       return [
-        '<div class="left">',
+        '<div style="float:left">',
         '<a id=' + modifySynonymId + ' href="javascript:void()">' + value + '</a>',
         '</div>',
+        '<div style="float:right">',
         '<a id=' + deleteSynonymId + ' class="remove" href="javascript:void(0)" title="Remove">',
-        '<i class="fa fa-trash"></i>',
+        '<i class="glyphicon glyphicon-trash"></i>',
         '</a>',
         '</div>'
       ].join('');
