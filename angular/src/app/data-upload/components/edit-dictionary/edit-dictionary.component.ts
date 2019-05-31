@@ -31,7 +31,7 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
     protected currentUserContainer: CurrentUserContainerService,
     protected saveColumnSynonymsService: SaveColumnSynonymsService,
     public modalService: NgbModal) {
-    super(currentUserContainer, saveColumnSynonymsService)
+    super(currentUserContainer, saveColumnSynonymsService);
   }
 
   ngOnInit() {
@@ -125,40 +125,40 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
       // load data
       $('#' + element.getUUID()).bootstrapTable('load', that.abstractSynonymRowsByUUID(element.getUUID()));
       // bind event handler to modify and delete
-      // this.bindClickEventToSynonym();
+      this.bindClickEventToSynonym(element);
     });
   }
   // bind click event to synonym row
-  private bindClickEventToSynonym(): void {
-    let index = 0;
+  private bindClickEventToSynonym(columnDictionary: ColumnsDictionary): void {
     const that = this;
-    this.columnsDictionaries.forEach(element => {
-      element.getSynonyms().forEach(synonym => {
-        // generate id as %method%uuid%index
-        const modifySynonymId = '#modify%' + element.getUUID() + '%' + index;
-        const deleteSynonymId = '#delete%' + element.getUUID() + '%' + index;
-        // bind modify synonym handler
-        $(modifySynonymId).on('click', that, that.modifySynonymHandler);
-        // bind delete synonym handler
-        $(deleteSynonymId).on('click', that, that.deleteSynonymHandler);
-      });
+    let index = 0;
+    const synonyms = columnDictionary.getSynonyms();
+    synonyms.forEach(synonym => {
+      console.log('foreaching synonyms' + synonyms.length);
+      // generate id as %method%uuid%index
+      const modifySynonymId = 'modify_' + columnDictionary.getUUID() + '_' + index;
+      const deleteSynonymId = 'delete_' + columnDictionary.getUUID() + '_' + index;
+      // bind modify synonym handler
+      $('#' + modifySynonymId).on('click', that, function () { return that.modifySynonymHandler(modifySynonymId); });
+      // bind delete synonym handler
+      $('#' + deleteSynonymId).on('click', that, function () { return that.deleteSynonymHandler(deleteSynonymId); });
+      // index increase
       index++;
     });
   }
   // modify synonym handler
-  private modifySynonymHandler(target: any): void {
+  private modifySynonymHandler(linkId: string): void {
     // separate id to three part for getting uuid and index
     // inde==0 method, modify/delete
     // index==1 uuid
     // index==2 index
-    const idParts = this.id.split('%');
-    const component = target.data;
-    const modalService: NgbModal = component.modalService;
-    const modalRef = modalService.open(EditSynonymComponent, target.data.adjustModalOptions());
+    const idParts = linkId.split('_');
+    const modalService: NgbModal = this.modalService;
+    const modalRef = modalService.open(EditSynonymComponent, this.adjustModalOptions());
     modalRef.componentInstance.setColumnsDictionaries(this.columnsDictionaries);
     modalRef.componentInstance.setUUID(idParts[1]);
     modalRef.componentInstance.setIndex(idParts[2]);
-    modalRef.componentInstance.notifyClose.subscribe(response => target.data.callbackOfEditSynonymClosed(response));
+    modalRef.componentInstance.notifyClose.subscribe(response => this.callbackOfEditSynonymClosed(response));
   }
   // callback of edit synonym closed
   private callbackOfEditSynonymClosed(repsonse: string): void {
@@ -186,8 +186,8 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
       return value;
     } else {
       // generate id as %method%uuid%index
-      const modifySynonymId = 'modify%' + uuid + '%' + index;
-      const deleteSynonymId = 'delete%' + uuid + '%' + index;
+      const modifySynonymId = 'modify_' + uuid + '_' + index;
+      const deleteSynonymId = 'delete_' + uuid + '_' + index;
       return [
         '<div style="float:left">',
         '<a id=' + modifySynonymId + ' href="javascript:void()">' + value + '</a>',

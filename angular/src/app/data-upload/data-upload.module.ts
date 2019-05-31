@@ -7,6 +7,7 @@ import { CommonModule } from '@angular/common';
 import { DataUploadConfComponent } from './components/data-upload-conf/data-upload-conf.component';
 import { EditDictionaryComponent } from './components/edit-dictionary/edit-dictionary.component';
 import { EditSynonymComponent } from './components/edit-synonym/edit-synonym.component';
+import { NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 
 const dataUploadRoutes: Routes = [
   {
@@ -20,6 +21,7 @@ const dataUploadRoutes: Routes = [
     FormsModule,
     FileUploadModule,
     CommonModule,
+    NgbModalModule,
   ],
   exports: [RouterModule],
   declarations: [
@@ -29,7 +31,7 @@ const dataUploadRoutes: Routes = [
     EditSynonymComponent,
   ],
   entryComponents: [
-    EditSynonymComponent
+    EditSynonymComponent,
   ],
 })
 export class DataUploadModule { }
