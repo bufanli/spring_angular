@@ -28,14 +28,20 @@
   </form>
 </div>
 <div class="modal-footer">
-  <div class="form-group">
-    <button type="button" class="btn btn-default btn-block" (click)="this.onSaveSynonyms()">
-      <span class="glyphicon glyphicon-edit"></span> 保存
-    </button>
-    <div class="form-group">
-      <button type="submit" class="btn btn-default btn-block" (click)="this.close()">
-        <span class="glyphicon glyphicon-remove"></span> 关闭
-      </button>
+  <div class="row">
+    <div class="col-md-2">
+      <div class="form-group">
+        <button type="button" class="btn btn-default btn-block btn-primary" (click)="this.onSaveSynonyms()">
+          <span class="glyphicon glyphicon-edit"></span> 保存
+        </button>
+      </div>
+    </div>
+    <div class="col-md-2">
+      <div class="form-group">
+        <button type="submit" class="btn btn-default btn-block" (click)="this.close()">
+          <span class="glyphicon glyphicon-remove"></span> 关闭
+        </button>
+      </div>
     </div>
   </div>
 </div>
