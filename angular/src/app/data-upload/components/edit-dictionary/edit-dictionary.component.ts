@@ -157,7 +157,8 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
     const modalRef = modalService.open(EditSynonymComponent, this.adjustModalOptions());
     modalRef.componentInstance.setColumnsDictionaries(this.columnsDictionaries);
     modalRef.componentInstance.setUUID(idParts[1]);
-    modalRef.componentInstance.setIndex(idParts[2]);
+    modalRef.componentInstance.setEditSynonymIndex(Number(idParts[2]));
+    modalRef.componentInstance.refreshDataModel();
     modalRef.componentInstance.notifyClose.subscribe(response => this.callbackOfEditSynonymClosed(response));
   }
   // callback of edit synonym closed
@@ -170,7 +171,6 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
     const options: NgbModalOptions = new NgbModalConfig();
     options.backdrop = false;
     options.windowClass = 'modal fade in';
-    options.size = 'lg';
     return options;
   }
   // delete synonym handler

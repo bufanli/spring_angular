@@ -44,6 +44,24 @@ export class EditSynonymComponent extends EditSynonymBase implements OnInit, Sav
   public setUUID(uuid: string): void {
     this.uuid = uuid;
   }
+  // refresh data model after set column dictionary and index
+  // this method should be called after setEditSynonymIndex and setColumnsDictionaries
+  public refreshDataModel(): void {
+    let columnDictionary: ColumnsDictionary = null;
+    for (let i = 0; i < this.columnsDictionaries.length; i++) {
+      if (this.columnsDictionaries[i].getUUID() === this.uuid) {
+        columnDictionary = this.columnsDictionaries[i];
+        break;
+      }
+    }
+    if (columnDictionary === null) {
+      // it is impossible here
+      return;
+    } else {
+      this.column = columnDictionary.getColumnName();
+      this.synonym = columnDictionary.getSynonyms()[this.editSynonymIndex];
+    }
+  }
   // close modal
   public close(): void {
     this.activeModal.close();
