@@ -19,12 +19,13 @@ import 'bootstrap-select';
   templateUrl: './edit-dictionary.component.html',
   styleUrls: ['./edit-dictionary.component.css']
 })
-export class EditDictionaryComponent extends EditSynonymBase implements OnInit, AfterViewChecked, SaveColumnDictionaryCallback {
+export class EditDictionaryComponent extends EditSynonymBase implements OnInit, AfterViewChecked {
   public readonly fieldName = 'synonym';
   private readonly getColumnDictionaryURL = 'api/getColumnsDictionary';
   public columnsDictionaries: ColumnsDictionary[] = null;
   public columns: string[] = null;
   private columnsDictionariesLoaded = false;
+  private isDeletingSynonym = false;
   // id is a dummy attribute, just for compilation
   private id: any;
   constructor(private http: HttpClient,
@@ -134,7 +135,6 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
     let index = 0;
     const synonyms = columnDictionary.getSynonyms();
     synonyms.forEach(synonym => {
-      console.log('foreaching synonyms' + synonyms.length);
       // generate id as %method%uuid%index
       const modifySynonymId = 'modify_' + columnDictionary.getUUID() + '_' + index;
       const deleteSynonymId = 'delete_' + columnDictionary.getUUID() + '_' + index;
@@ -163,7 +163,8 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
   }
   // callback of edit synonym closed
   private callbackOfEditSynonymClosed(repsonse: string): void {
-    // nothing to do
+    // refresh all synonym table's row
+    this.refreshAllSynonymTables();
   }
   // adjust modal options
   // if don't adjust modal options, modal will not be shown correctly
@@ -174,8 +175,31 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
     return options;
   }
   // delete synonym handler
-  private deleteSynonymHandler(target: any): void {
-    const component = target.data;
+  private deleteSynonymHandler(linkId: any): void {
+    // separate id to three part for getting uuid and index
+    // inde==0 method, modify/delete
+    // index==1 uuid
+    // index==2 index
+    const idParts = linkId.split('_');
+    // uuid
+    const uuid = idParts[1];
+    // index
+    const index = Number(idParts[2]);
+    // get column dictionary by uuid
+    let deleteColumnDictionary: ColumnsDictionary = null;
+    for (let i = 0; i < this.columnsDictionaries.length; i++) {
+      const tempColumnDictionary = this.columnsDictionaries[i];
+      if (tempColumnDictionary.getUUID() === uuid) {
+        deleteColumnDictionary = tempColumnDictionary;
+      }
+    }
+    if (deleteColumnDictionary !== null) {
+      deleteColumnDictionary.getSynonyms().splice(index, 1);
+    }
+    // set deleting flag
+    this.isDeletingSynonym = true;
+    // save all synonym rows
+    this.saveColumnDictionaries();
   }
   // set operate formatter to synonyms
   public operateFormatter(value, row, index): string {
@@ -230,5 +254,24 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
     });
     $(id).selectpicker('val', '');
     $(id).selectpicker('refresh');
+  }
+  // save column dictionary end notification
+  public callbackOnSaveEnd(httpResponse: HttpResponse): void {
+    if (this.isDeletingSynonym === false) {
+      super.callbackOnSaveEnd(httpResponse);
+    } else {
+      if (httpResponse.code === 201) {
+        this.currentUserContainer.sessionTimeout();
+      } else if (httpResponse.code === 200) {
+        // nothing to do
+      } else {
+        this.errorExist = true;
+        this.errorMsg = httpResponse.message;
+      }
+      // refresh synonyms row
+      this.refreshAllSynonymTables();
+      // set back deleting flag
+      this.isDeletingSynonym = false;
+    }
   }
 }

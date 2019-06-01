@@ -15,7 +15,7 @@ import { EditSynonymBase } from '../../interfaces/edit-synonym-base';
   templateUrl: './edit-synonym.component.html',
   styleUrls: ['./edit-synonym.component.css']
 })
-export class EditSynonymComponent extends EditSynonymBase implements OnInit, SaveColumnDictionaryCallback {
+export class EditSynonymComponent extends EditSynonymBase implements OnInit {
   // edit synonym index
   private editSynonymIndex = 0;
   // uuid
@@ -65,6 +65,8 @@ export class EditSynonymComponent extends EditSynonymBase implements OnInit, Sav
   // close modal
   public close(): void {
     this.activeModal.close();
+    // notify close
+    this.notifyClose.emit('closed');
   }
   // update synonym dictionaries
   protected updateColumnDictionaries(): void {

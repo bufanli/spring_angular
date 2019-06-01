@@ -2,8 +2,9 @@ import { ColumnsDictionary } from '../entities/columns-dictionary';
 import { CurrentUserContainerService } from 'src/app/common/services/current-user-container.service';
 import { SaveColumnSynonymsService } from '../services/save-column-synonyms.service';
 import { HttpResponse } from 'src/app/common/entities/http-response';
+import { SaveColumnDictionaryCallback } from './save-column-dictionary-callback';
 
-export abstract class EditSynonymBase {
+export abstract class EditSynonymBase implements SaveColumnDictionaryCallback {
   public readonly SYNONYM_NAME = '同义词';
   public readonly SYNONYM_EDIT_TITLE = '请编辑同义词';
   public readonly COLUMN_NAME = '请选择原词';
@@ -56,7 +57,7 @@ export abstract class EditSynonymBase {
   }
   protected abstract updateColumnDictionaries(): void;
   // save synonym dictionaries
-  private saveColumnDictionaries(): void {
+  protected saveColumnDictionaries(): void {
     // set column dictionaries
     this.saveColumnSynonymService.setColumnDictionaries(this.columnsDictionaries);
     // set save end callback
@@ -79,18 +80,18 @@ export abstract class EditSynonymBase {
 
   // tell whether synonym exist or not
   private synonymExist(synonymInput: string): string {
-    let sameSynonym = null;
+    let column: string = null;
     for (let i = 0; i < this.columnsDictionaries.length; i++) {
       const element = this.columnsDictionaries[i];
       for (let ii = 0; ii < element.getSynonyms().length; ii++) {
         const synonyms = element.getSynonyms();
         if (synonymInput === synonyms[ii]) {
-          sameSynonym = synonyms[ii];
+          column = element.getColumnName();
           break;
         }
       }
     }
-    return sameSynonym;
+    return column;
   }
 
   // on entering synonym
