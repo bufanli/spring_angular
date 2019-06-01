@@ -268,10 +268,10 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
         this.errorExist = true;
         this.errorMsg = httpResponse.message;
       }
-      // refresh synonyms row
-      this.refreshAllSynonymTables();
       // set back deleting flag
       this.isDeletingSynonym = false;
     }
+    // refresh synonyms row
+    this.refreshAllSynonymTables();
   }
 }
