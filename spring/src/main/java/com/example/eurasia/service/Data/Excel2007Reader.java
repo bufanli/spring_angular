@@ -99,7 +99,7 @@ public class Excel2007Reader implements IExcelReaderByEventMode {
                 } else {
                     String titleIsNotExist = this.rowReader.titleIsNotExistListToString();
                     Slf4jLogUtil.get().info("导入失败，{}在数据库中不存在！",titleIsNotExist);
-                    this.message.append("导入失败，" + titleIsNotExist + "在数据库中不存在！");
+                    this.message.append("导入失败，" + titleIsNotExist + " 在数据库中不存在！");
                 }
 
             }

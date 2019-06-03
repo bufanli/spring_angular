@@ -134,7 +134,7 @@ public class DataService {
     }
 
     /**
-     * 删除相同数据
+     * 删除表里的相同数据
      * @param
      * @return
      * @exception
@@ -147,6 +147,24 @@ public class DataService {
         }
 
         int deleteNum = getDataDao().deleteSameData(tableName);//失败时，返回-1
+
+        return deleteNum;
+    }
+
+    /**
+     * 删除表里的全部数据
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2019-06-03 00:00:00
+     */
+    public int deleteAllData(String tableName) throws Exception {
+        if (StringUtils.isEmpty(tableName)) {
+            return -1;
+        }
+
+        int deleteNum = getDataDao().deleteAllData(tableName);//失败时，返回-1
 
         return deleteNum;
     }
@@ -199,8 +217,10 @@ public class DataService {
                 new String[]{DataService.COLUMNS_DICTIONARY_SYNONYM, DataService.COLUMNS_DICTIONARY_COLUMN_NAME});
 
         for (int i=0; i<titleList.size(); i++) {
+            isInTableData = false;
+            isInTableColsDicData = false;
 
-            for (String columnName : colsNameList) {
+            for (String columnName : colsNameList) {//在数据表中找该字段
                 if (columnName.equals(titleList.get(i))) {//在数据表中找到该字段
                     isInTableData = true;
                     break;
@@ -208,6 +228,7 @@ public class DataService {
             }
 
             if (isInTableData == false) {
+                //在数据表中没找到该字段
                 for (Map<String, Object> map : colNamesListMap) {//在数据字典表中找该字段
                     String synonymValue = (String) map.get(DataService.COLUMNS_DICTIONARY_SYNONYM);
                     if (synonymValue.equals(titleList.get(i))) {//在数据字典表的同义词里找到该字段
@@ -222,8 +243,12 @@ public class DataService {
                 if (isInTableColsDicData == false) {
                     //不存在的字段
                     titleIsNotExistList.add(titleList.get(i));
+                } else {
+                    //存在的字段
                 }
 
+            } else {
+                //在数据表中找到该字段
             }
 
         }
@@ -409,6 +434,34 @@ as不是给表里的字段取别名，而是给查询的结果字段取别名。
         List<Map<String, Object>> colsNameList = getDataDao().queryListForColumnName(tableName);
         for (Map<String,Object> colsName: colsNameList) {
             colsList.add(colsName.get("COLUMN_NAME").toString());
+        }
+
+        return colsList;
+    }
+
+    /**
+     * 取得指定表的所有表头[名字],不包括id
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2019-06-03 00:00:00
+     */
+    public List<String> getAllColumnNamesWithoutID(String tableName) throws Exception {
+        if (StringUtils.isEmpty(tableName)) {
+            return null;
+        }
+
+        List<String> colsList = new ArrayList<>();
+
+        List<Map<String, Object>> colsNameList = getDataDao().queryListForColumnName(tableName);
+        for (Map<String,Object> colsName: colsNameList) {
+            String colName = colsName.get("COLUMN_NAME").toString();
+            if (colName.equals("id")) {
+                continue;
+            } else {
+                colsList.add(colName);
+            }
         }
 
         return colsList;

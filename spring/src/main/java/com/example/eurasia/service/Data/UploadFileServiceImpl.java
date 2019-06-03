@@ -194,7 +194,7 @@ public class UploadFileServiceImpl implements IUploadFileService {
     public ResponseResult getColumnsDictionary() throws Exception {
         ResponseResult responseResult;
         // 取得数据表的所有列名
-        List<String> colsNameList = dataService.getAllColumnNames(DataService.TABLE_DATA);
+        List<String> colsNameList = dataService.getAllColumnNamesWithoutID(DataService.TABLE_DATA);
         if (colsNameList == null) {
             throw new Exception(ResponseCodeEnum.GET_COLUMNS_DICTIONARY_GET_HEADER_INFO_FROM_SQL_NULL.getMessage());
         }
@@ -253,6 +253,7 @@ public class UploadFileServiceImpl implements IUploadFileService {
 //                }
             }
         }
+        int deleteNum = dataService.deleteAllData(DataService.TABLE_COLUMNS_DICTIONARY);
         int addDataNum = dataService.saveDataToSQL(DataService.TABLE_COLUMNS_DICTIONARY, dataList);
         Slf4jLogUtil.get().info("导入数据词典成功，共{}条数据！",addDataNum);
 

@@ -132,6 +132,21 @@ GROUP BY 列1,列2,列3 having count(*) > 1;
     }
 
     /**
+     * 删除全部的数据
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2019-06-03 00:00:00
+     */
+    public int deleteAllData(String tableName) throws Exception {
+        StringBuffer sql =  new StringBuffer();
+        sql.append("delete from " + tableName);
+
+        int num = getJdbcTemplate().update(sql.toString());//执行成功返回数据库当中受影响的记录条数，失败则返回-1
+        return num;
+    }
+    /**
      * 更新数据
      * @param
      * @return
