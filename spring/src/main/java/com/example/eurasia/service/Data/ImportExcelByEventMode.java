@@ -30,6 +30,7 @@ public class ImportExcelByEventMode {
                 msg = excel2003Reader.getMessage();
             } else if (ImportExcelUtils.isExcel2007(file.toString())) {
                 excel2007Reader.processAllSheets(inputStream);
+                excel2007Reader.waitEndDocument();
                 msg = excel2007Reader.getMessage();
             }
 

@@ -111,6 +111,26 @@ public class Excel2007Reader implements IExcelReaderByEventMode {
         }
     }
 
+    public void waitEndDocument() {
+        try {
+            synchronized (this) {
+                System.out.println("begin wait() ThreadName=" + Thread.currentThread().getName());
+                this.wait();
+                System.out.println("end wait() ThreadName=" + Thread.currentThread().getName());
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void notifyEndDocument() {
+        synchronized (this) {
+            System.out.println("begin notify() ThreadName=" + Thread.currentThread().getName());
+            this.notifyAll();
+            System.out.println("end notify() ThreadName=" + Thread.currentThread().getName());
+        }
+    }
+
     public XMLReader fetchSheetParser(SharedStringsTable sst, StylesTable st)
             throws SAXException, ParserConfigurationException {
         XMLReader parser = SAXHelper.newXMLReader();
@@ -298,7 +318,7 @@ public class Excel2007Reader implements IExcelReaderByEventMode {
 
         @Override
         public void endDocument() throws SAXException {
-
+            notifyEndDocument();
         }
 
        /**
