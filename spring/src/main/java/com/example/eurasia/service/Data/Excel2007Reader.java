@@ -23,7 +23,6 @@ import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 /*
@@ -75,7 +74,8 @@ public class Excel2007Reader implements IExcelReaderByEventMode {
              * 每个sheet的InputStream只有从Iterator获取时才会打开。
              * 解析完每个sheet时关闭InputStream。
              * */
-            Iterator<InputStream> sheets = r.getSheetsData();
+            //Iterator<InputStream> sheets = r.getSheetsData();
+            XSSFReader.SheetIterator sheets = (XSSFReader.SheetIterator)r.getSheetsData();
             while (sheets.hasNext()) {
                 Slf4jLogUtil.get().info("Processing new sheet.");
                 this.sheetIndex++;
@@ -91,15 +91,15 @@ public class Excel2007Reader implements IExcelReaderByEventMode {
 
                 if (this.rowReader.getTitleIsNotExistList().size() == 0) {
                     int addDataNum = this.rowReader.saveDataToSQL(DataService.TABLE_DATA);//导入数据。
-                    Slf4jLogUtil.get().info("导入成功，共{}条数据！",addDataNum);
-                    this.message.append("导入成功，共" + addDataNum + "条数据！");
+                    Slf4jLogUtil.get().info("Sheet[{}]导入成功，共{}条数据！",sheets.getSheetName(),addDataNum);
+                    this.message.append("Sheet[" + sheets.getSheetName() + "]导入成功，共" + addDataNum + "条数据！");
 
                     //清空保存前一个Sheet页内容用的List
                     this.rowReader.clearDataList();
                 } else {
                     String titleIsNotExist = this.rowReader.titleIsNotExistListToString();
-                    Slf4jLogUtil.get().info("导入失败，{}在数据库中不存在！",titleIsNotExist);
-                    this.message.append("导入失败，" + titleIsNotExist + " 在数据库中不存在！");
+                    Slf4jLogUtil.get().info("Sheet[{}]导入失败，{}在数据库中不存在！",sheets.getSheetName(),titleIsNotExist);
+                    this.message.append("Sheet[" + sheets.getSheetName() + "]导入失败，" + titleIsNotExist + " 在数据库中不存在！");
                 }
 
             }
@@ -289,6 +289,16 @@ public class Excel2007Reader implements IExcelReaderByEventMode {
             } else if ("worksheet".equals(qName)) {// Sheet读取完成
                 //
             }
+        }
+
+        @Override
+        public void startDocument() throws SAXException {
+
+        }
+
+        @Override
+        public void endDocument() throws SAXException {
+
         }
 
        /**

@@ -14,7 +14,7 @@ public class ImportExcelByEventMode {
     @Autowired
     private Excel2007Reader excel2007Reader;
     public String readExcelFile(File file) throws Exception {
-        Slf4jLogUtil.get().info("EventUserModel读取文件:" + file.getName());
+        Slf4jLogUtil.get().info("EventModel读取文件:" + file.getName());
 
         StringBuffer msg = new StringBuffer();//信息接收器
         InputStream inputStream = null;//初始化输入流

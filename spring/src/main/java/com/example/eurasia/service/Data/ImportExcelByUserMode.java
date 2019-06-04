@@ -35,6 +35,7 @@ public class ImportExcelByUserMode {
     private ImportExcelRowReader rowReader;
 
     public String readExcelFile(File file) throws Exception {
+        Slf4jLogUtil.get().info("UserModel读取文件:" + file.getName());
 
         InputStream inputStream = null;//初始化输入流
         Workbook workbook = null;//根据版本选择创建Workbook的方式

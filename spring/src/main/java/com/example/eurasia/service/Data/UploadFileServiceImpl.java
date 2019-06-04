@@ -169,15 +169,15 @@ public class UploadFileServiceImpl implements IUploadFileService {
         }
 
         if (fileNGNum == 0) {
-            responseMsg.append(fileOKNum + "个文件读取成功。");
+            responseMsg.append(fileOKNum + "个文件读取完成。");
             responseOK.delete((responseOK.length() - DataService.BR.length()),responseOK.length());
             responseResult = new ResponseResultUtil().success(ResponseCodeEnum.READ_UPLOADED_FILE_SUCCESS.getCode(), responseMsg.toString(), responseOK.toString());
         } else if (fileOKNum == 0 && fileNGNum != 0) {
-            responseMsg.append(fileNGNum + "个文件读取失败。");
+            responseMsg.append(fileNGNum + "个文件读取异常。");
             responseNG.delete((responseNG.length() - DataService.BR.length()),responseNG.length());
             responseResult = new ResponseResultUtil().error(ResponseCodeEnum.READ_UPLOADED_FILE_FAILED.getCode(), responseMsg.toString(), responseNG.toString());
         } else {
-            responseMsg.append(fileOKNum + "个文件读取成功," + fileNGNum + "个文件读取失败。");
+            responseMsg.append(fileOKNum + "个文件读取完成," + fileNGNum + "个文件读取异常。");
             responseOK.delete((responseOK.length() - DataService.BR.length()),responseOK.length());
             responseNG.delete((responseNG.length() - DataService.BR.length()),responseNG.length());
 
