@@ -37,7 +37,7 @@ export class DataUploadComponent implements AfterViewChecked {
         let failedDetail = null;
         // analyse extra data
         if (result.data != null) {
-          const extraData = result.data[0];
+          const extraData = result.data;
           const index = extraData.indexOf(':');
           if (index !== -1) {
             fileName = extraData.substring(0, index);
@@ -71,5 +71,8 @@ export class DataUploadComponent implements AfterViewChecked {
   // click file select button
   selectFile(): void {
     $('#file-select').click();
+  }
+  public synonymEdit(): void {
+    alert('synonym edit');
   }
 }
