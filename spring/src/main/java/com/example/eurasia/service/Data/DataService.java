@@ -220,8 +220,17 @@ public class DataService {
             isInTableData = false;
             isInTableColsDicData = false;
 
+            String title = titleList.get(i);
+            if (title.indexOf(" ") == -1) {
+
+            } else {
+                String newTitle = org.apache.commons.lang3.StringUtils.deleteWhitespace(title);
+                titleList.set(i, newTitle);
+            }
+
+            title = titleList.get(i);
             for (String columnName : colsNameList) {//在数据表中找该字段
-                if (columnName.equals(titleList.get(i))) {//在数据表中找到该字段
+                if (columnName.equals(title)) {//在数据表中找到该字段
                     isInTableData = true;
                     break;
                 }
@@ -231,7 +240,7 @@ public class DataService {
                 //在数据表中没找到该字段
                 for (Map<String, Object> map : colNamesListMap) {//在数据字典表中找该字段
                     String synonymValue = (String) map.get(DataService.COLUMNS_DICTIONARY_SYNONYM);
-                    if (synonymValue.equals(titleList.get(i))) {//在数据字典表的同义词里找到该字段
+                    if (synonymValue.equals(title)) {//在数据字典表的同义词里找到该字段
                         isInTableColsDicData = true;
                         String colNameValue = (String) map.get(DataService.COLUMNS_DICTIONARY_COLUMN_NAME);
                         //替换同义词
@@ -242,7 +251,7 @@ public class DataService {
 
                 if (isInTableColsDicData == false) {
                     //不存在的字段
-                    titleIsNotExistList.add(titleList.get(i));
+                    titleIsNotExistList.add(title);
                 } else {
                     //存在的字段
                 }

@@ -318,7 +318,7 @@ public class Excel2007Reader implements IExcelReaderByEventMode {
 
         @Override
         public void endDocument() throws SAXException {
-            notifyEndDocument();
+
         }
 
        /**
