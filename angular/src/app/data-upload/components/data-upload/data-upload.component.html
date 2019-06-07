@@ -41,7 +41,7 @@
                 <td class="text-left">
                   <span class="text-primary" data-toggle="tooltip"
                     title="{{item.formData['failedDetail']}}">{{item.formData['summary']}}</span>
-                    <a id="test" href="javascript:void(0)" (click)="synonymEdit()">同义词编辑</a>
+                    <a id="test" href="javascript:void(0)" (click)="synonymEdit(item)">同义词编辑</a>
                 </td>
                 <td nowrap>
                   <button type="button" class="btn btn-primary btn-xs" (click)="item.upload()" [disabled]="item.isReady || item.isUploading || item.isSuccess">

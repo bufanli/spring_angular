@@ -28,6 +28,8 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
   private isDeletingSynonym = false;
   // id is a dummy attribute, just for compilation
   private id: any;
+  // upload error msg
+  private uploadErrorMsg: string = null;
   constructor(private http: HttpClient,
     protected currentUserContainer: CurrentUserContainerService,
     protected saveColumnSynonymsService: SaveColumnSynonymsService,
@@ -273,5 +275,21 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
     }
     // refresh synonyms row
     this.refreshAllSynonymTables();
+  }
+  // set upload data error msg
+  public setUploadDataErrorMsg(errorMsg: string): void {
+    this.uploadErrorMsg = errorMsg;
+  }
+  // get upload data error msg
+  public getUploadDataErrorMsg(): string {
+    return this.uploadErrorMsg;
+  }
+  // check whether error msg is null or not
+  public isUploadDataErrorMsgEmpty(): boolean {
+    if (this.uploadErrorMsg === null || this.uploadErrorMsg === '') {
+      return true;
+    } else {
+      return false;
+    }
   }
 }

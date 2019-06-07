@@ -1,4 +1,4 @@
-import { Component, AfterViewChecked } from '@angular/core';
+import { Component, AfterViewChecked, Output, EventEmitter } from '@angular/core';
 import { FileUploader } from 'ng2-file-upload';
 import { FileItem } from 'ng2-file-upload';
 import { ParsedResponseHeaders } from 'ng2-file-upload';
@@ -12,6 +12,7 @@ const URL = 'api/uploadFile';
   styleUrls: ['./data-upload.component.css']
 })
 export class DataUploadComponent implements AfterViewChecked {
+  @Output() notifyOpenSynonym: EventEmitter<string> = new EventEmitter<string>();
   public uploader: FileUploader = new FileUploader({ url: URL });
   constructor(private currentUserContainer: CurrentUserContainerService) {
     const that: any = this;
@@ -70,9 +71,11 @@ export class DataUploadComponent implements AfterViewChecked {
   }
   // click file select button
   selectFile(): void {
+// tslint:disable-next-line: deprecation
     $('#file-select').click();
   }
-  public synonymEdit(): void {
-    alert('synonym edit');
+  // emit synonym edit event
+  public synonymEdit(item: any): void {
+    this.notifyOpenSynonym.emit(item.formData['failedDetail']);
   }
 }
