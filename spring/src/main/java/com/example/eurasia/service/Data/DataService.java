@@ -195,6 +195,34 @@ public class DataService {
     }
 
     /**
+     * 添加新字段
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2019-06-07 00:00:00
+     */
+    public int addColumnToSQL(List<String> addColList) throws Exception {
+        if (addColList == null) {
+            return -1;
+        }
+
+        int addColNum = addColList.size();
+        for (String columnName : addColList) {
+            int intoDataNum = getDataDao().addColumn(
+                    DataService.TABLE_DATA, columnName, "VARCHAR(255)");
+            int intoQueryConTypeNum = getDataDao().addColumn(
+                    DataService.TABLE_QUERY_CONDITION_TYPE, columnName, "VARCHAR(20)");
+            int intoStaticSettingGroupByNum = getDataDao().addData(
+                    DataService.TABLE_STATISTICS_SETTING_GROUP_BY,
+                    DataService.STATISTICS_SETTING_GROUP_BY_COLUMN_NAME,
+                    columnName);
+        }
+
+        return addColNum;
+    }
+
+    /**
      * 判断数据字段名或同义词，是否存在
      * @param
      * @return

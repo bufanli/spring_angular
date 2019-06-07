@@ -234,30 +234,40 @@ public class UploadFileServiceImpl implements IUploadFileService {
 
         List<Data> dataList = new ArrayList<>();
         Map<String, String> keyValue = new LinkedHashMap<>();
+        List<String> addColList = new ArrayList<>();
 
-        // 取得数据表的所有列名
-//        List<String> colsNameList = dataService.getAllColumnNames(DataService.TABLE_DATA);
+        try {
+            // 取得数据表的所有列名
+            List<String> colsNameList = dataService.getAllColumnNames(DataService.TABLE_DATA);
 
-        for (ColumnsDictionary columnsDictionary : columnsDictionaryArr) {
-            for (String synonym : columnsDictionary.getSynonyms()) {
+            for (ColumnsDictionary columnsDictionary : columnsDictionaryArr) {
                 String columnName = columnsDictionary.getColumnName();
-//                if (this.checkColumnNameValid(columnName, colsNameList)) { //T.B.D 应该不用判断字段是否合法
+                if (this.checkColumnNameValid(columnName, colsNameList)) {
+
+                } else {
+                    Slf4jLogUtil.get().info("添加新的字段！");
+                    addColList.add(columnName);
+                }
+
+                for (String synonym : columnsDictionary.getSynonyms()) {
                     keyValue.put(DataService.COLUMNS_DICTIONARY_SYNONYM, synonym);
                     keyValue.put(DataService.COLUMNS_DICTIONARY_COLUMN_NAME, columnName);
                     Data data = new Data(keyValue);
                     dataList.add(data);
-//                } else {
-//                    Slf4jLogUtil.get().info("导入数据词典字段不存在！");
-//                    responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SET_COLUMNS_DICTIONARY_FAILED);
-//                    return responseResult;
-//                }
+                }
             }
-        }
-        int deleteNum = dataService.deleteAllData(DataService.TABLE_COLUMNS_DICTIONARY);
-        int addDataNum = dataService.saveDataToSQL(DataService.TABLE_COLUMNS_DICTIONARY, dataList);
-        Slf4jLogUtil.get().info("导入数据词典成功，共{}条数据！",addDataNum);
 
-        responseResult = new ResponseResultUtil().success(ResponseCodeEnum.SET_COLUMNS_DICTIONARY_SUCCESS);
+            int addColNum = dataService.addColumnToSQL(addColList);
+            int deleteNum = dataService.deleteAllData(DataService.TABLE_COLUMNS_DICTIONARY);
+            int addDataNum = dataService.saveDataToSQL(DataService.TABLE_COLUMNS_DICTIONARY, dataList);
+            Slf4jLogUtil.get().info("导入数据词典成功，共{}条数据！",addDataNum);
+
+            responseResult = new ResponseResultUtil().success(ResponseCodeEnum.SET_COLUMNS_DICTIONARY_SUCCESS);
+        } catch (Exception e) {
+            e.printStackTrace();
+            responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SET_COLUMNS_DICTIONARY_FAILED);
+        }
+
         return responseResult;
     }
 
