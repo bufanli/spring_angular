@@ -41,18 +41,23 @@
                 <td class="text-left">
                   <span class="text-primary" data-toggle="tooltip"
                     title="{{item.formData['failedDetail']}}">{{item.formData['summary']}}</span>
-                    <a id="test" href="javascript:void(0)" (click)="synonymEdit(item)">同义词编辑</a>
                 </td>
                 <td nowrap>
-                  <button type="button" class="btn btn-primary btn-xs" (click)="item.upload()" [disabled]="item.isReady || item.isUploading || item.isSuccess">
+                  <button type="button" class="btn btn-primary btn-xs" (click)="item.upload()"
+                    [disabled]="item.isReady || item.isUploading || item.isSuccess">
                     <span class="glyphicon glyphicon-upload"></span> 上传
                   </button>
-                  <button type="button" class="btn btn-default btn-xs" (click)="item.cancel()" [disabled]="!item.isUploading">
+                  <button type="button" class="btn btn-default btn-xs" (click)="item.cancel()"
+                    [disabled]="!item.isUploading">
                     <span class="glyphicon glyphicon-ban-circle"></span> 取消
                   </button>
                   <button type="button" class="btn btn-default btn-xs" (click)="item.remove()">
                     <span class="glyphicon glyphicon-trash"></span> 删除
                   </button>
+                  <button type="button" class="btn btn-default btn-xs" (click)="this.synonymEdit(item)">
+                    <span class="glyphicon glyphicon-edit"></span> 编辑近义词
+                  </button>
+
                 </td>
               </tr>
             </tbody>
@@ -60,13 +65,16 @@
         </div>
       </div>
       <div>
-        <button type="button" class="btn btn-primary btn-s" (click)="uploader.uploadAll()" [disabled]="!uploader.getNotUploadedItems().length">
+        <button type="button" class="btn btn-primary btn-s" (click)="uploader.uploadAll()"
+          [disabled]="!uploader.getNotUploadedItems().length">
           <span class="glyphicon glyphicon-upload"></span> 上传全部
         </button>
-        <button type="button" class="btn btn-default btn-s" (click)="uploader.cancelAll()" [disabled]="!uploader.isUploading">
+        <button type="button" class="btn btn-default btn-s" (click)="uploader.cancelAll()"
+          [disabled]="!uploader.isUploading">
           <span class="glyphicon glyphicon-ban-circle"></span> 取消全部
         </button>
-        <button type="button" class="btn btn-default btn-s" (click)="uploader.clearQueue()" [disabled]="!uploader.queue.length">
+        <button type="button" class="btn btn-default btn-s" (click)="uploader.clearQueue()"
+          [disabled]="!uploader.queue.length">
           <span class="glyphicon glyphicon-trash"></span> 删除全部
         </button>
       </div>
