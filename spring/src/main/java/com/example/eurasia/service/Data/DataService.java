@@ -223,6 +223,35 @@ public class DataService {
     }
 
     /**
+     * 删除字段
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2019-06-07 00:00:00
+     */
+    public boolean deleteColumnFromSQL(String columnName) throws Exception {
+        if (StringUtils.isEmpty(columnName)) {
+            return false;
+        }
+
+        Long hasDataNum = getDataDao().hasColumnValue(DataService.TABLE_DATA, columnName);
+        if (hasDataNum > 0) {
+           return false;
+        } else {
+            int delDataNum = getDataDao().deleteColumn(DataService.TABLE_DATA, columnName);
+            int delQueryConTypeNum = getDataDao().deleteColumn(DataService.TABLE_QUERY_CONDITION_TYPE, columnName);
+
+            Map<String, String> keyValue = new LinkedHashMap<>();
+            keyValue.put(DataService.TABLE_STATISTICS_SETTING_GROUP_BY, columnName);
+            Data data = new Data(keyValue);
+            int delStaticSettingGroupByNum = getDataDao().deleteData(DataService.TABLE_STATISTICS_SETTING_GROUP_BY, data);
+
+            return true;
+        }
+    }
+
+    /**
      * 判断数据字段名或同义词，是否存在
      * @param
      * @return
