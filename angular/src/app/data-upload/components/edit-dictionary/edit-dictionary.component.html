@@ -1,6 +1,6 @@
 <div class="container">
   <div class="row">
-    <div class="col-md-9">
+    <div class="col-md-12">
       <div *ngIf="!this.isUploadDataErrorMsgEmpty()" class="alert alert-info">{{this.getUploadDataErrorMsg()}}</div>
       <div *ngIf="this.errorExist" class="alert alert-danger">{{this.errorMsg}}</div>
       <div *ngIf="this.infoExist" class="alert alert-info">{{this.infoMsg}}</div>

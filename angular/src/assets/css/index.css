@@ -121,8 +121,3 @@ a.toggle .glyphicon-chevron-right,
 iframe {
   border: 0;
 }
-
-.dropdown-menu {
-  max-height: 500px;
-  overflow: auto;
-}
