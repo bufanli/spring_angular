@@ -271,6 +271,25 @@ public class UploadFileServiceImpl implements IUploadFileService {
         return responseResult;
     }
 
+    @Override
+    public ResponseResult deleteColumn(String columnName) throws Exception {
+        ResponseResult responseResult;
+        try {
+            if (dataService.deleteColumnFromSQL(columnName)) {
+                Slf4jLogUtil.get().info("删除字段 {} 成功！",columnName);
+                responseResult = new ResponseResultUtil().success(ResponseCodeEnum.DELETE_COLUMN_SUCCESS);
+            } else {
+                Slf4jLogUtil.get().info("删除字段 {} 失败！",columnName);
+                responseResult = new ResponseResultUtil().success(ResponseCodeEnum.DELETE_COLUMN_FAILED);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            responseResult = new ResponseResultUtil().error(ResponseCodeEnum.DELETE_COLUMN_FAILED);
+        }
+        return responseResult;
+    }
+
     private boolean checkColumnNameValid(String columnName, List<String> colsNameList) throws Exception {
 
         for (String colsName : colsNameList) {

@@ -189,6 +189,10 @@ public enum ResponseCodeEnum {
 
     /* 添加数据 */
 
+    /* 删除数据 */
+    DELETE_COLUMN_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "删除字段成功"),
+    DELETE_COLUMN_FAILED(ResponseCode.RESPONSE_CODE_NG, "删除字段失败"),
+
     /* 导出数据 */
     EXPORT_GET_HEADER_INFO_FROM_SQL_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "导出数据时,从数据库取得表头信息成功"),
     EXPORT_GET_HEADER_INFO_FROM_SQL_FAILED(ResponseCode.RESPONSE_CODE_NG, "导出数据时,从数据库取得表头信息失败"),

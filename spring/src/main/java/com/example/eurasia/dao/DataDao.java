@@ -81,8 +81,19 @@ sbf = new StringBuffer("");//重新new
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
-    public void deleteData(String tableName, Data data) throws Exception {
-        //Nothing to do
+    public int deleteData(String tableName, Data data) throws Exception {
+        StringBuffer sql = new StringBuffer();
+        sql.append("delete from " + tableName + " where ");
+
+        Set<Map.Entry<String, String>> set = data.getKeyValue().entrySet();
+        Iterator<Map.Entry<String, String>> it = set.iterator();
+        while (it.hasNext()) {
+            Map.Entry<String,String> entry = it.next();
+            sql.append(entry.getKey() + "=" + entry.getValue());
+        }
+
+        int num = getJdbcTemplate().update(sql.toString());
+        return num;//大于0，插入成功。返回影响的行数。
     }
 
     /**
@@ -184,12 +195,12 @@ GROUP BY 列1,列2,列3 having count(*) > 1;
     }
 
     /**
-     * 添加数据
+     * 添加字段
      * @param
      * @return
      * @exception
      * @author FuJia
-     * @Time 2018-09-20 00:00:00
+     * @Time 2019-06-07 00:00:00
      */
     public int addColumn(String tableName, String columnName, String columnType) throws Exception {
 
@@ -198,6 +209,40 @@ GROUP BY 列1,列2,列3 having count(*) > 1;
 
         int num = getJdbcTemplate().update(sql.toString());
         return num;//返回影响的行数。(成功的话，0 rows affected)
+    }
+
+    /**
+     * 字段
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2019-06-08 00:00:00
+     */
+    public int deleteColumn(String tableName, String columnName) throws Exception {
+
+        StringBuffer sql = new StringBuffer();
+        sql.append("alter table " + tableName + " drop column " + columnName);
+
+        int num = getJdbcTemplate().update(sql.toString());
+        return num;//返回影响的行数。(成功的话，0 rows affected)
+    }
+
+    /**
+     * 判断字段是否有值
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2019-06-08 00:00:00
+     */
+    public Long hasColumnValue(String tableName, String columnName) throws Exception {
+
+        StringBuffer sql = new StringBuffer();
+        sql.append("select count(*) from " + tableName + " where " + columnName + "<>\"\" group by " + columnName);
+
+        Long num = getJdbcTemplate().queryForObject(sql.toString(), Long.class);
+        return num;//如果>0说明存在有值行数据
     }
 
     /**
