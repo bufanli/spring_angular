@@ -4,6 +4,7 @@ import { SaveColumnDictionaryCallback } from '../interfaces/save-column-dictiona
 import { Observable } from 'rxjs';
 import { HttpResponse } from 'src/app/common/entities/http-response';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { ChildActivationEnd } from '@angular/router';
 
 // json header for post
 const httpOptions = {
@@ -19,6 +20,8 @@ export class SaveColumnSynonymsService {
   private columnDictionaries: ColumnsDictionary[] = null;
   // save end callback
   private saveEndCallback: SaveColumnDictionaryCallback = null;
+  private readonly DELETE_COLUMN_NAME = 'delete_column';
+  private readonly ADD_COLUMN_HEADER = '添加自定义列';
   constructor(private http: HttpClient) { }
   // set columnDictionaries
   public setColumnDictionaries(columnDictionaries: ColumnsDictionary[]): void {
@@ -37,8 +40,25 @@ export class SaveColumnSynonymsService {
   private saveColumnDictionariesImpl(): Observable<HttpResponse> {
     return this.http.post<HttpResponse>(
       this.saveColumnDictionariesURL,
-      this.columnDictionaries,
+      this.purifyColumnDictionaries(),
       httpOptions);
+  }
+  // purify column dictionaries
+  private purifyColumnDictionaries(): ColumnsDictionary[] {
+    const purifiedColumnDictionaries: ColumnsDictionary[] = [];
+    this.columnDictionaries.forEach(element => {
+      // if it is just for adding custom column
+      // nothing to do
+      if (element.getColumnName() === this.ADD_COLUMN_HEADER) {
+        // nothing to do
+      } else {
+        const clonedColumnDictionary = element.clone();
+        // remove specified synonym
+        clonedColumnDictionary.removeSpecifiedSynonym(this.DELETE_COLUMN_NAME);
+        purifiedColumnDictionaries.push(clonedColumnDictionary);
+      }
+    });
+    return purifiedColumnDictionaries;
   }
   // save column dictionary notification
   private saveColumnDictionariesNotification(httpResponse: HttpResponse): void {

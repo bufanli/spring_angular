@@ -13,6 +13,7 @@ import 'jquery';
 import 'bootstrap';
 import 'bootstrap-table';
 import 'bootstrap-select';
+import { AddCustomColumnComponent } from '../add-custom-column/add-custom-column.component';
 
 @Component({
   selector: 'app-edit-dictionary',
@@ -22,10 +23,16 @@ import 'bootstrap-select';
 export class EditDictionaryComponent extends EditSynonymBase implements OnInit, AfterViewChecked {
   public readonly fieldName = 'synonym';
   private readonly getColumnDictionaryURL = 'api/getColumnsDictionary';
+  private readonly DELETE_COLUMN_TITLE = '删除';
+  private readonly DELETE_COLUMN_NAME = 'delete_column';
+  private readonly ADD_COLUMN_NAME = 'add_column';
+  private readonly ADD_COLUMN_TITLE = '添加';
+  private readonly ADD_COLUMN_HEADER = '添加自定义列';
   public columnsDictionaries: ColumnsDictionary[] = null;
   public columns: string[] = null;
   private columnsDictionariesLoaded = false;
   private isDeletingSynonym = false;
+  private isDeletingColumn = false;
   // id is a dummy attribute, just for compilation
   private id: any;
   // upload error msg
@@ -60,6 +67,10 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
       this.convertHttpDataToColumnsDictionaries(columnsDictionaries);
       // convert column dictionary entries to columns
       this.convertColumnDictionariesToColumns();
+      // add delete link to columns without synonyms
+      this.addDeleteLinkToColumnsWithoutSynonyms();
+      // add column definition link
+      this.addColumnDefinitionLink();
       // set loaded flag
       this.columnsDictionariesLoaded = true;
     } else if (httpResponse.code === 201) {
@@ -82,6 +93,24 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
       );
       this.columnsDictionaries.push(columnsDictionary);
     });
+  }
+  // add delete link to columns without synonyms
+  private addDeleteLinkToColumnsWithoutSynonyms(): void {
+    this.columnsDictionaries.forEach(element => {
+      if (element.getSynonyms().length === 0) {
+        element.getSynonyms().push(this.DELETE_COLUMN_NAME);
+      }
+    });
+  }
+  // add column definition link
+  private addColumnDefinitionLink(): void {
+    // add column definition link's synonyms
+    const synonyms = [this.ADD_COLUMN_NAME];
+    const columnDictionary = new ColumnsDictionary(
+      this.ADD_COLUMN_HEADER,
+      synonyms
+    );
+    this.columnsDictionaries.push(columnDictionary);
   }
   // abstract synonyms tables  row by given uuid
   private abstractSynonymRowsByUUID(uuid: string): any[] {
@@ -136,17 +165,32 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
     const that = this;
     let index = 0;
     const synonyms = columnDictionary.getSynonyms();
-    synonyms.forEach(synonym => {
-      // generate id as %method%uuid%index
-      const modifySynonymId = 'modify_' + columnDictionary.getUUID() + '_' + index;
-      const deleteSynonymId = 'delete_' + columnDictionary.getUUID() + '_' + index;
-      // bind modify synonym handler
-      $('#' + modifySynonymId).on('click', that, function () { return that.modifySynonymHandler(modifySynonymId); });
-      // bind delete synonym handler
-      $('#' + deleteSynonymId).on('click', that, function () { return that.deleteSynonymHandler(deleteSynonymId); });
-      // index increase
-      index++;
-    });
+    if (columnDictionary.getColumnName() === this.ADD_COLUMN_HEADER) {
+      // if this is add custom column link, bind it to add custom column link
+      const addCustomColumnId = 'addcolumn' + columnDictionary.getUUID();
+      $('#' + addCustomColumnId).on('click', that, function () { return that.addCustomColumnHandler(); });
+    } else {
+      if (synonyms.length === 1 && synonyms[0] === this.DELETE_COLUMN_NAME) {
+        // if this is delete column link
+        const deleteColumnId = 'deletecolumn_' + columnDictionary.getUUID();
+        $('#' + deleteColumnId).on('click', that, function () {
+          return that.deleteColumnHandler(columnDictionary.getUUID());
+        });
+      } else {
+        // else, column has synonyms
+        synonyms.forEach(synonym => {
+          // generate id as %method%uuid%index
+          const modifySynonymId = 'modify_' + columnDictionary.getUUID() + '_' + index;
+          const deleteSynonymId = 'delete_' + columnDictionary.getUUID() + '_' + index;
+          // bind modify synonym handler
+          $('#' + modifySynonymId).on('click', that, function () { return that.modifySynonymHandler(modifySynonymId); });
+          // bind delete synonym handler
+          $('#' + deleteSynonymId).on('click', that, function () { return that.deleteSynonymHandler(deleteSynonymId); });
+          // index increase
+          index++;
+        });
+      }
+    }
   }
   // modify synonym handler
   private modifySynonymHandler(linkId: string): void {
@@ -162,6 +206,33 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
     modalRef.componentInstance.setEditSynonymIndex(Number(idParts[2]));
     modalRef.componentInstance.refreshDataModel();
     modalRef.componentInstance.notifyClose.subscribe(response => this.callbackOfEditSynonymClosed(response));
+  }
+  // add custom column handler
+  private addCustomColumnHandler(): void {
+    const modalService: NgbModal = this.modalService;
+    const modalRef = modalService.open(AddCustomColumnComponent, this.adjustModalOptions());
+    modalRef.componentInstance.setColumnsDictionaries(this.columnsDictionaries);
+    modalRef.componentInstance.notifyClose.subscribe(response => this.callbackOfEditSynonymClosed(response));
+  }
+  // delete custom column
+  private deleteColumnHandler(uuid: string): void {
+    let index = -1;
+    for (let i = 0; i < this.columnsDictionaries.length; i++) {
+      if (this.columnsDictionaries[i].getUUID() === uuid) {
+        index = i;
+        break;
+      }
+      if (index !== -1) {
+        this.columnsDictionaries.splice(index, 1);
+      } else {
+        // nothing to do because it is impossible here
+      }
+    }
+    // set deleting flag
+    this.isDeletingColumn = true;
+    // save all synonym rows
+    this.saveColumnDictionaries();
+
   }
   // callback of edit synonym closed
   private callbackOfEditSynonymClosed(repsonse: string): void {
@@ -214,16 +285,34 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
       // generate id as %method%uuid%index
       const modifySynonymId = 'modify_' + uuid + '_' + index;
       const deleteSynonymId = 'delete_' + uuid + '_' + index;
-      return [
-        '<div style="float:left">',
-        '<a id=' + modifySynonymId + ' href="javascript:void()">' + value + '</a>',
-        '</div>',
-        '<div style="float:right">',
-        '<a id=' + deleteSynonymId + ' class="remove" href="javascript:void(0)" title="Remove">',
-        '<i class="glyphicon glyphicon-trash"></i>',
-        '</a>',
-        '</div>'
-      ].join('');
+      const deleteColumnId = 'deletecolumn_' + uuid;
+      const addColumnId = 'addcolumn' + uuid;
+      if (value === this.ADD_COLUMN_NAME) {
+        return [
+          '<div style="float:left">',
+          '<a id=' + addColumnId + ' href="javascript:void()">',
+          '<span class="glyphicon glyphicon-plus"></span>&nbsp&nbsp' + this.ADD_COLUMN_TITLE + '</a>',
+          '</div>',
+        ].join('');
+      } else if (value === this.DELETE_COLUMN_NAME) {
+        return [
+          '<div style="float:left">',
+          '<a id=' + deleteColumnId + ' href="javascript:void()">',
+          '<span class="glyphicon glyphicon-trash"></span>&nbsp&nbsp' + this.DELETE_COLUMN_TITLE + '</a>',
+          '</div>',
+        ].join('');
+      } else {
+        return [
+          '<div style="float:left">',
+          '<a id=' + modifySynonymId + ' href="javascript:void()">' + value + '</a>',
+          '</div>',
+          '<div style="float:right">',
+          '<a id=' + deleteSynonymId + ' class="remove" href="javascript:void(0)" title="Remove">',
+          '<i class="glyphicon glyphicon-trash"></i>',
+          '</a>',
+          '</div>'
+        ].join('');
+      }
     }
   }
   // find uuid of synonyms
@@ -259,7 +348,8 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
   }
   // save column dictionary end notification
   public callbackOnSaveEnd(httpResponse: HttpResponse): void {
-    if (this.isDeletingSynonym === false) {
+    if (!(this.isDeletingSynonym === false ||
+      this.isDeletingColumn === false)) {
       super.callbackOnSaveEnd(httpResponse);
     } else {
       if (httpResponse.code === 201) {
@@ -272,6 +362,7 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
       }
       // set back deleting flag
       this.isDeletingSynonym = false;
+      this.isDeletingColumn = false;
     }
     // refresh synonyms row
     this.refreshAllSynonymTables();

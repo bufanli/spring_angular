@@ -1,0 +1,41 @@
+<div class="modal-header bg-primary">
+  <button type="button" class="close" data-dismiss="modal" aria-hidden="true" (click)="close()">
+    &times;
+  </button>
+  <h4 class="modal-title" id="myModalLabel">
+    {{this.CUSTOM_COLUMN_TITLE}}
+  </h4>
+</div>
+<div class="modal-body">
+  <div *ngIf="this.errorExist" class="alert alert-danger">{{this.errorMsg}}</div>
+  <div *ngIf="this.infoExist" class="alert alert-info">{{this.infoMsg}}</div>
+  <form role="form">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="input-group">
+          <span class="input-group-addon">{{this.CUSTOM_COLUMN_NAME}}</span>
+          <input type="text" class="form-control" id="synonym" [(ngModel)]="this.column" name="column"
+            (keyup)="onEnterCustomColumn($event)">
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+<div class="modal-footer">
+  <div class="row">
+    <div class="col-md-3">
+      <div class="form-group">
+        <button type="button" class="btn btn-default btn-block btn-primary" (click)="this.saveColumnDictionaries()">
+          <span class="glyphicon glyphicon-edit"></span> 保存
+        </button>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="form-group">
+        <button type="submit" class="btn btn-default btn-block" (click)="this.close()">
+          <span class="glyphicon glyphicon-remove"></span> 关闭
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

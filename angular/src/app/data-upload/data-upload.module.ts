@@ -8,6 +8,7 @@ import { DataUploadConfComponent } from './components/data-upload-conf/data-uplo
 import { EditDictionaryComponent } from './components/edit-dictionary/edit-dictionary.component';
 import { EditSynonymComponent } from './components/edit-synonym/edit-synonym.component';
 import { NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
+import { AddCustomColumnComponent } from './components/add-custom-column/add-custom-column.component';
 
 const dataUploadRoutes: Routes = [
   {
@@ -29,9 +30,11 @@ const dataUploadRoutes: Routes = [
     DataUploadConfComponent,
     EditDictionaryComponent,
     EditSynonymComponent,
+    AddCustomColumnComponent,
   ],
   entryComponents: [
     EditSynonymComponent,
+    AddCustomColumnComponent,
   ],
 })
 export class DataUploadModule { }

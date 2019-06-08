@@ -22,4 +22,34 @@ export class ColumnsDictionary {
   public getUUID(): string {
     return this.uuid;
   }
+  // clone
+  public clone(): ColumnsDictionary {
+    // cloned synonyms
+    const clonedSynonyms: string[] = [];
+    this.synonyms.forEach(element => {
+      clonedSynonyms.push(element);
+    });
+    const cloned = new ColumnsDictionary(
+      this.columnName,
+      clonedSynonyms,
+    );
+    cloned.uuid = null;
+    return cloned;
+  }
+  // remove specified synonym
+  public removeSpecifiedSynonym(specifiedSynonym: string): void {
+    let index = -1;
+    for (let i = 0; i < this.synonyms.length; i++) {
+      if (this.synonyms[i] === specifiedSynonym) {
+        index = i;
+        break;
+      }
+    }
+    if (index !== -1) {
+      // found
+      this.synonyms.splice(index, 1);
+    } else {
+      // not found, nothing to do
+    }
+  }
 }
