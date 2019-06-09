@@ -81,6 +81,10 @@ public class ImportExcelRowReader {
         return this.titleIsNotExistList;
     }
 
+    public void clearTitleIsNotExistList() {
+        this.titleIsNotExistList.clear();
+    }
+
     public int saveDataToSQL(String tableName) throws Exception {
         return dataService.saveDataToSQL(tableName, this.getDataList());
     }
