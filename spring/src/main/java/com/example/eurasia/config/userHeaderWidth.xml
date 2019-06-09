@@ -6,12 +6,17 @@
     <column key="申报单位名称" value="TINYINT" />
     <column key="货主单位名称" value="TINYINT" />
     <column key="经营单位名称" value="TINYINT" />
+    <column key="申报单位代码" value="TINYINT" />
+    <column key="货主单位代码" value="TINYINT" />
     <column key="经营单位代码" value="TINYINT" />
+    <column key="企业性质" value="TINYINT" />
     <column key="运输工具名称" value="TINYINT" />
     <column key="提运单号" value="TINYINT" />
     <column key="海关编码" value="TINYINT" />
     <column key="附加码" value="TINYINT" />
     <column key="商品名称" value="TINYINT" />
+    <column key="制作或保存方法" value="TINYINT" />
+    <column key="加工方法" value="TINYINT" />
     <column key="部位" value="TINYINT" />
     <column key="包装规格" value="TINYINT" />
     <column key="英文品名" value="TINYINT" />
@@ -22,6 +27,7 @@
     <column key="牛龄" value="TINYINT" />
     <column key="级别" value="TINYINT" />
     <column key="饲养方式" value="TINYINT" />
+    <column key="签约日期" value="TINYINT" />
     <column key="申报要素" value="TINYINT" />
     <column key="成交方式" value="TINYINT" />
     <column key="申报单价" value="TINYINT" />
@@ -30,7 +36,7 @@
     <column key="美元单价" value="TINYINT" />
     <column key="美元总价" value="TINYINT" />
     <column key="美元币制" value="TINYINT" />
-    <column key="统计人民币价" value="TINYINT" />
+    <column key="人民币总价" value="TINYINT" />
     <column key="申报数量" value="TINYINT" />
     <column key="申报数量单位" value="TINYINT" />
     <column key="法定重量" value="TINYINT" />
@@ -63,4 +69,7 @@
     <column key="Email" value="TINYINT" />
     <column key="法人" value="TINYINT" />
     <column key="联系人" value="TINYINT" />
+    <column key="GTIN" value="TINYINT" />
+    <column key="CAS" value="TINYINT" />
+    <column key="备注" value="TINYINT" />
 </mapping>
