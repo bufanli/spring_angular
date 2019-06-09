@@ -1,5 +1,6 @@
 package com.example.eurasia.controller;
 
+import com.example.eurasia.entity.Data.ColumnsDictionary;
 import com.example.eurasia.service.Data.IUploadFileService;
 import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Response.ResponseResult;
@@ -102,6 +103,56 @@ public class UploadFileController {
             responseResult = new ResponseResultUtil().error(ResponseCodeEnum.READ_UPLOADED_FILE_FAILED);
         }
 
+        return responseResult;
+    }
+
+    /**
+     * @author
+     * @date 2019-05-23
+     * @description 取得数据字段的词典
+     */
+    @RequestMapping(value="/getColumnsDictionary", method = RequestMethod.GET)
+    public @ResponseBody
+    ResponseResult getColumnsDictionary(HttpServletRequest request) {
+        ResponseResult responseResult;
+        try {
+            Slf4jLogUtil.get().info("取得数据字段的词典开始");
+            String userID = userInfoServiceImpl.getLoginUserID(request);
+            if (StringUtils.isEmpty(userID)) {
+                responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
+            } else {
+                responseResult = uploadFileService.getColumnsDictionary();
+            }
+            Slf4jLogUtil.get().info("取得数据字段的词典结束");
+        } catch (Exception e) {
+            e.printStackTrace();
+            responseResult = new ResponseResultUtil().error(ResponseCodeEnum.GET_COLUMNS_DICTIONARY_FAILED);
+        }
+        return responseResult;
+    }
+
+    /**
+     * @author
+     * @date 2019-05-23
+     * @description 保存数据字段的词典
+     */
+    @RequestMapping(value="/setColumnsDictionary", method = RequestMethod.POST)
+    public @ResponseBody
+    ResponseResult setColumnsDictionary(HttpServletRequest request,@RequestBody ColumnsDictionary[] columnsDictionaryArr) {
+        ResponseResult responseResult;
+        try {
+            Slf4jLogUtil.get().info("保存数据字段的词典开始");
+            String userID = userInfoServiceImpl.getLoginUserID(request);
+            if (StringUtils.isEmpty(userID)) {
+                responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
+            } else {
+                responseResult = uploadFileService.setColumnsDictionary(columnsDictionaryArr);
+            }
+            Slf4jLogUtil.get().info("保存数据字段的词典结束");
+        } catch (Exception e) {
+            e.printStackTrace();
+            responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SET_COLUMNS_DICTIONARY_FAILED);
+        }
         return responseResult;
     }
 

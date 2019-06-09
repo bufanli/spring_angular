@@ -81,8 +81,19 @@ sbf = new StringBuffer("");//重新new
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
-    public void deleteData(String tableName, Data data) throws Exception {
-        //Nothing to do
+    public int deleteData(String tableName, Data data) throws Exception {
+        StringBuffer sql = new StringBuffer();
+        sql.append("delete from " + tableName + " where ");
+
+        Set<Map.Entry<String, String>> set = data.getKeyValue().entrySet();
+        Iterator<Map.Entry<String, String>> it = set.iterator();
+        while (it.hasNext()) {
+            Map.Entry<String,String> entry = it.next();
+            sql.append(entry.getKey() + "=" + entry.getValue());
+        }
+
+        int num = getJdbcTemplate().update(sql.toString());
+        return num;//大于0，插入成功。返回影响的行数。
     }
 
     /**
@@ -132,6 +143,21 @@ GROUP BY 列1,列2,列3 having count(*) > 1;
     }
 
     /**
+     * 删除全部的数据
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2019-06-03 00:00:00
+     */
+    public int deleteAllData(String tableName) throws Exception {
+        StringBuffer sql =  new StringBuffer();
+        sql.append("delete from " + tableName);
+
+        int num = getJdbcTemplate().update(sql.toString());//执行成功返回数据库当中受影响的记录条数，失败则返回-1
+        return num;
+    }
+    /**
      * 更新数据
      * @param
      * @return
@@ -166,6 +192,58 @@ GROUP BY 列1,列2,列3 having count(*) > 1;
     public Object queryForObject(String tableName, Data queryConditions) throws Exception {
         //Nothing to do
         return null;
+    }
+
+    /**
+     * 添加字段
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2019-06-07 00:00:00
+     */
+    public int addColumn(String tableName, String columnName, String columnType) throws Exception {
+
+        StringBuffer sql = new StringBuffer();
+        //sql.append("alter table " + tableName + " add column " + columnName + " " + columnType + " NOT NULL");
+        sql.append("alter table " + tableName + " add column " + columnName + " " + columnType + " DEFAULT \"\"");
+
+        int num = getJdbcTemplate().update(sql.toString());
+        return num;//返回影响的行数。(成功的话，0 rows affected)
+    }
+
+    /**
+     * 字段
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2019-06-08 00:00:00
+     */
+    public int deleteColumn(String tableName, String columnName) throws Exception {
+
+        StringBuffer sql = new StringBuffer();
+        sql.append("alter table " + tableName + " drop column " + columnName);
+
+        int num = getJdbcTemplate().update(sql.toString());
+        return num;//返回影响的行数。(成功的话，0 rows affected)
+    }
+
+    /**
+     * 判断字段是否有值
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2019-06-08 00:00:00
+     */
+    public Long hasColumnValue(String tableName, String columnName) throws Exception {
+
+        StringBuffer sql = new StringBuffer();
+        sql.append("select count(*) from " + tableName + " where " + columnName + "<>\"\" group by " + columnName);
+
+        Long num = getJdbcTemplate().queryForObject(sql.toString(), Long.class);
+        return num;//如果>0说明存在有值行数据
     }
 
     /**
@@ -373,18 +451,12 @@ Mysql limit offset示例
      * @author FuJia
      * @Time 2018-10-27 00:00:00
      */
-    public List<Map<String, Object>> queryListForColumns(String tableName, String[] columnNames) throws Exception {
-        StringBuffer sql = new StringBuffer();
-        sql.append("select ");
-        for (String columnName : columnNames) {
-            sql.append(columnName + CommonDao.COMMA);
-        }
-        sql.deleteCharAt(sql.length() - CommonDao.COMMA.length());
-        sql.append(" from " + tableName);
+    public List<Map<String, Object>> queryListForColumns(String tableName, String[] selectionCols) throws Exception {
+        StringBuffer sql = convertSelectionsToSQL(tableName, selectionCols);
 
-        List<Map<String, Object>> colsNameList = getJdbcTemplate().queryForList(sql.toString());
+        List<Map<String, Object>> selectionColsList = getJdbcTemplate().queryForList(sql.toString());
 
-        return colsNameList;
+        return selectionColsList;
     }
 
     /**
@@ -395,23 +467,16 @@ Mysql limit offset示例
      * @author FuJia
      * @Time 2018-10-27 00:00:00
      */
-    public List<Map<String, Object>> queryListForColumnValues(String tableName, String[] columnNames) throws Exception {
+    public List<Map<String, Object>> queryListForColumnValues(String tableName, String[] selectionCols) throws Exception {
         StringBuffer sql = new StringBuffer();
-        sql.append("select ");
-        for (String columnName : columnNames) {
-            sql.append(columnName + CommonDao.COMMA);
-        }
-        sql.deleteCharAt(sql.length() - CommonDao.COMMA.length());
-        sql.append(" from " + tableName);
-        sql.append(" group by ");
-        for (String columnName : columnNames) {
-            sql.append(columnName + CommonDao.COMMA);
-        }
-        sql.deleteCharAt(sql.length() - CommonDao.COMMA.length());
+        StringBuffer sqlSelections = convertSelectionsToSQL(tableName, selectionCols);
+        StringBuffer sqlGroupBys = convertGroupByToSQL(selectionCols);
+        sql.append(sqlSelections);
+        sql.append(sqlGroupBys);
 
-        List<Map<String, Object>> colsNameList = getJdbcTemplate().queryForList(sql.toString());
+        List<Map<String, Object>> selectionColsList = getJdbcTemplate().queryForList(sql.toString());
 
-        return colsNameList;
+        return selectionColsList;
     }
 
     /**
@@ -483,6 +548,27 @@ Mysql limit offset示例
         }
 */
         return colsNameList;
+    }
+
+    /**
+     * 查询并返回List集合
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-10-27 00:00:00
+     */
+    public List<Map<String, Object>> queryListForValuesIfs(String tableName,
+                                                           String[] selectionCols,
+                                                           String criterionCol,
+                                                           String criterionValue) throws Exception {
+        StringBuffer sql = convertSelectionsToSQL(tableName, selectionCols);
+        sql.append(" where ");
+        sql.append(criterionCol + " = '" + criterionValue + "'");
+
+        List<Map<String, Object>> selectionColsList = getJdbcTemplate().queryForList(sql.toString());
+
+        return selectionColsList;
     }
 }
 

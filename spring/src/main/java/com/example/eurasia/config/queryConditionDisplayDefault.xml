@@ -6,12 +6,17 @@
     <column key="申报单位名称" value="FALSE" />
     <column key="货主单位名称" value="TRUE" />
     <column key="经营单位名称" value="TRUE" />
+    <column key="申报单位代码" value="FALSE" />
+    <column key="货主单位代码" value="FALSE" />
     <column key="经营单位代码" value="FALSE" />
+    <column key="企业性质" value="FALSE" />
     <column key="运输工具名称" value="FALSE" />
     <column key="提运单号" value="FALSE" />
     <column key="海关编码" value="TRUE" />
     <column key="附加码" value="FALSE" />
     <column key="商品名称" value="TRUE" />
+    <column key="制作或保存方法" value="FALSE" />
+    <column key="加工方法" value="FALSE" />
     <column key="部位" value="FALSE" />
     <column key="包装规格" value="FALSE" />
     <column key="英文品名" value="FALSE" />
@@ -22,6 +27,7 @@
     <column key="牛龄" value="FALSE" />
     <column key="级别" value="FALSE" />
     <column key="饲养方式" value="FALSE" />
+    <column key="签约日期" value="FALSE" />
     <column key="申报要素" value="FALSE" />
     <column key="成交方式" value="FALSE" />
     <column key="申报单价" value="FALSE" />
@@ -30,7 +36,7 @@
     <column key="美元单价" value="FALSE" />
     <column key="美元总价" value="FALSE" />
     <column key="美元币制" value="FALSE" />
-    <column key="统计人民币价" value="FALSE" />
+    <column key="人民币总价" value="FALSE" />
     <column key="申报数量" value="FALSE" />
     <column key="申报数量单位" value="FALSE" />
     <column key="法定重量" value="FALSE" />
@@ -63,4 +69,7 @@
     <column key="Email" value="FALSE" />
     <column key="法人" value="FALSE" />
     <column key="联系人" value="FALSE" />
+    <column key="GTIN" value="FALSE" />
+    <column key="CAS" value="FALSE" />
+    <column key="备注" value="FALSE" />
 </mapping>

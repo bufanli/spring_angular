@@ -8,6 +8,7 @@ import com.example.eurasia.service.Data.DataService;
 import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;
+import com.example.eurasia.service.Util.DataProcessingUtil;
 import com.example.eurasia.service.Util.HttpSessionEnum;
 import com.example.eurasia.service.Util.Slf4jLogUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -235,7 +236,7 @@ public class UserInfoServiceImpl {
                                 case QueryCondition.QUERY_CONDITION_TYPE_LIST:
                                     // 如果是 QueryCondition.QUERY_CONDITION_SPLIT 的话，返回该列所有的元素
                                     List<Map<String, Object>> listMaps = dataService.getColumnAllValues(DataService.TABLE_DATA,new String[]{category});
-                                    queryConditionValues = this.getMapValues(listMaps);
+                                    queryConditionValues = DataProcessingUtil.getListMapValuesOfOneColumn(listMaps);
                                 break;
                                 case QueryCondition.QUERY_CONDITION_TYPE_DATE:
                                 case QueryCondition.QUERY_CONDITION_TYPE_MONEY:
@@ -324,20 +325,5 @@ public class UserInfoServiceImpl {
         }
         Slf4jLogUtil.get().info("用户密码不正确");
         return false;
-    }
-
-    private String[] getMapValues(List<Map<String, Object>> listMaps) {
-        String[] values = new String[listMaps.size()];
-        int i = 0;
-        for (Map<String, Object> map : listMaps) {
-            for (Map.Entry<String, Object> m : map.entrySet()) {
-                //System.out.print(m.getKey());
-                //System.out.println(m.getValue());
-                values[i] = new String();
-                values[i] = (String) m.getValue();
-                i++;
-            }
-        }
-        return values;
     }
 }

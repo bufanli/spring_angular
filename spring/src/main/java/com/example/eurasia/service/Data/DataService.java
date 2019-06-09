@@ -2,16 +2,14 @@ package com.example.eurasia.service.Data;
 
 import com.example.eurasia.dao.DataDao;
 import com.example.eurasia.entity.Data.*;
+import com.example.eurasia.service.Util.Slf4jLogUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class DataService {
@@ -33,13 +31,19 @@ public class DataService {
     public static final String TABLE_STATISTICS_SETTING_GROUP_BY = "statisticsSettingGroupByTable";
     public static final String TABLE_STATISTICS_SETTING_TYPE = "statisticsSettingTypeTable";
     public static final String TABLE_STATISTICS_SETTING_COMPUTE_BY = "statisticsSettingComputeByTable";
+    public static final String TABLE_COLUMNS_DICTIONARY = "columnsDictionaryTable";
 
     public static final String BEAN_NAME_COLUMNS_DEFAULT_NAME = "columnDefaultName";
     public static final String BEAN_NAME_QUERY_CONDITION_TYPE_NAME = "queryConditionTypeName";
     public static final String BEAN_NAME_QUERY_CONDITION_TYPE_VALUE = "queryConditionTypeValue";
+    public static final String BEAN_NAME_COLUMNS_DICTIONARY_NAME = "columnsDictionaryName";
+
     public static final String STATISTICS_SETTING_GROUP_BY_COLUMN_NAME = "GroupByName";
     public static final String STATISTICS_SETTING_TYPE_COLUMN_NAME = "Type";
     public static final String STATISTICS_SETTING_COMPUTE_BY_COLUMN_NAME = "ComputeByName";
+
+    public static final String COLUMNS_DICTIONARY_SYNONYM = "synonym";
+    public static final String COLUMNS_DICTIONARY_COLUMN_NAME = "columnName";
 
     public static final String STATISTICS_REPORT_PRODUCT_DATE = "日期";
     public static final String STATISTICS_REPORT_PRODUCT_DATE_YEAR = "年";
@@ -62,14 +66,13 @@ public class DataService {
         try {
             ApplicationContext context = new ClassPathXmlApplicationContext("com/example/eurasia/config/applicationContext.xml");
             DataXMLReader dataXMLReader = null;
-            Data dataValue = null;
             if (this.createTable(DataService.TABLE_DATA,DataService.BEAN_NAME_COLUMNS_DEFAULT_NAME) == true) {
 
             }
             if (this.createTable(DataService.TABLE_QUERY_CONDITION_TYPE,DataService.BEAN_NAME_QUERY_CONDITION_TYPE_NAME) == true) {
                 dataXMLReader = (DataXMLReader) context.getBean(DataService.BEAN_NAME_QUERY_CONDITION_TYPE_VALUE);
-                dataValue = new Data(dataXMLReader.getKeyValue());
-                getDataDao().addData(DataService.TABLE_QUERY_CONDITION_TYPE,dataValue);
+                Data queryConditionTypeDataValue = new Data(dataXMLReader.getKeyValue());
+                getDataDao().addData(DataService.TABLE_QUERY_CONDITION_TYPE,queryConditionTypeDataValue);
             }
             Map<String, String> groupByNameType = new LinkedHashMap<String, String>();
             groupByNameType.put(DataService.STATISTICS_SETTING_GROUP_BY_COLUMN_NAME,"VARCHAR(255)");
@@ -100,6 +103,20 @@ public class DataService {
                     getDataDao().addData(DataService.TABLE_STATISTICS_SETTING_COMPUTE_BY,DataService.STATISTICS_SETTING_COMPUTE_BY_COLUMN_NAME,computeByArr[i]);
                 }
             }
+            if (this.createTable(DataService.TABLE_COLUMNS_DICTIONARY,DataService.BEAN_NAME_COLUMNS_DICTIONARY_NAME) == true) {
+                Map<String, String> columnsDicMap = new LinkedHashMap<String, String>();
+                String[] synonymArr = {"进口","商品编码","商品编码2","产品名称","牛肉部位","贸易方式",
+                        "申报单位","货主单位","经营单位","企业代码","进口关区", "原产国"};
+                String[] columnNameArr = {"进出口","海关编码","附加码","商品名称","部位","监管方式",
+                        "申报单位名称","货主单位名称","经营单位名称","申报单位代码","报关口岸", "贸易国"};
+                for (int i=0; i<synonymArr.length; i++) {
+                    columnsDicMap.put(DataService.COLUMNS_DICTIONARY_SYNONYM,synonymArr[i]);
+                    columnsDicMap.put(DataService.COLUMNS_DICTIONARY_COLUMN_NAME,columnNameArr[i]);
+                    Data columnsDicData = new Data(columnsDicMap);
+                    getDataDao().addData(DataService.TABLE_COLUMNS_DICTIONARY,columnsDicData);
+                    columnsDicMap.clear();
+                }
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -125,7 +142,7 @@ public class DataService {
     }
 
     /**
-     * 删除相同数据
+     * 删除表里的相同数据
      * @param
      * @return
      * @exception
@@ -140,6 +157,198 @@ public class DataService {
         int deleteNum = getDataDao().deleteSameData(tableName);//失败时，返回-1
 
         return deleteNum;
+    }
+
+    /**
+     * 删除表里的全部数据
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2019-06-03 00:00:00
+     */
+    public int deleteAllData(String tableName) throws Exception {
+        if (StringUtils.isEmpty(tableName)) {
+            return -1;
+        }
+
+        int deleteNum = getDataDao().deleteAllData(tableName);//失败时，返回-1
+
+        return deleteNum;
+    }
+
+    /**
+     * 保存数据
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-09-20 00:00:00
+     */
+    public int saveDataToSQL(String tableName, List<Data> dataList) throws Exception {
+        int addDataNum = 0;
+        int deleteNum = 0;
+        if (dataList.size() > 0) {
+            for (Data data : dataList) {
+                addDataNum += this.addData(tableName, data);//导入一行数据。
+            }
+            if (addDataNum > 0) {
+                deleteNum = this.deleteSameData(tableName);
+            }
+            int num = addDataNum - deleteNum;//T.B.D
+            return (num < 0) ? 0 : num;
+        } else {
+            return 0;
+        }
+    }
+
+    /**
+     * 添加新字段
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2019-06-07 00:00:00
+     */
+    public int addColumnToSQL(List<String> addColList) throws Exception {
+        if (addColList == null) {
+            return -1;
+        }
+
+        int addColNum = addColList.size();
+        for (String columnName : addColList) {
+            int intoDataNum = getDataDao().addColumn(
+                    DataService.TABLE_DATA, columnName, "VARCHAR(255)");
+            int intoQueryConTypeNum = getDataDao().addColumn(
+                    DataService.TABLE_QUERY_CONDITION_TYPE, columnName, "VARCHAR(20)");
+            int intoStaticSettingGroupByNum = getDataDao().addData(
+                    DataService.TABLE_STATISTICS_SETTING_GROUP_BY,
+                    DataService.STATISTICS_SETTING_GROUP_BY_COLUMN_NAME,
+                    columnName);
+            Slf4jLogUtil.get().info("添加新字段 {} ！",columnName);
+        }
+
+        return addColNum;
+    }
+
+    /**
+     * 删除字段
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2019-06-07 00:00:00
+     */
+    public int deleteColumnFromSQL(Set<String> colsNameSet) throws Exception {
+        if (colsNameSet == null) {
+            return -1;
+        }
+
+        int delColNum = 0;
+        for (String columnName:colsNameSet) {
+            if (this.deleteColumnFromSQL(columnName)) {
+                delColNum++;
+            } else {
+                continue;
+            }
+        }
+        Slf4jLogUtil.get().info("删除共{}条字段！",delColNum);
+        return delColNum;
+    }
+
+    /**
+     * 删除字段
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2019-06-07 00:00:00
+     */
+    public boolean deleteColumnFromSQL(String columnName) throws Exception {
+
+        Long hasDataNum = getDataDao().hasColumnValue(DataService.TABLE_DATA, columnName);
+        if (hasDataNum > 0) {
+            return false;
+        } else {
+            int delDataNum = getDataDao().deleteColumn(DataService.TABLE_DATA, columnName);
+            int delQueryConTypeNum = getDataDao().deleteColumn(DataService.TABLE_QUERY_CONDITION_TYPE, columnName);
+
+            Map<String, String> keyValue = new LinkedHashMap<>();
+            keyValue.put(DataService.TABLE_STATISTICS_SETTING_GROUP_BY, columnName);
+            Data data = new Data(keyValue);
+            int delStaticSettingGroupByNum = getDataDao().deleteData(DataService.TABLE_STATISTICS_SETTING_GROUP_BY, data);
+
+            Slf4jLogUtil.get().info("删除字段 {} ！",columnName);
+            return true;
+        }
+    }
+
+    /**
+     * 判断数据字段名或同义词，是否存在
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-09-20 00:00:00
+     */
+    public List<String> isTitleExist(List<String> titleList) throws Exception {
+
+        boolean isInTableData = false;
+        boolean isInTableColsDicData = false;
+
+        List<String> titleIsNotExistList = new ArrayList<>();
+
+        // 取得数据表的所有列名
+        Set<String> colsNameSet = this.getAllColumnNames(DataService.TABLE_DATA);
+
+        // 取得数据字典表指定列的所有值
+        List<Map<String, Object>> colNamesListMap = this.getColumnAllValues(DataService.TABLE_COLUMNS_DICTIONARY,
+                new String[]{DataService.COLUMNS_DICTIONARY_SYNONYM, DataService.COLUMNS_DICTIONARY_COLUMN_NAME});
+
+        for (int i=0; i<titleList.size(); i++) {
+            isInTableData = false;
+            isInTableColsDicData = false;
+
+            String title = titleList.get(i);
+            if (title.indexOf(" ") == -1) {
+
+            } else {
+                String newTitle = org.apache.commons.lang3.StringUtils.deleteWhitespace(title);
+                titleList.set(i, newTitle);
+            }
+
+            title = titleList.get(i);
+            if (colsNameSet.contains(title)) {//在数据表中找到该字段
+                isInTableData = true;
+            }
+
+            if (isInTableData == false) {
+                //在数据表中没找到该字段
+                for (Map<String, Object> map : colNamesListMap) {//在数据字典表中找该字段
+                    String synonymValue = (String) map.get(DataService.COLUMNS_DICTIONARY_SYNONYM);
+                    if (synonymValue.equals(title)) {//在数据字典表的同义词里找到该字段
+                        isInTableColsDicData = true;
+                        String colNameValue = (String) map.get(DataService.COLUMNS_DICTIONARY_COLUMN_NAME);
+                        //替换同义词
+                        titleList.set(i, colNameValue);
+                        break;
+                    }
+                }
+
+                if (isInTableColsDicData == false) {
+                    //不存在的字段
+                    titleIsNotExistList.add(title);
+                } else {
+                    //存在的字段
+                }
+
+            } else {
+                //在数据表中找到该字段
+            }
+
+        }
+
+        return titleIsNotExistList;
     }
 
     /**
@@ -289,17 +498,17 @@ as不是给表里的字段取别名，而是给查询的结果字段取别名。
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
-    public List<Map<String,String>> getAllHeaders() throws Exception {
-        List<Map<String,String>> headerList = new ArrayList<>();
+    public List<Map<String,String>> getAllColumns() throws Exception {
+        List<Map<String,String>> colsList = new ArrayList<>();
 
         List<Map<String, Object>> colsNameList = getDataDao().queryListForColumnName(DataService.TABLE_DATA);
         for(Map<String,Object> colsName: colsNameList) {
             Map<String,String> nameMap = new LinkedHashMap<String,String>();
             nameMap.put(colsName.get("ORDINAL_POSITION").toString(),colsName.get("COLUMN_NAME").toString());
-            headerList.add(nameMap);
+            colsList.add(nameMap);
         }
 
-        return headerList;
+        return colsList;
     }
 
     /**
@@ -310,19 +519,47 @@ as不是给表里的字段取别名，而是给查询的结果字段取别名。
      * @author FuJia
      * @Time 2018-11-06 00:00:00
      */
-    public List<String> getAllHeaderNames(String tableName) throws Exception {
+    public Set<String> getAllColumnNames(String tableName) throws Exception {
         if (StringUtils.isEmpty(tableName)) {
             return null;
         }
 
-        List<String> headerList = new ArrayList<>();
+        Set<String> colsSet = new HashSet<>();
 
         List<Map<String, Object>> colsNameList = getDataDao().queryListForColumnName(tableName);
         for (Map<String,Object> colsName: colsNameList) {
-            headerList.add(colsName.get("COLUMN_NAME").toString());
+            colsSet.add(colsName.get("COLUMN_NAME").toString());
         }
 
-        return headerList;
+        return colsSet;
+    }
+
+    /**
+     * 取得指定表的所有表头[名字],不包括id
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2019-06-03 00:00:00
+     */
+    public List<String> getAllColumnNamesWithoutID(String tableName) throws Exception {
+        if (StringUtils.isEmpty(tableName)) {
+            return null;
+        }
+
+        List<String> colsList = new ArrayList<>();
+
+        List<Map<String, Object>> colsNameList = getDataDao().queryListForColumnName(tableName);
+        for (Map<String,Object> colsName: colsNameList) {
+            String colName = colsName.get("COLUMN_NAME").toString();
+            if (colName.equals("id")) {
+                continue;
+            } else {
+                colsList.add(colName);
+            }
+        }
+
+        return colsList;
     }
 
     /**
@@ -425,7 +662,6 @@ as不是给表里的字段取别名，而是给查询的结果字段取别名。
         return getDataDao().queryTableRows(tableName,queryConditions).longValue();
     }
 
-
     /**
      * 取得指定列的所有的值
      * @param
@@ -438,4 +674,21 @@ as不是给表里的字段取别名，而是给查询的结果字段取别名。
 
         return getDataDao().queryListForColumnValues(tableName,columnNames);
     }
+
+    /**
+     * 取得条件列条件值所对应指定列的所有的值
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-09-20 00:00:00
+     */
+    public List<Map<String, Object>> queryListForValuesIfs(String tableName,
+                                                           String[] selectionCols,
+                                                           String criterionCol,
+                                                           String criterionValue) throws Exception {
+
+        return getDataDao().queryListForValuesIfs(tableName, selectionCols, criterionCol, criterionValue);
+    }
+
 }

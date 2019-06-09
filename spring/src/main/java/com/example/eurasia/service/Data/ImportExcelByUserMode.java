@@ -35,6 +35,7 @@ public class ImportExcelByUserMode {
     private ImportExcelRowReader rowReader;
 
     public String readExcelFile(File file) throws Exception {
+        Slf4jLogUtil.get().info("UserModel读取文件:" + file.getName());
 
         InputStream inputStream = null;//初始化输入流
         Workbook workbook = null;//根据版本选择创建Workbook的方式
@@ -76,10 +77,11 @@ public class ImportExcelByUserMode {
             Sheet sheet = workbook.getSheetAt(m);//得到第一个sheet
             if (sheet == null) {
                 Slf4jLogUtil.get().error("第{}/{}个sheet有问题，请仔细检查。sheet名：{}",(m+1),numSheets,sheet.getSheetName());
+                msg.append("第" + (m+1) +"/" + numSheets + "个sheet有问题，请仔细检查。sheet名：" + sheet.getSheetName());
                 continue;
             }
             Slf4jLogUtil.get().info("第{}/{}个sheet开始读取,sheet名:{}",(m+1),numSheets,sheet.getSheetName());
-            msg = this.readExcelFileSheet(sheet);//读一个sheet内容
+            msg.append(this.readExcelFileSheet(sheet));//读一个sheet内容
             Slf4jLogUtil.get().info("第{}/{}个sheet读取结束,sheet名:{}",(m+1),numSheets,sheet.getSheetName());
         }
         return msg.toString();
@@ -110,10 +112,14 @@ public class ImportExcelByUserMode {
         if (titleList.size() != 0) {
             //读取内容(从第二行开始)
             StringBuffer dataErrMsg = this.readExcelFileSheetDataRow(sheet, titleList, dataList);
-
-            int addDataNum = this.rowReader.saveDataToSQL(DataService.TABLE_DATA, dataList);//导入数据。
-            Slf4jLogUtil.get().info("导入成功，共{}条数据！",addDataNum);
-            sheetMsg.append("导入成功，共" + addDataNum + "条数据！");
+            if (dataErrMsg.length()>0) {
+                Slf4jLogUtil.get().info("导入数据内容失败,{}!",dataErrMsg);
+                sheetMsg.append("导入数据内容失败," + dataErrMsg);
+            } else {
+                int addDataNum = this.rowReader.saveDataToSQL(DataService.TABLE_DATA, dataList);//导入数据。
+                Slf4jLogUtil.get().info("导入成功，共{}条数据！",addDataNum);
+                sheetMsg.append("导入成功，共" + addDataNum + "条数据！");
+            }
         } else {
             sheetMsg.append(titleErrMsg);
         }
@@ -284,7 +290,7 @@ public class ImportExcelByUserMode {
         try {
             Slf4jLogUtil.get().info("文件上传，取得表头开始");
 
-            colsNameList = dataService.getAllHeaders();
+            colsNameList = dataService.getAllColumns();
             if (colsNameList == null) {
                 throw new Exception(ResponseCodeEnum.UPLOAD_GET_HEADER_INFO_FROM_SQL_NULL.getMessage());
             }

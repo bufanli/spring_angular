@@ -4,7 +4,7 @@ public enum ResponseCodeEnum {
     /* 系统通用 */
     SYSTEM_OPERATE_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "操作成功"),
     SYSTEM_OPERATE_FAILED(ResponseCode.RESPONSE_CODE_NG, "操作失败"),
-    SYSTEM_LOGIN_FAILED(ResponseCode.RESPONSE_CODE_NG, "登录失败"),
+    SYSTEM_LOGIN_FAILED(ResponseCode.RESPONSE_CODE_SESSION_TIMEOUT, "登录失败"),
     SYSTEM_LOGIN_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "登录成功"),
     SYSTEM_LOGIN_ING(ResponseCode.RESPONSE_CODE_ING, "用户登陆中"),
     SYSTEM_LOGIN_ING_INFO_FAILED(ResponseCode.RESPONSE_CODE_NG, "用户登陆中,但用户信息获取失败"),
@@ -184,10 +184,14 @@ public enum ResponseCodeEnum {
     UPLOAD_GET_HEADER_INFO_FROM_SQL_ZERO(ResponseCode.RESPONSE_CODE_OK, "上传文件时,从数据库取得表头信息为0"),
 
     /* 读取上传文件 */
-    READ_UPLOADED_FILE_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "读取上传文件成功"),
-    READ_UPLOADED_FILE_FAILED(ResponseCode.RESPONSE_CODE_NG, "读取上传文件失败"),
+    READ_UPLOADED_FILE_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "读取上传文件完成"),
+    READ_UPLOADED_FILE_FAILED(ResponseCode.RESPONSE_CODE_NG, "读取上传文件异常"),
 
     /* 添加数据 */
+
+    /* 删除数据 */
+    DELETE_COLUMN_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "删除字段成功"),
+    DELETE_COLUMN_FAILED(ResponseCode.RESPONSE_CODE_NG, "删除字段失败"),
 
     /* 导出数据 */
     EXPORT_GET_HEADER_INFO_FROM_SQL_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "导出数据时,从数据库取得表头信息成功"),
@@ -201,6 +205,13 @@ public enum ResponseCodeEnum {
     EXPORT_DATA_INFO_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "导出数据成功"),
     EXPORT_DATA_INFO_FAILED(ResponseCode.RESPONSE_CODE_NG, "导出数据成功"),
     EXPORT_DATA_FILE_NAME_NULL(ResponseCode.RESPONSE_CODE_NG, "导出文件名字为NULL"),
+
+    /* 数据字段的词典 */
+    GET_COLUMNS_DICTIONARY_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "取得数据字段的词典成功"),
+    GET_COLUMNS_DICTIONARY_FAILED(ResponseCode.RESPONSE_CODE_NG, "取得数据字段的词典失败"),
+    GET_COLUMNS_DICTIONARY_GET_HEADER_INFO_FROM_SQL_NULL(ResponseCode.RESPONSE_CODE_NULL, "取得数据字段的词典时,从数据库取得表头信息为NULL"),
+    SET_COLUMNS_DICTIONARY_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "保存数据字段的词典成功"),
+    SET_COLUMNS_DICTIONARY_FAILED(ResponseCode.RESPONSE_CODE_NG, "保存数据字段的词典失败"),
 
     /* 取得查询条件 */
 
@@ -228,8 +239,9 @@ public enum ResponseCodeEnum {
     private static class ResponseCode {
         private static final Integer RESPONSE_CODE_END = 000;
         private static final Integer RESPONSE_CODE_OK = 200;
-        private static final Integer RESPONSE_CODE_NG = 201;//Session Timeout
+        private static final Integer RESPONSE_CODE_SESSION_TIMEOUT = 201;//Session Timeout
         private static final Integer RESPONSE_CODE_NULL = 202;
+        private static final Integer RESPONSE_CODE_NG = 203;
         private static final Integer RESPONSE_CODE_USER_ADD_CHECK_NG = 203;//添加用户时，信息判断
         private static final Integer RESPONSE_CODE_USER_ADD_NG = 204;//添加用户失败
         private static final Integer RESPONSE_CODE_USER_UPDATE_CHECK_NG = 204;//更新用户时，信息判断

@@ -203,7 +203,7 @@ REPLACE INTO `table` (`unique_column`,`num`) VALUES ('$unique_value',$num);
             sql.append(CommonDao.COMMA);
         }
         sql.deleteCharAt(sql.length() - CommonDao.COMMA.length());
-        sql.append(" where userID = " + "'" + userID + "'");
+        sql.append(" where userID = '" + userID + "'");
 
         int num = getJdbcTemplate().update(sql.toString());
         return num;

@@ -23,7 +23,6 @@ import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 /*
@@ -60,6 +59,10 @@ public class Excel2007Reader implements IExcelReaderByEventMode {
         return this.message;
     }
 
+    public void clearMessage() {
+        this.message.setLength(0);
+    }
+
     @Override
     public void processAllSheets(InputStream inputStream) throws Exception {
         OPCPackage pkg = OPCPackage.open(inputStream);
@@ -75,7 +78,8 @@ public class Excel2007Reader implements IExcelReaderByEventMode {
              * 每个sheet的InputStream只有从Iterator获取时才会打开。
              * 解析完每个sheet时关闭InputStream。
              * */
-            Iterator<InputStream> sheets = r.getSheetsData();
+            //Iterator<InputStream> sheets = r.getSheetsData();
+            XSSFReader.SheetIterator sheets = (XSSFReader.SheetIterator)r.getSheetsData();
             while (sheets.hasNext()) {
                 Slf4jLogUtil.get().info("Processing new sheet.");
                 this.sheetIndex++;
@@ -89,11 +93,19 @@ public class Excel2007Reader implements IExcelReaderByEventMode {
                 // 解析sheet: com.sun.org.apache.xerces.internal.jaxp.SAXParserImpl:522
                 parser.parse(sheetSource);
 
-                int addDataNum = this.rowReader.saveDataToSQL(DataService.TABLE_DATA);//导入数据。
-                Slf4jLogUtil.get().info("导入成功，共{}条数据！", addDataNum);
-                this.message.append("导入成功，共" + addDataNum + "条数据！");
-                //清空保存前一个Sheet页内容用的List
-                this.rowReader.clearDataList();
+                if (this.rowReader.getTitleIsNotExistList().size() == 0) {
+                    int addDataNum = this.rowReader.saveDataToSQL(DataService.TABLE_DATA);//导入数据。
+                    Slf4jLogUtil.get().info("Sheet[{}]导入成功，共{}条数据！",sheets.getSheetName(),addDataNum);
+                    this.message.append("Sheet[" + sheets.getSheetName() + "]导入成功，共" + addDataNum + "条数据！");
+
+                    //清空保存前一个Sheet页内容用的List
+                    this.rowReader.clearDataList();
+                } else {
+                    String titleIsNotExist = this.rowReader.titleIsNotExistListToString();
+                    Slf4jLogUtil.get().info("Sheet[{}]导入失败，{}在数据库中不存在！",sheets.getSheetName(),titleIsNotExist);
+                    this.message.append("Sheet[" + sheets.getSheetName() + "]导入失败，" + titleIsNotExist + " 在数据库中不存在！");
+                }
+                this.rowReader.clearTitleIsNotExistList();
 
             }
         } catch (Exception e) {
@@ -101,6 +113,26 @@ public class Excel2007Reader implements IExcelReaderByEventMode {
             throw new Exception();
         } finally {
             pkg.close();
+        }
+    }
+
+    public void waitEndDocument() {
+        try {
+            synchronized (this) {
+                System.out.println("begin wait() ThreadName=" + Thread.currentThread().getName());
+                this.wait();
+                System.out.println("end wait() ThreadName=" + Thread.currentThread().getName());
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void notifyEndDocument() {
+        synchronized (this) {
+            System.out.println("begin notify() ThreadName=" + Thread.currentThread().getName());
+            this.notifyAll();
+            System.out.println("end notify() ThreadName=" + Thread.currentThread().getName());
         }
     }
 
@@ -141,7 +173,7 @@ public class Excel2007Reader implements IExcelReaderByEventMode {
         private boolean nullRowFlag = true;
 
         //行数据保存
-        private List<String> rowList = new ArrayList<String>();;
+        private List<String> rowList = new ArrayList<String>();
 
         private int curRow = -1;
         private int curCol = -1;
@@ -284,6 +316,16 @@ public class Excel2007Reader implements IExcelReaderByEventMode {
             }
         }
 
+        @Override
+        public void startDocument() throws SAXException {
+
+        }
+
+        @Override
+        public void endDocument() throws SAXException {
+
+        }
+
        /**
          * 第二个执行
          * 得到单元格对应的索引值或是内容值
@@ -365,24 +407,29 @@ public class Excel2007Reader implements IExcelReaderByEventMode {
             } else if ("str".equals(cellType)) {
                 this.cellDataType = CellDataType.FORMULA;
             } else if (null == cellType) {
-                this.cellDataType = CellDataType.NUMBER;                //cellType为空，则表示该单元格类型为数字
 
-                int styleIndex = Integer.parseInt(cellStyleStr);
-                XSSFCellStyle style = this.st.getStyleAt(styleIndex);
-                this.formatIndex = style.getDataFormat();
-                this.formatString = style.getDataFormatString();
-                if (this.formatIndex == 14) {//处理日期
-                    if (this.formatString == null) {
-                        this.cellDataType = CellDataType.NULL;
-                        this.formatString = BuiltinFormats.getBuiltinFormat(this.formatIndex);
-                    } else {
-                        if (this.formatString.contains("m/d/yy")) {
-                            this.cellDataType = CellDataType.DATE;
-                            this.formatString = QueryCondition.PRODUCT_DATE_FORMAT;
-                        }
-                    }
+                if (null == cellStyleStr) {
+                    this.cellDataType = CellDataType.SSTINDEX;
                 } else {
+                    this.cellDataType = CellDataType.NUMBER;                //cellType为空，则表示该单元格类型为数字
 
+                    int styleIndex = Integer.parseInt(cellStyleStr);
+                    XSSFCellStyle style = this.st.getStyleAt(styleIndex);
+                    this.formatIndex = style.getDataFormat();
+                    this.formatString = style.getDataFormatString();
+                    if (this.formatIndex == 14) {//处理日期
+                        if (this.formatString == null) {
+                            this.cellDataType = CellDataType.NULL;
+                            this.formatString = BuiltinFormats.getBuiltinFormat(this.formatIndex);
+                        } else {
+                            if (this.formatString.contains("m/d/yy")) {
+                                this.cellDataType = CellDataType.DATE;
+                                this.formatString = QueryCondition.PRODUCT_DATE_FORMAT;
+                            }
+                        }
+                    } else {
+
+                    }
                 }
 
             }

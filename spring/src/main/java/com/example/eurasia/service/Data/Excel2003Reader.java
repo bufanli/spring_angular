@@ -103,6 +103,10 @@ public class Excel2003Reader implements HSSFListener,IExcelReaderByEventMode {
         return this.message;
     }
 
+    public void clearMessage() {
+        this.message.setLength(0);
+    }
+
     /**
      * 遍历excel下所有的sheet
      * @throws IOException
@@ -341,16 +345,23 @@ public class Excel2003Reader implements HSSFListener,IExcelReaderByEventMode {
 
                 //前一个Sheet页内容
                 if (this.sheetIndex > -1) {
-                    int addDataNum = 0;
                     try {
-                        addDataNum = this.rowReader.saveDataToSQL(DataService.TABLE_DATA);//导入数据。
+                        if (this.rowReader.getTitleIsNotExistList().size() == 0) {
+                            int addDataNum = this.rowReader.saveDataToSQL(DataService.TABLE_DATA);//导入数据。
+                            Slf4jLogUtil.get().info("Sheet[{}]导入成功，共{}条数据！",this.currentSheetName,addDataNum);
+                            this.message.append("Sheet[" + this.currentSheetName + "]导入成功，共" + addDataNum + "条数据！");
+
+                            //清空保存前一个Sheet页内容用的List
+                            this.rowReader.clearDataList();
+                        } else {
+                            String titleIsNotExist = this.rowReader.titleIsNotExistListToString();
+                            Slf4jLogUtil.get().info("Sheet[{}]导入失败，{}在数据库中不存在！",this.currentSheetName,titleIsNotExist);
+                            this.message.append("Sheet[" + this.currentSheetName + "]导入失败，" + titleIsNotExist + " 在数据库中不存在！");
+                        }
+                        this.rowReader.clearTitleIsNotExistList();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    Slf4jLogUtil.get().info("导入成功，共{}条数据！",addDataNum);
-                    this.message.append("导入成功，共" + addDataNum + "条数据！");
-                    //清空保存前一个Sheet页内容用的List
-                    this.rowReader.clearDataList();
                 }
                 break;
             default:

@@ -1,22 +1,31 @@
 package com.example.eurasia.service.Data;
 
+import com.example.eurasia.entity.Data.ColumnsDictionary;
+import com.example.eurasia.entity.Data.Data;
 import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;
 import com.example.eurasia.service.Util.Slf4jLogUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.*;
 
 //@Slf4j
 /*@Transactional(readOnly = true)事物注解*/
 @Service("UploadFileServiceImpl")
 @Component
 public class UploadFileServiceImpl implements IUploadFileService {
+
+    //注入DataService服务对象
+    @Qualifier("dataService")
+    @Autowired
+    private DataService dataService;
 
     @Autowired
     private ImportExcelByUserMode importExcelByUserMode;
@@ -126,7 +135,7 @@ public class UploadFileServiceImpl implements IUploadFileService {
 
                 try {
                     if (ImportExcelUtils.isExcelFileValidata(files[i]) == true) {
-                        //responseRead = importExcelByUserMode.readExcelFile(files[i]);
+                        //responseRead = importExcelByUserMode.readExcelFile(files[i]);//T.B.D UserMode，没有check列名的同义词
                         responseRead = importExcelByEventMode.readExcelFile(files[i]);
                     } else {
                         fileNGNum++;
@@ -157,15 +166,15 @@ public class UploadFileServiceImpl implements IUploadFileService {
         }
 
         if (fileNGNum == 0) {
-            responseMsg.append(fileOKNum + "个文件读取成功。");
+            responseMsg.append(fileOKNum + "个文件读取完成。");
             responseOK.delete((responseOK.length() - DataService.BR.length()),responseOK.length());
             responseResult = new ResponseResultUtil().success(ResponseCodeEnum.READ_UPLOADED_FILE_SUCCESS.getCode(), responseMsg.toString(), responseOK.toString());
         } else if (fileOKNum == 0 && fileNGNum != 0) {
-            responseMsg.append(fileNGNum + "个文件读取失败。");
+            responseMsg.append(fileNGNum + "个文件读取异常。");
             responseNG.delete((responseNG.length() - DataService.BR.length()),responseNG.length());
             responseResult = new ResponseResultUtil().error(ResponseCodeEnum.READ_UPLOADED_FILE_FAILED.getCode(), responseMsg.toString(), responseNG.toString());
         } else {
-            responseMsg.append(fileOKNum + "个文件读取成功," + fileNGNum + "个文件读取失败。");
+            responseMsg.append(fileOKNum + "个文件读取完成," + fileNGNum + "个文件读取异常。");
             responseOK.delete((responseOK.length() - DataService.BR.length()),responseOK.length());
             responseNG.delete((responseNG.length() - DataService.BR.length()),responseNG.length());
 
@@ -174,6 +183,129 @@ public class UploadFileServiceImpl implements IUploadFileService {
             responseNGArr[1] = responseNG.toString();
 
             responseResult = new ResponseResultUtil().error(ResponseCodeEnum.READ_UPLOADED_FILE_FAILED.getCode(), responseMsg.toString(), responseNGArr);
+        }
+        return responseResult;
+    }
+
+    @Override
+    public ResponseResult getColumnsDictionary() throws Exception {
+        ResponseResult responseResult;
+        // 取得数据表的所有列名
+        List<String> colsNameList = dataService.getAllColumnNamesWithoutID(DataService.TABLE_DATA);
+        if (colsNameList == null) {
+            throw new Exception(ResponseCodeEnum.GET_COLUMNS_DICTIONARY_GET_HEADER_INFO_FROM_SQL_NULL.getMessage());
+        }
+
+        // 取得数据字典表指定列的所有值
+        List<Map<String, Object>> colNamesListMap = dataService.getColumnAllValues(DataService.TABLE_COLUMNS_DICTIONARY,
+                new String[]{DataService.COLUMNS_DICTIONARY_SYNONYM, DataService.COLUMNS_DICTIONARY_COLUMN_NAME});
+
+        // 组成数据字典实例数组
+        ColumnsDictionary[] columnsDictionary = new ColumnsDictionary[colsNameList.size()];
+        for (int i=0; i<colsNameList.size(); i++) {
+            // init each column dictionary
+            columnsDictionary[i] = new ColumnsDictionary();
+            String columnName = colsNameList.get(i);//原词(数据库字段名)
+            List<String> synonymList = new ArrayList<>();
+
+            for (Map<String, Object> map : colNamesListMap) {
+                String colNameValue = (String) map.get(DataService.COLUMNS_DICTIONARY_COLUMN_NAME);
+                if (colNameValue.equals(columnName)) {//在该Map里找到指定原词
+                    String synonymValue = (String) map.get(DataService.COLUMNS_DICTIONARY_SYNONYM);
+                    synonymList.add(synonymValue);
+                }
+            }
+            String[] synonyms = new String[synonymList.size()];//同义词
+            synonymList.toArray(synonyms);
+
+            columnsDictionary[i].setColumnName(columnName);
+            columnsDictionary[i].setSynonyms(synonyms);
+        }
+        responseResult = new ResponseResultUtil().success(ResponseCodeEnum.GET_COLUMNS_DICTIONARY_SUCCESS, columnsDictionary);
+        return responseResult;
+    }
+
+    @Override
+    public ResponseResult setColumnsDictionary(ColumnsDictionary[] columnsDictionaryArr) throws Exception {
+        ResponseResult responseResult;
+
+        List<Data> dataList = new ArrayList<>();
+        Map<String, String> keyValue = new LinkedHashMap<>();
+        List<String> addColList = new ArrayList<>();
+
+        try {
+            // 需要保存的数据词典的所有列名
+            Set<String> newColsNameSet = new HashSet<>();
+
+            // 取得数据表的所有列名
+            Set<String> colsNameSet = dataService.getAllColumnNames(DataService.TABLE_DATA);
+
+            for (ColumnsDictionary columnsDictionary : columnsDictionaryArr) {
+                String columnName = columnsDictionary.getColumnName();
+                newColsNameSet.add(columnName);
+
+                if (colsNameSet.contains(columnName)) {
+
+                } else {
+                    Slf4jLogUtil.get().info("添加新的字段！");
+                    addColList.add(columnName);
+                }
+
+                for (String synonym : columnsDictionary.getSynonyms()) {
+                    keyValue.put(DataService.COLUMNS_DICTIONARY_SYNONYM, synonym);
+                    keyValue.put(DataService.COLUMNS_DICTIONARY_COLUMN_NAME, columnName);
+                    Data data = new Data(keyValue);
+                    dataList.add(data);
+                    keyValue.clear();
+                }
+            }
+
+            // 删除字段
+            for (String columnName:colsNameSet) {
+                if (newColsNameSet.contains(columnName)) {
+
+                } else {
+                    if (dataService.deleteColumnFromSQL(columnName)) {
+                        Slf4jLogUtil.get().info("删除字段 {} 成功！",columnName);
+                    } else {
+                        Slf4jLogUtil.get().info("删除字段 {} 失败！",columnName);
+                    }
+                }
+            }
+
+            // 添加新字段
+            int addColNum = dataService.addColumnToSQL(addColList);
+            Slf4jLogUtil.get().info("添加共{}条新字段！",addColList.size());
+
+            // 保存词典
+            int deleteNum = dataService.deleteAllData(DataService.TABLE_COLUMNS_DICTIONARY);
+            int addDataNum = dataService.saveDataToSQL(DataService.TABLE_COLUMNS_DICTIONARY, dataList);
+            Slf4jLogUtil.get().info("导入数据词典成功，共{}条数据！",addDataNum);
+
+            responseResult = new ResponseResultUtil().success(ResponseCodeEnum.SET_COLUMNS_DICTIONARY_SUCCESS);
+        } catch (Exception e) {
+            e.printStackTrace();
+            responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SET_COLUMNS_DICTIONARY_FAILED);
+        }
+
+        return responseResult;
+    }
+
+    @Override
+    public ResponseResult deleteColumn(String columnName) throws Exception {
+        ResponseResult responseResult;
+        try {
+            if (dataService.deleteColumnFromSQL(columnName)) {
+                Slf4jLogUtil.get().info("删除字段 {} 成功！",columnName);
+                responseResult = new ResponseResultUtil().success(ResponseCodeEnum.DELETE_COLUMN_SUCCESS);
+            } else {
+                Slf4jLogUtil.get().info("删除字段 {} 失败！",columnName);
+                responseResult = new ResponseResultUtil().success(ResponseCodeEnum.DELETE_COLUMN_FAILED);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            responseResult = new ResponseResultUtil().error(ResponseCodeEnum.DELETE_COLUMN_FAILED);
         }
         return responseResult;
     }

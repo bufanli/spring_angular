@@ -11,5 +11,6 @@ import java.io.InputStream;
  */
 public interface IExcelReaderByEventMode {
     StringBuffer getMessage();
+    void clearMessage();
     void processAllSheets(InputStream inputStream) throws Exception;
 }
