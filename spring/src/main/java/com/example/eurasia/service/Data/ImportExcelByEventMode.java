@@ -28,10 +28,13 @@ public class ImportExcelByEventMode {
             if (ImportExcelUtils.isExcel2003(file.toString())) {
                 excel2003Reader.processAllSheets(inputStream);
                 msg = excel2003Reader.getMessage();
+                excel2003Reader.clearMessage();
             } else if (ImportExcelUtils.isExcel2007(file.toString())) {
                 excel2007Reader.processAllSheets(inputStream);
                 msg = excel2007Reader.getMessage();
+                excel2007Reader.clearMessage();
             }
+            msg.setLength(0);
 
         } catch (IOException e) {
             e.printStackTrace();

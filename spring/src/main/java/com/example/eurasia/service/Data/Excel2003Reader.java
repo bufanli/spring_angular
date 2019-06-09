@@ -103,6 +103,10 @@ public class Excel2003Reader implements HSSFListener,IExcelReaderByEventMode {
         return this.message;
     }
 
+    public void clearMessage() {
+        this.message.setLength(0);
+    }
+
     /**
      * 遍历excel下所有的sheet
      * @throws IOException

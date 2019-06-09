@@ -59,6 +59,10 @@ public class Excel2007Reader implements IExcelReaderByEventMode {
         return this.message;
     }
 
+    public void clearMessage() {
+        this.message.setLength(0);
+    }
+
     @Override
     public void processAllSheets(InputStream inputStream) throws Exception {
         OPCPackage pkg = OPCPackage.open(inputStream);
