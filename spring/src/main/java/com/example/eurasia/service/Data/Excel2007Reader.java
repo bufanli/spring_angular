@@ -92,8 +92,7 @@ public class Excel2007Reader implements IExcelReaderByEventMode {
 
                 // 解析sheet: com.sun.org.apache.xerces.internal.jaxp.SAXParserImpl:522
                 parser.parse(sheetSource);
-                
-                this.rowReader.clearTitleIsNotExistList();
+
                 if (this.rowReader.getTitleIsNotExistList().size() == 0) {
                     int addDataNum = this.rowReader.saveDataToSQL(DataService.TABLE_DATA);//导入数据。
                     Slf4jLogUtil.get().info("Sheet[{}]导入成功，共{}条数据！",sheets.getSheetName(),addDataNum);
@@ -106,6 +105,7 @@ public class Excel2007Reader implements IExcelReaderByEventMode {
                     Slf4jLogUtil.get().info("Sheet[{}]导入失败，{}在数据库中不存在！",sheets.getSheetName(),titleIsNotExist);
                     this.message.append("Sheet[" + sheets.getSheetName() + "]导入失败，" + titleIsNotExist + " 在数据库中不存在！");
                 }
+                this.rowReader.clearTitleIsNotExistList();
 
             }
         } catch (Exception e) {
