@@ -222,11 +222,11 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
         index = i;
         break;
       }
-      if (index !== -1) {
-        this.columnsDictionaries.splice(index, 1);
-      } else {
-        // nothing to do because it is impossible here
-      }
+    }
+    if (index !== -1) {
+      this.columnsDictionaries.splice(index, 1);
+    } else {
+      // nothing to do because it is impossible here
     }
     // set deleting flag
     this.isDeletingColumn = true;
