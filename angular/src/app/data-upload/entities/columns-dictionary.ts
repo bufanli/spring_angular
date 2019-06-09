@@ -37,10 +37,10 @@ export class ColumnsDictionary {
     return cloned;
   }
   // remove specified synonym
-  public removeSpecifiedSynonym(specifiedSynonym: string): void {
+  public removeSpecifiedStartSynonym(specifiedStartSynonym: string): void {
     let index = -1;
     for (let i = 0; i < this.synonyms.length; i++) {
-      if (this.synonyms[i] === specifiedSynonym) {
+      if (this.synonyms[i].startsWith(specifiedStartSynonym)) {
         index = i;
         break;
       }

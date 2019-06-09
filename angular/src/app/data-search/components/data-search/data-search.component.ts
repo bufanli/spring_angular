@@ -131,6 +131,7 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
   }
 
   constructor(private http: HttpClient,
+// tslint:disable-next-line: deprecation
     private downloadHttp: Http,
     private commonUtilitiesService: CommonUtilitiesService,
     private currentUserContainer: CurrentUserContainerService,

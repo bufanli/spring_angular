@@ -24,7 +24,7 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
   public readonly fieldName = 'synonym';
   private readonly getColumnDictionaryURL = 'api/getColumnsDictionary';
   private readonly DELETE_COLUMN_TITLE = '删除';
-  private readonly DELETE_COLUMN_NAME = 'delete_column';
+  private readonly DELETE_COLUMN_NAME = 'deletecolumn_';
   private readonly ADD_COLUMN_NAME = 'add_column';
   private readonly ADD_COLUMN_TITLE = '添加';
   private readonly ADD_COLUMN_HEADER = '添加自定义列';
@@ -98,7 +98,7 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
   private addDeleteLinkToColumnsWithoutSynonyms(): void {
     this.columnsDictionaries.forEach(element => {
       if (element.getSynonyms().length === 0) {
-        element.getSynonyms().push(this.DELETE_COLUMN_NAME);
+        element.getSynonyms().push(this.DELETE_COLUMN_NAME + element.getUUID());
       }
     });
   }
@@ -170,9 +170,9 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
       const addCustomColumnId = 'addcolumn' + columnDictionary.getUUID();
       $('#' + addCustomColumnId).on('click', that, function () { return that.addCustomColumnHandler(); });
     } else {
-      if (synonyms.length === 1 && synonyms[0] === this.DELETE_COLUMN_NAME) {
+      if (synonyms.length === 1 && synonyms[0].startsWith(this.DELETE_COLUMN_NAME)) {
         // if this is delete column link
-        const deleteColumnId = 'deletecolumn_' + columnDictionary.getUUID();
+        const deleteColumnId = this.DELETE_COLUMN_NAME + columnDictionary.getUUID();
         $('#' + deleteColumnId).on('click', that, function () {
           return that.deleteColumnHandler(columnDictionary.getUUID());
         });
@@ -285,7 +285,7 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
       // generate id as %method%uuid%index
       const modifySynonymId = 'modify_' + uuid + '_' + index;
       const deleteSynonymId = 'delete_' + uuid + '_' + index;
-      const deleteColumnId = 'deletecolumn_' + uuid;
+      const deleteColumnId = this.DELETE_COLUMN_NAME + uuid;
       const addColumnId = 'addcolumn' + uuid;
       if (value === this.ADD_COLUMN_NAME) {
         return [
@@ -294,7 +294,7 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
           '<span class="glyphicon glyphicon-plus"></span>&nbsp&nbsp' + this.ADD_COLUMN_TITLE + '</a>',
           '</div>',
         ].join('');
-      } else if (value === this.DELETE_COLUMN_NAME) {
+      } else if (value.startsWith(this.DELETE_COLUMN_NAME)) {
         return [
           '<div style="float:left">',
           '<a id=' + deleteColumnId + ' href="javascript:void()">',
@@ -317,6 +317,12 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
   }
   // find uuid of synonyms
   private findUUIDOfSynonyms(synonymTarget: string): string {
+    if (synonymTarget.startsWith(this.DELETE_COLUMN_NAME)) {
+      // if it starts with add_column, it must be the formula of delete_column_%uuid%
+      // so after splitting, return idPart[1]
+      const idParts = synonymTarget.split('_');
+      return idParts[1];
+    }
     let uuid = '';
     for (let i = 0; i < this.columnsDictionaries.length; i++) {
       const element = this.columnsDictionaries[i];

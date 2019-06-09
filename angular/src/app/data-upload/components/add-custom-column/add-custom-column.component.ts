@@ -17,6 +17,7 @@ export class AddCustomColumnComponent implements OnInit {
   public readonly CUSTOM_COLUMN_EMPTY = '自定义列为空,请输入自定义列';
   public readonly CUSTOM_COLUMN_EXIST = '该自定义列已经存在';
   public readonly COSTOM_COLUMN_SAVED = '该自定义列已经保存';
+  private readonly DELETE_COLUMN_NAME = 'delete_column_';
   // column
   public column: string = null;
   // synonym error
@@ -51,18 +52,6 @@ export class AddCustomColumnComponent implements OnInit {
   public onEnterCustomColumn(event: any): void {
     this.clearErrorMsg();
     this.clearInfoMsg();
-    // check whether input column is empty or not
-    if (this.column === '') {
-      this.errorExist = true;
-      this.errorMsg = this.CUSTOM_COLUMN_EMPTY;
-      return;
-    }
-    // check whether column exists or not
-    if (this.columnExists() === true) {
-      this.errorExist = true;
-      this.errorMsg = this.CUSTOM_COLUMN_EXIST;
-      return;
-    }
   }
   // check whether column exist or not
   public columnExists(): boolean {
@@ -85,6 +74,20 @@ export class AddCustomColumnComponent implements OnInit {
   }
   // save synonym dictionaries
   public saveColumnDictionaries(): void {
+    // check whether input column is empty or not
+    if (this.column === '') {
+      this.errorExist = true;
+      this.errorMsg = this.CUSTOM_COLUMN_EMPTY;
+      return;
+    }
+    // check whether column exists or not
+    if (this.columnExists() === true) {
+      this.errorExist = true;
+      this.errorMsg = this.CUSTOM_COLUMN_EXIST;
+      return;
+    }
+    // update column dictionaries
+    this.updateColumnDictionaries();
     // set column dictionaries
     this.saveColumnSynonymService.setColumnDictionaries(this.columnDictionaries);
     // set save end callback
@@ -99,19 +102,23 @@ export class AddCustomColumnComponent implements OnInit {
     } else if (httpResponse.code === 200) {
       this.infoExist = true;
       this.infoMsg = this.COSTOM_COLUMN_SAVED;
-      // update column dictionaries
-      // 1. popup the last column dictionary
-      const lastColumnDictionary = this.columnDictionaries.pop();
-      // 2. push the new custom column
-      const customColumn = new ColumnsDictionary(
-        this.column,
-        []);
-      this.columnDictionaries.push(customColumn);
-      // 3. push back the last element
-      this.columnDictionaries.push(lastColumnDictionary);
     } else {
       this.errorExist = true;
       this.errorMsg = httpResponse.message;
     }
+  }
+  // update synonym dictionaries
+  private updateColumnDictionaries(): void {
+    // update column dictionaries
+    // 1. popup the last column dictionary
+    const lastColumnDictionary = this.columnDictionaries.pop();
+    // 2. push the new custom column
+    const customColumn = new ColumnsDictionary(
+      this.column,
+      // add delete column link because it must have no synonym in that time
+      [this.DELETE_COLUMN_NAME]);
+    this.columnDictionaries.push(customColumn);
+    // 3. push back the last element
+    this.columnDictionaries.push(lastColumnDictionary);
   }
 }

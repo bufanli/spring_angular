@@ -4,7 +4,6 @@ import { SaveColumnDictionaryCallback } from '../interfaces/save-column-dictiona
 import { Observable } from 'rxjs';
 import { HttpResponse } from 'src/app/common/entities/http-response';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { ChildActivationEnd } from '@angular/router';
 
 // json header for post
 const httpOptions = {
@@ -20,7 +19,7 @@ export class SaveColumnSynonymsService {
   private columnDictionaries: ColumnsDictionary[] = null;
   // save end callback
   private saveEndCallback: SaveColumnDictionaryCallback = null;
-  private readonly DELETE_COLUMN_NAME = 'delete_column';
+  private readonly DELETE_COLUMN_NAME = 'deletecolumn_';
   private readonly ADD_COLUMN_HEADER = '添加自定义列';
   constructor(private http: HttpClient) { }
   // set columnDictionaries
@@ -54,7 +53,7 @@ export class SaveColumnSynonymsService {
       } else {
         const clonedColumnDictionary = element.clone();
         // remove specified synonym
-        clonedColumnDictionary.removeSpecifiedSynonym(this.DELETE_COLUMN_NAME);
+        clonedColumnDictionary.removeSpecifiedStartSynonym(this.DELETE_COLUMN_NAME);
         purifiedColumnDictionaries.push(clonedColumnDictionary);
       }
     });
