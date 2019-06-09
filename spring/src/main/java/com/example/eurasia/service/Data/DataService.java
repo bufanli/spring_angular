@@ -65,14 +65,13 @@ public class DataService {
         try {
             ApplicationContext context = new ClassPathXmlApplicationContext("com/example/eurasia/config/applicationContext.xml");
             DataXMLReader dataXMLReader = null;
-            Data dataValue = null;
             if (this.createTable(DataService.TABLE_DATA,DataService.BEAN_NAME_COLUMNS_DEFAULT_NAME) == true) {
 
             }
             if (this.createTable(DataService.TABLE_QUERY_CONDITION_TYPE,DataService.BEAN_NAME_QUERY_CONDITION_TYPE_NAME) == true) {
                 dataXMLReader = (DataXMLReader) context.getBean(DataService.BEAN_NAME_QUERY_CONDITION_TYPE_VALUE);
-                dataValue = new Data(dataXMLReader.getKeyValue());
-                getDataDao().addData(DataService.TABLE_QUERY_CONDITION_TYPE,dataValue);
+                Data queryConditionTypeDataValue = new Data(dataXMLReader.getKeyValue());
+                getDataDao().addData(DataService.TABLE_QUERY_CONDITION_TYPE,queryConditionTypeDataValue);
             }
             Map<String, String> groupByNameType = new LinkedHashMap<String, String>();
             groupByNameType.put(DataService.STATISTICS_SETTING_GROUP_BY_COLUMN_NAME,"VARCHAR(255)");
@@ -108,6 +107,34 @@ public class DataService {
             columnsDictionary.put(DataService.COLUMNS_DICTIONARY_COLUMN_NAME,"VARCHAR(255)");
             if (this.createTable(DataService.TABLE_COLUMNS_DICTIONARY,columnsDictionary) == true) {
 
+                Map<String, String> columnsDictionaryDefault = new LinkedHashMap<String, String>();
+                columnsDictionaryDefault.put(DataService.COLUMNS_DICTIONARY_SYNONYM,"进口");
+                columnsDictionaryDefault.put(DataService.COLUMNS_DICTIONARY_COLUMN_NAME,"进出口");
+                columnsDictionaryDefault.put(DataService.COLUMNS_DICTIONARY_SYNONYM,"商品编码");
+                columnsDictionaryDefault.put(DataService.COLUMNS_DICTIONARY_COLUMN_NAME,"海关编码");
+                columnsDictionaryDefault.put(DataService.COLUMNS_DICTIONARY_SYNONYM,"商品编码2");
+                columnsDictionaryDefault.put(DataService.COLUMNS_DICTIONARY_COLUMN_NAME,"附加码");
+                columnsDictionaryDefault.put(DataService.COLUMNS_DICTIONARY_SYNONYM,"产品名称");
+                columnsDictionaryDefault.put(DataService.COLUMNS_DICTIONARY_COLUMN_NAME,"商品名称");
+                columnsDictionaryDefault.put(DataService.COLUMNS_DICTIONARY_SYNONYM,"牛肉部位");
+                columnsDictionaryDefault.put(DataService.COLUMNS_DICTIONARY_COLUMN_NAME,"部位");
+                columnsDictionaryDefault.put(DataService.COLUMNS_DICTIONARY_SYNONYM,"贸易方式");
+                columnsDictionaryDefault.put(DataService.COLUMNS_DICTIONARY_COLUMN_NAME,"监管方式");
+                columnsDictionaryDefault.put(DataService.COLUMNS_DICTIONARY_SYNONYM,"申报单位");
+                columnsDictionaryDefault.put(DataService.COLUMNS_DICTIONARY_COLUMN_NAME,"申报单位名称");
+                columnsDictionaryDefault.put(DataService.COLUMNS_DICTIONARY_SYNONYM,"货主单位");
+                columnsDictionaryDefault.put(DataService.COLUMNS_DICTIONARY_COLUMN_NAME,"货主单位名称");
+                columnsDictionaryDefault.put(DataService.COLUMNS_DICTIONARY_SYNONYM,"经营单位");
+                columnsDictionaryDefault.put(DataService.COLUMNS_DICTIONARY_COLUMN_NAME,"经营单位名称");
+                columnsDictionaryDefault.put(DataService.COLUMNS_DICTIONARY_SYNONYM,"企业代码");
+                columnsDictionaryDefault.put(DataService.COLUMNS_DICTIONARY_COLUMN_NAME,"申报单位代码");
+                columnsDictionaryDefault.put(DataService.COLUMNS_DICTIONARY_SYNONYM,"进口关区");
+                columnsDictionaryDefault.put(DataService.COLUMNS_DICTIONARY_COLUMN_NAME,"报关口岸");
+                columnsDictionaryDefault.put(DataService.COLUMNS_DICTIONARY_SYNONYM,"原产国");
+                columnsDictionaryDefault.put(DataService.COLUMNS_DICTIONARY_COLUMN_NAME,"贸易国");
+
+                Data queryConditionTypeDataValue = new Data(columnsDictionaryDefault);
+                getDataDao().addData(DataService.TABLE_COLUMNS_DICTIONARY,queryConditionTypeDataValue);
             }
 
         } catch (Exception e) {
