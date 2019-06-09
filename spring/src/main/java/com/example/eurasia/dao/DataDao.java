@@ -205,7 +205,8 @@ GROUP BY 列1,列2,列3 having count(*) > 1;
     public int addColumn(String tableName, String columnName, String columnType) throws Exception {
 
         StringBuffer sql = new StringBuffer();
-        sql.append("alter table " + tableName + " add column " + columnName + " " + columnType + " NOT NULL");
+        //sql.append("alter table " + tableName + " add column " + columnName + " " + columnType + " NOT NULL");
+        sql.append("alter table " + tableName + " add column " + columnName + " " + columnType + " DEFAULT \"\"");
 
         int num = getJdbcTemplate().update(sql.toString());
         return num;//返回影响的行数。(成功的话，0 rows affected)
