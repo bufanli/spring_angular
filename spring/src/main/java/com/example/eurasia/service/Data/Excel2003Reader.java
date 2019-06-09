@@ -1,6 +1,5 @@
 package com.example.eurasia.service.Data;
 
-import com.example.eurasia.entity.Data.Data;
 import com.example.eurasia.entity.Data.QueryCondition;
 import com.example.eurasia.service.Util.Slf4jLogUtil;
 import org.apache.poi.hssf.eventusermodel.*;
@@ -27,7 +26,7 @@ import java.util.List;
  * 注意Excel2003Reader类中引用的Record类在hssf包下。
  */
 @Component
-public class Excel2003Reader implements HSSFListener {
+public class Excel2003Reader implements HSSFListener,IExcelReaderByEventMode {
 
     private POIFSFileSystem poiFS;
     private FormatTrackingHSSFListener formatListener;
@@ -108,33 +107,42 @@ public class Excel2003Reader implements HSSFListener {
      * 遍历excel下所有的sheet
      * @throws IOException
      */
-    public void process(InputStream inputStream) throws IOException {
+    @Override
+    public void processAllSheets(InputStream inputStream) throws Exception {
 
-        //创建一个 org.apache.poi.poifs.filesystem.Filesystem
-        this.poiFS = new POIFSFileSystem(inputStream);
+        try {
+            //创建一个 org.apache.poi.poifs.filesystem.Filesystem
+            this.poiFS = new POIFSFileSystem(inputStream);
 
-        //将excel 2003格式POI文档输入流
-        InputStream din = this.poiFS.createDocumentInputStream("Workbook");
+            //将excel 2003格式POI文档输入流
+            InputStream din = this.poiFS.createDocumentInputStream("Workbook");
 
-        //添加监听记录的事件
-        MissingRecordAwareHSSFListener listener = new MissingRecordAwareHSSFListener(this);
-        this.formatListener = new FormatTrackingHSSFListener(listener);//监听代理，方便获取recordformat
+            //添加监听记录的事件
+            MissingRecordAwareHSSFListener listener = new MissingRecordAwareHSSFListener(this);
+            this.formatListener = new FormatTrackingHSSFListener(listener);//监听代理，方便获取recordformat
 
-        //创建时间工厂
-        HSSFEventFactory factory = new HSSFEventFactory();
+            //创建时间工厂
+            HSSFEventFactory factory = new HSSFEventFactory();
 
-        //这儿为所有类型的Record都注册了监听器，如果需求明确的话，可以用addListener方法，并指定所需的Record类型
-        HSSFRequest request = new HSSFRequest();
-        if (this.outputFormulaValues) {
-            request.addListenerForAllRecords(this.formatListener);
-        } else {
-            this.workbookBuildingListener = new EventWorkbookBuilder.SheetRecordCollectingListener(this.formatListener);
-            request.addListenerForAllRecords(this.workbookBuildingListener);
+            //这儿为所有类型的Record都注册了监听器，如果需求明确的话，可以用addListener方法，并指定所需的Record类型
+            HSSFRequest request = new HSSFRequest();
+            if (this.outputFormulaValues) {
+                request.addListenerForAllRecords(this.formatListener);
+            } else {
+                this.workbookBuildingListener = new EventWorkbookBuilder.SheetRecordCollectingListener(this.formatListener);
+                request.addListenerForAllRecords(this.workbookBuildingListener);
+            }
+
+            //处理基于时间文档流(循环获取每一条Record进行处理)
+            //factory.processEvents(request, din);
+            factory.processWorkbookEvents(request, this.poiFS);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception();
+        } finally {
+
         }
 
-        //处理基于时间文档流(循环获取每一条Record进行处理)
-        //factory.processEvents(request, din);
-        factory.processWorkbookEvents(request, this.poiFS);
     }
 
 
@@ -333,10 +341,9 @@ public class Excel2003Reader implements HSSFListener {
 
                 //前一个Sheet页内容
                 if (this.sheetIndex > -1) {
-                    List<Data> dataList = this.rowReader.getDataList();
                     int addDataNum = 0;
                     try {
-                        addDataNum = this.rowReader.saveDataToSQL(DataService.TABLE_DATA, dataList);//导入数据。
+                        addDataNum = this.rowReader.saveDataToSQL(DataService.TABLE_DATA);//导入数据。
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

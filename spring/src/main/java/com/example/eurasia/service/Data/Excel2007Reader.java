@@ -35,7 +35,7 @@ characters()用于获取该单元格对应的索引值或是内容值（如果�
 endElement()根据startElement()的单元格数字类型和characters()的索引值或内容值，最终得出单元格的内容值，并打印出来。
  */
 @Component
-public class Excel2007Reader {
+public class Excel2007Reader implements IExcelReaderByEventMode {
     /**
      * 单元格中的数据可能的数据类型
      */
@@ -45,42 +45,30 @@ public class Excel2007Reader {
 
     private int sheetIndex = -1;
 
+    //信息接收器
+    private StringBuffer message;
+
     @Autowired
     private ImportExcelRowReader rowReader;//必须是static，否则匿名内部类中引用时会报空指针异常
 
-    public void processOneSheet(InputStream inputStream) throws Exception {
-        OPCPackage pkg = OPCPackage.open(inputStream);
-        try {
-            XSSFReader r = new XSSFReader( pkg );
-            SharedStringsTable sst = r.getSharedStringsTable();// 获取当前Excel所有Sheet中字符串
-            StylesTable st = r.getStylesTable();// 获取当前Excel所有Sheet中单元格样式
-
-            XMLReader parser = fetchSheetParser(sst,st);
-
-            // To look up the Sheet Name / Sheet Order / rID,
-            // you need to process the core Workbook stream.
-            // Normally it's of the form rId# or rSheet#
-            InputStream sheet = r.getSheet("rId2");
-            InputSource sheetSource = new InputSource(sheet);
-            try {
-                // 解析sheet: com.sun.org.apache.xerces.internal.jaxp.SAXParserImpl:522
-                parser.parse(sheetSource);
-            } finally {
-                sheet.close();
-            }
-        } finally {
-            pkg.close();
-        }
+    Excel2007Reader() {
+        //信息接收器
+        message = new StringBuffer();
     }
 
+    public StringBuffer getMessage() {
+        return this.message;
+    }
+
+    @Override
     public void processAllSheets(InputStream inputStream) throws Exception {
         OPCPackage pkg = OPCPackage.open(inputStream);
         try {
-            XSSFReader r = new XSSFReader( pkg );
+            XSSFReader r = new XSSFReader(pkg);
             SharedStringsTable sst = r.getSharedStringsTable();// 获取当前Excel所有Sheet中字符串
             StylesTable st = r.getStylesTable();// 获取当前Excel所有Sheet中单元格样式
 
-            XMLReader parser = fetchSheetParser(sst,st);
+            XMLReader parser = fetchSheetParser(sst, st);
 
             /**
              * 返回一个迭代器，此迭代器会依次得到所有不同的sheet。
@@ -88,18 +76,29 @@ public class Excel2007Reader {
              * 解析完每个sheet时关闭InputStream。
              * */
             Iterator<InputStream> sheets = r.getSheetsData();
-            while(sheets.hasNext()) {
+            while (sheets.hasNext()) {
                 Slf4jLogUtil.get().info("Processing new sheet.");
                 this.sheetIndex++;
+                // To look up the Sheet Name / Sheet Order / rID,
+                // you need to process the core Workbook stream.
+                // Normally it's of the form rId# or rSheet#
+                //InputStream sheet = r.getSheet("rId2");//单一sheet的时候，可以通过sheet名字直接获得。
                 InputStream sheet = sheets.next();
                 InputSource sheetSource = new InputSource(sheet);
-                try {
-                    // 解析sheet: com.sun.org.apache.xerces.internal.jaxp.SAXParserImpl:522
-                    parser.parse(sheetSource);
-                } finally {
-                    sheet.close();
-                }
+
+                // 解析sheet: com.sun.org.apache.xerces.internal.jaxp.SAXParserImpl:522
+                parser.parse(sheetSource);
+
+                int addDataNum = this.rowReader.saveDataToSQL(DataService.TABLE_DATA);//导入数据。
+                Slf4jLogUtil.get().info("导入成功，共{}条数据！", addDataNum);
+                this.message.append("导入成功，共" + addDataNum + "条数据！");
+                //清空保存前一个Sheet页内容用的List
+                this.rowReader.clearDataList();
+
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception();
         } finally {
             pkg.close();
         }
@@ -261,7 +260,7 @@ public class Excel2007Reader {
                 }
                 //补全一行尾部可能缺失的单元格
                 if (this.maxRef != null) {
-                    int len = countNullCell(maxRef, ref);
+                    int len = countNullCell(maxRef, this.preRef);
                     for (int i = 0; i <= len; i++) {
                         this.curCol++;
                         this.rowList.add(this.curCol, "");
