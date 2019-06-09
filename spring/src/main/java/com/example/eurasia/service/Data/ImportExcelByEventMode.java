@@ -35,7 +35,6 @@ public class ImportExcelByEventMode {
                 excel2007Reader.processAllSheets(inputStream);
                 msg = excel2007Reader.getMessage();
             }
-            msg.setLength(0);
 
         } catch (IOException e) {
             e.printStackTrace();
