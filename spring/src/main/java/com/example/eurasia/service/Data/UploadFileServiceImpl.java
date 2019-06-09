@@ -14,10 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 //@Slf4j
 /*@Transactional(readOnly = true)事物注解*/
@@ -237,12 +234,17 @@ public class UploadFileServiceImpl implements IUploadFileService {
         List<String> addColList = new ArrayList<>();
 
         try {
+            // 需要保存的数据词典的所有列名
+            Set<String> newColsNameSet = new HashSet<>();
+
             // 取得数据表的所有列名
-            List<String> colsNameList = dataService.getAllColumnNames(DataService.TABLE_DATA);
+            Set<String> colsNameSet = dataService.getAllColumnNames(DataService.TABLE_DATA);
 
             for (ColumnsDictionary columnsDictionary : columnsDictionaryArr) {
                 String columnName = columnsDictionary.getColumnName();
-                if (this.checkColumnNameValid(columnName, colsNameList)) {
+                newColsNameSet.add(columnName);
+
+                if (colsNameSet.contains(columnName)) {
 
                 } else {
                     Slf4jLogUtil.get().info("添加新的字段！");
@@ -258,7 +260,24 @@ public class UploadFileServiceImpl implements IUploadFileService {
                 }
             }
 
+            // 删除字段
+            for (String columnName:colsNameSet) {
+                if (newColsNameSet.contains(columnName)) {
+
+                } else {
+                    if (dataService.deleteColumnFromSQL(columnName)) {
+                        Slf4jLogUtil.get().info("删除字段 {} 成功！",columnName);
+                    } else {
+                        Slf4jLogUtil.get().info("删除字段 {} 失败！",columnName);
+                    }
+                }
+            }
+
+            // 添加新字段
             int addColNum = dataService.addColumnToSQL(addColList);
+            Slf4jLogUtil.get().info("添加共{}条新字段！",addColList.size());
+
+            // 保存词典
             int deleteNum = dataService.deleteAllData(DataService.TABLE_COLUMNS_DICTIONARY);
             int addDataNum = dataService.saveDataToSQL(DataService.TABLE_COLUMNS_DICTIONARY, dataList);
             Slf4jLogUtil.get().info("导入数据词典成功，共{}条数据！",addDataNum);
@@ -289,16 +308,6 @@ public class UploadFileServiceImpl implements IUploadFileService {
             responseResult = new ResponseResultUtil().error(ResponseCodeEnum.DELETE_COLUMN_FAILED);
         }
         return responseResult;
-    }
-
-    private boolean checkColumnNameValid(String columnName, List<String> colsNameList) throws Exception {
-
-        for (String colsName : colsNameList) {
-            if (colsName.equals(columnName)) {
-                return true;
-            }
-        }
-        return false;
     }
 
 }

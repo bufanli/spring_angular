@@ -402,24 +402,29 @@ public class Excel2007Reader implements IExcelReaderByEventMode {
             } else if ("str".equals(cellType)) {
                 this.cellDataType = CellDataType.FORMULA;
             } else if (null == cellType) {
-                this.cellDataType = CellDataType.NUMBER;                //cellType为空，则表示该单元格类型为数字
 
-                int styleIndex = Integer.parseInt(cellStyleStr);
-                XSSFCellStyle style = this.st.getStyleAt(styleIndex);
-                this.formatIndex = style.getDataFormat();
-                this.formatString = style.getDataFormatString();
-                if (this.formatIndex == 14) {//处理日期
-                    if (this.formatString == null) {
-                        this.cellDataType = CellDataType.NULL;
-                        this.formatString = BuiltinFormats.getBuiltinFormat(this.formatIndex);
-                    } else {
-                        if (this.formatString.contains("m/d/yy")) {
-                            this.cellDataType = CellDataType.DATE;
-                            this.formatString = QueryCondition.PRODUCT_DATE_FORMAT;
-                        }
-                    }
+                if (null == cellStyleStr) {
+                    this.cellDataType = CellDataType.SSTINDEX;
                 } else {
+                    this.cellDataType = CellDataType.NUMBER;                //cellType为空，则表示该单元格类型为数字
 
+                    int styleIndex = Integer.parseInt(cellStyleStr);
+                    XSSFCellStyle style = this.st.getStyleAt(styleIndex);
+                    this.formatIndex = style.getDataFormat();
+                    this.formatString = style.getDataFormatString();
+                    if (this.formatIndex == 14) {//处理日期
+                        if (this.formatString == null) {
+                            this.cellDataType = CellDataType.NULL;
+                            this.formatString = BuiltinFormats.getBuiltinFormat(this.formatIndex);
+                        } else {
+                            if (this.formatString.contains("m/d/yy")) {
+                                this.cellDataType = CellDataType.DATE;
+                                this.formatString = QueryCondition.PRODUCT_DATE_FORMAT;
+                            }
+                        }
+                    } else {
+
+                    }
                 }
 
             }

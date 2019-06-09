@@ -38,8 +38,8 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
     @Override
     public ResponseResult exportExcel(HttpServletResponse response, QueryCondition[] queryConditionsArr) throws Exception {
 
-        List<String> colsNameList = this.getTitles(DataService.TABLE_DATA);
-        if (colsNameList.size() == 0) {
+        Set<String> colsNameSet = this.getTitles(DataService.TABLE_DATA);
+        if (colsNameSet.size() == 0) {
             Slf4jLogUtil.get().info(ResponseCodeEnum.EXPORT_GET_HEADER_INFO_FROM_SQL_ZERO.getMessage());
             return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_GET_HEADER_INFO_FROM_SQL_ZERO);
         }
@@ -53,7 +53,7 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
         XSSFWorkbook wb = new XSSFWorkbook();
         try {
             XSSFSheet sheet = wb.createSheet(DataService.EXPORT_EXCEL_SHEET_NAME);
-            int rowIndex = this.writeExcel(wb, sheet, colsNameList, dataList);
+            int rowIndex = this.writeExcel(wb, sheet, colsNameSet, dataList);
 
             Date date = new Date(System.currentTimeMillis());
             DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd");
@@ -72,15 +72,15 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
         return new ResponseResultUtil().success(ResponseCodeEnum.EXPORT_DATA_INFO_SUCCESS,responseMsg);
     }
 
-    private int writeExcel(XSSFWorkbook wb, Sheet sheet, List<String> colsNameList, List<Data> rowList) {
+    private int writeExcel(XSSFWorkbook wb, Sheet sheet, Set<String> colsNameSet, List<Data> rowList) {
 
-        int titleRowIndex = writeTitlesToExcel(wb, sheet, colsNameList);
+        int titleRowIndex = writeTitlesToExcel(wb, sheet, colsNameSet);
         int dataRowIndex = writeRowsToExcel(wb, sheet, rowList, titleRowIndex);
-        autoSizeColumns(sheet, (colsNameList.size() + 1));
+        autoSizeColumns(sheet, (colsNameSet.size() + 1));
         return (titleRowIndex + dataRowIndex);
     }
 
-    private int writeTitlesToExcel(XSSFWorkbook wb, Sheet sheet, List<String> colsNameList) {
+    private int writeTitlesToExcel(XSSFWorkbook wb, Sheet sheet, Set<String> colsNameSet) {
         int rowIndex = 0;
         int colIndex = 0;
 
@@ -103,7 +103,7 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
         // titleRow.setHeightInPoints(25);
         colIndex = 0;
 
-        for(String colsName: colsNameList) {
+        for(String colsName: colsNameSet) {
             Cell cell = titleRow.createCell(colIndex);
             cell.setCellValue(colsName);
             cell.setCellStyle(titleStyle);
@@ -222,13 +222,13 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
         outputStream.close();
     }
 
-    private List<String> getTitles(String tableName) throws Exception {
-        List<String> colsNameList;
+    private Set<String> getTitles(String tableName) throws Exception {
+        Set<String> colsNameSet;
         try {
             Slf4jLogUtil.get().info("文件导出，取得表头开始");
 
-            colsNameList = dataService.getAllColumnNames(tableName);
-            if (colsNameList == null) {
+            colsNameSet = dataService.getAllColumnNames(tableName);
+            if (colsNameSet == null) {
                 throw new Exception(ResponseCodeEnum.EXPORT_GET_HEADER_INFO_FROM_SQL_NULL.getMessage());
             }
 
@@ -238,7 +238,7 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
             throw new Exception(ResponseCodeEnum.EXPORT_GET_HEADER_INFO_FROM_SQL_FAILED.getMessage());
         }
 
-        return colsNameList;
+        return colsNameSet;
     }
 
     private List<Data> getRows(String tableName, QueryCondition[] queryConditionsArr) throws Exception {

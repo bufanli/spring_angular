@@ -2,6 +2,7 @@ package com.example.eurasia.service.Data;
 
 import com.example.eurasia.dao.DataDao;
 import com.example.eurasia.entity.Data.*;
+import com.example.eurasia.service.Util.Slf4jLogUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -224,6 +225,7 @@ public class DataService {
                     DataService.TABLE_STATISTICS_SETTING_GROUP_BY,
                     DataService.STATISTICS_SETTING_GROUP_BY_COLUMN_NAME,
                     columnName);
+            Slf4jLogUtil.get().info("添加新字段 {} ！",columnName);
         }
 
         return addColNum;
@@ -237,14 +239,36 @@ public class DataService {
      * @author FuJia
      * @Time 2019-06-07 00:00:00
      */
-    public boolean deleteColumnFromSQL(String columnName) throws Exception {
-        if (StringUtils.isEmpty(columnName)) {
-            return false;
+    public int deleteColumnFromSQL(Set<String> colsNameSet) throws Exception {
+        if (colsNameSet == null) {
+            return -1;
         }
+
+        int delColNum = 0;
+        for (String columnName:colsNameSet) {
+            if (this.deleteColumnFromSQL(columnName)) {
+                delColNum++;
+            } else {
+                continue;
+            }
+        }
+        Slf4jLogUtil.get().info("删除共{}条字段！",delColNum);
+        return delColNum;
+    }
+
+    /**
+     * 删除字段
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2019-06-07 00:00:00
+     */
+    public boolean deleteColumnFromSQL(String columnName) throws Exception {
 
         Long hasDataNum = getDataDao().hasColumnValue(DataService.TABLE_DATA, columnName);
         if (hasDataNum > 0) {
-           return false;
+            return false;
         } else {
             int delDataNum = getDataDao().deleteColumn(DataService.TABLE_DATA, columnName);
             int delQueryConTypeNum = getDataDao().deleteColumn(DataService.TABLE_QUERY_CONDITION_TYPE, columnName);
@@ -254,6 +278,7 @@ public class DataService {
             Data data = new Data(keyValue);
             int delStaticSettingGroupByNum = getDataDao().deleteData(DataService.TABLE_STATISTICS_SETTING_GROUP_BY, data);
 
+            Slf4jLogUtil.get().info("删除字段 {} ！",columnName);
             return true;
         }
     }
@@ -274,7 +299,7 @@ public class DataService {
         List<String> titleIsNotExistList = new ArrayList<>();
 
         // 取得数据表的所有列名
-        List<String> colsNameList = this.getAllColumnNames(DataService.TABLE_DATA);
+        Set<String> colsNameSet = this.getAllColumnNames(DataService.TABLE_DATA);
 
         // 取得数据字典表指定列的所有值
         List<Map<String, Object>> colNamesListMap = this.getColumnAllValues(DataService.TABLE_COLUMNS_DICTIONARY,
@@ -293,11 +318,9 @@ public class DataService {
             }
 
             title = titleList.get(i);
-            for (String columnName : colsNameList) {//在数据表中找该字段
-                if (columnName.equals(title)) {//在数据表中找到该字段
-                    isInTableData = true;
-                    break;
-                }
+            if (colsNameSet.contains(title)) {//在数据表中找到该字段
+                isInTableData = true;
+                break;
             }
 
             if (isInTableData == false) {
@@ -497,19 +520,19 @@ as不是给表里的字段取别名，而是给查询的结果字段取别名。
      * @author FuJia
      * @Time 2018-11-06 00:00:00
      */
-    public List<String> getAllColumnNames(String tableName) throws Exception {
+    public Set<String> getAllColumnNames(String tableName) throws Exception {
         if (StringUtils.isEmpty(tableName)) {
             return null;
         }
 
-        List<String> colsList = new ArrayList<>();
+        Set<String> colsSet = new HashSet<>();
 
         List<Map<String, Object>> colsNameList = getDataDao().queryListForColumnName(tableName);
         for (Map<String,Object> colsName: colsNameList) {
-            colsList.add(colsName.get("COLUMN_NAME").toString());
+            colsSet.add(colsName.get("COLUMN_NAME").toString());
         }
 
-        return colsList;
+        return colsSet;
     }
 
     /**
