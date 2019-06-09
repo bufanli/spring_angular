@@ -320,7 +320,6 @@ public class DataService {
             title = titleList.get(i);
             if (colsNameSet.contains(title)) {//在数据表中找到该字段
                 isInTableData = true;
-                break;
             }
 
             if (isInTableData == false) {
