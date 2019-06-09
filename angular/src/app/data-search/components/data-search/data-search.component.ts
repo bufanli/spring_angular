@@ -84,6 +84,10 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
   public exportEnabled = true;
   // 2. others
 
+
+  // data search table's offset
+  private dataSearchTableOffset = 0;
+
   // init access authorities from current user container
   private initAccessAuthorites(): void {
     // get access authorities
@@ -127,6 +131,7 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
   }
 
   constructor(private http: HttpClient,
+// tslint:disable-next-line: deprecation
     private downloadHttp: Http,
     private commonUtilitiesService: CommonUtilitiesService,
     private currentUserContainer: CurrentUserContainerService,
@@ -163,6 +168,9 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
       pageNumber: 1,
       queryParamsType: 'limit',
       pagination: true,
+      sortName: '日期',
+      sortOrder: 'desc',
+      sortable: true,
       queryParams: function (params) {
         return that.getQueryParams(params);
       },
@@ -200,6 +208,8 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
   // get query params
   private getQueryParams(params: any): any {
     const queryConditions = this.abstractInputQueryConditionsIntoParams();
+    // set data search table offset in advance
+    this.dataSearchTableOffset = params.offset;
     return {
       limit: params.limit,
       offset: params.offset,
@@ -215,8 +225,9 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
       DataSearchComponent.SEQUENCE_TITLE,
       true);
     seq.width = 50;
+    seq.title = 'No.';
     seq.formatter = function (value, row, index) {
-      return index + 1;
+      return that.dataSearchTableOffset + index + 1;
     };
 
     // operations header
@@ -238,6 +249,15 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
     let allHeaders: Header[] = [seq, operations];
     this.commonUtilitiesService.addTooltipFormatter(headers, 150);
     allHeaders = allHeaders.concat(headers);
+    // set sortable columns
+    headers.forEach(element => {
+      if (element.field === '日期') {
+        element.sortable = true;
+        element.order = 'desc';
+      } else {
+        element.sortable = false;
+      }
+    });
     return allHeaders;
   }
 
