@@ -102,39 +102,19 @@ public class DataService {
                     getDataDao().addData(DataService.TABLE_STATISTICS_SETTING_COMPUTE_BY,DataService.STATISTICS_SETTING_COMPUTE_BY_COLUMN_NAME,computeByArr[i]);
                 }
             }
-            Map<String, String> columnsDictionary = new LinkedHashMap<String, String>();
-            columnsDictionary.put(DataService.COLUMNS_DICTIONARY_SYNONYM,"VARCHAR(255)");
-            columnsDictionary.put(DataService.COLUMNS_DICTIONARY_COLUMN_NAME,"VARCHAR(255)");
-            if (this.createTable(DataService.TABLE_COLUMNS_DICTIONARY,columnsDictionary) == true) {
-
-                Map<String, String> columnsDictionaryDefault = new LinkedHashMap<String, String>();
-                columnsDictionaryDefault.put(DataService.COLUMNS_DICTIONARY_SYNONYM,"进口");
-                columnsDictionaryDefault.put(DataService.COLUMNS_DICTIONARY_COLUMN_NAME,"进出口");
-                columnsDictionaryDefault.put(DataService.COLUMNS_DICTIONARY_SYNONYM,"商品编码");
-                columnsDictionaryDefault.put(DataService.COLUMNS_DICTIONARY_COLUMN_NAME,"海关编码");
-                columnsDictionaryDefault.put(DataService.COLUMNS_DICTIONARY_SYNONYM,"商品编码2");
-                columnsDictionaryDefault.put(DataService.COLUMNS_DICTIONARY_COLUMN_NAME,"附加码");
-                columnsDictionaryDefault.put(DataService.COLUMNS_DICTIONARY_SYNONYM,"产品名称");
-                columnsDictionaryDefault.put(DataService.COLUMNS_DICTIONARY_COLUMN_NAME,"商品名称");
-                columnsDictionaryDefault.put(DataService.COLUMNS_DICTIONARY_SYNONYM,"牛肉部位");
-                columnsDictionaryDefault.put(DataService.COLUMNS_DICTIONARY_COLUMN_NAME,"部位");
-                columnsDictionaryDefault.put(DataService.COLUMNS_DICTIONARY_SYNONYM,"贸易方式");
-                columnsDictionaryDefault.put(DataService.COLUMNS_DICTIONARY_COLUMN_NAME,"监管方式");
-                columnsDictionaryDefault.put(DataService.COLUMNS_DICTIONARY_SYNONYM,"申报单位");
-                columnsDictionaryDefault.put(DataService.COLUMNS_DICTIONARY_COLUMN_NAME,"申报单位名称");
-                columnsDictionaryDefault.put(DataService.COLUMNS_DICTIONARY_SYNONYM,"货主单位");
-                columnsDictionaryDefault.put(DataService.COLUMNS_DICTIONARY_COLUMN_NAME,"货主单位名称");
-                columnsDictionaryDefault.put(DataService.COLUMNS_DICTIONARY_SYNONYM,"经营单位");
-                columnsDictionaryDefault.put(DataService.COLUMNS_DICTIONARY_COLUMN_NAME,"经营单位名称");
-                columnsDictionaryDefault.put(DataService.COLUMNS_DICTIONARY_SYNONYM,"企业代码");
-                columnsDictionaryDefault.put(DataService.COLUMNS_DICTIONARY_COLUMN_NAME,"申报单位代码");
-                columnsDictionaryDefault.put(DataService.COLUMNS_DICTIONARY_SYNONYM,"进口关区");
-                columnsDictionaryDefault.put(DataService.COLUMNS_DICTIONARY_COLUMN_NAME,"报关口岸");
-                columnsDictionaryDefault.put(DataService.COLUMNS_DICTIONARY_SYNONYM,"原产国");
-                columnsDictionaryDefault.put(DataService.COLUMNS_DICTIONARY_COLUMN_NAME,"贸易国");
-
-                Data queryConditionTypeDataValue = new Data(columnsDictionaryDefault);
-                getDataDao().addData(DataService.TABLE_COLUMNS_DICTIONARY,queryConditionTypeDataValue);
+            if (this.createTable(DataService.TABLE_COLUMNS_DICTIONARY,DataService.BEAN_NAME_COLUMNS_DICTIONARY_NAME) == true) {
+                Map<String, String> columnsDicMap = new LinkedHashMap<String, String>();
+                String[] synonymArr = {"进口","商品编码","商品编码2","产品名称","牛肉部位","贸易方式",
+                        "申报单位","货主单位","经营单位","企业代码","进口关区", "原产国"};
+                String[] columnNameArr = {"进出口","海关编码","附加码","商品名称","部位","监管方式",
+                        "申报单位名称","货主单位名称","经营单位名称","申报单位代码","报关口岸", "贸易国"};
+                for (int i=0; i<synonymArr.length; i++) {
+                    columnsDicMap.put(DataService.COLUMNS_DICTIONARY_SYNONYM,synonymArr[i]);
+                    columnsDicMap.put(DataService.COLUMNS_DICTIONARY_COLUMN_NAME,columnNameArr[i]);
+                    Data columnsDicData = new Data(columnsDicMap);
+                    getDataDao().addData(DataService.TABLE_COLUMNS_DICTIONARY,columnsDicData);
+                    columnsDicMap.clear();
+                }
             }
 
         } catch (Exception e) {

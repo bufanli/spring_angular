@@ -6,8 +6,8 @@
     <column key="申报单位名称" value="FALSE" />
     <column key="货主单位名称" value="TRUE" />
     <column key="经营单位名称" value="TRUE" />
+    <column key="申报单位代码" value="FALSE" />
     <column key="货主单位代码" value="FALSE" />
-    <column key="经营单位代码" value="FALSE" />
     <column key="经营单位代码" value="FALSE" />
     <column key="企业性质" value="FALSE" />
     <column key="运输工具名称" value="FALSE" />

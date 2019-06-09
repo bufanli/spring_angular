@@ -254,6 +254,7 @@ public class UploadFileServiceImpl implements IUploadFileService {
                     keyValue.put(DataService.COLUMNS_DICTIONARY_COLUMN_NAME, columnName);
                     Data data = new Data(keyValue);
                     dataList.add(data);
+                    keyValue.clear();
                 }
             }
 
