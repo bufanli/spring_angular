@@ -28,7 +28,6 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
   private readonly ADD_COLUMN_NAME = 'add_column';
   private readonly ADD_COLUMN_TITLE = '添加';
   private readonly ADD_COLUMN_HEADER = '添加自定义列';
-  public columnsDictionaries: ColumnsDictionary[] = null;
   public columns: string[] = null;
   private columnsDictionariesLoaded = false;
   private isDeletingSynonym = false;
@@ -224,6 +223,9 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
       }
     }
     if (index !== -1) {
+      // before savint columns dictionaries, save it
+      this.saveOriginalColumnsDictionaries();
+      // delete specified column
       this.columnsDictionaries.splice(index, 1);
     } else {
       // nothing to do because it is impossible here
@@ -354,8 +356,8 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
   }
   // save column dictionary end notification
   public callbackOnSaveEnd(httpResponse: HttpResponse): void {
-    if (!(this.isDeletingSynonym === false ||
-      this.isDeletingColumn === false)) {
+    if (!(this.isDeletingSynonym === true ||
+      this.isDeletingColumn === true)) {
       super.callbackOnSaveEnd(httpResponse);
     } else {
       if (httpResponse.code === 201) {
@@ -371,7 +373,7 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
       this.isDeletingColumn = false;
     }
     // refresh synonyms row
-    this.refreshAllSynonymTables();
+    this.columnsDictionariesLoaded = true;
   }
   // set upload data error msg
   public setUploadDataErrorMsg(errorMsg: string): void {

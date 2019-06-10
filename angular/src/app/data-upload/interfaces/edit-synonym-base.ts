@@ -24,6 +24,9 @@ export abstract class EditSynonymBase implements SaveColumnDictionaryCallback {
   public infoMsg: string = null;
   // column dictionaries
   protected columnsDictionaries: ColumnsDictionary[] = null;
+  // original column dictionaries to save column dictionaries before save
+  // if saving failed, recover it
+  protected oriColumnsDictionaries: ColumnsDictionary[] = null;
   constructor(
     protected currentUserContainer: CurrentUserContainerService,
     protected saveColumnSynonymService: SaveColumnSynonymsService) { }
@@ -48,12 +51,28 @@ export abstract class EditSynonymBase implements SaveColumnDictionaryCallback {
         this.errorMsg = this.SYNONYM_IS_DUPLICATED + column;
         return;
       } else {
+        // save original columns dictionaries before saving it
+        this.saveOriginalColumnsDictionaries();
         // no duplicated synonym exists
         this.updateColumnDictionaries();
         // save synonym dictionaries
         this.saveColumnDictionaries();
       }
     }
+  }
+  // save columns dictionaries before saving it
+  // if saving it failed, then recover it
+  protected saveOriginalColumnsDictionaries(): void {
+    this.oriColumnsDictionaries = [];
+    this.columnsDictionaries.forEach(element => {
+      this.oriColumnsDictionaries.push(element.clone());
+    });
+  }
+  protected recoverOriginalColumnsDictionaries(): void {
+    this.columnsDictionaries = [];
+    this.oriColumnsDictionaries.forEach(element => {
+      this.columnsDictionaries.push(element.clone());
+    });
   }
   protected abstract updateColumnDictionaries(): void;
   // save synonym dictionaries
@@ -75,6 +94,9 @@ export abstract class EditSynonymBase implements SaveColumnDictionaryCallback {
     } else {
       this.errorExist = true;
       this.errorMsg = httpResponse.message;
+      // if saving columns dictinaries failed
+      // then recover columns dictionaries
+      this.recoverOriginalColumnsDictionaries();
     }
   }
 

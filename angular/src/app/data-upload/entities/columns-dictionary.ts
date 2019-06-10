@@ -33,7 +33,7 @@ export class ColumnsDictionary {
       this.columnName,
       clonedSynonyms,
     );
-    cloned.uuid = null;
+    cloned.uuid = this.getUUID();
     return cloned;
   }
   // remove specified synonym
