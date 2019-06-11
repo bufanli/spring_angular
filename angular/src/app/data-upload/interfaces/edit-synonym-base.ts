@@ -122,12 +122,12 @@ export abstract class EditSynonymBase implements SaveColumnDictionaryCallback {
     this.clearInfoMsg();
   }
   // clear info msg
-  private clearInfoMsg(): void {
+  protected clearInfoMsg(): void {
     this.infoExist = false;
     this.infoMsg = '';
   }
   // clear error msg
-  private clearErrorMsg(): void {
+  protected clearErrorMsg(): void {
     this.errorExist = false;
     this.errorMsg = '';
   }

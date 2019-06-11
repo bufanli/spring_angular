@@ -28,6 +28,8 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
   private readonly ADD_COLUMN_NAME = 'add_column';
   private readonly ADD_COLUMN_TITLE = '添加';
   private readonly ADD_COLUMN_HEADER = '添加自定义列';
+  private readonly DELETE_SYNONYM_OK = '删除同义词成功';
+  private readonly DELETE_COLUMN_OK = '删除自定义列成功';
   public columns: string[] = null;
   private columnsDictionariesLoaded = false;
   private isDeletingSynonym = false;
@@ -251,6 +253,11 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
   }
   // delete synonym handler
   private deleteSynonymHandler(linkId: any): void {
+    // clear info msg and error msg
+    this.clearErrorMsg();
+    this.clearInfoMsg();
+    // save column dictionaries
+    this.saveOriginalColumnsDictionaries();
     // separate id to three part for getting uuid and index
     // inde==0 method, modify/delete
     // index==1 uuid
@@ -270,6 +277,11 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
     }
     if (deleteColumnDictionary !== null) {
       deleteColumnDictionary.getSynonyms().splice(index, 1);
+    }
+    // if last synonym deleted, add delete column link
+    if (deleteColumnDictionary.getSynonyms().length === 0) {
+      deleteColumnDictionary.getSynonyms().push(
+        this.DELETE_COLUMN_NAME + deleteColumnDictionary.getUUID());
     }
     // set deleting flag
     this.isDeletingSynonym = true;
@@ -343,7 +355,16 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
     // find column dictionary entry
     this.columnsDictionaries.forEach(element => {
       if (element.getColumnName() === this.column) {
-        element.getSynonyms().push(this.synonym);
+        // if there is just one synonyms and this
+        // synonym is delete column, then push this synonym
+        // before delete column link
+        if (element.getSynonyms().length === 1 &&
+          element.getSynonyms()[0].startsWith(this.DELETE_COLUMN_NAME)) {
+          element.getSynonyms().pop();
+          element.getSynonyms().push(this.synonym);
+        } else {
+          element.getSynonyms().push(this.synonym);
+        }
       }
     });
   }
@@ -363,10 +384,23 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
       if (httpResponse.code === 201) {
         this.currentUserContainer.sessionTimeout();
       } else if (httpResponse.code === 200) {
-        // nothing to do
+        // show ok msg
+        if (this.isDeletingColumn) {
+          this.infoExist = true;
+          this.infoMsg = this.DELETE_COLUMN_OK;
+        } else if (this.isDeletingSynonym) {
+          this.infoExist = true;
+          this.infoMsg = this.DELETE_SYNONYM_OK;
+        } else {
+          // nothing to do
+        }
       } else {
         this.errorExist = true;
         this.errorMsg = httpResponse.message;
+        // recover original columns dictionaries
+        this.recoverOriginalColumnsDictionaries();
+        // set flag to callback ng view checked
+        this.columnsDictionariesLoaded = true;
       }
       // set back deleting flag
       this.isDeletingSynonym = false;
