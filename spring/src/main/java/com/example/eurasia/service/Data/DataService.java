@@ -524,7 +524,7 @@ as不是给表里的字段取别名，而是给查询的结果字段取别名。
             return null;
         }
 
-        Set<String> colsSet = new HashSet<>();
+        Set<String> colsSet = new LinkedHashSet<>();
 
         List<Map<String, Object>> colsNameList = getDataDao().queryListForColumnName(tableName);
         for (Map<String,Object> colsName: colsNameList) {
@@ -542,12 +542,12 @@ as不是给表里的字段取别名，而是给查询的结果字段取别名。
      * @author FuJia
      * @Time 2019-06-03 00:00:00
      */
-    public List<String> getAllColumnNamesWithoutID(String tableName) throws Exception {
+    public Set<String> getAllColumnNamesWithoutID(String tableName) throws Exception {
         if (StringUtils.isEmpty(tableName)) {
             return null;
         }
 
-        List<String> colsList = new ArrayList<>();
+        Set<String> colsSet = new LinkedHashSet<>();
 
         List<Map<String, Object>> colsNameList = getDataDao().queryListForColumnName(tableName);
         for (Map<String,Object> colsName: colsNameList) {
@@ -555,11 +555,11 @@ as不是给表里的字段取别名，而是给查询的结果字段取别名。
             if (colName.equals("id")) {
                 continue;
             } else {
-                colsList.add(colName);
+                colsSet.add(colName);
             }
         }
 
-        return colsList;
+        return colsSet;
     }
 
     /**

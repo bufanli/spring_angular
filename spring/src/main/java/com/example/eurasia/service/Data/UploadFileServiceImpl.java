@@ -191,8 +191,8 @@ public class UploadFileServiceImpl implements IUploadFileService {
     public ResponseResult getColumnsDictionary() throws Exception {
         ResponseResult responseResult;
         // 取得数据表的所有列名
-        List<String> colsNameList = dataService.getAllColumnNamesWithoutID(DataService.TABLE_DATA);
-        if (colsNameList == null) {
+        Set<String> colsNameSet = dataService.getAllColumnNamesWithoutID(DataService.TABLE_DATA);
+        if (colsNameSet == null) {
             throw new Exception(ResponseCodeEnum.GET_COLUMNS_DICTIONARY_GET_HEADER_INFO_FROM_SQL_NULL.getMessage());
         }
 
@@ -201,16 +201,16 @@ public class UploadFileServiceImpl implements IUploadFileService {
                 new String[]{DataService.COLUMNS_DICTIONARY_SYNONYM, DataService.COLUMNS_DICTIONARY_COLUMN_NAME});
 
         // 组成数据字典实例数组
-        ColumnsDictionary[] columnsDictionary = new ColumnsDictionary[colsNameList.size()];
-        for (int i=0; i<colsNameList.size(); i++) {
+        ColumnsDictionary[] columnsDictionary = new ColumnsDictionary[colsNameSet.size()];
+        int i = 0;
+        for (String columnName:colsNameSet) {
             // init each column dictionary
             columnsDictionary[i] = new ColumnsDictionary();
-            String columnName = colsNameList.get(i);//原词(数据库字段名)
             List<String> synonymList = new ArrayList<>();
 
             for (Map<String, Object> map : colNamesListMap) {
                 String colNameValue = (String) map.get(DataService.COLUMNS_DICTIONARY_COLUMN_NAME);
-                if (colNameValue.equals(columnName)) {//在该Map里找到指定原词
+                if (colNameValue.equals(columnName)) {//在该Map里找到指定原词(数据库字段名)
                     String synonymValue = (String) map.get(DataService.COLUMNS_DICTIONARY_SYNONYM);
                     synonymList.add(synonymValue);
                 }
@@ -220,6 +220,7 @@ public class UploadFileServiceImpl implements IUploadFileService {
 
             columnsDictionary[i].setColumnName(columnName);
             columnsDictionary[i].setSynonyms(synonyms);
+            i++;
         }
         responseResult = new ResponseResultUtil().success(ResponseCodeEnum.GET_COLUMNS_DICTIONARY_SUCCESS, columnsDictionary);
         return responseResult;
@@ -235,10 +236,10 @@ public class UploadFileServiceImpl implements IUploadFileService {
 
         try {
             // 需要保存的数据词典的所有列名
-            Set<String> newColsNameSet = new HashSet<>();
+            Set<String> newColsNameSet = new LinkedHashSet<>();
 
             // 取得数据表的所有列名
-            Set<String> colsNameSet = dataService.getAllColumnNames(DataService.TABLE_DATA);
+            Set<String> colsNameSet = dataService.getAllColumnNamesWithoutID(DataService.TABLE_DATA);
 
             for (ColumnsDictionary columnsDictionary : columnsDictionaryArr) {
                 String columnName = columnsDictionary.getColumnName();
