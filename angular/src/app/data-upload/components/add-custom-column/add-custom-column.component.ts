@@ -62,8 +62,6 @@ export class AddCustomColumnComponent extends EditSynonymBase implements OnInit 
       this.errorMsg = this.CUSTOM_COLUMN_EXIST;
       return;
     }
-    // save original column dictionaries before updating it
-    this.saveOriginalColumnsDictionaries()
     // update column dictionaries
     this.updateColumnDictionaries();
     // set column dictionaries
@@ -78,14 +76,17 @@ export class AddCustomColumnComponent extends EditSynonymBase implements OnInit 
     // update column dictionaries
     // 1. popup the last column dictionary
     const lastColumnDictionary = this.columnsDictionaries.pop();
-    // 2. push the new custom column
+    // 2. create the new custom column
     const customColumn = new ColumnsDictionary(
       this.column,
       // add delete column link because it must have no synonym in that time
       []);
-      customColumn.getSynonyms().push(this.DELETE_COLUMN_NAME + customColumn.getUUID());
+    customColumn.getSynonyms().push(this.DELETE_COLUMN_NAME + customColumn.getUUID());
+    // 3. save original column
+    this.saveOriginalColumnsDictionaries(this.ADD_COLUMN, customColumn);
+    // 4. push custom column
     this.columnsDictionaries.push(customColumn);
-    // 3. push back the last element
+    // 5. push back the last element
     this.columnsDictionaries.push(lastColumnDictionary);
   }
 }

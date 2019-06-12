@@ -78,6 +78,11 @@ export class EditSynonymComponent extends EditSynonymBase implements OnInit {
       // it is impossible here
       return;
     } else {
+      // save original column dictionaries
+      this.saveOriginalColumnsDictionaries(
+        this.EDIT_COLUMN,
+        columnsDictionary
+      );
       const synonyms: string[] = columnsDictionary.getSynonyms();
       synonyms[this.editSynonymIndex] = this.synonym;
     }

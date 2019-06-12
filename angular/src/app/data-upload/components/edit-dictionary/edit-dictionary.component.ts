@@ -230,7 +230,11 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
     }
     if (index !== -1) {
       // before savint columns dictionaries, save it
-      this.saveOriginalColumnsDictionaries();
+      this.saveOriginalColumnsDictionaries(
+        this.DELETE_COLUMN,
+        this.columnsDictionaries[index],
+        index
+      );
       // delete specified column
       this.columnsDictionaries.splice(index, 1);
     } else {
@@ -265,8 +269,6 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
     // clear info msg and error msg
     this.clearErrorMsg();
     this.clearInfoMsg();
-    // save column dictionaries
-    this.saveOriginalColumnsDictionaries();
     // separate id to three part for getting uuid and index
     // inde==0 method, modify/delete
     // index==1 uuid
@@ -285,6 +287,11 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
       }
     }
     if (deleteColumnDictionary !== null) {
+      // save original column dictionaries
+      this.saveOriginalColumnsDictionaries(
+        this.EDIT_COLUMN,
+        deleteColumnDictionary
+      )
       deleteColumnDictionary.getSynonyms().splice(index, 1);
     }
     // if last synonym deleted, add delete column link
@@ -364,6 +371,11 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
     // find column dictionary entry
     this.columnsDictionaries.forEach(element => {
       if (element.getColumnName() === this.column) {
+        // save original column dictionaries
+        this.saveOriginalColumnsDictionaries(
+          this.EDIT_COLUMN,
+          element
+        );
         // if there is just one synonyms and this
         // synonym is delete column, then push this synonym
         // before delete column link

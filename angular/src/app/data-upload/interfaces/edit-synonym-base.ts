@@ -12,6 +12,14 @@ export abstract class EditSynonymBase implements SaveColumnDictionaryCallback {
   public readonly COLUMN_IS_EMPTY = '原词为空,请选择原词';
   public readonly SYNONYM_IS_DUPLICATED = '该同义词已经定义,原词为 ';
   public readonly SYNONYM_IS_SAVED = '该同义词已经保存';
+  // save original column dictionaries action type
+  protected readonly DELETE_COLUMN = 1; // delete column
+  protected readonly ADD_COLUMN = 2; // add column
+  protected readonly EDIT_COLUMN = 3; // add/delete/edit synonym to column
+  // save original column'action and column
+  protected saveOriginalColumnAction = 0;
+  protected saveOriginalColumnDeletedIndex = -1;
+  protected saveOriginalColumn: ColumnsDictionary = null;
   // synonym
   public synonym: string = null;
   // column
@@ -51,8 +59,6 @@ export abstract class EditSynonymBase implements SaveColumnDictionaryCallback {
         this.errorMsg = this.SYNONYM_IS_DUPLICATED + column;
         return;
       } else {
-        // save original columns dictionaries before saving it
-        this.saveOriginalColumnsDictionaries();
         // no duplicated synonym exists
         this.updateColumnDictionaries();
         // save synonym dictionaries
@@ -62,17 +68,57 @@ export abstract class EditSynonymBase implements SaveColumnDictionaryCallback {
   }
   // save columns dictionaries before saving it
   // if saving it failed, then recover it
-  protected saveOriginalColumnsDictionaries(): void {
-    this.oriColumnsDictionaries = [];
-    this.columnsDictionaries.forEach(element => {
-      this.oriColumnsDictionaries.push(element.clone());
-    });
+  protected saveOriginalColumnsDictionaries(
+    actionType: number,
+    actionColumn: ColumnsDictionary,
+    deleteColumnIndex = -1): void {
+    this.saveOriginalColumnAction = actionType;
+    this.saveOriginalColumn = actionColumn;
+    this.saveOriginalColumnDeletedIndex = deleteColumnIndex;
   }
+  // recover original column dictionaries
+  // when saving column dictionaries failed
   protected recoverOriginalColumnsDictionaries(): void {
-    this.columnsDictionaries = [];
-    this.oriColumnsDictionaries.forEach(element => {
-      this.columnsDictionaries.push(element.clone());
-    });
+    // add column's case, delete this column to recover
+    if (this.saveOriginalColumnAction === this.ADD_COLUMN) {
+      let deleteIndex = -1;
+      for (let i = 0; i < this.columnsDictionaries.length; i++) {
+        if (this.columnsDictionaries[i].getUUID()
+          === this.saveOriginalColumn.getUUID()) {
+          deleteIndex = i;
+        }
+      }
+      if (deleteIndex !== -1) {
+        this.columnsDictionaries.splice(deleteIndex, 1);
+      } else {
+        // nothing to do
+      }
+    } else if (this.saveOriginalColumnAction === this.DELETE_COLUMN) {
+      // delete all after elements
+      const afterElements = this.columnsDictionaries.splice(
+        this.saveOriginalColumnDeletedIndex,
+      );
+      // push original column
+      this.columnsDictionaries.push(this.saveOriginalColumn);
+      // push other after elements
+      afterElements.forEach(element => {
+        this.columnsDictionaries.push(element);
+      });
+    } else if (this.saveOriginalColumnAction === this.EDIT_COLUMN) {
+      let editIndex = -1;
+      for (let i = 0; i < this.columnsDictionaries.length; i++) {
+        if (this.columnsDictionaries[i].getUUID()
+          === this.saveOriginalColumn.getUUID()) {
+          editIndex = i;
+        }
+      }
+      if (editIndex !== -1) {
+        // popup editing column
+        this.columnsDictionaries[editIndex] = this.saveOriginalColumn;
+      } else {
+        // nothing to do
+      }
+    }
   }
   protected abstract updateColumnDictionaries(): void;
   // save synonym dictionaries
