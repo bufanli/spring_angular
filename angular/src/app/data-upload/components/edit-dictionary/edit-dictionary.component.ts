@@ -213,10 +213,14 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
     const modalService: NgbModal = this.modalService;
     const modalRef = modalService.open(AddCustomColumnComponent, this.adjustModalOptions());
     modalRef.componentInstance.setColumnsDictionaries(this.columnsDictionaries);
-    modalRef.componentInstance.notifyClose.subscribe(response => this.callbackOfEditSynonymClosed(response));
+    modalRef.componentInstance.notifyClose.subscribe(response => this.callbackOfAddColumnClosed(response));
   }
   // delete custom column
   private deleteColumnHandler(uuid: string): void {
+    // clear all message
+    this.clearInfoMsg();
+    this.clearErrorMsg();
+    // update column dictionaries
     let index = -1;
     for (let i = 0; i < this.columnsDictionaries.length; i++) {
       if (this.columnsDictionaries[i].getUUID() === uuid) {
@@ -240,6 +244,11 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
   }
   // callback of edit synonym closed
   private callbackOfEditSynonymClosed(repsonse: string): void {
+    // refresh all synonym table's row
+    this.refreshAllSynonymTables();
+  }
+  // callback of add column  closed
+  private callbackOfAddColumnClosed(repsonse: string): void {
     // refresh all synonym table's row
     this.refreshAllSynonymTables();
   }

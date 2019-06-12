@@ -32,10 +32,7 @@ export class EditSynonymComponent extends EditSynonymBase implements OnInit {
 
   ngOnInit() {
   }
-  // set column dictionaries getting from parent component
-  public setColumnsDictionaries(columnsDictionaries: ColumnsDictionary[]): void {
-    this.columnsDictionaries = columnsDictionaries;
-  }
+
   // set editing synonym index
   public setEditSynonymIndex(index: number): void {
     this.editSynonymIndex = index;

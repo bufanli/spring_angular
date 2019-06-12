@@ -131,5 +131,9 @@ export abstract class EditSynonymBase implements SaveColumnDictionaryCallback {
     this.errorExist = false;
     this.errorMsg = '';
   }
+  // set column dictionaries getting from parent component
+  public setColumnsDictionaries(columnsDictionaries: ColumnsDictionary[]): void {
+    this.columnsDictionaries = columnsDictionaries;
+  }
 
 }
