@@ -89,7 +89,7 @@ sbf = new StringBuffer("");//重新new
         Iterator<Map.Entry<String, String>> it = set.iterator();
         while (it.hasNext()) {
             Map.Entry<String,String> entry = it.next();
-            sql.append(entry.getKey() + "=" + entry.getValue());
+            sql.append(entry.getKey() + "='" + entry.getValue() + "'");
         }
 
         int num = getJdbcTemplate().update(sql.toString());
@@ -237,13 +237,13 @@ GROUP BY 列1,列2,列3 having count(*) > 1;
      * @author FuJia
      * @Time 2019-06-08 00:00:00
      */
-    public Long hasColumnValue(String tableName, String columnName) throws Exception {
+    public List<Long> hasColumnValue(String tableName, String columnName) throws Exception {
 
         StringBuffer sql = new StringBuffer();
         sql.append("select count(*) from " + tableName + " where " + columnName + "<>\"\" group by " + columnName);
 
-        Long num = getJdbcTemplate().queryForObject(sql.toString(), Long.class);
-        return num;//如果>0说明存在有值行数据
+        List<Long> numList = getJdbcTemplate().queryForList(sql.toString(),Long.class);
+        return numList;//如果>0说明存在有值行数据
     }
 
     /**

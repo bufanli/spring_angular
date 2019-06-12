@@ -266,15 +266,15 @@ public class DataService {
      */
     public boolean deleteColumnFromSQL(String columnName) throws Exception {
 
-        Long hasDataNum = getDataDao().hasColumnValue(DataService.TABLE_DATA, columnName);
-        if (hasDataNum > 0) {
+        List<Long> hasDataNum = getDataDao().hasColumnValue(DataService.TABLE_DATA, columnName);
+        if (hasDataNum.size() != 0) {
             return false;
         } else {
             int delDataNum = getDataDao().deleteColumn(DataService.TABLE_DATA, columnName);
             int delQueryConTypeNum = getDataDao().deleteColumn(DataService.TABLE_QUERY_CONDITION_TYPE, columnName);
 
             Map<String, String> keyValue = new LinkedHashMap<>();
-            keyValue.put(DataService.TABLE_STATISTICS_SETTING_GROUP_BY, columnName);
+            keyValue.put(DataService.STATISTICS_SETTING_GROUP_BY_COLUMN_NAME, columnName);
             Data data = new Data(keyValue);
             int delStaticSettingGroupByNum = getDataDao().deleteData(DataService.TABLE_STATISTICS_SETTING_GROUP_BY, data);
 
