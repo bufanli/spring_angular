@@ -269,7 +269,9 @@ public class UploadFileServiceImpl implements IUploadFileService {
                     if (dataService.deleteColumnFromSQL(columnName)) {
                         Slf4jLogUtil.get().info("删除字段 {} 成功！",columnName);
                     } else {
-                        Slf4jLogUtil.get().info("删除字段 {} 失败！",columnName);
+                        Slf4jLogUtil.get().info("删除字段 {} 已有数据，不可删除！",columnName);
+                        responseResult = new ResponseResultUtil().error(ResponseCodeEnum.DELETE_COLUMN_DATA_IS_EXIST);
+                        return responseResult;
                     }
                 }
             }
