@@ -82,7 +82,8 @@ export class AddCustomColumnComponent extends EditSynonymBase implements OnInit 
     const customColumn = new ColumnsDictionary(
       this.column,
       // add delete column link because it must have no synonym in that time
-      [this.DELETE_COLUMN_NAME]);
+      []);
+      customColumn.getSynonyms().push(this.DELETE_COLUMN_NAME + customColumn.getUUID());
     this.columnsDictionaries.push(customColumn);
     // 3. push back the last element
     this.columnsDictionaries.push(lastColumnDictionary);
