@@ -291,7 +291,7 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
       this.saveOriginalColumnsDictionaries(
         this.EDIT_COLUMN,
         deleteColumnDictionary
-      )
+      );
       deleteColumnDictionary.getSynonyms().splice(index, 1);
     }
     // if last synonym deleted, add delete column link
@@ -427,8 +427,6 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
       this.isDeletingSynonym = false;
       this.isDeletingColumn = false;
     }
-    // refresh synonyms row
-    this.columnsDictionariesLoaded = true;
   }
   // set upload data error msg
   public setUploadDataErrorMsg(errorMsg: string): void {
