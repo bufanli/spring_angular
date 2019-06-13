@@ -1,5 +1,7 @@
 ﻿【processing】
 
+1. 能够添加，删除column之后，有两个地方需要修改，1. data detail的地方，2. 用户配置query condition的地方  考虑用全局的ColumnsContainer在保存，更新。
+
 2. delete user 未对应。
 
 3. add user input 和 edit user 这两个component在 getUserDetailedInfo和 getDefaultDetailedInfo的时候，两秒之后
