@@ -72,4 +72,8 @@
     <column key="GTIN" value="VARCHAR(10)" />
     <column key="CAS" value="VARCHAR(10)" />
     <column key="备注" value="VARCHAR(10)" />
+    <column key="城市" value="VARCHAR(10)" />
+    <column key="省份" value="VARCHAR(10)" />
+    <column key="区域" value="VARCHAR(10)" />
+    <column key="大洲" value="VARCHAR(10)" />
 </mapping>
