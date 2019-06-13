@@ -38,6 +38,8 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
   private id: any;
   // upload error msg
   private uploadErrorMsg: string = null;
+  // deleting column
+  protected deletingColumn: string = null;
   constructor(private http: HttpClient,
     protected currentUserContainer: CurrentUserContainerService,
     protected saveColumnSynonymsService: SaveColumnSynonymsService,
@@ -238,6 +240,8 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
         this.columnsDictionaries[index],
         index
       );
+      // set deleting column
+      this.deletingColumn = this.columnsDictionaries[index].getColumnName();
       // delete specified column
       this.columnsDictionaries.splice(index, 1);
     } else {
@@ -415,7 +419,9 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
           this.infoExist = true;
           this.infoMsg = this.DELETE_COLUMN_OK;
           // update columns after deleting column
-          this.convertColumnDictionariesToColumns();
+          this.deleteColumnFromColumnSelections();
+          // set flag to callback ng view checked
+          this.columnsDictionariesLoaded = true;
         } else if (this.isDeletingSynonym) {
           this.infoExist = true;
           this.infoMsg = this.DELETE_SYNONYM_OK;
@@ -449,6 +455,20 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
       return true;
     } else {
       return false;
+    }
+  }
+  // delete column from columns selections
+  private deleteColumnFromColumnSelections(): void {
+    let index = -1;
+    for (let i = 0; i < this.columns.length; i++) {
+      if (this.columns[i] === this.deletingColumn) {
+        index = i;
+        break;
+      }
+    }
+    // delete column
+    if (index !== -1) {
+      this.columns.splice(index, 1);
     }
   }
 }
