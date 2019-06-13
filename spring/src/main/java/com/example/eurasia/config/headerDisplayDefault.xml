@@ -72,4 +72,8 @@
     <column key="GTIN" value="FALSE" />
     <column key="CAS" value="FALSE" />
     <column key="备注" value="FALSE" />
+    <column key="城市" value="FALSE" />
+    <column key="省份" value="FALSE" />
+    <column key="区域" value="FALSE" />
+    <column key="大洲" value="FALSE" />
 </mapping>

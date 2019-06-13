@@ -72,4 +72,8 @@
     <column key="GTIN" value="TINYINT" />
     <column key="CAS" value="TINYINT" />
     <column key="备注" value="TINYINT" />
+    <column key="城市" value="TINYINT" />
+    <column key="省份" value="TINYINT" />
+    <column key="区域" value="TINYINT" />
+    <column key="大洲" value="TINYINT" />
 </mapping>

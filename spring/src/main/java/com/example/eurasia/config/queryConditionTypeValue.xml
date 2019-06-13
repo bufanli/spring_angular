@@ -71,4 +71,8 @@
     <column key="GTIN" value="String" />
     <column key="CAS" value="String" />
     <column key="备注" value="String" />
+    <column key="城市" value="List" />
+    <column key="省份" value="List" />
+    <column key="区域" value="List" />
+    <column key="大洲" value="List" />
 </mapping>

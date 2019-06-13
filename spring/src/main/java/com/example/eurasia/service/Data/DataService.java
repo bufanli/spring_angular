@@ -77,12 +77,12 @@ public class DataService {
             Map<String, String> groupByNameType = new LinkedHashMap<String, String>();
             groupByNameType.put(DataService.STATISTICS_SETTING_GROUP_BY_COLUMN_NAME,"VARCHAR(255)");
             if (this.createTable(DataService.TABLE_STATISTICS_SETTING_GROUP_BY,groupByNameType) == true) {
-                String[] groupByArr = {"日期","进出口","申报单位名称","货主单位名称","经营单位名称","经营单位代码",
-                                        "运输工具名称","提运单号","海关编码","附加码","商品名称", "部位","包装规格",
-                                        "英文品名","品牌","加工厂号","加工企业名称","牛种","牛龄","级别",
-                                        "饲养方式","申报要素","成交方式","监管方式","运输方式","目的地","包装种类",
+                String[] groupByArr = {"日期","进出口","申报单位名称","货主单位名称","经营单位名称","申报单位代码","货主单位代码","经营单位代码",
+                                        "企业性质","运输工具名称","提运单号","海关编码","附加码","商品名称","制作或保存方法","加工方法",
+                                        "部位","包装规格","英文品名","品牌","加工厂号","加工企业名称","牛种","牛龄","级别",
+                                        "饲养方式","签约日期","申报要素","成交方式","监管方式","运输方式","目的地","包装种类",
                                         "主管关区","报关口岸","装货港","中转国","贸易国","企业性质","地址",
-                                        "手机","电话","传真","Email","法人","联系人"};
+                                        "手机","电话","传真","Email","法人","联系人","城市","省份","区域","大洲"};
                 for (int i=0; i<groupByArr.length; i++) {
                     getDataDao().addData(DataService.TABLE_STATISTICS_SETTING_GROUP_BY,DataService.STATISTICS_SETTING_GROUP_BY_COLUMN_NAME,groupByArr[i]);
                 }
@@ -106,9 +106,9 @@ public class DataService {
             if (this.createTable(DataService.TABLE_COLUMNS_DICTIONARY,DataService.BEAN_NAME_COLUMNS_DICTIONARY_NAME) == true) {
                 Map<String, String> columnsDicMap = new LinkedHashMap<String, String>();
                 String[] synonymArr = {"进口","商品编码","商品编码2","产品名称","牛肉部位","贸易方式",
-                        "申报单位","货主单位","经营单位","企业代码","进口关区", "原产国"};
+                        "申报单位","货主单位","经营单位","企业代码","进口关区", "原产国","装/卸货港","规格型号"};
                 String[] columnNameArr = {"进出口","海关编码","附加码","商品名称","部位","监管方式",
-                        "申报单位名称","货主单位名称","经营单位名称","经营单位代码","报关口岸", "贸易国"};
+                        "申报单位名称","货主单位名称","经营单位名称","经营单位代码","报关口岸", "贸易国","装货港","包装规格"};
                 for (int i=0; i<synonymArr.length; i++) {
                     columnsDicMap.put(DataService.COLUMNS_DICTIONARY_SYNONYM,synonymArr[i]);
                     columnsDicMap.put(DataService.COLUMNS_DICTIONARY_COLUMN_NAME,columnNameArr[i]);
