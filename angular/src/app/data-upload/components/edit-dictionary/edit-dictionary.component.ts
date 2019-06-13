@@ -210,6 +210,9 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
   }
   // add custom column handler
   private addCustomColumnHandler(): void {
+    // clear info msg and error msg
+    this.clearErrorMsg();
+    this.clearInfoMsg();
     const modalService: NgbModal = this.modalService;
     const modalRef = modalService.open(AddCustomColumnComponent, this.adjustModalOptions());
     modalRef.componentInstance.setColumnsDictionaries(this.columnsDictionaries);
@@ -253,6 +256,8 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
   }
   // callback of add column  closed
   private callbackOfAddColumnClosed(repsonse: string): void {
+    // update columns after adding columns
+    this.convertColumnDictionariesToColumns();
     // refresh all synonym table's row
     this.refreshAllSynonymTables();
   }
@@ -409,6 +414,8 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
         if (this.isDeletingColumn) {
           this.infoExist = true;
           this.infoMsg = this.DELETE_COLUMN_OK;
+          // update columns after deleting column
+          this.convertColumnDictionariesToColumns();
         } else if (this.isDeletingSynonym) {
           this.infoExist = true;
           this.infoMsg = this.DELETE_SYNONYM_OK;
