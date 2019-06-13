@@ -35,6 +35,7 @@ export abstract class EditSynonymBase implements SaveColumnDictionaryCallback {
   // original column dictionaries to save column dictionaries before save
   // if saving failed, recover it
   protected oriColumnsDictionaries: ColumnsDictionary[] = null;
+
   constructor(
     protected currentUserContainer: CurrentUserContainerService,
     protected saveColumnSynonymService: SaveColumnSynonymsService) { }

@@ -259,9 +259,12 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
     this.refreshAllSynonymTables();
   }
   // callback of add column  closed
-  private callbackOfAddColumnClosed(repsonse: string): void {
+  private callbackOfAddColumnClosed(addedColumn: string): void {
     // update columns after adding columns
-    this.convertColumnDictionariesToColumns();
+    if (addedColumn !== null) {
+      this.columns.push(addedColumn);
+      this.columnsDictionariesLoaded = true;
+    }
     // refresh all synonym table's row
     this.refreshAllSynonymTables();
   }

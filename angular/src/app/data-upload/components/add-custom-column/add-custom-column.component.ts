@@ -4,6 +4,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { SaveColumnSynonymsService } from '../../services/save-column-synonyms.service';
 import { ColumnsDictionary } from '../../entities/columns-dictionary';
 import { EditSynonymBase } from '../../interfaces/edit-synonym-base';
+import { HttpResponse } from 'src/app/common/entities/http-response';
 
 @Component({
   selector: 'app-add-custom-column',
@@ -17,6 +18,9 @@ export class AddCustomColumnComponent extends EditSynonymBase implements OnInit 
   public readonly CUSTOM_COLUMN_EXIST = '该自定义列已经存在';
   public readonly COSTOM_COLUMN_SAVED = '该自定义列已经保存';
   private readonly DELETE_COLUMN_NAME = 'deletecolumn_';
+  // adding column
+  protected addingColumn: string = null;
+  protected addedColumn: string = null;
   // notify close event
   @Output() notifyClose: EventEmitter<string> = new EventEmitter<string>();
 
@@ -32,7 +36,10 @@ export class AddCustomColumnComponent extends EditSynonymBase implements OnInit 
   public close(): void {
     this.activeModal.close();
     // notify close
-    this.notifyClose.emit('column_added');
+    this.notifyClose.emit(this.addedColumn);
+    // clear column
+    this.addedColumn = null;
+    this.addingColumn = null;
   }
   // on entering synonym
   public onEnterCustomColumn(event: any): void {
@@ -88,5 +95,14 @@ export class AddCustomColumnComponent extends EditSynonymBase implements OnInit 
     this.columnsDictionaries.push(customColumn);
     // 5. push back the last element
     this.columnsDictionaries.push(lastColumnDictionary);
+    // 6. set adding column
+    this.addingColumn = this.column;
+  }
+  // save column dictionary notification
+  public callbackOnSaveEnd(httpResponse: HttpResponse): void {
+    if (httpResponse.code === 200) {
+      this.addedColumn = this.addingColumn;
+    }
+    super.callbackOnSaveEnd(httpResponse);
   }
 }
