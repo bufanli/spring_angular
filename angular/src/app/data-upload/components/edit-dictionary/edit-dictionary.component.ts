@@ -234,7 +234,7 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
       }
     }
     if (index !== -1) {
-      // before savint columns dictionaries, save it
+      // before saving columns dictionaries, save it
       this.saveOriginalColumnsDictionaries(
         this.DELETE_COLUMN,
         this.columnsDictionaries[index],
@@ -244,6 +244,8 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
       this.deletingColumn = this.columnsDictionaries[index].getColumnName();
       // delete specified column
       this.columnsDictionaries.splice(index, 1);
+      // trigger to ng after view checked
+      this.columnsDictionariesLoaded = true;
     } else {
       // nothing to do because it is impossible here
     }
@@ -251,7 +253,6 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
     this.isDeletingColumn = true;
     // save all synonym rows
     this.saveColumnDictionaries();
-
   }
   // callback of edit synonym closed
   private callbackOfEditSynonymClosed(repsonse: string): void {
@@ -311,6 +312,8 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
       deleteColumnDictionary.getSynonyms().push(
         this.DELETE_COLUMN_NAME + deleteColumnDictionary.getUUID());
     }
+    // trigger to ng after view checked
+    this.columnsDictionariesLoaded = true;
     // set deleting flag
     this.isDeletingSynonym = true;
     // save all synonym rows
@@ -400,6 +403,8 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
         }
       }
     });
+    // tigger to ng after view checked
+    this.columnsDictionariesLoaded = true;
   }
   private setSelectOptions(id: string): void {
     $(id).selectpicker({
@@ -440,10 +445,9 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
       // set back deleting flag
       this.isDeletingSynonym = false;
       this.isDeletingColumn = false;
-      // set flag to callback ng view checked
-      this.columnsDictionariesLoaded = true;
-
     }
+    // set flag to callback ng view checked
+    this.columnsDictionariesLoaded = true;
   }
   // set upload data error msg
   public setUploadDataErrorMsg(errorMsg: string): void {
