@@ -436,12 +436,13 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
         this.errorMsg = httpResponse.message;
         // recover original columns dictionaries
         this.recoverOriginalColumnsDictionaries();
-        // set flag to callback ng view checked
-        this.columnsDictionariesLoaded = true;
       }
       // set back deleting flag
       this.isDeletingSynonym = false;
       this.isDeletingColumn = false;
+      // set flag to callback ng view checked
+      this.columnsDictionariesLoaded = true;
+
     }
   }
   // set upload data error msg
