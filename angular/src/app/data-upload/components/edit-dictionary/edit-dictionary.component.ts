@@ -14,6 +14,7 @@ import 'bootstrap';
 import 'bootstrap-table';
 import 'bootstrap-select';
 import { AddCustomColumnComponent } from '../add-custom-column/add-custom-column.component';
+import { ColumnsContainerService } from 'src/app/common/services/columns-container.service';
 
 @Component({
   selector: 'app-edit-dictionary',
@@ -43,7 +44,8 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
   constructor(private http: HttpClient,
     protected currentUserContainer: CurrentUserContainerService,
     protected saveColumnSynonymsService: SaveColumnSynonymsService,
-    public modalService: NgbModal) {
+    public modalService: NgbModal,
+    private columnsContainer: ColumnsContainerService) {
     super(currentUserContainer, saveColumnSynonymsService);
   }
 
@@ -268,6 +270,8 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
     }
     // refresh all synonym table's row
     this.refreshAllSynonymTables();
+    // refresh columns container service
+    this.columnsContainer.refreshAllColumns();
   }
   // adjust modal options
   // if don't adjust modal options, modal will not be shown correctly
@@ -430,6 +434,8 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
           this.deleteColumnFromColumnSelections();
           // set flag to callback ng view checked
           this.columnsDictionariesLoaded = true;
+          // refresh columns container
+          this.columnsContainer.refreshAllColumns();
         } else if (this.isDeletingSynonym) {
           this.infoExist = true;
           this.infoMsg = this.DELETE_SYNONYM_OK;

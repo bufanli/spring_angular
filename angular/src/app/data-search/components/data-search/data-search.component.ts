@@ -29,6 +29,7 @@ import { QueryCondition } from '../../entities/query-condition';
 import { UUID } from 'angular2-uuid';
 import { QueryConditionRow } from '../../entities/query-conditions-row';
 import { UserQueryConditionsComponent } from 'src/app/user-conf/components/user-query-conditions/user-query-conditions.component';
+import { ColumnsContainerService } from 'src/app/common/services/columns-container.service';
 
 // json header for post
 const httpOptions = {
@@ -63,10 +64,10 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
   public readonly PLEASE_SELECT = '请选择';
   public readonly QUERY_CONDITIONS_NUMBER_EACH_ROW = 3;
   // api urls
-  private searchUrl = 'api/searchData';  // URL to web api
-  private exportUrl = 'api/downloadFile';  // URL to web api
-  private headersUrl = 'api/getHeaders';  // URL to web api
-  private getQueryConditionsUrl = 'api/getQueryConditions';  // URL to web api
+  private readonly searchUrl = 'api/searchData';  // URL to web api
+  private readonly exportUrl = 'api/downloadFile';  // URL to web api
+  private readonly headersUrl = 'api/getHeaders';  // URL to web api
+  private readonly getQueryConditionsUrl = 'api/getQueryConditions';  // URL to web api
 
   // this id is just for compiling pass
   private id: string = null;
@@ -131,14 +132,15 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
   }
 
   constructor(private http: HttpClient,
-// tslint:disable-next-line: deprecation
+    // tslint:disable-next-line: deprecation
     private downloadHttp: Http,
     private commonUtilitiesService: CommonUtilitiesService,
     private currentUserContainer: CurrentUserContainerService,
     public modalService: NgbModal,
     private route: Router,
     public dataSearchConstListService: DataSearchConstListService,
-    private dataStatisticsService: DataStatisticsService) {
+    private dataStatisticsService: DataStatisticsService,
+    private columnsContainerService: ColumnsContainerService) {
   }
 
   // notification for getting header of table
@@ -266,6 +268,8 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
     this.getQueryConditions();
     // init access authorities
     this.initAccessAuthorites();
+    // load all columns
+    this.columnsContainerService.init();
   }
 
   private setSelectOptions(id: string): void {

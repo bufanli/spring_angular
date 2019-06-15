@@ -9,7 +9,7 @@
 <div class="modal-body">
   <div class="data-detail-container">
     <form role="form" class="form-horizental">
-      <div *ngFor="let field of DATA_DETAIL_FIELDS" class="col-md-6">
+      <div *ngFor="let field of this.dataDetailFields" class="col-md-6">
         <div class="form-group">
           <label class="control-label col-sm-6 my-control-label">{{field}}:</label>
           <p class="form-control-static col-sm-6">{{this.currentData[field]}}</p>

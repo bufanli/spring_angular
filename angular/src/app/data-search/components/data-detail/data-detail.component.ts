@@ -1,5 +1,6 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { ColumnsContainerService } from 'src/app/common/services/columns-container.service';
 
 @Component({
   selector: 'app-data-detail',
@@ -74,14 +75,23 @@ export class DataDetailComponent implements OnInit {
     '联系人',
   ];
   public currentData: any = null;
+  public dataDetailFields: string[] = null;
   @Output() notifyClose: EventEmitter<string> = new EventEmitter<string>();
-  constructor(private activeModal: NgbActiveModal) { }
+  constructor(
+    private activeModal: NgbActiveModal,
+    private columnsContainerService: ColumnsContainerService) { }
   // set current data
   public setCurrentData(data: any): void {
     this.currentData = data;
   }
 
   ngOnInit() {
+    const allColumns = this.columnsContainerService.getAllColumns();
+    if (allColumns !== null) {
+      this.dataDetailFields = allColumns;
+    } else {
+      this.dataDetailFields = this.DATA_DETAIL_FIELDS;
+    }
   }
   // close modal
   public close(): void {

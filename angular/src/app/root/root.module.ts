@@ -37,10 +37,12 @@ const rootRoutes: Routes = [
   ],
   imports: [
     BrowserModule,
+// tslint:disable-next-line: deprecation
     NgbModule.forRoot(),
     CommonModule,
     RouterModule.forRoot(rootRoutes),
     OurCommonModule,
+// tslint:disable-next-line: deprecation
     HttpModule,
     HttpClientModule,
     // HttpClientInMemoryWebApiModule.forRoot(
