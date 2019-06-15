@@ -10,6 +10,7 @@ import { UserQueryConditionHeader } from '../entities/user-query-condition-heade
 import { UserAddInputComponent } from '../components/user-add-input/user-add-input.component';
 import { UserAccessAuthoritiesComponent } from '../components/user-access-authorities/user-access-authorities.component';
 import { CategorySelections } from '../entities/category-selections';
+import { ColumnsContainerService } from 'src/app/common/services/columns-container.service';
 
 // json header for post
 const httpOptions = {
@@ -50,7 +51,7 @@ export const UserBaiscInfosDictionary = [
   '手机号码',
   '电子邮件',
 ];
-export const QueryConditionHeaderDictionary = [
+export const QUERY_CONDITION_HEADER_DICTIONARY = [
   'userID',
   '日期',
   '进出口',
@@ -132,9 +133,13 @@ export class UserInfoService {
   private userAccessAuthoritiesComponent: UserAccessAuthoritiesComponent = null;
   // hs code catetory name
   private readonly HS_CODE_CATETORY_NAME = '海关编码';
+  // query condition header dictionary
+  private queryConditionHeaderDictionary: string[] = null;
 
   constructor(private http: HttpClient,
-    private commonUtilityService: CommonUtilitiesService) { }
+    private commonUtilityService: CommonUtilitiesService,
+    private columnsContainer: ColumnsContainerService) {
+  }
 
   public getUserDetailedInfo(sourceComponent: UserEditComponent, userID: string): void {
     this.userEditComponent = sourceComponent;
@@ -164,17 +169,24 @@ export class UserInfoService {
       UserAccessAuthoritiesDictionary, userAccessAuthoritiesData);
     this.userEditComponent.setUserAccessAuthorities(userAccessAuthorities);
 
+    // get all columns
+    this.columnsContainer.init();
+    if (this.columnsContainer.getAllColumns() !== null) {
+      this.queryConditionHeaderDictionary = this.columnsContainer.getAllColumns();
+    } else {
+      this.queryConditionHeaderDictionary = QUERY_CONDITION_HEADER_DICTIONARY;
+    }
     // get header display
     const userHeaderDisplays = data.userHeaderDisplays;
     const headerDisplays = this.commonUtilityService.deserializeDataFromHttpResponse(
-      QueryConditionHeaderDictionary,
+      this.queryConditionHeaderDictionary,
       userHeaderDisplays);
     this.userEditComponent.setUserHeaderDisplay(headerDisplays);
 
     // get query condition display
     const userQueryConditionDisplays = data.userQueryConditionDisplays;
     const queryConditionDisplays = this.commonUtilityService.deserializeDataFromHttpResponse(
-      QueryConditionHeaderDictionary,
+      this.queryConditionHeaderDictionary,
       userQueryConditionDisplays
     );
     this.userEditComponent.setUserQueryConditionDisplay(queryConditionDisplays);
@@ -208,14 +220,21 @@ export class UserInfoService {
       UserAccessAuthoritiesDictionary,
       userAccessAuthorities
     );
+    // get all columns
+    this.columnsContainer.init();
+    if (this.columnsContainer.getAllColumns() !== null) {
+      this.queryConditionHeaderDictionary = this.columnsContainer.getAllColumns();
+    } else {
+      this.queryConditionHeaderDictionary = QUERY_CONDITION_HEADER_DICTIONARY;
+    }
     // header display
     const headerDisplay = this.commonUtilityService.serializeDataToHttpResponse(
-      QueryConditionHeaderDictionary,
+      this.queryConditionHeaderDictionary,
       userHeaderDisplay
     );
     // query condition display
     const queryConditionDisplay = this.commonUtilityService.serializeDataToHttpResponse(
-      QueryConditionHeaderDictionary,
+      this.queryConditionHeaderDictionary,
       userQueryConditionDisplay
     );
     const userDetailInfo = {
@@ -277,11 +296,18 @@ export class UserInfoService {
     this.userAddInputComponent.setUserAccessAuthorites(userAccessAuthorities);
     // get query condition displays
     const queryConditionDisplays = this.commonUtilityService.deserializeDataFromHttpResponse(
-      QueryConditionHeaderDictionary, httpResponse.data.userQueryConditionDisplays);
+      this.queryConditionHeaderDictionary, httpResponse.data.userQueryConditionDisplays);
     this.userAddInputComponent.setUserQueryConditionDisplays(queryConditionDisplays);
     // get header displays
+    // get all columns
+    this.columnsContainer.init();
+    if (this.columnsContainer.getAllColumns() !== null) {
+      this.queryConditionHeaderDictionary = this.columnsContainer.getAllColumns();
+    } else {
+      this.queryConditionHeaderDictionary = QUERY_CONDITION_HEADER_DICTIONARY;
+    }
     const headerDisplay = this.commonUtilityService.deserializeDataFromHttpResponse(
-      QueryConditionHeaderDictionary, httpResponse.data.userHeaderDisplays);
+      this.queryConditionHeaderDictionary, httpResponse.data.userHeaderDisplays);
     this.userAddInputComponent.setUserHeaderDisplays(headerDisplay);
     // call back to finish get user detailed info
     this.userAddInputComponent.callbackToFinsihGetUserDetaildInfo();
@@ -321,14 +347,21 @@ export class UserInfoService {
       UserAccessAuthoritiesDictionary,
       userAccessAuthorities
     );
+    // get all columns
+    this.columnsContainer.init();
+    if (this.columnsContainer.getAllColumns() !== null) {
+      this.queryConditionHeaderDictionary = this.columnsContainer.getAllColumns();
+    } else {
+      this.queryConditionHeaderDictionary = QUERY_CONDITION_HEADER_DICTIONARY;
+    }
     // header display
     const headerDisplay = this.commonUtilityService.serializeDataToHttpResponse(
-      QueryConditionHeaderDictionary,
+      this.queryConditionHeaderDictionary,
       userHeaderDisplay
     );
     // query condition display
     const queryConditionDisplay = this.commonUtilityService.serializeDataToHttpResponse(
-      QueryConditionHeaderDictionary,
+      this.queryConditionHeaderDictionary,
       userQueryConditionDisplay
     );
     const userDetailInfo = {

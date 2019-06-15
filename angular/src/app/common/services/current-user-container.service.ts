@@ -5,9 +5,10 @@ import { UserQueryConditionHeader } from 'src/app/user-conf/entities/user-query-
 import { HttpClient } from '@angular/common/http';
 import { UserBaiscInfosDictionary } from 'src/app/user-conf/services/user-info.service';
 import { UserAccessAuthoritiesDictionary } from 'src/app/user-conf/services/user-info.service';
-import { QueryConditionHeaderDictionary } from 'src/app/user-conf/services/user-info.service';
 import { CommonUtilitiesService } from './common-utilities.service';
 import { Router } from '@angular/router';
+import { ColumnsContainerService } from './columns-container.service';
+import { QUERY_CONDITION_HEADER_DICTIONARY } from '../../user-conf/services/user-info.service';
 
 @Injectable({
   providedIn: 'root'
@@ -27,7 +28,8 @@ export class CurrentUserContainerService {
 
   constructor(private http: HttpClient,
     private commonUtilitiesService: CommonUtilitiesService,
-    private router: Router) { }
+    private router: Router,
+    private columnsContainer: ColumnsContainerService) { }
   public getCurrentUserBasicInfo(): UserBasicInfo {
     return this.userBasicInfo;
   }
@@ -46,6 +48,13 @@ export class CurrentUserContainerService {
   // set openid and user basic info and detail info
   // when input url to go to main component without login in the case of session available
   public saveUserInfo(userInfo: any): void {
+    // get all columns
+    let queryConditionHeaderDictionary = null;
+    if (this.columnsContainer.getAllColumns() !== null) {
+      queryConditionHeaderDictionary = this.columnsContainer.getAllColumns();
+    } else {
+      queryConditionHeaderDictionary = QUERY_CONDITION_HEADER_DICTIONARY;
+    }
     // set openid
     this.openID = userInfo.userIDFromBasicInfos;
     // user basic info
@@ -58,11 +67,11 @@ export class CurrentUserContainerService {
     this.userAccessAuthorities = userAccessAuthorities;
     // user query conditions
     const queryConditionDisplays = this.commonUtilitiesService.deserializeDataFromHttpResponse(
-      QueryConditionHeaderDictionary, userInfo.userDetailedInfos.userQueryConditionDisplays);
+      queryConditionHeaderDictionary, userInfo.userDetailedInfos.userQueryConditionDisplays);
     this.userQueryConditionDisplays = queryConditionDisplays;
     // header displays
     const headerDisplays = this.commonUtilitiesService.deserializeDataFromHttpResponse(
-      QueryConditionHeaderDictionary, userInfo.userDetailedInfos.userHeaderDisplays);
+      queryConditionHeaderDictionary, userInfo.userDetailedInfos.userHeaderDisplays);
     this.userHeaderDisplays = headerDisplays;
   }
   // when session timeout, navigate /web/login/external
