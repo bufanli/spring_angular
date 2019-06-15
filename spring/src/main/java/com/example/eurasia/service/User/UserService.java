@@ -540,7 +540,7 @@ public class UserService {
                     }
 
                     //查询用户可见的最近一个月
-                    SimpleDateFormat sdf = new SimpleDateFormat(QueryCondition.PRODUCT_DATE_FORMAT);
+                    SimpleDateFormat sdf = new SimpleDateFormat(QueryCondition.PRODUCT_DATE_FORMAT_1);
                     Date dateStart = sdf.parse(productDateArr[0]);
                     Date dateEnd = sdf.parse(productDateArr[1]);
                     Calendar cld = Calendar.getInstance();

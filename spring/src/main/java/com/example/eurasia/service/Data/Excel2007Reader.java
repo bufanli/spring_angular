@@ -8,6 +8,7 @@ import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.ss.usermodel.BuiltinFormats;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.util.SAXHelper;
+import org.apache.poi.xssf.eventusermodel.ReadOnlySharedStringsTable;
 import org.apache.poi.xssf.eventusermodel.XSSFReader;
 import org.apache.poi.xssf.model.SharedStringsTable;
 import org.apache.poi.xssf.model.StylesTable;
@@ -68,10 +69,10 @@ public class Excel2007Reader implements IExcelReaderByEventMode {
         OPCPackage pkg = OPCPackage.open(inputStream);
         try {
             XSSFReader r = new XSSFReader(pkg);
-            SharedStringsTable sst = r.getSharedStringsTable();// 获取当前Excel所有Sheet中字符串
+            ReadOnlySharedStringsTable readOnlySharedStringsTable = new ReadOnlySharedStringsTable(pkg);
             StylesTable st = r.getStylesTable();// 获取当前Excel所有Sheet中单元格样式
 
-            XMLReader parser = fetchSheetParser(sst, st);
+            XMLReader parser = fetchSheetParser(readOnlySharedStringsTable, st);
 
             /**
              * 返回一个迭代器，此迭代器会依次得到所有不同的sheet。
@@ -136,10 +137,10 @@ public class Excel2007Reader implements IExcelReaderByEventMode {
         }
     }
 
-    public XMLReader fetchSheetParser(SharedStringsTable sst, StylesTable st)
+    public XMLReader fetchSheetParser(ReadOnlySharedStringsTable rsst, StylesTable st)
             throws SAXException, ParserConfigurationException {
         XMLReader parser = SAXHelper.newXMLReader();
-        ContentHandler handler = new SheetHandler(sst,st);
+        ContentHandler handler = new SheetHandler(rsst,st);
         parser.setContentHandler(handler);// 处理公共属性：Sheet名，Sheet合并单元格
         return parser;
     }
@@ -150,7 +151,7 @@ public class Excel2007Reader implements IExcelReaderByEventMode {
     private class SheetHandler extends DefaultHandler {
 
         //取SST 的索引对应的值
-        private SharedStringsTable sst;
+        private ReadOnlySharedStringsTable rsst;
         private StylesTable st;
         //单元格内容是SST 的索引
         private boolean nextIsString = false;
@@ -185,8 +186,8 @@ public class Excel2007Reader implements IExcelReaderByEventMode {
         private short formatIndex;//单元格日期格式的索引
         private String formatString;//日期格式字符串
 
-        private SheetHandler(SharedStringsTable sst, StylesTable st) {
-            this.sst = sst;
+        private SheetHandler(ReadOnlySharedStringsTable rsst, StylesTable st) {
+            this.rsst = rsst;
             this.st = st;
         }
 
@@ -286,6 +287,7 @@ public class Excel2007Reader implements IExcelReaderByEventMode {
             } else if ("row".equals(qName)) {// 行结束标签
                 // 如果标签名称为 row ，这说明已到行尾，调用 getRows() 方法
                 this.curRow++;
+                System.out.println("current row is " + curRow);
                 //默认第一行为表头，以该行单元格数目为最大数目
                 if (this.curRow == 0) {
                     this.maxRef = this.ref;
@@ -338,6 +340,7 @@ public class Excel2007Reader implements IExcelReaderByEventMode {
          * */
         @Override
         public void characters(char[] ch, int start, int length) throws SAXException {
+            String test = new String(ch);
             this.lastContents += new String(ch, start, length);
         }
 
@@ -409,7 +412,7 @@ public class Excel2007Reader implements IExcelReaderByEventMode {
             } else if (null == cellType) {
 
                 if (null == cellStyleStr) {
-                    this.cellDataType = CellDataType.SSTINDEX;
+                    this.cellDataType = CellDataType.NUMBER;
                 } else {
                     this.cellDataType = CellDataType.NUMBER;                //cellType为空，则表示该单元格类型为数字
 
@@ -424,7 +427,7 @@ public class Excel2007Reader implements IExcelReaderByEventMode {
                         } else {
                             if (this.formatString.contains("m/d/yy")) {
                                 this.cellDataType = CellDataType.DATE;
-                                this.formatString = QueryCondition.PRODUCT_DATE_FORMAT;
+                                this.formatString = QueryCondition.PRODUCT_DATE_FORMAT_1;
                             }
                         }
                     } else {
@@ -464,7 +467,7 @@ public class Excel2007Reader implements IExcelReaderByEventMode {
                 case SSTINDEX: //字符串
                     try {
                         int idx = Integer.parseInt(value);
-                        thisStr = new XSSFRichTextString(this.sst.getEntryAt(idx)).toString();//根据idx索引值获取内容值
+                        thisStr = new XSSFRichTextString(this.rsst.getEntryAt(idx)).toString();//根据idx索引值获取内容值
                     } catch (NumberFormatException ex) {
                         thisStr = value;
                     }
@@ -547,7 +550,7 @@ public class Excel2007Reader implements IExcelReaderByEventMode {
         }
 
         private String formatDateToString(Date date) {
-            SimpleDateFormat sdf = new SimpleDateFormat(QueryCondition.PRODUCT_DATE_FORMAT);//格式化日期
+            SimpleDateFormat sdf = new SimpleDateFormat(QueryCondition.PRODUCT_DATE_FORMAT_1);//格式化日期
             return sdf.format(date);
 
         }

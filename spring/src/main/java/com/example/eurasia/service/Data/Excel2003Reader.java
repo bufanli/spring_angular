@@ -328,7 +328,7 @@ public class Excel2003Reader implements HSSFListener,IExcelReaderByEventMode {
 
                 //if(HSSFDateUtil.isInternalDateFormat(numberRecord.getXFIndex())){//判断是否为时间列
                 if(value.contains("/")) {//T.B.D
-                    value = (new SimpleDateFormat(QueryCondition.PRODUCT_DATE_FORMAT))
+                    value = (new SimpleDateFormat(QueryCondition.PRODUCT_DATE_FORMAT_1))
                             .format(HSSFDateUtil.getJavaDate(numberRecord.getValue()));
                     Slf4jLogUtil.get().debug("Date:" + value +
                             ", 行：" + numberRecord.getRow() + ", 列：" + numberRecord.getColumn());

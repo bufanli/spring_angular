@@ -365,7 +365,7 @@ public class ImportExcelByUserMode {
                             // 如果是Date类型则，取得该Cell的Date值
                             date = cell.getDateCellValue();
                         }
-                        DateFormat formater = new SimpleDateFormat(QueryCondition.PRODUCT_DATE_FORMAT);
+                        DateFormat formater = new SimpleDateFormat(QueryCondition.PRODUCT_DATE_FORMAT_1);
                         val = formater.format(date);
 
                     } else {

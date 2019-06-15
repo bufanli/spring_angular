@@ -102,7 +102,7 @@ SELECT information_schema.SCHEMATA.SCHEMA_NAME FROM information_schema.SCHEMATA 
                 DataXMLReader dataXMLReader = (DataXMLReader) context.getBean(beanName);
                 Map<String, String> columnNameType = dataXMLReader.getKeyValue();
 
-                StringBuffer sql = convertCreatingTableWithPrimaryKeyToSQL(tableName,columnNameType);
+                StringBuffer sql = convertCreatingTableWithPrimaryKeyToSQL(tableName, columnNameType);
                 int count = getJdbcTemplate().update(sql.toString());
                 return true;
             }
@@ -128,7 +128,7 @@ SELECT information_schema.SCHEMATA.SCHEMA_NAME FROM information_schema.SCHEMATA 
                 return false;
             } else {
 
-                StringBuffer sql = convertCreatingTableWithPrimaryKeyToSQL(tableName,columnNameType);
+                StringBuffer sql = convertCreatingTableWithPrimaryKeyToSQL(tableName, columnNameType);
                 int count = getJdbcTemplate().update(sql.toString());
                 return true;
             }
@@ -290,7 +290,7 @@ CREATE TABLE SPRING_SESSION_ATTRIBUTES (
     // angular得到的时间格式是 2018/9/11 和数据库2018/09/11里面不一致，所以转换一下
     public String convertDateToNewFormat(String dateFromAngular) {
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat(QueryCondition.PRODUCT_DATE_FORMAT);
+            SimpleDateFormat sdf = new SimpleDateFormat(QueryCondition.PRODUCT_DATE_FORMAT_1);
             Date tempDateEnd = sdf.parse(dateFromAngular);
             return sdf.format(tempDateEnd);
         } catch (ParseException e) {
@@ -319,13 +319,14 @@ CREATE TABLE SPRING_SESSION_ATTRIBUTES (
 
     /**
      * query table row with query conditions
+     *
      * @param tableName
      * @return
      * @throws Exception
      */
     public Long queryTableRows(String tableName,
                                QueryCondition[] queryConditions) throws Exception {
-        StringBuffer sql = convertQueryConditionsToSQL(tableName,queryConditions,true);
+        StringBuffer sql = convertQueryConditionsToSQL(tableName, queryConditions, true);
         Long row = getJdbcTemplate().queryForObject(sql.toString(), Long.class);
         //System.out.println("查询出来的记录数为：" + row);
         return row;
@@ -351,6 +352,7 @@ CREATE TABLE SPRING_SESSION_ATTRIBUTES (
 
     /**
      * 查询数据库中的最近一个月
+     *
      * @param tableName
      * @return
      * @throws
@@ -412,7 +414,7 @@ select PERIOD_DIFF(DATE_FORMAT(CURDATE(),'%Y%m'),DATE_FORMAT(日期,'%Y%m')) fro
             return null;
         }
 
-        SimpleDateFormat sdf = new SimpleDateFormat(QueryCondition.PRODUCT_DATE_FORMAT);
+        SimpleDateFormat sdf = new SimpleDateFormat(QueryCondition.PRODUCT_DATE_FORMAT_1);
         Date date = null;
         String[] dateArr = new String[2];
         dateArr[1] = dataList.get(0).getKeyValue().get("max(" + dateColumnName + ")");
@@ -422,7 +424,11 @@ select PERIOD_DIFF(DATE_FORMAT(CURDATE(),'%Y%m'),DATE_FORMAT(日期,'%Y%m')) fro
             date = new Date();
             dateArr[1] = sdf.format(date);
         } else {
-            date = sdf.parse(dateArr[1]);
+            date = formatStringToDate(dateArr[1]);
+            if (date == null) {
+                date = new Date();
+                dateArr[1] = sdf.format(date);
+            }
         }
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
@@ -430,6 +436,28 @@ select PERIOD_DIFF(DATE_FORMAT(CURDATE(),'%Y%m'),DATE_FORMAT(日期,'%Y%m')) fro
         Date dateMouth = calendar.getTime();
         dateArr[0] = sdf.format(dateMouth);
         return dateArr;
+    }
+
+    // try different date formats
+    private Date formatStringToDate(String dateStr) throws ParseException {
+        Date retDate = null;
+        SimpleDateFormat sdf = new SimpleDateFormat(QueryCondition.PRODUCT_DATE_FORMAT_1);
+        try {
+            retDate = sdf.parse(dateStr);
+        } catch (ParseException e) {
+            try {
+                sdf = new SimpleDateFormat(QueryCondition.PRODUCT_DATE_FORMAT_2);
+                retDate = sdf.parse(dateStr);
+            } catch (ParseException e1) {
+                try {
+                    sdf = new SimpleDateFormat(QueryCondition.PRODUCT_DATE_FORMAT_3);
+                    retDate = sdf.parse(dateStr);
+                } catch (ParseException e2) {
+                    retDate = null;
+                }
+            }
+        }
+        return retDate;
     }
 
     /**
@@ -461,7 +489,7 @@ select PERIOD_DIFF(DATE_FORMAT(CURDATE(),'%Y%m'),DATE_FORMAT(日期,'%Y%m')) fro
 
         StringBuffer sql = new StringBuffer();
         sql.append("select " + selectField + CommonDao.COMMA);
-        for (ComputeField computeField:computeFields) {
+        for (ComputeField computeField : computeFields) {
             sql.append(computeField.toSql() + CommonDao.COMMA);
         }
         sql.deleteCharAt(sql.length() - CommonDao.COMMA.length());
@@ -591,7 +619,7 @@ select PERIOD_DIFF(DATE_FORMAT(CURDATE(),'%Y%m'),DATE_FORMAT(日期,'%Y%m')) fro
         Set<Map.Entry<String, String>> set = order.entrySet();
         Iterator<Map.Entry<String, String>> it = set.iterator();
         while (it.hasNext()) {
-            Map.Entry<String,String> entry = it.next();
+            Map.Entry<String, String> entry = it.next();
             sql.append(entry.getKey() + " " + entry.getValue() + CommonDao.COMMA);
         }
         sql.deleteCharAt(sql.length() - CommonDao.COMMA.length());
