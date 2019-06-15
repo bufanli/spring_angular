@@ -69,7 +69,7 @@ sbf = new StringBuffer("");//重新new
             sql.deleteCharAt(sql.length() - CommonDao.COMMA.length());
             sql.append("),");
 
-            String[] columnsValuesArr = data.getValuesToArray();
+            Object[] columnsValuesArr = data.getKeyValue().values().toArray();
             columnsValuesArrList.add(columnsValuesArr);
         }
         sql.deleteCharAt(sql.length() - CommonDao.COMMA.length());
