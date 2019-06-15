@@ -107,10 +107,10 @@ public class DataService {
                 Map<String, String> columnsDicMap = new LinkedHashMap<String, String>();
                 String[] synonymArr = {"进口","商品编码","商品编号","商品编码2","产品名称","牛肉部位","贸易方式",
                         "申报单位","货主单位","经营单位","企业代码","进口关区","原产国","装/卸货港",
-                        "规格型号","电子邮件"};
+                        "规格型号","电子邮件","目的地（原产地）"};
                 String[] columnNameArr = {"进出口","海关编码","海关编码","附加码","商品名称","部位","监管方式",
                         "申报单位名称","货主单位名称","经营单位名称","经营单位代码","报关口岸","贸易国","装货港",
-                        "包装规格","Email"};
+                        "包装规格","Email","目的地"};
                 for (int i=0; i<synonymArr.length; i++) {
                     columnsDicMap.put(DataService.COLUMNS_DICTIONARY_SYNONYM,synonymArr[i]);
                     columnsDicMap.put(DataService.COLUMNS_DICTIONARY_COLUMN_NAME,columnNameArr[i]);
@@ -141,6 +141,24 @@ public class DataService {
         int addNum = getDataDao().addData(tableName, data);
 
         return addNum;
+    }
+
+    /**
+     * 批量添加数据
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2019-06-15 00:00:00
+     */
+    public int[] batchAddData(String tableName, List<Data> dataList) throws Exception {
+        if (StringUtils.isEmpty(tableName) || dataList == null) {
+            return null;
+        }
+
+        int[] numArr = getDataDao().batchAddData(tableName, dataList);
+
+        return numArr;
     }
 
     /**
@@ -188,16 +206,16 @@ public class DataService {
      * @Time 2018-09-20 00:00:00
      */
     public int saveDataToSQL(String tableName, List<Data> dataList) throws Exception {
-        int addDataNum = 0;
         int deleteNum = 0;
         if (dataList.size() > 0) {
-            for (Data data : dataList) {
-                addDataNum += this.addData(tableName, data);//导入一行数据。
+            int[] numArr = this.batchAddData(tableName, dataList);
+            if (numArr == null) {
+                return 0;
             }
-            if (addDataNum > 0) {
+            if (numArr.length > 0) {
                 deleteNum = this.deleteSameData(tableName);
             }
-            int num = addDataNum - deleteNum;//T.B.D
+            int num = numArr.length - deleteNum;//T.B.D
             return (num < 0) ? 0 : num;
         } else {
             return 0;

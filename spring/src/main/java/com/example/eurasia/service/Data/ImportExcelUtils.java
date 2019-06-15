@@ -3,6 +3,9 @@ package com.example.eurasia.service.Data;
 import org.springframework.util.StringUtils;
 
 import java.io.File;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 public class ImportExcelUtils {
 
@@ -64,5 +67,35 @@ public class ImportExcelUtils {
 
         //"文件检查ok";
         return true;
+    }
+
+    /**
+     * 判断列名是否有重复
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-09-20 00:00:00
+     */
+    public static Set<String> getSameTitle(List<String> elementsList) throws Exception {
+        System.out.println("Elements : " + elementsList);
+        Set<String> set = new LinkedHashSet<>();
+        Set<String> duplicateElements = new LinkedHashSet<>();
+        for (String element : elementsList) {
+            if(!set.add(element)){//如果添加的元素重复的话将返回false
+                duplicateElements.add(element);
+            }
+        }
+/*
+        //将list放入set中对其去重
+        Set<String> set = new HashSet<>(elementsList);
+        //获得list与set的差集
+        Collection rs = CollectionUtils.disjunction(elementsList,set);
+        //将collection转换为list
+        List<String> list1 = new ArrayList<>(rs);
+*/
+
+        System.out.println("Duplicate Elements : " + duplicateElements);
+        return duplicateElements;
     }
 }

@@ -18,6 +18,7 @@ public class ImportExcelRowReader {
     private List<String> titleList;
     private List<Data> dataList;
     private List<String> titleIsNotExistList;
+    private Set<String> sameTitleSet;
 
     ImportExcelRowReader () {
         dataList = new ArrayList<Data>();
@@ -41,21 +42,30 @@ public class ImportExcelRowReader {
 
         if (row == 0) {
             try {
-                titleIsNotExistList = dataService.isTitleExist(rowList);
+                this.titleIsNotExistList = dataService.isTitleExist(rowList);
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
-            this.titleList = new ArrayList<String>(Arrays.asList(new String[rowList.size()]));
-            Collections.copy(this.titleList, rowList);
-            //this.titleList.addAll(rowList);//addAll实现的是浅拷贝
+            try {
+                this.sameTitleSet = ImportExcelUtils.getSameTitle(rowList);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            if (this.titleIsNotExistList.size() == 0 && this.sameTitleSet.size() == 0) {
+                this.titleList = new ArrayList<>(Arrays.asList(new String[rowList.size()]));
+                Collections.copy(this.titleList, rowList);
+                //this.titleList.addAll(rowList);//addAll实现的是浅拷贝
+            }
+
             /*
             Collections有一个copy方法。可是不好用啊总是报错。查看api才知道，它的capacity（容纳能力大小）可以指定（最好指定）。
             而初始化时size的大小永远默认为0，只有在进行add和remove等相关操作 时，size的大小才变化。
             然而进行copy()时候，首先做的是将desc的size和src的size大小进行比较，
             只有当desc的 size 大于或者等于src的size时才进行拷贝，否则抛出IndexOutOfBoundsException异常；
              */
-        } else if (row > 0 && titleIsNotExistList.size() == 0) {
+        } else if (row > 0 && this.titleIsNotExistList.size() == 0 && this.sameTitleSet.size() == 0) {
             Map<String, String> keyValue = new LinkedHashMap<>();
             for (int i=0; i<this.titleList.size(); i++) {
                 keyValue.put(this.titleList.get(i), rowList.get(i));//首行(表头)值，单元格值
@@ -83,6 +93,14 @@ public class ImportExcelRowReader {
 
     public void clearTitleIsNotExistList() {
         this.titleIsNotExistList.clear();
+    }
+
+    public Set<String> getSameTitleSet() {
+        return this.sameTitleSet;
+    }
+
+    public void clearSameTitleSet() {
+        this.sameTitleSet.clear();
     }
 
     public int saveDataToSQL(String tableName) throws Exception {
@@ -119,6 +137,23 @@ public class ImportExcelRowReader {
         StringBuilder sb = new StringBuilder();
 
         for (String title : this.getTitleIsNotExistList()) {
+            sb.append(title);
+            sb.append(",");
+        }
+
+        sb.deleteCharAt(sb.length() - ",".length());
+        return sb.toString();
+    }
+
+    /**
+     * 重复列名Set转String
+     * @param
+     * @return
+     */
+    public String sameTitleSetToString() {
+        StringBuilder sb = new StringBuilder();
+
+        for (String title : this.getSameTitleSet()) {
             sb.append(title);
             sb.append(",");
         }
