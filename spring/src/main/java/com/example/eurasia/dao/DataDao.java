@@ -45,6 +45,40 @@ sbf = new StringBuffer("");//重新new
     }
 
     /**
+     * 批量添加数据
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2019-06-15 00:00:00
+     */
+    public int[] batchAddData(String tableName, List<Data> dataList) throws Exception {
+
+        StringBuffer sql = new StringBuffer();
+        int size = dataList.get(0).getKeyValue().size();
+        String columnsNames = dataList.get(0).getKeys();
+        sql.append("insert into " + tableName + "(" + columnsNames + ") values ");
+
+        List<Object[]> columnsValuesArrList = new ArrayList<>();
+
+        for (Data data : dataList) {
+            sql.append("(");
+            for (int i=0; i<size; i++) {
+                sql.append("?,");
+            }
+            sql.deleteCharAt(sql.length() - CommonDao.COMMA.length());
+            sql.append("),");
+
+            String[] columnsValuesArr = data.getValuesToArray();
+            columnsValuesArrList.add(columnsValuesArr);
+        }
+        sql.deleteCharAt(sql.length() - CommonDao.COMMA.length());
+
+        int[] numArr = getJdbcTemplate().batchUpdate(sql.toString(),columnsValuesArrList);
+        return numArr;//大于0，插入成功。返回影响的行数。
+    }
+
+    /**
      * 添加数据
      * @param
      * @return

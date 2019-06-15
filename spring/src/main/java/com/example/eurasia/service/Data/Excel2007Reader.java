@@ -94,20 +94,28 @@ public class Excel2007Reader implements IExcelReaderByEventMode {
                 // 解析sheet: com.sun.org.apache.xerces.internal.jaxp.SAXParserImpl:522
                 parser.parse(sheetSource);
 
-                if (this.rowReader.getTitleIsNotExistList().size() == 0) {
+                if (this.rowReader.getTitleIsNotExistList().size() > 0) {
+                    String titleIsNotExist = this.rowReader.titleIsNotExistListToString();
+                    Slf4jLogUtil.get().info("Sheet[{}]导入失败，{}在数据库中不存在！",sheets.getSheetName(),titleIsNotExist);
+                    this.message.append("Sheet[" + sheets.getSheetName() + "]导入失败，" + titleIsNotExist + " 在数据库中不存在！");
+
+                    this.rowReader.clearTitleIsNotExistList();
+                }
+                if (this.rowReader.getSameTitleSet().size() > 0) {
+                    String sameTitle = this.rowReader.sameTitleSetToString();
+                    Slf4jLogUtil.get().info("Sheet[{}]导入失败，{}重复！",sheets.getSheetName(),sameTitle);
+                    this.message.append("Sheet[" + sheets.getSheetName() + "]导入失败，" + sameTitle + " 重复！");
+
+                    this.rowReader.clearSameTitleSet();
+                }
+                if (this.rowReader.getTitleIsNotExistList().size() == 0 && this.rowReader.getSameTitleSet().size() == 0) {
                     int addDataNum = this.rowReader.saveDataToSQL(DataService.TABLE_DATA);//导入数据。
                     Slf4jLogUtil.get().info("Sheet[{}]导入成功，共{}条数据！",sheets.getSheetName(),addDataNum);
                     this.message.append("Sheet[" + sheets.getSheetName() + "]导入成功，共" + addDataNum + "条数据！");
 
                     //清空保存前一个Sheet页内容用的List
                     this.rowReader.clearDataList();
-                } else {
-                    String titleIsNotExist = this.rowReader.titleIsNotExistListToString();
-                    Slf4jLogUtil.get().info("Sheet[{}]导入失败，{}在数据库中不存在！",sheets.getSheetName(),titleIsNotExist);
-                    this.message.append("Sheet[" + sheets.getSheetName() + "]导入失败，" + titleIsNotExist + " 在数据库中不存在！");
                 }
-                this.rowReader.clearTitleIsNotExistList();
-
             }
         } catch (Exception e) {
             e.printStackTrace();
