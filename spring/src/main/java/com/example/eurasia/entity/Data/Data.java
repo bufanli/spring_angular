@@ -162,7 +162,6 @@ LinkedHashMap保证了元素迭代的顺序。该迭代顺序可以是插入顺�
 
         Collection<String> valueCollection = this.keyValue.values();
         final int size = valueCollection.size();
-        List<String> valueList = new ArrayList<String>(valueCollection);
         String[] valueArray = new String[size];
         this.keyValue.values().toArray(valueArray);
 
