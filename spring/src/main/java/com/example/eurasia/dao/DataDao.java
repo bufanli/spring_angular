@@ -9,12 +9,17 @@ import org.springframework.util.StringUtils;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Repository
 public class DataDao extends CommonDao {
 
     private static int INSERT_RECODE_STEPS = 10000;
+    public static final SimpleDateFormat SIMPLE_DATE_FORMAT_1 = new SimpleDateFormat(QueryCondition.PRODUCT_DATE_FORMAT_1);
+    public static final SimpleDateFormat SIMPLE_DATE_FORMAT_2 = new SimpleDateFormat(QueryCondition.PRODUCT_DATE_FORMAT_2);
+    public static final SimpleDateFormat SIMPLE_DATE_FORMAT_3 = new SimpleDateFormat(QueryCondition.PRODUCT_DATE_FORMAT_3);
 
     /**
      * 添加数据
@@ -755,6 +760,31 @@ Mysql limit offset示例
         List<Map<String, Object>> selectionColsList = getJdbcTemplate().queryForList(sql.toString());
 
         return selectionColsList;
+    }
+    private String formatDate(String dateStr) {
+        Date date = null;
+        try {
+            date = SIMPLE_DATE_FORMAT_1.parse(dateStr);
+            return DataDao.SIMPLE_DATE_FORMAT_1.format(date);
+        } catch (ParseException e) {
+            try {
+                date = SIMPLE_DATE_FORMAT_2.parse(dateStr);
+                return DataDao.SIMPLE_DATE_FORMAT_1.format(date);
+            } catch (ParseException e1) {
+                try {
+                    date = SIMPLE_DATE_FORMAT_3.parse(dateStr);
+                    return DataDao.SIMPLE_DATE_FORMAT_1.format(date);
+                } catch (ParseException e2) {
+                    int daysFrom1900 = Integer.parseInt(dateStr);
+                    Calendar cal = Calendar.getInstance();
+                    cal.set(1900, 0, 1);
+                    cal.add(Calendar.DAY_OF_MONTH, daysFrom1900);
+                    return DataDao.SIMPLE_DATE_FORMAT_1.format(cal.getTime());
+                } catch (NumberFormatException e4) {
+                    return dateStr;
+                }
+            }
+        }
     }
 }
 
