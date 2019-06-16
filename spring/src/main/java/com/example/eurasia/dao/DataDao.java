@@ -67,11 +67,21 @@ sbf = new StringBuffer("");//重新new
     public int[] batchAddData(String tableName, List<Data> dataList, Data dataType) throws Exception {
         StringBuffer sql = new StringBuffer();
         int size = dataList.get(0).getKeyValue().size();
-        HashMap<Integer, String> columnNameMap = new LinkedHashMap<>();
-        Set<String> columnsNamesSet = dataList.get(0).getKeyValue().keySet();
+
+        Set<Integer> indexSet = new LinkedHashSet<>();
+
         int index = 0;
-        for (String columnName : columnsNamesSet) {
-            columnNameMap.put(index,columnName);
+        for (String columnName : dataList.get(0).getKeyValue().keySet()) {
+
+            for (Map.Entry<String, String> dataTypeEntry : dataType.getKeyValue().entrySet()) {
+                if (columnName.equals(dataTypeEntry.getKey())) {
+                    if (dataTypeEntry.getValue().equals(QueryCondition.QUERY_CONDITION_TYPE_DATE)) {
+                        indexSet.add(index);
+                        break;
+                    }
+                }
+            }
+
             index++;
         }
 
@@ -101,8 +111,7 @@ sbf = new StringBuffer("");//重新new
                     MultiInsertBatchPreparedStatementSetter();
             setter.setColumnsNumber(size);
             setter.setDataList(dataList);
-            setter.setDataType(dataType);
-            setter.setColumnNameMap(columnNameMap);
+            setter.setDataColumns(indexSet);
             setter.setInsertStep(insertStep);
             int[] numArr = getJdbcTemplate().batchUpdate(sql.toString(),setter);
             if(totalNumArr == null){
