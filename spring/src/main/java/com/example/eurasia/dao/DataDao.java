@@ -183,20 +183,17 @@ sbf = new StringBuffer("");//重新new
         public void setColumnsNumber(int columnsNumber) {
             this.columnsNumber = columnsNumber;
         }
-
         public void setValues(PreparedStatement ps, int i) throws SQLException {
             Data rowData = this.dataList.get(this.insertStep.getOffset() + i);
             String[] rowDataValues = rowData.getValuesToArray();
             for (int index = 0; index < this.columnsNumber; index++) {
-                //if () {
-                    //ps.setDate(index + 1, );
-                //} else {
+                if (this.dateColumns.contains(index)) {
+                    ps.setString(index + 1, formatDate(rowDataValues[index]));
+                } else {
                     ps.setString(index + 1, rowDataValues[index]);
-                //}
-
+                }
             }
         }
-
         @Override
         public int getBatchSize() {
             return this.insertStep.limit;
