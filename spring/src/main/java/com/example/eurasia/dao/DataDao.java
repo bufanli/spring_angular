@@ -81,18 +81,19 @@ sbf = new StringBuffer("");//重新new
         int[] numArr = getJdbcTemplate().batchUpdate(sql.toString(),columnsValuesArrList);
 */
         int[] numArr = getJdbcTemplate().batchUpdate(sql.toString(), new BatchPreparedStatementSetter() {
-                    public void setValues(PreparedStatement ps, int i) throws SQLException {
-                        Data rowData = dataList.get(i);
-                        String[] rowDataValues = rowData.getValuesToArray();
-                        for(int index = 0;index < size;index++) {
-                            ps.setString(index + 1, rowDataValues[index]);
-                        }
-                    }
-                    @Override
-                    public int getBatchSize() {
-                        return dataList.size();
+                @Override
+                public void setValues(PreparedStatement ps, int i) throws SQLException {
+                    Data rowData = dataList.get(i);
+                    String[] rowDataValues = rowData.getValuesToArray();
+                    for(int index = 0;index < size;index++) {
+                        ps.setString(index + 1, rowDataValues[index]);
                     }
                 }
+                @Override
+                public int getBatchSize() {
+                    return dataList.size();
+                }
+            }
         );
         return numArr;//大于0，插入成功。返回影响的行数
    }
