@@ -9,19 +9,19 @@ import org.springframework.util.StringUtils;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Repository
 public class DataDao extends CommonDao {
 
+    private static int INSERT_RECODE_STEPS = 10000;
+
     /**
      * 添加数据
+     *
      * @param
      * @return
-     * @exception
+     * @throws
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
@@ -35,12 +35,12 @@ public class DataDao extends CommonDao {
         String[] columnsValuesArr = data.getValuesToArray();
 
         sql.append("insert into " + tableName + "(" + columnsNames + ") values (");
-        for (int i=0; i<size; i++) {
+        for (int i = 0; i < size; i++) {
             sql.append("?,");
         }
         sql.deleteCharAt(sql.length() - CommonDao.COMMA.length());
         sql.append(")");
-        int num = getJdbcTemplate().update(sql.toString(),(Object[])columnsValuesArr);
+        int num = getJdbcTemplate().update(sql.toString(), (Object[]) columnsValuesArr);
         return num;//大于0，插入成功。返回影响的行数。
 /*
 StringBuffer sbf = new  StringBuffer("Hello World!");
@@ -52,9 +52,10 @@ sbf = new StringBuffer("");//重新new
 
     /**
      * 批量添加数据
+     *
      * @param
      * @return
-     * @exception
+     * @throws
      * @author FuJia
      * @Time 2019-06-15 00:00:00
      */
@@ -80,29 +81,109 @@ sbf = new StringBuffer("");//重新new
 
         int[] numArr = getJdbcTemplate().batchUpdate(sql.toString(),columnsValuesArrList);
 */
-        int[] numArr = getJdbcTemplate().batchUpdate(sql.toString(), new BatchPreparedStatementSetter() {
-                @Override
-                public void setValues(PreparedStatement ps, int i) throws SQLException {
-                    Data rowData = dataList.get(i);
-                    String[] rowDataValues = rowData.getValuesToArray();
-                    for(int index = 0;index < size;index++) {
-                        ps.setString(index + 1, rowDataValues[index]);
-                    }
-                }
-                @Override
-                public int getBatchSize() {
-                    return dataList.size();
-                }
+        List<InsertStep> batchInsertSteps = splitBatchInsertSteps(dataList.size());
+        int[] totalNumArr = null;
+        for (InsertStep insertStep : batchInsertSteps) {
+            MultiInsertBatchPreparedStatementSetter setter = new
+                    MultiInsertBatchPreparedStatementSetter();
+            setter.setColumnsNumber(size);
+            setter.setDataList(dataList);
+            setter.setInsertStep(insertStep);
+            int[] numArr = getJdbcTemplate().batchUpdate(sql.toString(),setter);
+            if(totalNumArr == null){
+                totalNumArr = numArr;
+            }else{
+                totalNumArr = concat(totalNumArr,numArr);
             }
-        );
-        return numArr;//大于0，插入成功。返回影响的行数
-   }
+        }
+        return totalNumArr;//大于0，插入成功。返回影响的行数
+    }
+    private int[] concat(int[] left,int[] right){
+        int[] dst = new int[left.length + right.length];
+        System.arraycopy(left,0,dst,0,left.length);
+        System.arraycopy(right,0,dst, left.length,right.length);
+        return dst;
+    }
+    private List<InsertStep> splitBatchInsertSteps(int dataListSize) {
+        List<InsertStep> batchInsertSteps = new ArrayList<InsertStep>();
+        int offset = 0;
+        while (dataListSize > 0) {
+            if (dataListSize > INSERT_RECODE_STEPS) {
+                InsertStep insertStep = new InsertStep(offset, INSERT_RECODE_STEPS);
+                batchInsertSteps.add(insertStep);
+                offset += INSERT_RECODE_STEPS;
+                dataListSize -= INSERT_RECODE_STEPS;
+            } else {
+                InsertStep insertStep = new InsertStep(offset, dataListSize);
+                batchInsertSteps.add(insertStep);
+                offset += dataListSize;
+                dataListSize = 0;
+            }
+        }
+        return batchInsertSteps;
+    }
+
+    private class MultiInsertBatchPreparedStatementSetter implements BatchPreparedStatementSetter {
+        // insert date
+        private List<Data> dataList = null;
+        // insert step
+        private InsertStep insertStep = null;
+        // columns number
+        private int columnsNumber = 0;
+
+        // set data list
+        public void setDataList(List<Data> dataList) {
+            this.dataList = dataList;
+        }
+
+        public void setInsertStep(InsertStep insertStep) {
+            this.insertStep = insertStep;
+        }
+
+        // set columns number
+        public void setColumnsNumber(int columnsNumber) {
+            this.columnsNumber = columnsNumber;
+        }
+
+        public void setValues(PreparedStatement ps, int i) throws SQLException {
+            Data rowData = dataList.get(insertStep.getOffset() + i);
+            String[] rowDataValues = rowData.getValuesToArray();
+            for (int index = 0; index < columnsNumber; index++) {
+                ps.setString(index + 1, rowDataValues[index]);
+            }
+        }
+
+        @Override
+        public int getBatchSize() {
+            return this.insertStep.limit;
+        }
+    }
+
+    // insert step class
+    private class InsertStep {
+        private int offset = 0;
+        private int limit = 0;
+
+        public InsertStep(int offset, int limit) {
+            this.limit = limit;
+            this.offset = offset;
+        }
+
+        public int getOffset() {
+            return offset;
+        }
+
+        public int getLimit() {
+            return limit;
+        }
+    }
 
     /**
      * 添加数据
+     *
      * @param
      * @return
-     * @exception
+     * @throws
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
@@ -111,15 +192,16 @@ sbf = new StringBuffer("");//重新new
         StringBuffer sql = new StringBuffer();
         sql.append("insert into " + tableName + "(" + columnName + ") values (?)");
 
-        int num = getJdbcTemplate().update(sql.toString(),columnValue);
+        int num = getJdbcTemplate().update(sql.toString(), columnValue);
         return num;//大于0，插入成功。返回影响的行数。
     }
 
     /**
      * 批处理添加数据
+     *
      * @param
      * @return
-     * @exception
+     * @throws
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
@@ -129,9 +211,10 @@ sbf = new StringBuffer("");//重新new
 
     /**
      * 删除数据
+     *
      * @param
      * @return
-     * @exception
+     * @throws
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
@@ -142,7 +225,7 @@ sbf = new StringBuffer("");//重新new
         Set<Map.Entry<String, String>> set = data.getKeyValue().entrySet();
         Iterator<Map.Entry<String, String>> it = set.iterator();
         while (it.hasNext()) {
-            Map.Entry<String,String> entry = it.next();
+            Map.Entry<String, String> entry = it.next();
             sql.append(entry.getKey() + "='" + entry.getValue() + "'");
         }
 
@@ -152,24 +235,25 @@ sbf = new StringBuffer("");//重新new
 
     /**
      * 删除重复的数据，只保留一行
+     *
      * @param
      * @return
-     * @exception
+     * @throws
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
     public int deleteSameData(String tableName) throws Exception {
 
         StringBuffer strColsName = new StringBuffer();
-        List<Map<String,Object>> colsNameList = this.queryListForColumnName(tableName);
-        for(Map<String,Object> colsName: colsNameList) {
+        List<Map<String, Object>> colsNameList = this.queryListForColumnName(tableName);
+        for (Map<String, Object> colsName : colsNameList) {
             strColsName.append(colsName.get("COLUMN_NAME").toString());
             strColsName.append(CommonDao.COMMA);
         }
 
         strColsName.deleteCharAt(strColsName.length() - CommonDao.COMMA.length());
-        strColsName.replace(strColsName.indexOf(CommonDao.ID_COMMA),CommonDao.ID_COMMA.length(),"");//indexOf从0开始计算,没有查到指定的字符则该方法返回-1
-        String[] name = strColsName.toString().split(CommonDao.COMMA,-1);
+        strColsName.replace(strColsName.indexOf(CommonDao.ID_COMMA), CommonDao.ID_COMMA.length(), "");//indexOf从0开始计算,没有查到指定的字符则该方法返回-1
+        String[] name = strColsName.toString().split(CommonDao.COMMA, -1);
 /*
 mysql根据两个字段判断重复的数据并且删除，只保留一条。
 DELETE from table
@@ -183,7 +267,7 @@ MySQL统计重复数据，根据多条字段查询。
 SELECT count(*),列1,列2,列3 from table
 GROUP BY 列1,列2,列3 having count(*) > 1;
  */
-        StringBuffer sql =  new StringBuffer();
+        StringBuffer sql = new StringBuffer();
         sql.append("delete from " + tableName);
         sql.append(" where id not in");
         sql.append(" (select minid from");
@@ -198,24 +282,27 @@ GROUP BY 列1,列2,列3 having count(*) > 1;
 
     /**
      * 删除全部的数据
+     *
      * @param
      * @return
-     * @exception
+     * @throws
      * @author FuJia
      * @Time 2019-06-03 00:00:00
      */
     public int deleteAllData(String tableName) throws Exception {
-        StringBuffer sql =  new StringBuffer();
+        StringBuffer sql = new StringBuffer();
         sql.append("delete from " + tableName);
 
         int num = getJdbcTemplate().update(sql.toString());//执行成功返回数据库当中受影响的记录条数，失败则返回-1
         return num;
     }
+
     /**
      * 更新数据
+     *
      * @param
      * @return
-     * @exception
+     * @throws
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
@@ -225,9 +312,10 @@ GROUP BY 列1,列2,列3 having count(*) > 1;
 
     /**
      * 批处理更新数据
+     *
      * @param
      * @return
-     * @exception
+     * @throws
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
@@ -237,9 +325,10 @@ GROUP BY 列1,列2,列3 having count(*) > 1;
 
     /**
      * 查询返回对象
+     *
      * @param
      * @return
-     * @exception
+     * @throws
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
@@ -250,9 +339,10 @@ GROUP BY 列1,列2,列3 having count(*) > 1;
 
     /**
      * 添加字段
+     *
      * @param
      * @return
-     * @exception
+     * @throws
      * @author FuJia
      * @Time 2019-06-07 00:00:00
      */
@@ -268,9 +358,10 @@ GROUP BY 列1,列2,列3 having count(*) > 1;
 
     /**
      * 字段
+     *
      * @param
      * @return
-     * @exception
+     * @throws
      * @author FuJia
      * @Time 2019-06-08 00:00:00
      */
@@ -285,9 +376,10 @@ GROUP BY 列1,列2,列3 having count(*) > 1;
 
     /**
      * 判断字段是否有值
+     *
      * @param
      * @return
-     * @exception
+     * @throws
      * @author FuJia
      * @Time 2019-06-08 00:00:00
      */
@@ -296,21 +388,22 @@ GROUP BY 列1,列2,列3 having count(*) > 1;
         StringBuffer sql = new StringBuffer();
         sql.append("select count(*) from " + tableName + " where " + columnName + "<>\"\" group by " + columnName);
 
-        List<Long> numList = getJdbcTemplate().queryForList(sql.toString(),Long.class);
+        List<Long> numList = getJdbcTemplate().queryForList(sql.toString(), Long.class);
         return numList;//如果>0说明存在有值行数据
     }
 
     /**
      * 查询并返回List集合
+     *
      * @param
      * @return
-     * @exception
+     * @throws
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
     public List<Data> queryListForObject(String tableName, Data queryConditions) {
         String sqlAnd = " and ";
-        String sqlOr= " or ";
+        String sqlOr = " or ";
         String dateStart = "";
         String dateEnd = "";
         StringBuffer sql = new StringBuffer();
@@ -369,18 +462,18 @@ StringUtils.isWhitespace(null); // false
     whitespace：包含空串("")和空白符，不包含null值.
 */
             if (!StringUtils.isEmpty(entry.getValue().toString())) {
-                if(!entry.getValue().toString().contains("||")) {
+                if (!entry.getValue().toString().contains("||")) {
                     sql.append(" " + entry.getKey().toString() + " like '%" + entry.getValue().toString() + "%'");
                     sql.append(sqlAnd);
-                }else{
-                    String values[] = entry.getValue().toString().split("\\|\\|",-1);
+                } else {
+                    String values[] = entry.getValue().toString().split("\\|\\|", -1);
                     sql.append("( ");
-                    for(String value : values){
-                       sql.append(entry.getKey().toString() + " like '%" + value + "%'");
-                       sql.append(sqlOr);
+                    for (String value : values) {
+                        sql.append(entry.getKey().toString() + " like '%" + value + "%'");
+                        sql.append(sqlOr);
                     }
                     if (sql.indexOf(sqlOr) >= 0) {
-                        sql.delete((sql.length() - sqlOr.length()),sql.length());
+                        sql.delete((sql.length() - sqlOr.length()), sql.length());
                     }
                     sql.append(" )");
                     sql.append(sqlAnd);
@@ -401,9 +494,9 @@ StringUtils.isWhitespace(null); // false
             dateStart = convertDateToNewFormat(dateStart);
             dateEnd = convertDateToNewFormat(dateEnd);
             sql.append(" (日期" + " between '" + dateStart + "' and '" + dateEnd + "')");
-        } else if (dateStart.equals("") == true && dateEnd.equals("") == true)  {
+        } else if (dateStart.equals("") == true && dateEnd.equals("") == true) {
             if (sql.indexOf(sqlAnd) >= 0) {
-                sql.delete((sql.length() - sqlAnd.length()),sql.length());
+                sql.delete((sql.length() - sqlAnd.length()), sql.length());
             }
         }
 
@@ -412,16 +505,18 @@ StringUtils.isWhitespace(null); // false
         List<Data> dataList = getJdbcTemplate().query(sql.toString(), new DataMapper());
         return dataList;
     }
+
     /**
      * 查询并返回List集合
+     *
      * @param
      * @return
-     * @exception
+     * @throws
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
     public List<Data> queryListForObject(String tableName, QueryCondition[] queryConditionsArr, long offset, long limit, Map<String, String> order) {
-        StringBuffer sql = convertQueryConditionsToSQL(tableName,queryConditionsArr,false);
+        StringBuffer sql = convertQueryConditionsToSQL(tableName, queryConditionsArr, false);
         StringBuffer sqlOrder = convertOrderToSQL(order);
         sql.append(sqlOrder);
         sql.append(" LIMIT " + String.valueOf(offset) + "," + String.valueOf(limit));
@@ -448,14 +543,15 @@ Mysql limit offset示例
 
     /**
      * 查询并返回List集合
+     *
      * @param
      * @return
-     * @exception
+     * @throws
      * @author FuJia
      * @Time 2018-10-27 00:00:00
      */
     public List<Data> queryListForAllObject(String tableName, QueryCondition[] queryConditionsArr) throws Exception {
-        StringBuffer sql = convertQueryConditionsToSQL(tableName,queryConditionsArr,false);
+        StringBuffer sql = convertQueryConditionsToSQL(tableName, queryConditionsArr, false);
 
         List<Data> dataList = getJdbcTemplate().query(sql.toString(), new DataMapper());
         return dataList;
@@ -463,9 +559,10 @@ Mysql limit offset示例
 
     /**
      * 查询并返回List集合
+     *
      * @param
      * @return
-     * @exception
+     * @throws
      * @author FuJia
      * @Time 2018-10-27 00:00:00
      */
@@ -476,7 +573,7 @@ Mysql limit offset示例
                                             ComputeField[] computeFields,
                                             QueryCondition[] queryConditionsArr) throws Exception {
 
-        StringBuffer sql = convertStatisticsReportQueryDataToSQL(tableName,selectFieldSql,groupByFieldSql,computeFields,queryConditionsArr);
+        StringBuffer sql = convertStatisticsReportQueryDataToSQL(tableName, selectFieldSql, groupByFieldSql, computeFields, queryConditionsArr);
         sql.append(orderSql);
 
         List<Data> dataList = getJdbcTemplate().query(sql.toString(), new DataMapper());
@@ -485,9 +582,10 @@ Mysql limit offset示例
 
     /**
      * 查询并返回List集合
+     *
      * @param
      * @return
-     * @exception
+     * @throws
      * @author FuJia
      * @Time 2018-10-27 00:00:00
      */
@@ -499,9 +597,10 @@ Mysql limit offset示例
 
     /**
      * 查询并返回List集合
+     *
      * @param
      * @return
-     * @exception
+     * @throws
      * @author FuJia
      * @Time 2018-10-27 00:00:00
      */
@@ -515,9 +614,10 @@ Mysql limit offset示例
 
     /**
      * 查询并返回List集合
+     *
      * @param
      * @return
-     * @exception
+     * @throws
      * @author FuJia
      * @Time 2018-10-27 00:00:00
      */
@@ -535,10 +635,11 @@ Mysql limit offset示例
 
     /**
      * 拼接语句，往表里面插入数据
+     *
      * @param tableName
      * @param data
      * @return
-     * @exception
+     * @throws
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
@@ -547,7 +648,7 @@ Mysql limit offset示例
         try {
             StringBuffer sql = new StringBuffer();
             sql.append(" insert into " + tableName + " (");
-            Map<String,String> map = data.getKeyValue();
+            Map<String, String> map = data.getKeyValue();
             Set<String> set = map.keySet();
             for (String key : set) {
                 sql.append(key + CommonDao.COMMA);
@@ -568,13 +669,14 @@ Mysql limit offset示例
 
     /**
      * 查询某表的列名
+     *
      * @param tableName
      * @return
-     * @exception
+     * @throws
      * @author FuJia
      * @Time 2018-10-15 23:11:00
      */
-    public List<Map<String,Object>> queryListForColumnName(String tableName) throws Exception {
+    public List<Map<String, Object>> queryListForColumnName(String tableName) throws Exception {
         /*
         Select COLUMN_NAME 列名, DATA_TYPE 字段类型, COLUMN_COMMENT 字段注释
         from INFORMATION_SCHEMA.COLUMNS
@@ -606,9 +708,10 @@ Mysql limit offset示例
 
     /**
      * 查询并返回List集合
+     *
      * @param
      * @return
-     * @exception
+     * @throws
      * @author FuJia
      * @Time 2018-10-27 00:00:00
      */
