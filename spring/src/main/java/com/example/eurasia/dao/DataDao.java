@@ -3,9 +3,12 @@ package com.example.eurasia.dao;
 import com.example.eurasia.entity.Data.ComputeField;
 import com.example.eurasia.entity.Data.Data;
 import com.example.eurasia.entity.Data.QueryCondition;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.*;
 
 @Repository
@@ -53,30 +56,35 @@ sbf = new StringBuffer("");//重新new
      * @Time 2019-06-15 00:00:00
      */
     public int[] batchAddData(String tableName, List<Data> dataList) throws Exception {
-
         StringBuffer sql = new StringBuffer();
         int size = dataList.get(0).getKeyValue().size();
         String columnsNames = dataList.get(0).getKeys();
         sql.append("insert into " + tableName + "(" + columnsNames + ") values ");
 
-        List<Object[]> columnsValuesArrList = new ArrayList<>();
-
-        for (Data data : dataList) {
-            sql.append("(");
-            for (int i=0; i<size; i++) {
-                sql.append("?,");
-            }
-            sql.deleteCharAt(sql.length() - CommonDao.COMMA.length());
-            sql.append("),");
-
-            Object[] columnsValuesArr = data.getKeyValue().values().toArray();
-            columnsValuesArrList.add(columnsValuesArr);
+        sql.append("(");
+        for (int i = 0; i < size; i++) {
+            sql.append("?,");
         }
         sql.deleteCharAt(sql.length() - CommonDao.COMMA.length());
+        sql.append("),");
+        sql.deleteCharAt(sql.length() - CommonDao.COMMA.length());
 
-        int[] numArr = getJdbcTemplate().batchUpdate(sql.toString(),columnsValuesArrList);
-        return numArr;//大于0，插入成功。返回影响的行数。
-    }
+        int[] numArr = getJdbcTemplate().batchUpdate(sql.toString(), new BatchPreparedStatementSetter() {
+                    public void setValues(PreparedStatement ps, int i) throws SQLException {
+                        Data rowData = dataList.get(i);
+                        String[] rowDataValues = rowData.getValuesToArray();
+                        for(int index = 0;index < size;index ++) {
+                            ps.setString(index + 1, rowDataValues[index]);
+                        }
+                    }
+                    @Override
+                    public int getBatchSize() {
+                        return dataList.size();
+                    }
+                }
+        );
+        return numArr;//大于0，插入成功。返回影响的行数
+   }
 
     /**
      * 添加数据
