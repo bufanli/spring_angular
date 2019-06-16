@@ -10,7 +10,6 @@ import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.util.SAXHelper;
 import org.apache.poi.xssf.eventusermodel.ReadOnlySharedStringsTable;
 import org.apache.poi.xssf.eventusermodel.XSSFReader;
-import org.apache.poi.xssf.model.SharedStringsTable;
 import org.apache.poi.xssf.model.StylesTable;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFRichTextString;
@@ -110,8 +109,13 @@ public class Excel2007Reader implements IExcelReaderByEventMode {
                 }
                 if (this.rowReader.getTitleIsNotExistList().size() == 0 && this.rowReader.getSameTitleSet().size() == 0) {
                     int addDataNum = this.rowReader.saveDataToSQL(DataService.TABLE_DATA);//导入数据。
-                    Slf4jLogUtil.get().info("Sheet[{}]导入成功，共{}条数据！",sheets.getSheetName(),addDataNum);
-                    this.message.append("Sheet[" + sheets.getSheetName() + "]导入成功，共" + addDataNum + "条数据！");
+                    if (addDataNum >= 0) {
+                        Slf4jLogUtil.get().info("Sheet[{}]导入成功，共{}条数据！",sheets.getSheetName(),addDataNum);
+                        this.message.append("Sheet[" + sheets.getSheetName() + "]导入成功，共" + addDataNum + "条数据！");
+                    } else {
+                        Slf4jLogUtil.get().info("Sheet[{}]导入失败，数据库操作问题！",sheets.getSheetName());
+                        this.message.append("Sheet[" + sheets.getSheetName() + "]导失败，数据库操作问题！");
+                    }
 
                     //清空保存前一个Sheet页内容用的List
                     this.rowReader.clearDataList();

@@ -362,8 +362,13 @@ public class Excel2003Reader implements HSSFListener,IExcelReaderByEventMode {
                         }
                         if (this.rowReader.getTitleIsNotExistList().size() == 0 && this.rowReader.getSameTitleSet().size() == 0) {
                             int addDataNum = this.rowReader.saveDataToSQL(DataService.TABLE_DATA);//导入数据。
-                            Slf4jLogUtil.get().info("Sheet[{}]导入成功，共{}条数据！",this.currentSheetName,addDataNum);
-                            this.message.append("Sheet[" + this.currentSheetName + "]导入成功，共" + addDataNum + "条数据！");
+                            if (addDataNum >= 0) {
+                                Slf4jLogUtil.get().info("Sheet[{}]导入成功，共{}条数据！",this.currentSheetName,addDataNum);
+                                this.message.append("Sheet[" + this.currentSheetName + "]导入成功，共" + addDataNum + "条数据！");
+                            } else {
+                                Slf4jLogUtil.get().info("Sheet[{}]导入失败，数据库操作问题！",this.currentSheetName);
+                                this.message.append("Sheet[" + this.currentSheetName + "]导失败，数据库操作问题！");
+                            }
 
                             //清空保存前一个Sheet页内容用的List
                             this.rowReader.clearDataList();

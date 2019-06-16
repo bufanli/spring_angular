@@ -210,13 +210,18 @@ public class DataService {
         if (dataList.size() > 0) {
             int[] numArr = this.batchAddData(tableName, dataList);
             if (numArr == null) {
-                return 0;
+                return -1;
+            }
+            for (int num : numArr) {
+                if (num != 1) {
+                    return -1;
+                }
             }
             if (numArr.length > 0) {
                 deleteNum = this.deleteSameData(tableName);
             }
             int num = numArr.length - deleteNum;//T.B.D
-            return (num < 0) ? 0 : num;
+            return (num < 0) ? -1 : num;
         } else {
             return 0;
         }
