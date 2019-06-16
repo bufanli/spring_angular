@@ -59,7 +59,7 @@ sbf = new StringBuffer("");//重新new
      * @author FuJia
      * @Time 2019-06-15 00:00:00
      */
-    public int[] batchAddData(String tableName, List<Data> dataList) throws Exception {
+    public int[] batchAddData(String tableName, List<Data> dataList, List<Data> dataTypeList) throws Exception {
         StringBuffer sql = new StringBuffer();
         int size = dataList.get(0).getKeyValue().size();
         String columnsNames = dataList.get(0).getKeys();
@@ -88,6 +88,7 @@ sbf = new StringBuffer("");//重新new
                     MultiInsertBatchPreparedStatementSetter();
             setter.setColumnsNumber(size);
             setter.setDataList(dataList);
+            setter.setDataTypeList(dataTypeList);
             setter.setInsertStep(insertStep);
             int[] numArr = getJdbcTemplate().batchUpdate(sql.toString(),setter);
             if(totalNumArr == null){
@@ -126,6 +127,8 @@ sbf = new StringBuffer("");//重新new
     private class MultiInsertBatchPreparedStatementSetter implements BatchPreparedStatementSetter {
         // insert date
         private List<Data> dataList = null;
+        // insert date type
+        private List<Data> dataTypeList = null;
         // insert step
         private InsertStep insertStep = null;
         // columns number
@@ -134,6 +137,11 @@ sbf = new StringBuffer("");//重新new
         // set data list
         public void setDataList(List<Data> dataList) {
             this.dataList = dataList;
+        }
+
+        // set data type list
+        public void setDataTypeList(List<Data> dataTypeList) {
+            this.dataTypeList = dataTypeList;
         }
 
         public void setInsertStep(InsertStep insertStep) {
@@ -146,9 +154,9 @@ sbf = new StringBuffer("");//重新new
         }
 
         public void setValues(PreparedStatement ps, int i) throws SQLException {
-            Data rowData = dataList.get(insertStep.getOffset() + i);
+            Data rowData = this.dataList.get(this.insertStep.getOffset() + i);
             String[] rowDataValues = rowData.getValuesToArray();
-            for (int index = 0; index < columnsNumber; index++) {
+            for (int index = 0; index < this.columnsNumber; index++) {
                 ps.setString(index + 1, rowDataValues[index]);
             }
         }

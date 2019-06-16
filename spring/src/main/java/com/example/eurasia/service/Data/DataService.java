@@ -151,12 +151,12 @@ public class DataService {
      * @author FuJia
      * @Time 2019-06-15 00:00:00
      */
-    public int[] batchAddData(String tableName, List<Data> dataList) throws Exception {
+    public int[] batchAddData(String tableName, List<Data> dataList, List<Data> dataTypeList) throws Exception {
         if (StringUtils.isEmpty(tableName) || dataList == null) {
             return null;
         }
 
-        int[] numArr = getDataDao().batchAddData(tableName, dataList);
+        int[] numArr = getDataDao().batchAddData(tableName, dataList, dataTypeList);
 
         return numArr;
     }
@@ -208,7 +208,16 @@ public class DataService {
     public int saveDataToSQL(String tableName, List<Data> dataList) throws Exception {
         int deleteNum = 0;
         if (dataList.size() > 0) {
-            int[] numArr = this.batchAddData(tableName, dataList);
+            // 取得所有的查询条件(Data的Map-key是查询条件的key，Data的Map-value是查询条件的type)
+            List<Data> allQueryConditionsList = this.getAllQueryConditions();
+            if (allQueryConditionsList == null) {
+                return -1;
+            }
+            if (allQueryConditionsList.size() != 1) {
+                return -1;
+            }
+
+            int[] numArr = this.batchAddData(tableName, dataList, allQueryConditionsList);
             if (numArr == null) {
                 return -1;
             }
@@ -404,7 +413,7 @@ public class DataService {
             return null;
         }
 
-        long count = queryTableRows(tableName,queryConditionsArr);
+        long count = getDataDao().queryTableRows(tableName,queryConditionsArr).longValue();
         List<Data> dataList = getDataDao().queryListForObject(tableName,queryConditionsArr,offset,limit,order);
 
         return new SearchedData(count,dataList);

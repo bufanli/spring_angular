@@ -45,7 +45,7 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
         QueryCondition[] queryConditions;
 
         try {
-            // 取得所以的查询条件(Data的Map-key是查询条件的key，Data的Map-value是查询条件的type)
+            // 取得所有的查询条件(Data的Map-key是查询条件的key，Data的Map-value是查询条件的type)
             List<Data> allQueryConditionsList = dataService.getAllQueryConditions();
             if (allQueryConditionsList == null) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.QUERY_CONDITION_FROM_SQL_NULL);
