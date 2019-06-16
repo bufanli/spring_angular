@@ -152,8 +152,8 @@ sbf = new StringBuffer("");//重新new
         private List<Data> dataList = null;
         // insert date type
         private Data dataType = null;
-        // insert column name index map
-        private HashMap<Integer, String> columnNameMap = null;
+        // insert Date column index Set
+        private Set<Integer> dateColumns = null;
         // insert step
         private InsertStep insertStep = null;
         // columns number
@@ -169,11 +169,12 @@ sbf = new StringBuffer("");//重新new
             this.dataType = dataType;
         }
 
-        // set data type
-        public void setColumnNameMap(HashMap<Integer, String> columnNameMap) {
-            this.columnNameMap = columnNameMap;
+        // set Date column index Set
+        public void setDataColumns(Set<Integer> dateColumns) {
+            this.dateColumns = dateColumns;
         }
 
+        // set step
         public void setInsertStep(InsertStep insertStep) {
             this.insertStep = insertStep;
         }
