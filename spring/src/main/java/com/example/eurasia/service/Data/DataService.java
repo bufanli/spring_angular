@@ -212,11 +212,6 @@ public class DataService {
             if (numArr == null) {
                 return -1;
             }
-            for (int num : numArr) {
-                if (num != 1) {
-                    return -1;
-                }
-            }
             if (numArr.length > 0) {
                 deleteNum = this.deleteSameData(tableName);
             }
