@@ -295,7 +295,6 @@ public class Excel2007Reader implements IExcelReaderByEventMode {
             } else if ("row".equals(qName)) {// 行结束标签
                 // 如果标签名称为 row ，这说明已到行尾，调用 getRows() 方法
                 this.curRow++;
-                System.out.println("current row is " + curRow);
                 //默认第一行为表头，以该行单元格数目为最大数目
                 if (this.curRow == 0) {
                     this.maxRef = this.ref;
