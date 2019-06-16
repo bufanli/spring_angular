@@ -151,12 +151,12 @@ public class DataService {
      * @author FuJia
      * @Time 2019-06-15 00:00:00
      */
-    public int[] batchAddData(String tableName, List<Data> dataList, List<Data> dataTypeList) throws Exception {
+    public int[] batchAddData(String tableName, List<Data> dataList, Data dataType) throws Exception {
         if (StringUtils.isEmpty(tableName) || dataList == null) {
             return null;
         }
 
-        int[] numArr = getDataDao().batchAddData(tableName, dataList, dataTypeList);
+        int[] numArr = getDataDao().batchAddData(tableName, dataList, dataType);
 
         return numArr;
     }
@@ -217,7 +217,7 @@ public class DataService {
                 return -1;
             }
 
-            int[] numArr = this.batchAddData(tableName, dataList, allQueryConditionsList);
+            int[] numArr = this.batchAddData(tableName, dataList, allQueryConditionsList.get(0));
             if (numArr == null) {
                 return -1;
             }
