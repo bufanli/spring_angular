@@ -62,6 +62,14 @@ sbf = new StringBuffer("");//重新new
     public int[] batchAddData(String tableName, List<Data> dataList, Data dataType) throws Exception {
         StringBuffer sql = new StringBuffer();
         int size = dataList.get(0).getKeyValue().size();
+        HashMap<Integer, String> columnNameMap = new LinkedHashMap<>();
+        Set<String> columnsNamesSet = dataList.get(0).getKeyValue().keySet();
+        int index = 0;
+        for (String columnName : columnsNamesSet) {
+            columnNameMap.put(index,columnName);
+            index++;
+        }
+
         String columnsNames = dataList.get(0).getKeys();
         sql.append("insert into " + tableName + "(" + columnsNames + ") values ");
 
@@ -89,6 +97,7 @@ sbf = new StringBuffer("");//重新new
             setter.setColumnsNumber(size);
             setter.setDataList(dataList);
             setter.setDataType(dataType);
+            setter.setColumnNameMap(columnNameMap);
             setter.setInsertStep(insertStep);
             int[] numArr = getJdbcTemplate().batchUpdate(sql.toString(),setter);
             if(totalNumArr == null){
@@ -129,6 +138,8 @@ sbf = new StringBuffer("");//重新new
         private List<Data> dataList = null;
         // insert date type
         private Data dataType = null;
+        // insert column name index map
+        private HashMap<Integer, String> columnNameMap = null;
         // insert step
         private InsertStep insertStep = null;
         // columns number
@@ -142,6 +153,11 @@ sbf = new StringBuffer("");//重新new
         // set data type
         public void setDataType(Data dataType) {
             this.dataType = dataType;
+        }
+
+        // set data type
+        public void setColumnNameMap(HashMap<Integer, String> columnNameMap) {
+            this.columnNameMap = columnNameMap;
         }
 
         public void setInsertStep(InsertStep insertStep) {
