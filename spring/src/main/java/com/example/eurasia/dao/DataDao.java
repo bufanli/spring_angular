@@ -157,7 +157,12 @@ sbf = new StringBuffer("");//重新new
             Data rowData = this.dataList.get(this.insertStep.getOffset() + i);
             String[] rowDataValues = rowData.getValuesToArray();
             for (int index = 0; index < this.columnsNumber; index++) {
-                ps.setString(index + 1, rowDataValues[index]);
+                //if () {
+                    //ps.setDate(index + 1, );
+                //} else {
+                    ps.setString(index + 1, rowDataValues[index]);
+                //}
+
             }
         }
 
