@@ -9,7 +9,10 @@ import org.springframework.util.StringUtils;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Repository
 public class DataDao extends CommonDao {
@@ -66,14 +69,22 @@ sbf = new StringBuffer("");//重新new
             sql.append("?,");
         }
         sql.deleteCharAt(sql.length() - CommonDao.COMMA.length());
-        sql.append("),");
-        sql.deleteCharAt(sql.length() - CommonDao.COMMA.length());
+        sql.append(")");
+/*
+        List<Object[]> columnsValuesArrList = new ArrayList<>();
+        for (Data data : dataList) {
+            Object[] columnsValuesArr = data.getKeyValue().values().toArray();
+            columnsValuesArrList.add(columnsValuesArr);
 
+        }
+
+        int[] numArr = getJdbcTemplate().batchUpdate(sql.toString(),columnsValuesArrList);
+*/
         int[] numArr = getJdbcTemplate().batchUpdate(sql.toString(), new BatchPreparedStatementSetter() {
                     public void setValues(PreparedStatement ps, int i) throws SQLException {
                         Data rowData = dataList.get(i);
                         String[] rowDataValues = rowData.getValuesToArray();
-                        for(int index = 0;index < size;index ++) {
+                        for(int index = 0;index < size;index++) {
                             ps.setString(index + 1, rowDataValues[index]);
                         }
                     }
