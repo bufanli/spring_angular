@@ -1,65 +1,65 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mapping>
     <column key="日期" value="Date" />
-    <column key="进出口" value="List" />
-    <column key="申报单位名称" value="List" />
-    <column key="货主单位名称" value="List" />
-    <column key="经营单位名称" value="List" />
-    <column key="申报单位代码" value="List" />
-    <column key="货主单位代码" value="List" />
-    <column key="经营单位代码" value="List" />
+    <column key="进出口" value="String" />
+    <column key="申报单位名称" value="String" />
+    <column key="货主单位名称" value="String" />
+    <column key="经营单位名称" value="String" />
+    <column key="申报单位代码" value="String" />
+    <column key="货主单位代码" value="String" />
+    <column key="经营单位代码" value="String" />
     <column key="企业性质" value="String" />
     <column key="运输工具名称" value="String" />
     <column key="提运单号" value="String" />
-    <column key="海关编码" value="List" />
-    <column key="附加码" value="List" />
+    <column key="海关编码" value="String" />
+    <column key="附加码" value="String" />
     <column key="商品名称" value="String" />
     <column key="制作或保存方法" value="String" />
     <column key="加工方法" value="String" />
-    <column key="部位" value="List" />
+    <column key="部位" value="String" />
     <column key="包装规格" value="String" />
     <column key="英文品名" value="String" />
-    <column key="品牌" value="List" />
-    <column key="加工厂号" value="List" />
+    <column key="品牌" value="String" />
+    <column key="加工厂号" value="String" />
     <column key="加工企业名称" value="String" />
     <column key="牛种" value="String" />
     <column key="牛龄" value="String" />
-    <column key="级别" value="List" />
+    <column key="级别" value="String" />
     <column key="饲养方式" value="String" />
     <column key="签约日期" value="String" />
     <column key="申报要素" value="String" />
-    <column key="成交方式" value="List" />
+    <column key="成交方式" value="String" />
     <column key="申报单价" value="Money" />
     <column key="申报总价" value="Money" />
-    <column key="申报币制" value="List" />
+    <column key="申报币制" value="String" />
     <column key="美元单价" value="Money" />
     <column key="美元总价" value="Money" />
-    <column key="美元币制" value="List" />
-    <column key="人民币总价" value="List" />
+    <column key="美元币制" value="String" />
+    <column key="人民币总价" value="String" />
     <column key="申报数量" value="Amount" />
-    <column key="申报数量单位" value="List" />
+    <column key="申报数量单位" value="String" />
     <column key="法定重量" value="Amount" />
-    <column key="法定单位" value="List" />
+    <column key="法定单位" value="String" />
     <column key="毛重" value="Amount" />
     <column key="净重" value="Amount" />
-    <column key="重量单位" value="List" />
+    <column key="重量单位" value="String" />
     <column key="件数" value="Amount" />
-    <column key="监管方式" value="List" />
-    <column key="运输方式" value="List" />
-    <column key="目的地" value="List" />
-    <column key="包装种类" value="List" />
-    <column key="主管关区" value="List" />
-    <column key="报关口岸" value="List" />
-    <column key="装货港" value="List" />
-    <column key="中转国" value="List" />
-    <column key="贸易国" value="List" />
-    <column key="企业性质" value="List" />
+    <column key="监管方式" value="String" />
+    <column key="运输方式" value="String" />
+    <column key="目的地" value="String" />
+    <column key="包装种类" value="String" />
+    <column key="主管关区" value="String" />
+    <column key="报关口岸" value="String" />
+    <column key="装货港" value="String" />
+    <column key="中转国" value="String" />
+    <column key="贸易国" value="String" />
+    <column key="企业性质" value="String" />
     <column key="运费／率" value="String" />
-    <column key="运费币制" value="List" />
+    <column key="运费币制" value="String" />
     <column key="保险费／率" value="String" />
-    <column key="保险费币制" value="List" />
+    <column key="保险费币制" value="String" />
     <column key="杂费／率" value="String" />
-    <column key="杂费币制" value="List" />
+    <column key="杂费币制" value="String" />
     <column key="地址" value="String" />
     <column key="手机" value="String" />
     <column key="电话" value="String" />
@@ -71,8 +71,8 @@
     <column key="GTIN" value="String" />
     <column key="CAS" value="String" />
     <column key="备注" value="String" />
-    <column key="城市" value="List" />
-    <column key="省份" value="List" />
-    <column key="区域" value="List" />
-    <column key="大洲" value="List" />
+    <column key="城市" value="String" />
+    <column key="省份" value="String" />
+    <column key="区域" value="String" />
+    <column key="大洲" value="String" />
 </mapping>
