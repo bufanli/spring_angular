@@ -8,8 +8,6 @@ import com.example.eurasia.service.User.UserService;
 import com.example.eurasia.service.Util.DataProcessingUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -192,9 +190,20 @@ public class SearchDataServiceImpl implements ISearchDataService {
     private String checkQueryConditions(String userID, QueryCondition[] queryConditionsArr) throws Exception {
         StringBuffer ret = new StringBuffer();
 
-        ApplicationContext context = new ClassPathXmlApplicationContext("com/example/eurasia/config/applicationContext.xml");
-        DataXMLReader dataXMLReader = (DataXMLReader) context.getBean(DataService.BEAN_NAME_QUERY_CONDITION_TYPE_VALUE);
-        Map<String, String> queryConditionsBase = dataXMLReader.getKeyValue();
+        // 取得所有的查询条件(Data的Map-key是查询条件的key，Data的Map-value是查询条件的type)
+        List<Data> allQueryConditionsList = dataService.getAllQueryConditions();
+        if (allQueryConditionsList == null) {
+            ret.append(ResponseCodeEnum.QUERY_CONDITION_TYPE_FROM_SQL_NULL.getMessage());
+            ret.append(UserService.BR);
+            return ret.toString();
+        }
+        if (allQueryConditionsList.size() != 1) {
+            ret.append(ResponseCodeEnum.QUERY_CONDITION_TYPE_FROM_SQL_SIZE_ERROR.getMessage());
+            ret.append(UserService.BR);
+            return ret.toString();
+        }
+
+        Map<String, String> queryConditionsBase = allQueryConditionsList.get(0).getKeyValue();
         for (QueryCondition queryCondition : queryConditionsArr) {
 
             // 检查格式
