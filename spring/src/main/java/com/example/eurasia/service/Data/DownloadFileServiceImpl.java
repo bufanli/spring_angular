@@ -58,7 +58,7 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
             Date date = new Date(System.currentTimeMillis());
             DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd");
             String fileName = dateFormat.format(date);//导出文件名是当天日期
-            this.buildExcelDocument(fileName, wb, response);
+            this.buildExcelDocument(fileName+".xls", wb, response);
 
             responseMsg.append("导出到文件的条目数：" + rowIndex);//包括title行
             Slf4jLogUtil.get().info("导出到文件的条目数：{}",rowIndex);//包括title行
@@ -188,6 +188,9 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
                     }
                 }
             }
+            if (columnWidth > 30) {
+                columnWidth = 30;
+            }
             sheet.setColumnWidth(columnNum, columnWidth * 256);
         }
     }
@@ -216,6 +219,7 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
 
     //浏览器下载excel
     private void buildExcelDocument(String filename, XSSFWorkbook workbook, HttpServletResponse response) throws Exception{
+        //String filename = StringUtils.encodeFilename(StringUtils.trim(filename), request);//处理中文文件名
         response.setContentType("application/vnd.ms-excel");
         response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(filename, "gbk"));
         OutputStream outputStream = response.getOutputStream();

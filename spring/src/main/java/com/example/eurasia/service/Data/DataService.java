@@ -110,7 +110,7 @@ public class DataService {
                         "规格型号","电子邮件","目的地（原产地）"};
                 String[] columnNameArr = {"进出口","海关编码","海关编码","附加码","商品名称","部位","监管方式",
                         "申报单位名称","货主单位名称","经营单位名称","经营单位代码","报关口岸","贸易国","装货港",
-                        "包装规格","Email","目的地"};
+                        "申报要素","Email","目的地"};
                 for (int i=0; i<synonymArr.length; i++) {
                     columnsDicMap.put(DataService.COLUMNS_DICTIONARY_SYNONYM,synonymArr[i]);
                     columnsDicMap.put(DataService.COLUMNS_DICTIONARY_COLUMN_NAME,columnNameArr[i]);
