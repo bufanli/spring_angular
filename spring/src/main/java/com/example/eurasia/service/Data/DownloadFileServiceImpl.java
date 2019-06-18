@@ -72,15 +72,15 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
         return new ResponseResultUtil().success(ResponseCodeEnum.EXPORT_DATA_INFO_SUCCESS,responseMsg);
     }
 
-    private int writeExcel(XSSFWorkbook wb, Sheet sheet, Set<String> colsNameSet, List<Data> rowList) {
+    private int writeExcel(XSSFWorkbook wb, XSSFSheet sheet, Set<String> colsNameSet, List<Data> rowList) {
 
         int titleRowIndex = writeTitlesToExcel(wb, sheet, colsNameSet);
         int dataRowIndex = writeRowsToExcel(wb, sheet, rowList, titleRowIndex);
-        autoSizeColumns(sheet, (colsNameSet.size() + 1));
+        setSizeColumn(sheet, (colsNameSet.size() + 1));
         return (titleRowIndex + dataRowIndex);
     }
 
-    private int writeTitlesToExcel(XSSFWorkbook wb, Sheet sheet, Set<String> colsNameSet) {
+    private int writeTitlesToExcel(XSSFWorkbook wb, XSSFSheet sheet, Set<String> colsNameSet) {
         int rowIndex = 0;
         int colIndex = 0;
 
@@ -114,8 +114,9 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
         return rowIndex;
     }
 
-    private int writeRowsToExcel(XSSFWorkbook wb, Sheet sheet, List<Data> rowList, int rowIndex) {
+    private int writeRowsToExcel(XSSFWorkbook wb, XSSFSheet sheet, List<Data> rowList, int rowStartIndex) {
         int colIndex = 0;
+        int rowIndex = rowStartIndex;
 
         // 设置字体
         Font dataFont = wb.createFont();
@@ -143,11 +144,12 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
                 cell.setCellStyle(dataStyle);
                 colIndex++;
             }
+            rowIndex++;
         }
         return rowList.size();
     }
 
-    private void autoSizeColumns(Sheet sheet, int columnNumber) {
+    private void autoSizeColumns(XSSFSheet sheet, int columnNumber) {
 
         for (int i = 0; i < columnNumber; i++) {
             int orgWidth = sheet.getColumnWidth(i);
@@ -164,8 +166,8 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
     }
 
     // 自适应宽度(中文支持)
-    private void setSizeColumn(XSSFSheet sheet, int size) {
-        for (int columnNum = 0; columnNum < size; columnNum++) {
+    private void setSizeColumn(XSSFSheet sheet, int columnNumber) {
+        for (int columnNum = 0; columnNum < columnNumber; columnNum++) {
             int columnWidth = sheet.getColumnWidth(columnNum) / 256;
             for (int rowNum = 0; rowNum < sheet.getLastRowNum(); rowNum++) {
                 XSSFRow currentRow;
