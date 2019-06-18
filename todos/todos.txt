@@ -1,6 +1,10 @@
 ﻿【processing】
 
-1. 能够添加，删除column之后，有两个地方需要修改，1. data detail的地方，2. 用户配置query condition的地方  考虑用全局的ColumnsContainer在保存，更新。
+1. download文件名，最好从Java传过来的。不行前端生成。contentDisposition = res.headers.headers.Entries[1]['content-disposition'].value;
+
+2. 还有那个download 23400以上 OOM。
+
+3. 用户权限设定的时候，海关编码是下拉，但是没有选择项。
 
 2. delete user 未对应。
 
@@ -67,3 +71,5 @@
 23.如果分辨率大（1920*1080）的PC上面，微信二维码显示不全。(公司的PC再现，原因是腾讯的CSS URL被屏蔽了)
 
 15. 针对最新的数据（2019/1/27 现在）格式columnDefaultName.xml调整了一次，但是queryConditionTypeValue.xml等文件没有更新。OK
+
+1. 能够添加，删除column之后，有两个地方需要修改，1. data detail的地方，2. 用户配置query condition的地方  考虑用全局的ColumnsContainer在保存，更新。OK
