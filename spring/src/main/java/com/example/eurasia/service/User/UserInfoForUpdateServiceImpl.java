@@ -84,6 +84,11 @@ public class UserInfoForUpdateServiceImpl {
 
             String userID = userInfo.getUserIDFromBasicInfos();
 
+            //T.B.D 管理员和默认用户不check
+            if (userID.equals(UserService.USER_ADMINISTRATOR) || userID.equals(UserService.USER_DEFAULT)) {
+                return ret.toString();
+            }
+
             ret.append(this.checkUserBasicInfo(id,userID,userInfo.getUserBasicInfos()));
             ret.append(this.checkUserAccessAuthority(id,userID,userInfo.getUserDetailedInfos().getUserAccessAuthorities()));
             ret.append(this.checkUserQueryConditionDisplay(id,userID,userInfo.getUserDetailedInfos().getUserAccessAuthorities(),
