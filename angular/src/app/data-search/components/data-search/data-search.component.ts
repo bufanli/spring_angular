@@ -121,7 +121,16 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
         if (tempRes._body.size === 0) {
           this.currentUserContainer.sessionTimeout();
         } else {
-          importedSaveAs(res.blob());
+          // get file name from responose
+          const contentDisposition = tempRes.headers._headers.get('content-disposition');
+          const attachmentAndFileName: string = contentDisposition[0];
+          const fileNameIndex = attachmentAndFileName.indexOf('filename=');
+          if (fileNameIndex >= 0) {
+            const fileName = attachmentAndFileName.substring(fileNameIndex + 'filename='.length);
+            importedSaveAs(res.blob(), fileName);
+          } else {
+            importedSaveAs(res.blob());
+          }
         }
       });
   }

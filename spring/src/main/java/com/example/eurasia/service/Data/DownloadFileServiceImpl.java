@@ -58,7 +58,7 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
             Date date = new Date(System.currentTimeMillis());
             DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd");
             String fileName = dateFormat.format(date);//导出文件名是当天日期
-            this.buildExcelDocument(fileName+".xls", wb, response);
+            this.buildExcelDocument(fileName+".xlsx", wb, response);
 
             responseMsg.append("导出到文件的条目数：" + rowIndex);//包括title行
             Slf4jLogUtil.get().info("导出到文件的条目数：{}",rowIndex);//包括title行
