@@ -11,7 +11,7 @@
     <column key="企业性质" value="String" />
     <column key="运输工具名称" value="String" />
     <column key="提运单号" value="String" />
-    <column key="海关编码" value="String" />
+    <column key="海关编码" value="List" />
     <column key="附加码" value="String" />
     <column key="商品名称" value="String" />
     <column key="制作或保存方法" value="String" />
