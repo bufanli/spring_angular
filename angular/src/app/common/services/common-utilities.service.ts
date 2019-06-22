@@ -53,6 +53,9 @@ export class CommonUtilitiesService {
     '香港特别行政区',
     '澳门',
   ];
+  // system reserved users
+  private readonly ADMIN_USER = 'sinoshuju_admin';
+  private readonly DEFAULT_USER = 'sinoshuju_default';
   // processing modal dialog handler
   private processingDialog: NgbModalRef = null;
 
@@ -282,5 +285,14 @@ export class CommonUtilitiesService {
     });
     $(id).selectpicker('val', '');
     $(id).selectpicker('refresh');
+  }
+  // tell whether it is system reserved user or not
+  public isSystemReservedUser(userName: string): boolean {
+    if (userName === this.ADMIN_USER ||
+      userName === this.DEFAULT_USER) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }

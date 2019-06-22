@@ -17,7 +17,7 @@
 
 6. logout没有做。
 
-9. 编辑管理员时候，给商品编码为空，会报错，但是不应该报错，管理员允许空商品编码。
+9. 编辑管理员时候，给商品编码为空，会报错，但是不应该报错，管理员允许空商品编码。OK
 
 11. spring侧的 sessiontimeout判断， 不用每个controller都做一遍，
       String userID = userInfoServiceImpl.getLoginUserID(request); if (StringUtils.isEmpty(userID)) {

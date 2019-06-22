@@ -152,4 +152,8 @@ export class UserAccessAuthoritiesComponent implements OnInit, AfterViewInit, Af
     }
     return this.currentUserAccessAuthorities;
   }
+  // tell current userID is system reserved user or not
+  public isSystemReservedUser(): boolean {
+    return this.commonUtilitiesService.isSystemReservedUser(this.currentUserAccessAuthorities['userID']);
+  }
 }

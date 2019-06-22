@@ -42,4 +42,8 @@ export class UserBasicInfoComponent implements OnInit, AfterViewInit {
   getCurrentUserBasicInfo(): UserBasicInfo {
     return this.currentUser;
   }
+  // tell current userID is system reserved user or not
+  public isSystemReservedUser():boolean{
+    return this.commonUtilitiesService.isSystemReservedUser(this.currentUser['userID']);
+  }
 }

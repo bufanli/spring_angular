@@ -3,11 +3,12 @@
     <div class="form-group">
       <div class="input-group">
         <span class="input-group-addon" id="product-time">商品有效期间</span>
-        <input type="text" class="form-control datepicker required" aria-describedby="product-time"
-          name="product-start-time{{this.componentID}}" id="product-start-time{{this.componentID}}" autocomplete="off">
+        <input type="text" class="form-control datepicker" aria-describedby="product-time"
+          name="product-start-time{{this.componentID}}" id="product-start-time{{this.componentID}}" autocomplete="off"
+          [ngClass]="{'required':!this.isSystemReservedUser()}">
         <div class="input-group-addon">到</div>
-        <input type="text" class="form-control datepicker required" id="product-to-time{{this.componentID}}"
-          autocomplete="off">
+        <input type="text" class="form-control datepicker" id="product-to-time{{this.componentID}}" autocomplete="off"
+          [ngClass]="{'required':!this.isSystemReservedUser()}">
       </div>
     </div>
   </div>
@@ -17,18 +18,19 @@
     <div class="form-group">
       <div class="input-group">
         <span class="input-group-addon" id="user-time">用户有效期间</span>
-        <input type="text" class="form-control datepicker required" aria-describedby="user-time"
-          name="user-start-time{{this.componentID}}" id="user-start-time{{this.componentID}}" autocomplete="off">
+        <input type="text" class="form-control datepicker" aria-describedby="user-time"
+          name="user-start-time{{this.componentID}}" id="user-start-time{{this.componentID}}" autocomplete="off"
+          [ngClass]="{'required':!this.isSystemReservedUser()}">
         <div class="input-group-addon">到</div>
-        <input type="text" class="form-control datepicker required" id="user-to-time{{this.componentID}}"
-          autocomplete="off">
+        <input type="text" class="form-control datepicker" id="user-to-time{{this.componentID}}" autocomplete="off"
+          [ngClass]="{'required':!this.isSystemReservedUser()}">
       </div>
     </div>
   </div>
 </div>
 <div class="row" *ngIf="currentUserAccessAuthorities">
   <div class="col-md-12">
-    <div class="form-group required">
+    <div class="form-group" [ngClass]="{'required':!this.isSystemReservedUser()}">
       <select class="form-control selectpicker" multiple title="请选择海关编码" id="hs_code_{{this.componentID}}"
         [(ngModel)]="this.selectedHsCodes" name="hs_code_{{this.componentID}}">
         <option *ngFor="let hsCode of this.hsCodes" value="{{hsCode}}">
