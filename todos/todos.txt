@@ -1,8 +1,8 @@
 ﻿【processing】
 
-1. download文件名，最好从Java传过来的。不行前端生成。contentDisposition = res.headers.headers.Entries[1]['content-disposition'].value;
+1. download文件名，最好从Java传过来的。不行前端生成。contentDisposition = res.headers.headers.Entries[1]['content-disposition'].value; OK
 
-2. 还有那个download 23400以上 OOM。
+2. 还有那个download 23400以上 OOM。OK
 
 3. 用户权限设定的时候，海关编码是下拉，但是没有选择项。
 
