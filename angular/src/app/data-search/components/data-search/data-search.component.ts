@@ -11,6 +11,7 @@ import 'bootstrap';
 import 'bootstrap-datepicker';
 import 'bootstrap-table';
 import 'bootstrap-select';
+import 'select2';
 import { HttpResponse } from '../../../common/entities/http-response';
 import { saveAs as importedSaveAs } from 'file-saver';
 import { CommonUtilitiesService } from '../../../common/services/common-utilities.service';
@@ -279,6 +280,10 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
     this.initAccessAuthorites();
     // load all columns
     this.columnsContainerService.init();
+    // test select2
+    $('#select').select2({
+        placeholder: 'Select an option'
+    });
   }
 
   private setSelectOptions(id: string): void {
