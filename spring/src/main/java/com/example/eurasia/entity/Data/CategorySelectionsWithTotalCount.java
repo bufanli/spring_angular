@@ -5,17 +5,17 @@ import java.util.ArrayList;
 /**
  * entity class respresents category selections with total count
  * {
- *   "results": [
- *     {
- *       "id": 1,
- *       "text": "Option 1"
- *     },
- *     {
- *       "id": 2,
- *       "text": "Option 2"
- *     }
- *   ],
- *   "totalCount": 3000
+ * "results": [
+ * {
+ * "id": 1,
+ * "text": "Option 1"
+ * },
+ * {
+ * "id": 2,
+ * "text": "Option 2"
+ * }
+ * ],
+ * "totalCount": 3000
  * }
  */
 public class CategorySelectionsWithTotalCount {
@@ -32,6 +32,16 @@ public class CategorySelectionsWithTotalCount {
     // set total count
     public void setTotalCount(int totalCount) {
         this.totalCount = totalCount;
+    }
+
+    // get total count
+    public int getTotalCount() {
+        return totalCount;
+    }
+
+    // get results
+    public ArrayList<Selection> getResults() {
+        return results;
     }
 
     // push selection
@@ -52,6 +62,16 @@ public class CategorySelectionsWithTotalCount {
         public Selection(int id, String text) {
             this.id = id;
             this.text = text;
+        }
+
+        // get id
+        public int getId() {
+            return id;
+        }
+
+        // get text
+        public String getText() {
+            return text;
         }
     }
 }
