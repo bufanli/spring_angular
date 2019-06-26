@@ -1,5 +1,7 @@
 package com.example.eurasia.controller;
 
+import com.example.eurasia.entity.Data.CategorySelections;
+import com.example.eurasia.entity.Data.CategorySelectionsWithTotalCount;
 import com.example.eurasia.entity.Data.Data;
 import com.example.eurasia.entity.User.UserCustom;
 import com.example.eurasia.entity.User.UserDetailedInfos;
@@ -20,6 +22,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.List;
 
@@ -44,7 +47,7 @@ public class UserInfoController {
      * @date 2018-11-18
      * @description 用户通过用户名密码登陆
      */
-    @RequestMapping(value="/loginUserByUsernamePassword", method = RequestMethod.POST)
+    @RequestMapping(value = "/loginUserByUsernamePassword", method = RequestMethod.POST)
     public @ResponseBody
     ResponseResult loginUserByUsernamePassword(@RequestBody UserCustom[] userCustoms, HttpServletRequest request) {
         ResponseResult responseResult = null;
@@ -52,7 +55,7 @@ public class UserInfoController {
             Slf4jLogUtil.get().info("用户登陆开始");
             String userName = null;
             String userPassword = null;
-            for (UserCustom userCustom:userCustoms) {
+            for (UserCustom userCustom : userCustoms) {
                 switch (userCustom.getKey()) {
                     case UserService.LOGIN_USER_ID:
                         userName = userCustom.getValue();
@@ -70,7 +73,7 @@ public class UserInfoController {
                 return new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_NO_USER);
             }
             // 判断用户名和密码
-            if (userInfoServiceImpl.checkUserPassWord(userName,userPassword) == false) {
+            if (userInfoServiceImpl.checkUserPassWord(userName, userPassword) == false) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_USERNAME_PASSWORD_ERROR);
             }
             // 判断用户有效期
@@ -96,17 +99,17 @@ public class UserInfoController {
      * @date 2018-12-08
      * @description 判读用户是否已登陆
      */
-    @RequestMapping(value="/isUserLogging", method = RequestMethod.GET)
+    @RequestMapping(value = "/isUserLogging", method = RequestMethod.GET)
     public @ResponseBody
     ResponseResult isUserLogging(HttpServletRequest request) {
         ResponseResult responseResult;
         try {
             Slf4jLogUtil.get().info("判断用户是否已登陆开始");
             HttpSession session = request.getSession();
-            String userID = (String)session.getAttribute(HttpSessionEnum.LOGIN_ID.getAttribute());
+            String userID = (String) session.getAttribute(HttpSessionEnum.LOGIN_ID.getAttribute());
             if (!StringUtils.isEmpty(userID)) {
                 // 登陆的时候，才会有id
-                String loginStatus = (String)session.getAttribute(HttpSessionEnum.LOGIN_STATUS.getAttribute());
+                String loginStatus = (String) session.getAttribute(HttpSessionEnum.LOGIN_STATUS.getAttribute());
                 if (loginStatus.equals(HttpSessionEnum.LOGIN_STATUS_SUCCESS)) {
 
                     ResponseResult userBasicInfoRes = userInfoServiceImpl.getUserBasicInfo(userID);
@@ -118,8 +121,8 @@ public class UserInfoController {
                             userDetailedInfosRes.getMessage().equals(ResponseCodeEnum.USER_GET_DETAILED_INFOS_SUCCESS.getMessage())
                     ) {
                         UserInfo userInfo = new UserInfo(
-                                ((List<Data>)userBasicInfoRes.getData()).get(0).toUserCustomArr(),
-                                ((UserDetailedInfos)userDetailedInfosRes.getData()));
+                                ((List<Data>) userBasicInfoRes.getData()).get(0).toUserCustomArr(),
+                                ((UserDetailedInfos) userDetailedInfosRes.getData()));
                         responseResult = new ResponseResultUtil().success(ResponseCodeEnum.SYSTEM_LOGIN_ING, userInfo);
                     } else {
                         responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_ING_INFO_FAILED);
@@ -147,7 +150,7 @@ public class UserInfoController {
      * @date 2018-11-18
      * @description 更新用户
      */
-    @RequestMapping(value="/updateUser", method = RequestMethod.POST)
+    @RequestMapping(value = "/updateUser", method = RequestMethod.POST)
     public @ResponseBody
     ResponseResult updateUser(@RequestBody UserInfo userInfo, HttpServletRequest request) {
         ResponseResult responseResult;
@@ -177,7 +180,7 @@ public class UserInfoController {
      * @date 2018-11-18
      * @description 添加用户
      */
-    @RequestMapping(value="/addUser", method = RequestMethod.POST)
+    @RequestMapping(value = "/addUser", method = RequestMethod.POST)
     public @ResponseBody
     ResponseResult addUser(@RequestBody UserInfo userInfo, HttpServletRequest request) {
         ResponseResult responseResult;
@@ -207,7 +210,7 @@ public class UserInfoController {
      * @date 2018-11-18
      * @description 取得所有用户的基本信息
      */
-    @RequestMapping(value="/getAllUserBasicInfo", method = RequestMethod.GET)
+    @RequestMapping(value = "/getAllUserBasicInfo", method = RequestMethod.GET)
     public @ResponseBody
     ResponseResult getAllUserBasicInfo(HttpServletRequest request) {
         ResponseResult responseResult;
@@ -232,7 +235,7 @@ public class UserInfoController {
      * @date 2018-11-18
      * @description 取得用户默认的基本信息
      */
-    @RequestMapping(value="/getUserDefaultBasicInfo", method = RequestMethod.GET)
+    @RequestMapping(value = "/getUserDefaultBasicInfo", method = RequestMethod.GET)
     public @ResponseBody
     ResponseResult getUserDefaultBasicInfo(HttpServletRequest request) {
         ResponseResult responseResult;
@@ -257,9 +260,9 @@ public class UserInfoController {
      * @date 2018-11-18
      * @description 取得用户的基本信息
      */
-    @RequestMapping(value="/getUserBasicInfo/{editUserID}", method = RequestMethod.GET)
+    @RequestMapping(value = "/getUserBasicInfo/{editUserID}", method = RequestMethod.GET)
     public @ResponseBody
-    ResponseResult getUserBasicInfo(HttpServletRequest request, @PathVariable(value="editUserID") String editUserID) {
+    ResponseResult getUserBasicInfo(HttpServletRequest request, @PathVariable(value = "editUserID") String editUserID) {
         ResponseResult responseResult;
         try {
             Slf4jLogUtil.get().info("取得用户的基本信息开始");
@@ -280,9 +283,9 @@ public class UserInfoController {
     /**
      * @author
      * @date 2018-12-07
-     * @description 取得用户默认的详细信息(访问权限，可显示列等)
+     * @description 取得用户默认的详细信息(访问权限 ， 可显示列等)
      */
-    @RequestMapping(value="/getUserDefaultDetailedInfos", method = RequestMethod.GET)
+    @RequestMapping(value = "/getUserDefaultDetailedInfos", method = RequestMethod.GET)
     public @ResponseBody
     ResponseResult getUserDefaultDetailedInfos(HttpServletRequest request) {
         ResponseResult responseResult;
@@ -305,11 +308,11 @@ public class UserInfoController {
     /**
      * @author
      * @date 2018-12-07
-     * @description 取得用户的详细信息(访问权限，可显示列等)
+     * @description 取得用户的详细信息(访问权限 ， 可显示列等)
      */
-    @RequestMapping(value="/getUserDetailedInfos/{editUserID}", method = RequestMethod.GET)
+    @RequestMapping(value = "/getUserDetailedInfos/{editUserID}", method = RequestMethod.GET)
     public @ResponseBody
-    ResponseResult getUserDetailedInfos(HttpServletRequest request, @PathVariable(value="editUserID") String editUserID) {
+    ResponseResult getUserDetailedInfos(HttpServletRequest request, @PathVariable(value = "editUserID") String editUserID) {
         ResponseResult responseResult;
         try {
             Slf4jLogUtil.get().info("取得用户的详细信息开始");
@@ -327,14 +330,26 @@ public class UserInfoController {
         return responseResult;
     }
 
+    @RequestMapping(value = "/getOneCategoryListWithPagination", method = RequestMethod.GET)
+    public @ResponseBody
+    ResponseResult getOneCategoryListWithPagination(
+            HttpServletRequest request,
+            @RequestBody String category,
+            @RequestBody String term,
+            @RequestBody int page,
+            @RequestBody int numberPerPage
+    ) {
+        return null;
+    }
+
     /**
      * @author
      * @date 2019-04-25
      * @description 取得字段的所有值
      */
-    @RequestMapping(value="/getCategoryList", method = RequestMethod.POST)
+    @RequestMapping(value = "/getCategoryList", method = RequestMethod.POST)
     public @ResponseBody
-    ResponseResult getCategoryList(HttpServletRequest request,@RequestBody String[] categories) {
+    ResponseResult getCategoryList(HttpServletRequest request, @RequestBody String[] categories) {
         ResponseResult responseResult;
         try {
             Slf4jLogUtil.get().info("取得字段的所有值开始");
