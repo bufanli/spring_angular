@@ -179,6 +179,10 @@ public enum ResponseCodeEnum {
     QUERY_CONDITION_TYPE_FROM_SQL_FAILED(ResponseCode.RESPONSE_CODE_NG, "从数据库取得查询条件类型失败"),
     QUERY_CONDITION_TYPE_FROM_SQL_NULL(ResponseCode.RESPONSE_CODE_NULL, "从数据库取得查询条件类型为NULL"),
     QUERY_CONDITION_TYPE_FROM_SQL_SIZE_ERROR(ResponseCode.RESPONSE_CODE_OK, "从数据库取得查询条件类型条数错误"),
+    QUERY_CONDITION_LIST_VALUE_FROM_SQL_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "从数据库取得List型查询条件的值成功"),
+    QUERY_CONDITION_LIST_VALUE_FROM_SQL_FAILED(ResponseCode.RESPONSE_CODE_NG, "从数据库取得List型查询条件的值失败"),
+    QUERY_CONDITION_LIST_VALUE_FROM_SQL_NULL(ResponseCode.RESPONSE_CODE_NULL, "从数据库取得List型查询条件的值为NULL"),
+    QUERY_CONDITION_LIST_VALUE_FROM_SQL_ZERO(ResponseCode.RESPONSE_CODE_OK, "从数据库取得List型查询条件的值为0"),
 
     /* 文件上传 */
     UPLOAD_FILE_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "上传文件成功"),

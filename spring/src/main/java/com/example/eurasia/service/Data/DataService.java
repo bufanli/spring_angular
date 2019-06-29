@@ -295,8 +295,8 @@ public class DataService {
      */
     public boolean deleteColumnFromSQL(String columnName) throws Exception {
 
-        List<Long> hasDataNum = getDataDao().hasColumnValue(DataService.TABLE_DATA, columnName);
-        if (hasDataNum.size() != 0) {
+        List<Long> countsList = this.getColumnValueCounts(DataService.TABLE_DATA, columnName);
+        if (countsList.size() != 0) {
             return false;
         } else {
             int delDataNum = getDataDao().deleteColumn(DataService.TABLE_DATA, columnName);
@@ -331,7 +331,7 @@ public class DataService {
         Set<String> colsNameSet = this.getAllColumnNames(DataService.TABLE_DATA);
 
         // 取得数据字典表指定列的所有值
-        List<Map<String, Object>> colNamesListMap = this.getColumnAllValues(DataService.TABLE_COLUMNS_DICTIONARY,
+        List<Map<String, Object>> colValuesListMap = this.getColumnAllValuesByGroup(DataService.TABLE_COLUMNS_DICTIONARY,
                 new String[]{DataService.COLUMNS_DICTIONARY_SYNONYM, DataService.COLUMNS_DICTIONARY_COLUMN_NAME});
 
         for (int i=0; i<titleList.size(); i++) {
@@ -353,7 +353,7 @@ public class DataService {
 
             if (isInTableData == false) {
                 //在数据表中没找到该字段
-                for (Map<String, Object> map : colNamesListMap) {//在数据字典表中找该字段
+                for (Map<String, Object> map : colValuesListMap) {//在数据字典表中找该字段
                     String synonymValue = (String) map.get(DataService.COLUMNS_DICTIONARY_SYNONYM);
                     if (synonymValue.equals(title)) {//在数据字典表的同义词里找到该字段
                         isInTableColsDicData = true;
@@ -408,15 +408,16 @@ public class DataService {
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
-    public SearchedData searchData(String tableName, QueryCondition[] queryConditionsArr, long offset, long limit, Map<String, String> order) throws Exception {
+    public List<Data> searchData(String tableName,
+                                 QueryCondition[] queryConditionsArr,
+                                 long offset,
+                                 long limit,
+                                 Map<String, String> order) throws Exception {
         if (StringUtils.isEmpty(tableName) || queryConditionsArr == null) {
             return null;
         }
 
-        long count = getDataDao().queryTableRows(tableName,queryConditionsArr).longValue();
-        List<Data> dataList = getDataDao().queryListForObject(tableName,queryConditionsArr,offset,limit,order);
-
-        return new SearchedData(count,dataList);
+        return getDataDao().queryListForObject(tableName,queryConditionsArr,offset,limit,order);
     }
 
     /**
@@ -516,7 +517,7 @@ as不是给表里的字段取别名，而是给查询的结果字段取别名。
             return null;
         }
 
-        return getDataDao().queryListForColumns(tableName,columnNames);
+        return getDataDao().queryListForColumnAllValues(tableName,columnNames);
     }
 
     /**
@@ -692,16 +693,34 @@ as不是给表里的字段取别名，而是给查询的结果字段取别名。
     }
 
     /**
-     * 取得指定列的所有的值
+     * 取得指定列分组的的值
      * @param
      * @return
      * @exception
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
-    public List<Map<String, Object>> getColumnAllValues(String tableName,String[] columnNames) throws Exception {
+    public List<Map<String, Object>> getColumnAllValuesByGroup(String tableName, String[] columnNames) throws Exception {
 
-        return getDataDao().queryListForColumnValues(tableName,columnNames);
+        return getDataDao().queryListForColumnAllValuesByGroup(tableName, columnNames);
+    }
+
+    /**
+     * 取得指定列分页的值
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2019-06-27 00:00:00
+     */
+    public List<Map<String, Object>> getColumnValuesWithPagination(String tableName,
+                                                                   String category,
+                                                                   String term,
+                                                                   long offset,
+                                                                   long limit,
+                                                                   Map<String, String> order) throws Exception {
+
+        return getDataDao().queryListForColumnAllValuesByGroupWithPagination(tableName, category, term, offset, limit, order);
     }
 
     /**
@@ -718,6 +737,20 @@ as不是给表里的字段取别名，而是给查询的结果字段取别名。
                                                            String criterionValue) throws Exception {
 
         return getDataDao().queryListForValuesIfs(tableName, selectionCols, criterionCol, criterionValue);
+    }
+
+    /**
+     * 字段各值的数
+     *
+     * @param
+     * @return
+     * @throws
+     * @author FuJia
+     * @Time 2019-06-08 00:00:00
+     */
+    public List<Long> getColumnValueCounts(String tableName, String columnName) throws Exception {
+
+        return getDataDao().getColumnValueCounts(tableName, columnName);
     }
 
 }

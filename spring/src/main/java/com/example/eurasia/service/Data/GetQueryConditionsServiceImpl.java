@@ -1,21 +1,19 @@
 package com.example.eurasia.service.Data;
 
+import com.example.eurasia.entity.Data.CategorySelectionsWithTotalCount;
 import com.example.eurasia.entity.Data.Data;
+import com.example.eurasia.entity.Data.GetListValueParam;
 import com.example.eurasia.entity.Data.QueryCondition;
 import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;
 import com.example.eurasia.service.User.UserService;
-import com.example.eurasia.service.Util.DataProcessingUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 //@Slf4j
 /*@Transactional(readOnly = true)事物注解*/
@@ -162,14 +160,18 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
                             UserService.MUST_PRODUCT_NUMBER,
                             userID);
                 } else {
+                    queryConditionValue = "";
+                }
+                /* List改为翻页形式。2019-06-26。
                     queryConditionValue = QueryCondition.QUERY_CONDITION_SPLIT;
                 }
 
                 // 如果是 QueryCondition.QUERY_CONDITION_SPLIT 的话，返回该列所有的元素
                 if (queryConditionValue.equals(QueryCondition.QUERY_CONDITION_SPLIT)) {
-                    List<Map<String, Object>> listMaps = dataService.getColumnAllValues(DataService.TABLE_DATA,new String[]{key});
-                    queryConditionValue = DataProcessingUtil.getListMapValuesOfOneColumnWithQueryConditionSplit(listMaps);
+                    List<Map<String, Object>> colValuesListMap = dataService.getColumnAllValuesByGroup(DataService.TABLE_DATA,new String[]{key});
+                    queryConditionValue = DataProcessingUtil.getListMapValuesOfOneColumnWithQueryConditionSplit(colValuesListMap);
                 }
+                */
                 break;
             case QueryCondition.QUERY_CONDITION_TYPE_STRING:
             default:
@@ -179,6 +181,58 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
         return queryConditionValue;
     }
 
+    /**
+     * 取得List类型的查询条件的值
+     * @exception
+     * @author FuJia
+     * @Time 2019-06-26 00:00:00
+     */
+    public ResponseResult getListValueWithPagination(GetListValueParam getListValueParam) throws Exception {
+
+        CategorySelectionsWithTotalCount categorySelectionsWithTotalCount = new CategorySelectionsWithTotalCount();
+        String category = getListValueParam.getCategory();
+        String term = getListValueParam.getTerm();
+        int offset = getListValueParam.getOffset();
+        int limit = getListValueParam.getLimit();
+        try {
+
+            Map<String, String> order = new LinkedHashMap<>();
+            order.put(category,"asc");//T.B.D
+
+            List<Long> countsList = dataService.getColumnValueCounts(DataService.TABLE_DATA, category);
+            long count = countsList.size();
+            categorySelectionsWithTotalCount.setTotalCount(count);
+
+            List<Map<String, Object>> colValuesListMap = dataService.getColumnValuesWithPagination(DataService.TABLE_DATA,
+                                                                                                    category,
+                                                                                                    term,
+                                                                                                    offset,
+                                                                                                    limit,
+                                                                                                    order);
+
+            int i= offset+1;
+            for (Map<String, Object> map : colValuesListMap) {
+                for (Map.Entry<String, Object> m : map.entrySet()) {
+                    categorySelectionsWithTotalCount.pushSelection(new CategorySelectionsWithTotalCount.Selection(i+1,(String) m.getValue()));
+                    i++;
+                }
+            }
+
+            if (categorySelectionsWithTotalCount.getResults() == null) {
+                return new ResponseResultUtil().error(ResponseCodeEnum.QUERY_CONDITION_LIST_VALUE_FROM_SQL_NULL);
+            }
+            if (categorySelectionsWithTotalCount.getResults().size() < 0) {
+                return new ResponseResultUtil().error(ResponseCodeEnum.QUERY_CONDITION_LIST_VALUE_FROM_SQL_ZERO);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseResultUtil().error(ResponseCodeEnum.QUERY_CONDITION_LIST_VALUE_FROM_SQL_FAILED);
+        }
+
+        return new ResponseResultUtil().success(ResponseCodeEnum.QUERY_CONDITION_LIST_VALUE_FROM_SQL_SUCCESS,
+                                                categorySelectionsWithTotalCount);
+    }
     /**
      * 取得数据中最近的月份
      * @param

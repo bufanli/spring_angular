@@ -610,6 +610,26 @@ select PERIOD_DIFF(DATE_FORMAT(CURDATE(),'%Y%m'),DATE_FORMAT(日期,'%Y%m')) fro
     }
 
     /**
+     * convert "where" to sql
+     */
+    protected StringBuffer convertWhereToSQL(String[] columnNames, String[] values) {
+        String sqlAnd = " and ";
+
+        StringBuffer sql = new StringBuffer();
+        sql.append(" where ");
+        for (int i=0; i<columnNames.length; i++) {
+            sql.append("( ");
+            sql.append(columnNames[i] + " like '%" + values[i] + "%'");
+            sql.append(" )");
+            sql.append(sqlAnd);
+        }
+        if (sql.indexOf(sqlAnd) >= 0) {
+            sql.delete((sql.length() - sqlAnd.length()), sql.length());
+        }
+        return sql;
+    }
+
+    /**
      * convert "order" to sql
      */
     public StringBuffer convertOrderToSQL(Map<String, String> order) {

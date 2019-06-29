@@ -197,7 +197,7 @@ public class UploadFileServiceImpl implements IUploadFileService {
         }
 
         // 取得数据字典表指定列的所有值
-        List<Map<String, Object>> colNamesListMap = dataService.getColumnAllValues(DataService.TABLE_COLUMNS_DICTIONARY,
+        List<Map<String, Object>> colValuesListMap = dataService.getColumnAllValuesByGroup(DataService.TABLE_COLUMNS_DICTIONARY,
                 new String[]{DataService.COLUMNS_DICTIONARY_SYNONYM, DataService.COLUMNS_DICTIONARY_COLUMN_NAME});
 
         // 组成数据字典实例数组
@@ -208,7 +208,7 @@ public class UploadFileServiceImpl implements IUploadFileService {
             columnsDictionary[i] = new ColumnsDictionary();
             List<String> synonymList = new ArrayList<>();
 
-            for (Map<String, Object> map : colNamesListMap) {
+            for (Map<String, Object> map : colValuesListMap) {
                 String colNameValue = (String) map.get(DataService.COLUMNS_DICTIONARY_COLUMN_NAME);
                 if (colNameValue.equals(columnName)) {//在该Map里找到指定原词(数据库字段名)
                     String synonymValue = (String) map.get(DataService.COLUMNS_DICTIONARY_SYNONYM);

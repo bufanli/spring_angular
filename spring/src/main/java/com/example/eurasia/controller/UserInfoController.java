@@ -1,7 +1,5 @@
 package com.example.eurasia.controller;
 
-import com.example.eurasia.entity.Data.CategorySelections;
-import com.example.eurasia.entity.Data.CategorySelectionsWithTotalCount;
 import com.example.eurasia.entity.Data.Data;
 import com.example.eurasia.entity.User.UserCustom;
 import com.example.eurasia.entity.User.UserDetailedInfos;
@@ -22,7 +20,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.List;
 
@@ -328,18 +325,6 @@ public class UserInfoController {
             responseResult = new ResponseResultUtil().error();
         }
         return responseResult;
-    }
-
-    @RequestMapping(value = "/getOneCategoryListWithPagination", method = RequestMethod.GET)
-    public @ResponseBody
-    ResponseResult getOneCategoryListWithPagination(
-            HttpServletRequest request,
-            @RequestBody String category,
-            @RequestBody String term,
-            @RequestBody int page,
-            @RequestBody int numberPerPage
-    ) {
-        return null;
     }
 
     /**

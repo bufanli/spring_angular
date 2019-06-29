@@ -18,9 +18,9 @@ import java.util.ArrayList;
  * "totalCount": 3000
  * }
  */
-public class CategorySelectionsWithTotalCount {
+public class CategorySelectionsWithTotalCount implements Cloneable {
     // total count
-    private int totalCount = 0;
+    private long totalCount = 0;
     // selections
     private ArrayList<Selection> results = null;
 
@@ -29,14 +29,25 @@ public class CategorySelectionsWithTotalCount {
         this.results = new ArrayList<Selection>();
     }
 
+    // constructor
+    public CategorySelectionsWithTotalCount(long totalCount, ArrayList<Selection> results) {
+        this.totalCount = totalCount;
+        this.results = new ArrayList<Selection>(results.size());
+        this.results.addAll(results);//这个是浅拷贝
+    }
+
     // set total count
-    public void setTotalCount(int totalCount) {
+    public void setTotalCount(long totalCount) {
         this.totalCount = totalCount;
     }
 
     // get total count
-    public int getTotalCount() {
+    public long getTotalCount() {
         return totalCount;
+    }
+
+    public void setResults(ArrayList<Selection> results) {
+        this.results.addAll(results);
     }
 
     // get results
@@ -47,6 +58,11 @@ public class CategorySelectionsWithTotalCount {
     // push selection
     public void pushSelection(Selection selection) {
         this.results.add(selection);
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 
     // inner class of selection
@@ -69,9 +85,19 @@ public class CategorySelectionsWithTotalCount {
             return id;
         }
 
+        // set id
+        public void setId(int id) {
+            this.id = id;
+        }
+
         // get text
         public String getText() {
             return text;
+        }
+
+        // set text
+        public void setText(String text) {
+            this.text = text;
         }
     }
 }

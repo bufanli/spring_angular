@@ -416,7 +416,7 @@ GROUP BY 列1,列2,列3 having count(*) > 1;
     }
 
     /**
-     * 判断字段是否有值
+     * 字段各值的数
      *
      * @param
      * @return
@@ -424,7 +424,7 @@ GROUP BY 列1,列2,列3 having count(*) > 1;
      * @author FuJia
      * @Time 2019-06-08 00:00:00
      */
-    public List<Long> hasColumnValue(String tableName, String columnName) throws Exception {
+    public List<Long> getColumnValueCounts(String tableName, String columnName) throws Exception {
 
         StringBuffer sql = new StringBuffer();
         sql.append("select count(*) from " + tableName + " where " + columnName + "<>\"\" group by " + columnName);
@@ -556,7 +556,11 @@ StringUtils.isWhitespace(null); // false
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
-    public List<Data> queryListForObject(String tableName, QueryCondition[] queryConditionsArr, long offset, long limit, Map<String, String> order) {
+    public List<Data> queryListForObject(String tableName,
+                                         QueryCondition[] queryConditionsArr,
+                                         long offset,
+                                         long limit,
+                                         Map<String, String> order) {
         StringBuffer sql = convertQueryConditionsToSQL(tableName, queryConditionsArr, false);
         StringBuffer sqlOrder = convertOrderToSQL(order);
         sql.append(sqlOrder);
@@ -645,7 +649,7 @@ Mysql limit offset示例
      * @author FuJia
      * @Time 2018-10-27 00:00:00
      */
-    public List<Map<String, Object>> queryListForColumns(String tableName, String[] selectionCols) throws Exception {
+    public List<Map<String, Object>> queryListForColumnAllValues(String tableName, String[] selectionCols) throws Exception {
         StringBuffer sql = convertSelectionsToSQL(tableName, selectionCols);
 
         List<Map<String, Object>> selectionColsList = getJdbcTemplate().queryForList(sql.toString());
@@ -654,7 +658,7 @@ Mysql limit offset示例
     }
 
     /**
-     * 查询并返回List集合
+     * 查询并返回分组的List集合
      *
      * @param
      * @return
@@ -662,12 +666,47 @@ Mysql limit offset示例
      * @author FuJia
      * @Time 2018-10-27 00:00:00
      */
-    public List<Map<String, Object>> queryListForColumnValues(String tableName, String[] selectionCols) throws Exception {
+    public List<Map<String, Object>> queryListForColumnAllValuesByGroup(String tableName, String[] selectionCols) throws Exception {
         StringBuffer sql = new StringBuffer();
         StringBuffer sqlSelections = convertSelectionsToSQL(tableName, selectionCols);
         StringBuffer sqlGroupBys = convertGroupByToSQL(selectionCols);
         sql.append(sqlSelections);
         sql.append(sqlGroupBys);
+
+        List<Map<String, Object>> selectionColsList = getJdbcTemplate().queryForList(sql.toString());
+
+        return selectionColsList;
+    }
+
+    /**
+     * 查询并返回分组并分页的List集合
+     *
+     * @param
+     * @return
+     * @throws
+     * @author FuJia
+     * @Time 2018-10-27 00:00:00
+     */
+    public List<Map<String, Object>> queryListForColumnAllValuesByGroupWithPagination(String tableName,
+                                                                                      String category,
+                                                                                      String term,
+                                                                                      long offset,
+                                                                                      long limit,
+                                                                                      Map<String, String> order) throws Exception {
+/*
+group by 与order by 一起使用是要遵守一定原则的：
+1.order by 的列，必须是出现在group by 子句里的列
+2.order by 要 放在 group by的 后面
+*/
+        StringBuffer sql = new StringBuffer();
+        StringBuffer sqlSelections = convertSelectionsToSQL(tableName, new String[]{category});
+        StringBuffer sqlWhere = convertWhereToSQL(new String[]{category}, new String[]{term});
+        StringBuffer sqlGroupBys = convertGroupByToSQL(new String[]{category});
+        StringBuffer sqlOrder = convertOrderToSQL(order);
+        sql.append(sqlSelections);
+        sql.append(sqlGroupBys);
+        sql.append(sqlOrder);
+        sql.append(" LIMIT " + String.valueOf(offset) + "," + String.valueOf(limit));
 
         List<Map<String, Object>> selectionColsList = getJdbcTemplate().queryForList(sql.toString());
 

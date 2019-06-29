@@ -8,7 +8,6 @@ import com.example.eurasia.service.Data.DataService;
 import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;
-import com.example.eurasia.service.Util.DataProcessingUtil;
 import com.example.eurasia.service.Util.HttpSessionEnum;
 import com.example.eurasia.service.Util.Slf4jLogUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -234,10 +233,12 @@ public class UserInfoServiceImpl {
                             String[] queryConditionValues = null;
                             switch (entry.getValue()) {
                                 case QueryCondition.QUERY_CONDITION_TYPE_LIST:
+                                    /* List改为翻页形式。2019-06-26。
                                     // 如果是 QueryCondition.QUERY_CONDITION_SPLIT 的话，返回该列所有的元素
-                                    List<Map<String, Object>> listMaps = dataService.getColumnAllValues(DataService.TABLE_DATA,new String[]{category});
-                                    queryConditionValues = DataProcessingUtil.getListMapValuesOfOneColumn(listMaps);
+                                    List<Map<String, Object>> colValuesListMap = dataService.getColumnAllValuesByGroup(DataService.TABLE_DATA,new String[]{category});
+                                    queryConditionValues = DataProcessingUtil.getListMapValuesOfOneColumn(colValuesListMap);
                                 break;
+                                */
                                 case QueryCondition.QUERY_CONDITION_TYPE_DATE:
                                 case QueryCondition.QUERY_CONDITION_TYPE_MONEY:
                                 case QueryCondition.QUERY_CONDITION_TYPE_AMOUNT:

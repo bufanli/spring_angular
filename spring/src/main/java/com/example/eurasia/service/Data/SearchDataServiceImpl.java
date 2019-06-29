@@ -36,8 +36,8 @@ public class SearchDataServiceImpl implements ISearchDataService {
 
         SearchedData searchedData = null;
         QueryCondition[] queryConditionsArr = dataSearchParam.getQueryConditions();
-        long userOffset = dataSearchParam.getOffset();
-        long userLimit = dataSearchParam.getLimit();
+        long offset = dataSearchParam.getOffset();
+        long limit = dataSearchParam.getLimit();
         long userMax = -1;
         try {
             //检查查询条件的格式和内容
@@ -55,7 +55,9 @@ public class SearchDataServiceImpl implements ISearchDataService {
             Map<String, String> order = new LinkedHashMap<>();
             order.put("id","asc");//T.B.D
 
-            searchedData = dataService.searchData(DataService.TABLE_DATA,queryConditionsArr,userOffset,userLimit,order);
+            long count = dataService.queryTableRows(DataService.TABLE_DATA,queryConditionsArr);
+            List<Data> dataList = dataService.searchData(DataService.TABLE_DATA,queryConditionsArr, offset, limit,order);
+            searchedData = new SearchedData(count, dataList);
 
             if (searchedData.getDataList() == null) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.SEARCH_DATA_INFO_FROM_SQL_NULL);
