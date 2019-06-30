@@ -62,7 +62,7 @@ public class GetQueryConditionsController {
      * @date 2019-06-26
      * @description 取得List类型的查询条件的值
      */
-    @RequestMapping(value = "/getListValueWithPagination", method = RequestMethod.GET)
+    @RequestMapping(value = "/getListValueWithPagination", method = RequestMethod.POST)
     public @ResponseBody
     ResponseResult getListValueWithPagination(
             HttpServletRequest request,
