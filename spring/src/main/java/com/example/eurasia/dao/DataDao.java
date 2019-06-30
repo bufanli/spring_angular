@@ -427,7 +427,8 @@ GROUP BY 列1,列2,列3 having count(*) > 1;
     public List<Long> getColumnValueCounts(String tableName, String columnName) throws Exception {
 
         StringBuffer sql = new StringBuffer();
-        sql.append("select count(*) from " + tableName + " where " + columnName + "<>\"\" group by " + columnName);
+        //sql.append("select count(*) from " + tableName + " where " + columnName + "<>\"\" group by " + columnName);
+        sql.append("select count(distinct(" + columnName + ")) from " + tableName);
 
         List<Long> numList = getJdbcTemplate().queryForList(sql.toString(), Long.class);
         return numList;//如果>0说明存在有值行数据
@@ -704,9 +705,7 @@ group by 与order by 一起使用是要遵守一定原则的：
         StringBuffer sqlGroupBys = convertGroupByToSQL(new String[]{category});
         StringBuffer sqlOrder = convertOrderToSQL(order);
         sql.append(sqlSelections);
-        if (!StringUtils.isEmpty(term)) {
-            sql.append(sqlWhere);
-        }
+        sql.append(sqlWhere);
         sql.append(sqlGroupBys);
         sql.append(sqlOrder);
         sql.append(" LIMIT " + String.valueOf(offset) + "," + String.valueOf(limit));

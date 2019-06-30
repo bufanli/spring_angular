@@ -619,7 +619,7 @@ select PERIOD_DIFF(DATE_FORMAT(CURDATE(),'%Y%m'),DATE_FORMAT(日期,'%Y%m')) fro
         sql.append(" where ");
         for (int i=0; i<columnNames.length; i++) {
             sql.append("( ");
-            sql.append(columnNames[i] + " like '%" + values[i] + "%'");
+            sql.append(columnNames[i] + " like '%" + values[i] + "%'");//value不能为null
             sql.append(" )");
             sql.append(sqlAnd);
         }
