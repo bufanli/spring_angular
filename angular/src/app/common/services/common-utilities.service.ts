@@ -82,13 +82,13 @@ export class CommonUtilitiesService {
   }
 
   // add tooltip formatter to table
-  addTooltipFormatter(headers: Header[], width) {
+  addTooltipFormatter(headers: Header[], smallWidth, bigWidth) {
     for (const header of headers) {
       header.class = 'colStyle';
       if (header.title.length > 4) {
-        header.width = width;
+        header.width = bigWidth;
       } else {
-        header.width = width;
+        header.width = smallWidth;
       }
       header.formatter = function (value, row, index) {
         value = value ? value : '';

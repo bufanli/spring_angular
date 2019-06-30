@@ -31,6 +31,7 @@ import { UUID } from 'angular2-uuid';
 import { QueryConditionRow } from '../../entities/query-conditions-row';
 import { UserQueryConditionsComponent } from 'src/app/user-conf/components/user-query-conditions/user-query-conditions.component';
 import { ColumnsContainerService } from 'src/app/common/services/columns-container.service';
+import { OptionData } from 'select2';
 
 // json header for post
 const httpOptions = {
@@ -63,12 +64,15 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
   public readonly TO = '到';
   public readonly PLEASE_INPUT = '请输入';
   public readonly PLEASE_SELECT = '请选择';
-  public readonly QUERY_CONDITIONS_NUMBER_EACH_ROW = 3;
+  public readonly QUERY_CONDITIONS_NUMBER_EACH_ROW = 4;
+  public readonly DATA_NUMBER_PER_PAGE = 100;
+  public readonly LIST_VALUE_QUERY_NUMBER_PER_PAGE = 100;
   // api urls
   private readonly searchUrl = 'api/searchData';  // URL to web api
   private readonly exportUrl = 'api/downloadFile';  // URL to web api
   private readonly headersUrl = 'api/getHeaders';  // URL to web api
   private readonly getQueryConditionsUrl = 'api/getQueryConditions';  // URL to web api
+  private readonly getListValueUrl = 'api/getListValueWithPagination';  // URL to web api
 
   // this id is just for compiling pass
   private id: string = null;
@@ -80,6 +84,12 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
   private initialized = false;
   // query condition rows
   public queryConditionRows: QueryConditionRow[] = null;
+  // init height of table(show query conditions with collapse)
+  private TABLE_HEIGHT_QUERY_CONDITIONS_SHOWN = 0.60;
+  // total height of table(hide query conditions with collapse)
+  private TABLE_HEIGHT_QUERY_CONDITIONS_HIDEN = 0.90;
+  // is showing query conditions
+  private isShowingQueryConditions = true;
 
   // user access authorities definition
   // 1. export button
@@ -165,8 +175,32 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
     const allHeaders: Header[] = this.addFormatterToHeaders(httpResponse.data);
     // init data table
     this.initDataTable(allHeaders);
+    // init query conditions collapse
+    this.initQueryCondtionCollapse();
   }
-
+  // init query condtions collapse
+  private initQueryCondtionCollapse() {
+    $('#query-conditions-body').on('shown.bs.collapse', this, this.showQueryConditions);
+    $('#query-conditions-body').on('hidden.bs.collapse', this, this.hideQueryConditions);
+  }
+  // show query conditions
+  private showQueryConditions(target: any) {
+    const that = target.data;
+    that.isShowingQueryConditions = true;
+    $('#table').bootstrapTable('resetView', {
+      // 60 px is for pagination
+      height: $(window).height() * that.TABLE_HEIGHT_QUERY_CONDITIONS_SHOWN - 60,
+    });
+  }
+  // hide query conditions
+  private hideQueryConditions(target: any) {
+    const that = target.data;
+    that.isShowingQueryConditions = false;
+    $('#table').bootstrapTable('resetView', {
+      // 60 px is for pagination
+      height: $(window).height() * that.TABLE_HEIGHT_QUERY_CONDITIONS_HIDEN - 60,
+    });
+  }
   // init data table
   private initDataTable(headers: Header[]): void {
     const that: any = this;
@@ -175,7 +209,7 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
       method: 'post',
       url: that.searchUrl,
       // 60 px is for pagination
-      height: $(window).height() * 0.5 - 60,
+      height: $(window).height() * this.TABLE_HEIGHT_QUERY_CONDITIONS_SHOWN - 60,
       striped: true,
       pageNumber: 1,
       queryParamsType: 'limit',
@@ -187,7 +221,7 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
         return that.getQueryParams(params);
       },
       sidePagination: 'server',
-      pageSize: 10,
+      pageSize: that.DATA_NUMBER_PER_PAGE,
       pageList: [],
       // showColumns: true,
       locale: 'zh-CN',
@@ -259,7 +293,7 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
     operations.width = 100;
     // get all headers
     let allHeaders: Header[] = [seq, operations];
-    this.commonUtilitiesService.addTooltipFormatter(headers, 150);
+    this.commonUtilitiesService.addTooltipFormatter(headers, 100, 150);
     allHeaders = allHeaders.concat(headers);
     // set sortable columns
     headers.forEach(element => {
@@ -280,18 +314,41 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
     this.initAccessAuthorites();
     // load all columns
     this.columnsContainerService.init();
-    // test select2
-    $('#select').select2({
-        placeholder: 'Select an option'
-    });
   }
-
-  private setSelectOptions(id: string): void {
-    $(id).selectpicker({
-      'liveSearch': true,
+  // set select options to select2
+  private setSelectOptions(listQueryCondition: QueryCondition): void {
+    const that = this;
+    $('#' + listQueryCondition.getUUID()).select2({
+      placeholder: this.PLEASE_SELECT + listQueryCondition.getKey(),
+      multiple: true,
+      closeOnSelect: false,
+      ajax: {
+        url: this.getListValueUrl,
+        type: 'POST',
+        dataType: 'json',
+        contentType: 'application/json',
+        delay: 500, // wait 500 milliseconds before triggering the request
+        data: function (params): any {
+          const currentPage = params.page || 1;
+          const query = {
+            category: listQueryCondition.getKey(),
+            term: params.term || '',
+            offset: (currentPage - 1) * that.LIST_VALUE_QUERY_NUMBER_PER_PAGE,
+            limit: that.LIST_VALUE_QUERY_NUMBER_PER_PAGE,
+          };
+          return JSON.stringify(query);
+        },
+        processResults: function (data, params) {
+          params.page = params.page || 1;
+          return {
+            results: data.data.results,
+            pagination: {
+              more: ((params.page * that.LIST_VALUE_QUERY_NUMBER_PER_PAGE) < data.data.totalCount),
+            },
+          };
+        },
+      }
     });
-    $(id).selectpicker('val', '');
-    $(id).selectpicker('refresh');
   }
 
   // bind data detail event handler to every page
@@ -520,7 +577,7 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
     this.queryCondtions.forEach(element => {
       if (element.getType() === 'List') {
         // initialize select options
-        this.setSelectOptions('#' + element.getUUID());
+        this.setSelectOptions(element);
       }
     });
     return true;
@@ -528,11 +585,15 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
   // resize data table
   private bindResizeDataTableEvent(): void {
     // reset data search table when window's height changes
+    let height = this.TABLE_HEIGHT_QUERY_CONDITIONS_SHOWN;
+    if (this.isShowingQueryConditions === false) {
+      height = this.TABLE_HEIGHT_QUERY_CONDITIONS_HIDEN;
+    }
     // tslint:disable-next-line: deprecation
     $(window).resize(function () {
       $('#table').bootstrapTable('resetView', {
         // 60 px is for pagination
-        height: $(window).height() * 0.5 - 60,
+        height: $(window).height() * height - 60,
       });
     });
   }
@@ -636,11 +697,15 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
     queryParams: QueryCondition[],
     queryCondition: QueryCondition): void {
     // if nothing is selected, then do not put into query params
-    let selections = this.queryConditionInputModel[queryCondition.getUUID()];
+    const selections: OptionData[] = $('#' + queryCondition.getUUID()).select2('data');
+    const selectionsArray = [];
+    selections.forEach(element => {
+      selectionsArray.push(element.text);
+    });
     // convert selection from comma to dash
-    selections = this.commonUtilitiesService.convertArrayCommaSeperatorToDash(selections);
+    const selectionsStr = this.commonUtilitiesService.convertArrayCommaSeperatorToDash(selectionsArray);
     const inputQueryCondition = queryCondition.clone();
-    inputQueryCondition.setStringValue(selections);
+    inputQueryCondition.setStringValue(selectionsStr);
     queryParams.push(inputQueryCondition);
   }
   // abstract input query condition of amount type or money type

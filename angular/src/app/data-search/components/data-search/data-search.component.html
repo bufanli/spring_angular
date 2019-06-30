@@ -1,95 +1,84 @@
-<div class="container">
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <h3 class="panel-title">
-        产品检索
-      </h3>
-    </div>
-    <div class="panel-body">
-      <form role="form" (ngSubmit)="onSearch()">
-        <div *ngFor="let queryConditionRow of this.queryConditionRows" class="row">
-          <div *ngFor="let queryCondition of queryConditionRow.getQueryConditions()" class="col-md-4">
-            <div class="form-group" *ngIf="queryCondition.getType() === 'Date' else notDate">
-              <div class="input-group input-daterange">
-                <span class="input-group-addon" id="date">{{queryCondition.getKey()}}</span>
-                <input type="text" class="form-control grey-input" id="{{queryCondition.getUUID()}}_from"
-                  autocomplete="off" aria-describedby="date">
-                <div class="input-group-addon">{{this.TO}}</div>
-                <input type="text" class="form-control grey-input" id="{{queryCondition.getUUID()}}_to"
-                  autocomplete="off">
+<div class="container-fluid">
+  <div class="accordion" id="query-conditions-all">
+    <div class="accordion-group">
+      <div class="accordion-heading">
+        <a class="accordion-toggle" data-toggle="collapse" data-parent="#query-conditions-all" href="#query-conditions-body">
+          <h5>产品检索</h5>
+        </a>
+      </div>
+      <div id="query-conditions-body" class="accordion-body collapse in">
+        <div class="accordion-inner">
+          <form role="form" (ngSubmit)="onSearch()">
+            <div *ngFor="let queryConditionRow of this.queryConditionRows" class="row">
+              <div *ngFor="let queryCondition of queryConditionRow.getQueryConditions()" class="col-md-3">
+                <div class="form-group" *ngIf="queryCondition.getType() === 'Date' else notDate">
+                  <div class="input-group input-daterange">
+                    <span class="input-group-addon" id="date">{{queryCondition.getKey()}}</span>
+                    <input type="text" class="form-control grey-input" id="{{queryCondition.getUUID()}}_from"
+                      autocomplete="off" aria-describedby="date">
+                    <div class="input-group-addon">{{this.TO}}</div>
+                    <input type="text" class="form-control grey-input" id="{{queryCondition.getUUID()}}_to"
+                      autocomplete="off">
+                  </div>
+                </div>
+                <ng-template #notDate>
+                  <div class="form-group" *ngIf="queryCondition.getType() === 'String' else notString">
+                    <div class="input-group">
+                      <span class="input-group-addon">{{queryCondition.getKey()}}</span>
+                      <input type="text" [(ngModel)]="this.queryConditionInputModel[queryCondition.getUUID()]"
+                        name="{{queryCondition.getUUID()}}" class="form-control"
+                        placeholder="{{this.PLEASE_INPUT}}{{queryCondition.getKey()}}">
+                    </div>
+                  </div>
+                </ng-template>
+                <ng-template #notString>
+                  <div class="form-group" *ngIf="queryCondition.getType() === 'List' else notList">
+                    <select class="form-control" id="{{queryCondition.getUUID()}}" name="{{queryCondition.getUUID()}}">
+                    </select>
+                  </div>
+                </ng-template>
+                <ng-template #notList>
+                  <div class="form-group"
+                    *ngIf="queryCondition.getType() === 'Money' || queryCondition.getType() === 'Amount'">
+                    <div class="input-group">
+                      <span class="input-group-addon">{{queryCondition.getKey()}}</span>
+                      <input type="number" class="form-control" id="{{queryCondition.getUUID()}}_from"
+                        [(ngModel)]="this.queryConditionInputModel[queryCondition.getUUID()+'_from']">
+                      <div class="input-group-addon">{{this.TO}}</div>
+                      <input type="number" class="form-control" id="{{queryCondition.getUUID()}}_to"
+                        [(ngModel)]="this.queryConditionInputModel[queryCondition.getUUID()+'_to']">
+                    </div>
+                  </div>
+                </ng-template>
               </div>
             </div>
-            <ng-template #notDate>
-              <div class="form-group" *ngIf="queryCondition.getType() === 'String' else notString">
-                <div class="input-group">
-                  <span class="input-group-addon">{{queryCondition.getKey()}}</span>
-                  <input type="text" [(ngModel)]="this.queryConditionInputModel[queryCondition.getUUID()]"
-                    name="{{queryCondition.getUUID()}}" class="form-control"
-                    placeholder="{{this.PLEASE_INPUT}}{{queryCondition.getKey()}}">
+            <div class="row">
+              <div class="col-md-2">
+                <div class="form-group">
+                  <button type="submit" class="btn btn-primary btn-block">
+                    <span class="glyphicon glyphicon-search"></span> 检索
+                  </button>
                 </div>
               </div>
-            </ng-template>
-            <ng-template #notString>
-              <div class="form-group" *ngIf="queryCondition.getType() === 'List' else notList">
-                <select class="form-control selectpicker" multiple
-                  title="{{this.PLEASE_SELECT}}{{queryCondition.getKey()}}" id="{{queryCondition.getUUID()}}"
-                  [(ngModel)]="this.queryConditionInputModel[queryCondition.getUUID()]"
-                  name="{{queryCondition.getUUID()}}">
-                  <option *ngFor="let selection of queryCondition.getValue()" value="{{selection}}">
-                    {{selection}}</option>
-                </select>
-              </div>
-            </ng-template>
-            <ng-template #notList>
-              <div class="form-group"
-                *ngIf="queryCondition.getType() === 'Money' || queryCondition.getType() === 'Amount'">
-                <div class="input-group">
-                  <span class="input-group-addon">{{queryCondition.getKey()}}</span>
-                  <input type="number" class="form-control" id="{{queryCondition.getUUID()}}_from"
-                    [(ngModel)]="this.queryConditionInputModel[queryCondition.getUUID()+'_from']">
-                  <div class="input-group-addon">{{this.TO}}</div>
-                  <input type="number" class="form-control" id="{{queryCondition.getUUID()}}_to"
-                    [(ngModel)]="this.queryConditionInputModel[queryCondition.getUUID()+'_to']">
+              <div class="col-md-2">
+                <div class="form-group">
+                  <button type="button" class="btn btn-default btn-block" [disabled]="!exportEnabled"
+                    (click)="onDownloadFile()">
+                    <span class="glyphicon glyphicon-export"></span> 导出
+                  </button>
                 </div>
               </div>
-            </ng-template>
-          </div>
+              <div class="col-md-2">
+                <div class="form-group">
+                  <button type="button" class="btn btn-default btn-block" (click)="onStatisticsReport()">
+                    <span class="glyphicon glyphicon-stats"></span> 数据统计
+                  </button>
+                </div>
+              </div>
+            </div>
+          </form>
         </div>
-        <div class="row">
-          <div class="col-md-4">
-            <div class="form-group">
-              <select id="select" class="form-control" name="select">
-                <option value="AL">Alabama</option>
-                <option value="bL">Blabama</option>
-              </select>
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-2">
-            <div class="form-group">
-              <button type="submit" class="btn btn-primary btn-block">
-                <span class="glyphicon glyphicon-search"></span> 检索
-              </button>
-            </div>
-          </div>
-          <div class="col-md-2">
-            <div class="form-group">
-              <button type="button" class="btn btn-default btn-block" [disabled]="!exportEnabled"
-                (click)="onDownloadFile()">
-                <span class="glyphicon glyphicon-export"></span> 导出
-              </button>
-            </div>
-          </div>
-          <div class="col-md-2">
-            <div class="form-group">
-              <button type="button" class="btn btn-default btn-block" (click)="onStatisticsReport()">
-                <span class="glyphicon glyphicon-stats"></span> 数据统计
-              </button>
-            </div>
-          </div>
-        </div>
-      </form>
+      </div>
     </div>
   </div>
   <div class="row">
