@@ -704,6 +704,9 @@ group by 与order by 一起使用是要遵守一定原则的：
         StringBuffer sqlGroupBys = convertGroupByToSQL(new String[]{category});
         StringBuffer sqlOrder = convertOrderToSQL(order);
         sql.append(sqlSelections);
+        if (!StringUtils.isEmpty(term)) {
+            sql.append(sqlWhere);
+        }
         sql.append(sqlGroupBys);
         sql.append(sqlOrder);
         sql.append(" LIMIT " + String.valueOf(offset) + "," + String.valueOf(limit));

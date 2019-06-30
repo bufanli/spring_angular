@@ -18,7 +18,7 @@ public class GetListValueParam {
         return this.category;
     }
 
-    public void setTerm(String groupByField) {
+    public void setTerm(String term) {
         this.term = term;
     }
 
