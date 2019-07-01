@@ -266,9 +266,10 @@ CREATE TABLE SPRING_SESSION_ATTRIBUTES (
      * @Time 2018-09-20 00:00:00
      */
     public boolean isExistTableName(String tableName) throws Exception {
-        Connection conn = getJdbcTemplate().getDataSource().getConnection();
+        Connection conn = null;
         ResultSet tables = null;
         try {
+            conn = getJdbcTemplate().getDataSource().getConnection();
             DatabaseMetaData dbMetaData = conn.getMetaData();
             String[] types = {"TABLE"};
             tables = dbMetaData.getTables(null, null, tableName, types);
@@ -281,8 +282,8 @@ CREATE TABLE SPRING_SESSION_ATTRIBUTES (
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            tables.close();
-            conn.close();
+            if (tables != null) tables.close();
+            if (conn != null) conn.close();
         }
         return false;
     }
