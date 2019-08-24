@@ -16,7 +16,7 @@ import java.util.*;
 @Repository
 public class DataDao extends CommonDao {
 
-    private static int INSERT_RECODE_STEPS = 10000;
+    public static int INSERT_RECODE_STEPS = 10000;
     public static final SimpleDateFormat SIMPLE_DATE_FORMAT_1 = new SimpleDateFormat(QueryCondition.PRODUCT_DATE_FORMAT_1);
     public static final SimpleDateFormat SIMPLE_DATE_FORMAT_2 = new SimpleDateFormat(QueryCondition.PRODUCT_DATE_FORMAT_2);
     public static final SimpleDateFormat SIMPLE_DATE_FORMAT_3 = new SimpleDateFormat(QueryCondition.PRODUCT_DATE_FORMAT_3);
