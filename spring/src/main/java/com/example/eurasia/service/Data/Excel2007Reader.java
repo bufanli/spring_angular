@@ -72,7 +72,6 @@ public class Excel2007Reader implements IExcelReaderByEventMode {
             ReadOnlySharedStringsTable readOnlySharedStringsTable = new ReadOnlySharedStringsTable(pkg);
             StylesTable st = r.getStylesTable();// 获取当前Excel所有Sheet中单元格样式
             XSSFReader.SheetIterator sheets = (XSSFReader.SheetIterator)r.getSheetsData();
-            XMLReader parser = fetchSheetParser(readOnlySharedStringsTable, st,sheets);
             /**
              * 返回一个迭代器，此迭代器会依次得到所有不同的sheet。
              * 每个sheet的InputStream只有从Iterator获取时才会打开。
@@ -88,9 +87,11 @@ public class Excel2007Reader implements IExcelReaderByEventMode {
                 //InputStream sheet = r.getSheet("rId2");//单一sheet的时候，可以通过sheet名字直接获得。
                 InputStream sheet = sheets.next();
                 InputSource sheetSource = new InputSource(sheet);
-
+                XMLReader parser = fetchSheetParser(readOnlySharedStringsTable, st,sheets);
                 // 解析sheet: com.sun.org.apache.xerces.internal.jaxp.SAXParserImpl:522
                 parser.parse(sheetSource);
+                // clear error message for each sheet
+                this.rowReaderClearErrorMessage();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -99,20 +100,35 @@ public class Excel2007Reader implements IExcelReaderByEventMode {
             pkg.close();
         }
     }
+    /**
+     * clear error message when parsing a new sheet
+     */
+    private void rowReaderClearErrorMessage(){
+        this.rowReader.clearSameTitleSet();
+        this.rowReader.clearTitleIsNotExistList();
+    }
+
+    /**
+     * save data when reaching max rows
+     * @param sheets
+     * @throws Exception
+     */
     private void rowReaderSaveDataSQL(XSSFReader.SheetIterator sheets ) throws  Exception{
         if (this.rowReader.getTitleIsNotExistList().size() > 0) {
-            String titleIsNotExist = this.rowReader.titleIsNotExistListToString();
-            Slf4jLogUtil.get().info("Sheet[{}]导入失败，{}在数据库中不存在！",sheets.getSheetName(),titleIsNotExist);
-            this.message.append("Sheet[" + sheets.getSheetName() + "]导入失败，" + titleIsNotExist + " 在数据库中不存在！");
-
-            this.rowReader.clearTitleIsNotExistList();
+            // add error message only when message is empty
+            if(this.message.length() == 0) {
+                String titleIsNotExist = this.rowReader.titleIsNotExistListToString();
+                Slf4jLogUtil.get().info("Sheet[{}]导入失败，{}在数据库中不存在！", sheets.getSheetName(), titleIsNotExist);
+                this.message.append("Sheet[" + sheets.getSheetName() + "]导入失败，" + titleIsNotExist + " 在数据库中不存在！");
+            }
         }
         if (this.rowReader.getSameTitleSet().size() > 0) {
-            String sameTitle = this.rowReader.sameTitleSetToString();
-            Slf4jLogUtil.get().info("Sheet[{}]导入失败，{}重复！",sheets.getSheetName(),sameTitle);
-            this.message.append("Sheet[" + sheets.getSheetName() + "]导入失败，" + sameTitle + " 重复！");
-
-            this.rowReader.clearSameTitleSet();
+            // add error message only when message is empty
+            if(this.message.length() == 0) {
+                String sameTitle = this.rowReader.sameTitleSetToString();
+                Slf4jLogUtil.get().info("Sheet[{}]导入失败，{}重复！", sheets.getSheetName(), sameTitle);
+                this.message.append("Sheet[" + sheets.getSheetName() + "]导入失败，" + sameTitle + " 重复！");
+            }
         }
         if (this.rowReader.getTitleIsNotExistList().size() == 0 && this.rowReader.getSameTitleSet().size() == 0) {
             int addDataNum = this.rowReader.saveDataToSQL(DataService.TABLE_DATA);//导入数据。
@@ -159,7 +175,7 @@ public class Excel2007Reader implements IExcelReaderByEventMode {
     }
 
          /**
-         * See org.xml.sax.helpers.DefaultHandler javadocs
+          * See org.xml.sax.helpers.DefaultHandler javadocs
          */
         private class SheetHandler extends DefaultHandler {
 
