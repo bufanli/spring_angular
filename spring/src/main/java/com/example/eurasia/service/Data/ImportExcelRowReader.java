@@ -53,7 +53,7 @@ public class ImportExcelRowReader {
                 e.printStackTrace();
             }
 
-            if (this.titleIsNotExistList.size() == 0 && this.sameTitleSet.size() == 0) {
+            if (getTitleIsNotExistList().size() == 0 && getSameTitleSet().size() == 0) {
                 this.titleList = new ArrayList<>(Arrays.asList(new String[rowList.size()]));
                 Collections.copy(this.titleList, rowList);
                 //this.titleList.addAll(rowList);//addAll实现的是浅拷贝
@@ -65,7 +65,7 @@ public class ImportExcelRowReader {
             然而进行copy()时候，首先做的是将desc的size和src的size大小进行比较，
             只有当desc的 size 大于或者等于src的size时才进行拷贝，否则抛出IndexOutOfBoundsException异常；
              */
-        } else if (row > 0 && this.titleIsNotExistList.size() == 0 && this.sameTitleSet.size() == 0) {
+        } else if (row > 0 && getTitleIsNotExistList().size() == 0 && getSameTitleSet().size() == 0) {
             Map<String, String> keyValue = new LinkedHashMap<>();
             for (int i=0; i<this.titleList.size(); i++) {
                 keyValue.put(this.titleList.get(i), rowList.get(i));//首行(表头)值，单元格值
