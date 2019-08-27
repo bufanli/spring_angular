@@ -44,6 +44,7 @@ public class Excel2007Reader implements IExcelReaderByEventMode {
     }
 
     private int sheetIndex = -1;
+    private long addDataNumber = 0;
 
     //信息接收器
     private StringBuffer message;
@@ -71,7 +72,7 @@ public class Excel2007Reader implements IExcelReaderByEventMode {
             XSSFReader r = new XSSFReader(pkg);
             ReadOnlySharedStringsTable readOnlySharedStringsTable = new ReadOnlySharedStringsTable(pkg);
             StylesTable st = r.getStylesTable();// 获取当前Excel所有Sheet中单元格样式
-            XSSFReader.SheetIterator sheets = (XSSFReader.SheetIterator)r.getSheetsData();
+            XSSFReader.SheetIterator sheets = (XSSFReader.SheetIterator) r.getSheetsData();
             /**
              * 返回一个迭代器，此迭代器会依次得到所有不同的sheet。
              * 每个sheet的InputStream只有从Iterator获取时才会打开。
@@ -87,11 +88,10 @@ public class Excel2007Reader implements IExcelReaderByEventMode {
                 //InputStream sheet = r.getSheet("rId2");//单一sheet的时候，可以通过sheet名字直接获得。
                 InputStream sheet = sheets.next();
                 InputSource sheetSource = new InputSource(sheet);
-                XMLReader parser = fetchSheetParser(readOnlySharedStringsTable, st,sheets);
+                XMLReader parser = fetchSheetParser(readOnlySharedStringsTable, st, sheets);
                 // 解析sheet: com.sun.org.apache.xerces.internal.jaxp.SAXParserImpl:522
                 parser.parse(sheetSource);
-                // clear error message for each sheet
-                this.rowReaderClearErrorMessage();
+
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -100,45 +100,25 @@ public class Excel2007Reader implements IExcelReaderByEventMode {
             pkg.close();
         }
     }
+
     /**
      * clear error message when parsing a new sheet
      */
-    private void rowReaderClearErrorMessage(){
+    private void rowReaderClearErrorMessage() {
         this.rowReader.clearSameTitleSet();
         this.rowReader.clearTitleIsNotExistList();
     }
 
     /**
      * save data when reaching max rows
+     *
      * @param sheets
      * @throws Exception
      */
-    private void rowReaderSaveDataSQL(XSSFReader.SheetIterator sheets ) throws  Exception{
-        if (this.rowReader.getTitleIsNotExistList().size() > 0) {
-            // add error message only when message is empty
-            if(this.message.length() == 0) {
-                String titleIsNotExist = this.rowReader.titleIsNotExistListToString();
-                Slf4jLogUtil.get().info("Sheet[{}]导入失败，{}在数据库中不存在！", sheets.getSheetName(), titleIsNotExist);
-                this.message.append("Sheet[" + sheets.getSheetName() + "]导入失败，" + titleIsNotExist + " 在数据库中不存在！");
-            }
-        }
-        if (this.rowReader.getSameTitleSet().size() > 0) {
-            // add error message only when message is empty
-            if(this.message.length() == 0) {
-                String sameTitle = this.rowReader.sameTitleSetToString();
-                Slf4jLogUtil.get().info("Sheet[{}]导入失败，{}重复！", sheets.getSheetName(), sameTitle);
-                this.message.append("Sheet[" + sheets.getSheetName() + "]导入失败，" + sameTitle + " 重复！");
-            }
-        }
+    private void rowReaderSaveDataSQL(XSSFReader.SheetIterator sheets) throws Exception {
         if (this.rowReader.getTitleIsNotExistList().size() == 0 && this.rowReader.getSameTitleSet().size() == 0) {
-            int addDataNum = this.rowReader.saveDataToSQL(DataService.TABLE_DATA);//导入数据。
-            if (addDataNum >= 0) {
-                Slf4jLogUtil.get().info("Sheet[{}]导入成功，共{}条数据！",sheets.getSheetName(),addDataNum);
-                this.message.append("Sheet[" + sheets.getSheetName() + "]导入成功，共" + addDataNum + "条数据！");
-            } else {
-                Slf4jLogUtil.get().info("Sheet[{}]导入失败，数据库操作问题！",sheets.getSheetName());
-                this.message.append("Sheet[" + sheets.getSheetName() + "]导失败，数据库操作问题！");
-            }
+            addDataNumber += this.rowReader.saveDataToSQL(DataService.TABLE_DATA);//导入数据。
+
             //清空保存前一个Sheet页内容用的List
             this.rowReader.clearDataList();
         }
@@ -169,22 +149,22 @@ public class Excel2007Reader implements IExcelReaderByEventMode {
                                       XSSFReader.SheetIterator sheets)
             throws SAXException, ParserConfigurationException {
         XMLReader parser = SAXHelper.newXMLReader();
-        ContentHandler handler = new SheetHandler(rsst,st,sheets);
+        ContentHandler handler = new SheetHandler(rsst, st, sheets);
         parser.setContentHandler(handler);// 处理公共属性：Sheet名，Sheet合并单元格
         return parser;
     }
 
-         /**
-          * See org.xml.sax.helpers.DefaultHandler javadocs
-         */
-        private class SheetHandler extends DefaultHandler {
+    /**
+     * See org.xml.sax.helpers.DefaultHandler javadocs
+     */
+    private class SheetHandler extends DefaultHandler {
 
-            //取SST 的索引对应的值
-            private ReadOnlySharedStringsTable rsst;
-            private StylesTable st;
-            //单元格内容是SST 的索引
-            private boolean nextIsString = false;
-            /**
+        //取SST 的索引对应的值
+        private ReadOnlySharedStringsTable rsst;
+        private StylesTable st;
+        //单元格内容是SST 的索引
+        private boolean nextIsString = false;
+        /**
          * 存储cell标签下v标签包裹的字符文本内容
          * 在v标签开始后，解析器自动调用characters()保存到 lastContents
          * 【但】当cell标签的属性 s是 t时, 表示取到的lastContents是 SharedStringsTable 的index值
@@ -228,12 +208,12 @@ public class Excel2007Reader implements IExcelReaderByEventMode {
          * 第一个执行
          * 解析到XML的开始标签触发此方法
          *
-         * @param uri 如"http://schemas.openxmlformats.org/spreadsheetml/2006/main"
-         * @param localName The local name (without prefix), or the empty string if Namespace processing is not being performed.
-         * @param qName The qualified name (with prefix), or the empty string if qualified names are not available.
+         * @param uri        如"http://schemas.openxmlformats.org/spreadsheetml/2006/main"
+         * @param localName  The local name (without prefix), or the empty string if Namespace processing is not being performed.
+         * @param qName      The qualified name (with prefix), or the empty string if qualified names are not available.
          * @param attributes The attributes attached to the element. If there are no attributes, it shall be an empty Attributes object.
          * @throws SAXException
-         * */
+         */
         @Override
         public void startElement(String uri, String localName, String qName,
                                  Attributes attributes) throws SAXException {
@@ -273,17 +253,18 @@ public class Excel2007Reader implements IExcelReaderByEventMode {
          * 第三个执行
          * 解析到XML的结束标签触发此方法
          * 如：</row>
-         * @param uri The Namespace URI, or the empty string if the element has no Namespace URI or if Namespace processing is not being performed.
+         *
+         * @param uri       The Namespace URI, or the empty string if the element has no Namespace URI or if Namespace processing is not being performed.
          * @param localName The local name (without prefix), or the empty string if Namespace processing is not being performed.
-         * @param qName The qualified name (with prefix), or the empty string if qualified names are not available.
+         * @param qName     The qualified name (with prefix), or the empty string if qualified names are not available.
          * @throws SAXException
-         * */
+         */
         @Override
         public void endElement(String uri, String localName, String qName)
                 throws SAXException {
             // Process the last contents as required.
             // Do now, as characters() may be called more than once
-            if(this.nextIsString) {
+            if (this.nextIsString) {
 //                int idx = Integer.parseInt(this.lastContents);
 //                this.lastContents = new XSSFRichTextString(sst.getEntryAt(idx)).toString();
                 this.nextIsString = false;
@@ -333,10 +314,10 @@ public class Excel2007Reader implements IExcelReaderByEventMode {
                     }
                 }
                 rowReader.getRows(Excel2007Reader.this.sheetIndex, this.curRow, this.rowList);
-                if(this.curRow > 0 && this.curRow % DataDao.INSERT_RECODE_STEPS == 0){
-                    try{
+                if (this.curRow > 0 && this.curRow % DataDao.INSERT_RECODE_STEPS == 0) {
+                    try {
                         rowReaderSaveDataSQL(this.sheets);
-                    }catch (Exception ex){
+                    } catch (Exception ex) {
                         ex.printStackTrace();
                     }
                 }
@@ -358,28 +339,50 @@ public class Excel2007Reader implements IExcelReaderByEventMode {
 
         @Override
         public void startDocument() throws SAXException {
-
         }
 
         @Override
         public void endDocument() throws SAXException {
-            try{
+            try {
                 rowReaderSaveDataSQL(this.sheets);
-            }catch (Exception ex){
+            } catch (Exception ex) {
                 ex.printStackTrace();
             }
+            // show error message in error case
+            if (rowReader.getTitleIsNotExistList().size() > 0) {
+                String titleIsNotExist = rowReader.titleIsNotExistListToString();
+                Slf4jLogUtil.get().info("Sheet[{}]导入失败，{}在数据库中不存在！", sheets.getSheetName(), titleIsNotExist);
+                message.append("Sheet[" + sheets.getSheetName() + "]导入失败，" + titleIsNotExist + " 在数据库中不存在！\n");
+            } else if (rowReader.getSameTitleSet().size() > 0) {
+                String sameTitle = rowReader.sameTitleSetToString();
+                Slf4jLogUtil.get().info("Sheet[{}]导入失败，{}重复！", sheets.getSheetName(), sameTitle);
+                message.append("Sheet[" + sheets.getSheetName() + "]导入失败，" + sameTitle + " 重复！\n");
+            } else {
+                if (addDataNumber >= 0) {
+                    Slf4jLogUtil.get().info("Sheet[{}]导入成功，共{}条数据！", sheets.getSheetName(), addDataNumber);
+                    message.append("Sheet[" + sheets.getSheetName() + "]导入成功，共" + addDataNumber + "条数据！\n");
+                } else {
+                    Slf4jLogUtil.get().info("Sheet[{}]导入失败，数据库操作问题！", sheets.getSheetName());
+                    message.append("Sheet[" + sheets.getSheetName() + "]导失败，数据库操作问题！\n");
+                }
+            }
+            // reset add data number
+            addDataNumber = 0;
+            // clear error message for each sheet
+            rowReaderClearErrorMessage();
         }
 
-       /**
+        /**
          * 第二个执行
          * 得到单元格对应的索引值或是内容值
          * 如果单元格类型是字符串、INLINESTR、数字、日期，lastIndex则是索引值
          * 如果单元格类型是布尔值、错误、公式，lastIndex则是内容值
+         *
          * @param ch
          * @param start
          * @param length
          * @throws SAXException
-         * */
+         */
         @Override
         public void characters(char[] ch, int start, int length) throws SAXException {
             String test = new String(ch);
@@ -423,7 +426,7 @@ public class Excel2007Reader implements IExcelReaderByEventMode {
          * 处理数据类型
          *
          * @param attributes
-         * */
+         */
         private void setCellDataType(Attributes attributes) {
             this.nextIsString = false;
             this.formatIndex = -1;                                  //单元格日期格式的索引
@@ -483,11 +486,12 @@ public class Excel2007Reader implements IExcelReaderByEventMode {
 
         /**
          * 对解析出来的数据进行类型处理
-         * @param value   单元格的值，
-         *                value代表解析：BOOL的为0或1， ERROR的为内容值，FORMULA的为内容值，INLINESTR的为索引值需转换为内容值，
-         *                SSTINDEX的为索引值需转换为内容值， NUMBER为内容值，DATE为内容值
+         *
+         * @param value 单元格的值，
+         *              value代表解析：BOOL的为0或1， ERROR的为内容值，FORMULA的为内容值，INLINESTR的为索引值需转换为内容值，
+         *              SSTINDEX的为索引值需转换为内容值， NUMBER为内容值，DATE为内容值
          * @return
-         * */
+         */
         private String getDataValue(String value) {
             String thisStr;
             switch (this.cellDataType) {
@@ -541,9 +545,10 @@ public class Excel2007Reader implements IExcelReaderByEventMode {
 
         /**
          * 两个单元格之间空单元格的个数
-         * @param ref 当前单元格的位置
+         *
+         * @param ref    当前单元格的位置
          * @param preRef 前一个单元格的位置
-         * */
+         */
         private int countNullCell(String ref, String preRef) {
             //excel2007最大行数是1048576，最大列数是16384，最后一列列名是XFD
             String xfd = ref.replaceAll("\\d+", "");
@@ -576,15 +581,16 @@ public class Excel2007Reader implements IExcelReaderByEventMode {
 
         /**
          * 检查是否为空行
+         *
          * @param obj
          * @return
-         * */
+         */
         private boolean checkNullRow(Object[] obj) {
             boolean bl = false;
             String temp;
-            for(int i=0,size = obj.length;i<size;i++){
-                temp = (String)obj[i];
-                if(temp==null||temp.trim().length()==0)continue;
+            for (int i = 0, size = obj.length; i < size; i++) {
+                temp = (String) obj[i];
+                if (temp == null || temp.trim().length() == 0) continue;
                 bl = true;
                 break;
             }
