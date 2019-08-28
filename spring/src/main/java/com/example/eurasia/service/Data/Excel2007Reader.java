@@ -352,20 +352,25 @@ public class Excel2007Reader implements IExcelReaderByEventMode {
             if (rowReader.getTitleIsNotExistList().size() > 0) {
                 String titleIsNotExist = rowReader.titleIsNotExistListToString();
                 Slf4jLogUtil.get().info("Sheet[{}]导入失败，{}在数据库中不存在！", sheets.getSheetName(), titleIsNotExist);
-                message.append("Sheet[" + sheets.getSheetName() + "]导入失败，" + titleIsNotExist + " 在数据库中不存在！\n");
-            } else if (rowReader.getSameTitleSet().size() > 0) {
+                message.append("Sheet[" + sheets.getSheetName() + "]导入失败，" + titleIsNotExist + " 在数据库中不存在！");
+                message.append(System.getProperty("line.separator"));//java中依赖于系统的换行符
+            }
+            if (rowReader.getSameTitleSet().size() > 0) {
                 String sameTitle = rowReader.sameTitleSetToString();
                 Slf4jLogUtil.get().info("Sheet[{}]导入失败，{}重复！", sheets.getSheetName(), sameTitle);
-                message.append("Sheet[" + sheets.getSheetName() + "]导入失败，" + sameTitle + " 重复！\n");
-            } else {
-                if (addDataNumber >= 0) {
-                    Slf4jLogUtil.get().info("Sheet[{}]导入成功，共{}条数据！", sheets.getSheetName(), addDataNumber);
-                    message.append("Sheet[" + sheets.getSheetName() + "]导入成功，共" + addDataNumber + "条数据！\n");
-                } else {
-                    Slf4jLogUtil.get().info("Sheet[{}]导入失败，数据库操作问题！", sheets.getSheetName());
-                    message.append("Sheet[" + sheets.getSheetName() + "]导失败，数据库操作问题！\n");
-                }
+                message.append("Sheet[" + sheets.getSheetName() + "]导入失败，" + sameTitle + " 重复！");
+                message.append(System.getProperty("line.separator"));//java中依赖于系统的换行符
             }
+            if (addDataNumber >= 0) {
+                Slf4jLogUtil.get().info("Sheet[{}]导入成功，共{}条数据！", sheets.getSheetName(), addDataNumber);
+                message.append("Sheet[" + sheets.getSheetName() + "]导入成功，共" + addDataNumber + "条数据！");
+                message.append(System.getProperty("line.separator"));//java中依赖于系统的换行符
+            } else {
+                Slf4jLogUtil.get().info("Sheet[{}]导入失败，数据库操作问题！", sheets.getSheetName());
+                message.append("Sheet[" + sheets.getSheetName() + "]导失败，数据库操作问题！");
+                message.append(System.getProperty("line.separator"));//java中依赖于系统的换行符
+            }
+
             // reset add data number
             addDataNumber = 0;
             // clear error message for each sheet

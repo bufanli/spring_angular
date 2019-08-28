@@ -38,7 +38,7 @@ public class DownloadFileController {
      * @description 导出数据到文件
      */
     @RequestMapping(value="/downloadFile", method = RequestMethod.POST)
-    public void downloadFiles(HttpServletRequest request, HttpServletResponse response, @RequestBody QueryCondition[] queryConditionsArr) throws IOException {
+    public ResponseResult downloadFiles(HttpServletRequest request, HttpServletResponse response, @RequestBody QueryCondition[] queryConditionsArr) throws IOException {
         ResponseResult responseResult;
         //导出excel
         try {
@@ -62,6 +62,6 @@ public class DownloadFileController {
             e.printStackTrace();
             responseResult = new ResponseResultUtil().error();
         }
-
+        return responseResult;
     }
 }
