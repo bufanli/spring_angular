@@ -7,6 +7,9 @@ import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;
 import com.example.eurasia.service.Util.Slf4jLogUtil;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.streaming.SXSSFRow;
+import org.apache.poi.xssf.streaming.SXSSFSheet;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.*;
 import org.apache.poi.xssf.usermodel.extensions.XSSFCellBorder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +18,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.net.URLEncoder;
@@ -50,11 +55,10 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
         }
 
         StringBuffer responseMsg = new StringBuffer();
-        XSSFWorkbook wb = new XSSFWorkbook();
+        SXSSFWorkbook wb = new SXSSFWorkbook();
         try {
-            XSSFSheet sheet = wb.createSheet(DataService.EXPORT_EXCEL_SHEET_NAME);
+            SXSSFSheet sheet = wb.createSheet(DataService.EXPORT_EXCEL_SHEET_NAME);
             int rowIndex = this.writeExcel(wb, sheet, colsNameSet, dataList);
-
             Date date = new Date(System.currentTimeMillis());
             DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd");
             String fileName = dateFormat.format(date);//导出文件名是当天日期
@@ -72,7 +76,7 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
         return new ResponseResultUtil().success(ResponseCodeEnum.EXPORT_DATA_INFO_SUCCESS,responseMsg);
     }
 
-    private int writeExcel(XSSFWorkbook wb, XSSFSheet sheet, Set<String> colsNameSet, List<Data> rowList) {
+    private int writeExcel(SXSSFWorkbook wb, SXSSFSheet sheet, Set<String> colsNameSet, List<Data> rowList) {
 
         int titleRowIndex = writeTitlesToExcel(wb, sheet, colsNameSet);
         int dataRowIndex = writeRowsToExcel(wb, sheet, rowList, titleRowIndex);
@@ -80,7 +84,7 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
         return (titleRowIndex + dataRowIndex);
     }
 
-    private int writeTitlesToExcel(XSSFWorkbook wb, XSSFSheet sheet, Set<String> colsNameSet) {
+    private int writeTitlesToExcel(SXSSFWorkbook wb, SXSSFSheet sheet, Set<String> colsNameSet) {
         int rowIndex = 0;
         int colIndex = 0;
 
@@ -91,10 +95,10 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
         // titleFont.setFontHeightInPoints((short) 14);
         titleFont.setColor(IndexedColors.BLACK.index);
 
-        XSSFCellStyle titleStyle = wb.createCellStyle();
+        CellStyle titleStyle = wb.createCellStyle();
         titleStyle.setAlignment(HorizontalAlignment.CENTER);// 指定单元格居中对齐
         titleStyle.setVerticalAlignment(VerticalAlignment.CENTER);// 指定单元格垂直居中对齐
-        titleStyle.setFillForegroundColor(new XSSFColor(new java.awt.Color(182, 184, 192)));
+        titleStyle.setFillForegroundColor((short)0);
         titleStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         titleStyle.setFont(titleFont);
         setBorder(titleStyle, BorderStyle.THIN, new XSSFColor(new java.awt.Color(0, 0, 0)));
@@ -114,7 +118,7 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
         return rowIndex;
     }
 
-    private int writeRowsToExcel(XSSFWorkbook wb, XSSFSheet sheet, List<Data> rowList, int rowStartIndex) {
+    private int writeRowsToExcel(SXSSFWorkbook wb, SXSSFSheet sheet, List<Data> rowList, int rowStartIndex) {
         int colIndex = 0;
         int rowIndex = rowStartIndex;
 
@@ -124,7 +128,7 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
         // dataFont.setFontHeightInPoints((short) 14);
         dataFont.setColor(IndexedColors.BLACK.index);
 
-        XSSFCellStyle dataStyle = wb.createCellStyle();
+        CellStyle dataStyle = wb.createCellStyle();
         dataStyle.setAlignment(HorizontalAlignment.CENTER);// 指定单元格居中对齐
         dataStyle.setVerticalAlignment(VerticalAlignment.CENTER);// 指定单元格垂直居中对齐
         dataStyle.setFont(dataFont);
@@ -166,11 +170,11 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
     }
 
     // 自适应宽度(中文支持)
-    private void setSizeColumn(XSSFSheet sheet, int columnNumber) {
+    private void setSizeColumn(SXSSFSheet sheet, int columnNumber) {
         for (int columnNum = 0; columnNum < columnNumber; columnNum++) {
             int columnWidth = sheet.getColumnWidth(columnNum) / 256;
             for (int rowNum = 0; rowNum < sheet.getLastRowNum(); rowNum++) {
-                XSSFRow currentRow;
+                SXSSFRow currentRow;
                 //当前行未被使用过
                 if (sheet.getRow(rowNum) == null) {
                     currentRow = sheet.createRow(rowNum);
@@ -195,15 +199,15 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
         }
     }
 
-    private void setBorder(XSSFCellStyle style, BorderStyle border, XSSFColor color) {
+    private void setBorder(CellStyle style, BorderStyle border, XSSFColor color) {
         style.setBorderTop(border);
         style.setBorderLeft(border);
         style.setBorderRight(border);
         style.setBorderBottom(border);
-        style.setBorderColor(XSSFCellBorder.BorderSide.TOP, color);
-        style.setBorderColor(XSSFCellBorder.BorderSide.LEFT, color);
-        style.setBorderColor(XSSFCellBorder.BorderSide.RIGHT, color);
-        style.setBorderColor(XSSFCellBorder.BorderSide.BOTTOM, color);
+//        style.setbsetBorderColor(XSSFCellBorder.BorderSide.TOP, color);
+//        style.setBorderColor(XSSFCellBorder.BorderSide.LEFT, color);
+//        style.setBorderColor(XSSFCellBorder.BorderSide.RIGHT, color);
+//        style.setBorderColor(XSSFCellBorder.BorderSide.BOTTOM, color);
     }
 
     //生成excel文件
@@ -218,12 +222,12 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
     }
 
     //浏览器下载excel
-    private void buildExcelDocument(String filename, XSSFWorkbook workbook, HttpServletResponse response) throws Exception{
+    private void buildExcelDocument(String filename,SXSSFWorkbook wb ,HttpServletResponse response) throws Exception{
         //String filename = StringUtils.encodeFilename(StringUtils.trim(filename), request);//处理中文文件名
         response.setContentType("application/vnd.ms-excel");
         response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(filename, "gbk"));
         OutputStream outputStream = response.getOutputStream();
-        workbook.write(outputStream);
+            wb.write(outputStream);
         outputStream.flush();
         outputStream.close();
     }
