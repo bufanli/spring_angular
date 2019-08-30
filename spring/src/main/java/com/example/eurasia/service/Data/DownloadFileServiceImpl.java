@@ -1,6 +1,5 @@
 package com.example.eurasia.service.Data;
 
-import com.example.eurasia.entity.Data.Data;
 import com.example.eurasia.entity.Data.QueryCondition;
 import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Response.ResponseResult;
@@ -47,8 +46,10 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
             Slf4jLogUtil.get().info(ResponseCodeEnum.EXPORT_GET_HEADER_INFO_FROM_SQL_ZERO.getMessage());
             return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_GET_HEADER_INFO_FROM_SQL_ZERO);
         }
-        List<Data> dataList = this.getRows(queryConditionsArr);
-        if (dataList.size() == 0) {
+        //List<Data> dataList = this.getRows(queryConditionsArr);
+        //if (dataList.size() == 0) {
+        List<String[]> dataArrList = this.getRows(queryConditionsArr);
+        if (dataArrList.size() == 0) {
             Slf4jLogUtil.get().info(ResponseCodeEnum.EXPORT_GET_DATA_INFO_FROM_SQL_ZERO.getMessage());
             return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_GET_DATA_INFO_FROM_SQL_ZERO);
         }
@@ -57,7 +58,8 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
         SXSSFWorkbook wb = new SXSSFWorkbook();
         try {
             SXSSFSheet sheet = wb.createSheet(DataService.EXPORT_EXCEL_SHEET_NAME);
-            int rowIndex = this.writeExcel(wb, sheet, colsNameSet, dataList);
+            //int rowIndex = this.writeExcel(wb, sheet, colsNameSet, dataList);
+            int rowIndex = this.writeExcel(wb, sheet, colsNameSet, dataArrList);
             Date date = new Date(System.currentTimeMillis());
             DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd");
             String fileName = dateFormat.format(date);//导出文件名是当天日期
@@ -75,7 +77,7 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
         return new ResponseResultUtil().success(ResponseCodeEnum.EXPORT_DATA_INFO_SUCCESS,responseMsg);
     }
 
-    private int writeExcel(SXSSFWorkbook wb, SXSSFSheet sheet, Set<String> colsNameSet, List<Data> rowList) {
+    private int writeExcel(SXSSFWorkbook wb, SXSSFSheet sheet, Set<String> colsNameSet, List<String[]> rowList) {
 
         int titleRowIndex = writeTitlesToExcel(wb, sheet, colsNameSet);
         int dataRowIndex = writeRowsToExcel(wb, sheet, rowList, titleRowIndex);
@@ -117,7 +119,7 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
         return rowIndex;
     }
 
-    private int writeRowsToExcel(SXSSFWorkbook wb, SXSSFSheet sheet, List<Data> rowList, int rowStartIndex) {
+    private int writeRowsToExcel(SXSSFWorkbook wb, SXSSFSheet sheet, List<String[]> rowList, int rowStartIndex) {
         int colIndex = 0;
         int rowIndex = rowStartIndex;
 
@@ -132,7 +134,7 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
         dataStyle.setVerticalAlignment(VerticalAlignment.CENTER);// 指定单元格垂直居中对齐
         dataStyle.setFont(dataFont);
         setBorder(dataStyle, BorderStyle.THIN, new XSSFColor(new java.awt.Color(0, 0, 0)));
-
+/*
         for (Data rowData : rowList) {
             Row dataRow = sheet.createRow(rowIndex);
             // dataRow.setHeightInPoints(25);
@@ -144,6 +146,21 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
                 Map.Entry<String,String> entry = it.next();
                 Cell cell = dataRow.createCell(colIndex);
                 cell.setCellValue(entry.getValue().toString());
+                cell.setCellStyle(dataStyle);
+                colIndex++;
+            }
+            rowIndex++;
+        }
+
+ */
+        for (String[] rowData : rowList) {
+            Row dataRow = sheet.createRow(rowIndex);
+            // dataRow.setHeightInPoints(25);
+            colIndex = 0;
+
+            for (String data : rowData) {
+                Cell cell = dataRow.createCell(colIndex);
+                cell.setCellValue(data);
                 cell.setCellStyle(dataStyle);
                 colIndex++;
             }
@@ -249,14 +266,14 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
 
         return colsNameSet;
     }
-
+/*
     private List<Data> getRows(QueryCondition[] queryConditionsArr) throws Exception {
         List<Data> dataList = new ArrayList<>();;
         try {
             Slf4jLogUtil.get().info("文件导出，查询数据开始");
 
             long offset = 0;
-            long limit = 10000;
+            long limit = DataService.DOWNLOAD_RECODE_STEPS;
             Map<String, String> order = new LinkedHashMap<>();
             order.put("id","asc");//T.B.D
 
@@ -277,5 +294,26 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
         }
         return dataList;
     }
+*/
+    private List<String[]>  getRows(QueryCondition[] queryConditionsArr) throws Exception {
+        List<String[]> dataArrList = null;
+        try {
+            Slf4jLogUtil.get().info("文件导出，查询数据开始");
 
+            long offset = 0;
+            long limit = DataService.DOWNLOAD_RECODE_STEPS;
+            Map<String, String> order = new LinkedHashMap<>();
+            order.put("id","asc");//T.B.D
+
+            long count = dataService.queryTableRows(DataService.TABLE_DATA,queryConditionsArr);
+
+            dataArrList = dataService.searchDataForDownload(DataService.TABLE_DATA,queryConditionsArr, offset, limit,order);
+
+            Slf4jLogUtil.get().info("文件导出，查询数据结束");
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception(ResponseCodeEnum.EXPORT_GET_DATA_INFO_FROM_SQL_FAILED.getMessage());
+        }
+        return dataArrList;
+    }
 }

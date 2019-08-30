@@ -612,6 +612,27 @@ Mysql limit offset示例
      * @author FuJia
      * @Time 2018-10-27 00:00:00
      */
+    public List<String[]> queryListForAllObject(String tableName,
+                                            QueryCondition[] queryConditionsArr,
+                                            long offset,
+                                            long limit,
+                                            Map<String, String> order) throws Exception {
+        StringBuffer sql = convertQueryConditionsToSQL(tableName, queryConditionsArr, false);
+
+        List<String[]> dataArrList = getJdbcTemplate().query(sql.toString(), new DownloadDataMapper());
+        return dataArrList;
+    }
+
+
+    /**
+     * 查询并返回List集合
+     *
+     * @param
+     * @return
+     * @throws
+     * @author FuJia
+     * @Time 2018-10-27 00:00:00
+     */
     public List<Data> queryListForAllObject(String tableName,
                                             StringBuffer selectFieldSql,
                                             StringBuffer groupByFieldSql,
