@@ -10,16 +10,15 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.streaming.SXSSFRow;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.apache.poi.xssf.usermodel.*;
-import org.apache.poi.xssf.usermodel.extensions.XSSFCellBorder;
+import org.apache.poi.xssf.usermodel.XSSFColor;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.net.URLEncoder;
@@ -48,7 +47,7 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
             Slf4jLogUtil.get().info(ResponseCodeEnum.EXPORT_GET_HEADER_INFO_FROM_SQL_ZERO.getMessage());
             return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_GET_HEADER_INFO_FROM_SQL_ZERO);
         }
-        List<Data> dataList = this.getRows(DataService.TABLE_DATA,queryConditionsArr);
+        List<Data> dataList = this.getRows(queryConditionsArr);
         if (dataList.size() == 0) {
             Slf4jLogUtil.get().info(ResponseCodeEnum.EXPORT_GET_DATA_INFO_FROM_SQL_ZERO.getMessage());
             return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_GET_DATA_INFO_FROM_SQL_ZERO);
@@ -251,15 +250,25 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
         return colsNameSet;
     }
 
-    private List<Data> getRows(String tableName, QueryCondition[] queryConditionsArr) throws Exception {
-        List<Data> dataList;
+    private List<Data> getRows(QueryCondition[] queryConditionsArr) throws Exception {
+        List<Data> dataList = new ArrayList<>();;
         try {
             Slf4jLogUtil.get().info("文件导出，查询数据开始");
 
-            dataList = dataService.searchDataForDownload(tableName, queryConditionsArr);
-            if (dataList == null) {
-                throw new Exception(ResponseCodeEnum.EXPORT_GET_DATA_INFO_FROM_SQL_NULL.getMessage());
+            long offset = 0;
+            long limit = 10000;
+            Map<String, String> order = new LinkedHashMap<>();
+            order.put("id","asc");//T.B.D
+
+            long count = dataService.queryTableRows(DataService.TABLE_DATA,queryConditionsArr);
+            while (offset <= count) {
+                dataList.addAll(dataService.searchData(DataService.TABLE_DATA,queryConditionsArr, offset, limit,order));
+                offset += DataService.DOWNLOAD_RECODE_STEPS;
             }
+            //dataList = dataService.searchDataForDownload(DataService.TABLE_DATA, queryConditionsArr);
+            //if (dataList == null) {
+            //    throw new Exception(ResponseCodeEnum.EXPORT_GET_DATA_INFO_FROM_SQL_NULL.getMessage());
+            //}
 
             Slf4jLogUtil.get().info("文件导出，查询数据结束");
         } catch (Exception e) {

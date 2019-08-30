@@ -54,6 +54,8 @@ public class DataService {
     public static final String STATISTICS_REPORT_NAME_EX = "汇总报表";
     public static final String BR = "<br/>";
 
+    public static final int DOWNLOAD_RECODE_STEPS = 10000;
+
     /**
      * 初始化数据表
      * @param
