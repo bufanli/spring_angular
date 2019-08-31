@@ -44,30 +44,50 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
     @Override
     public ResponseResult exportExcel(HttpServletResponse response, QueryCondition[] queryConditionsArr) throws Exception {
 
-        Set<String> colsNameSet = this.getTitles(DataService.TABLE_DATA);
-        if (colsNameSet.size() == 0) {
-            Slf4jLogUtil.get().info(ResponseCodeEnum.EXPORT_GET_HEADER_INFO_FROM_SQL_ZERO.getMessage());
-            return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_GET_HEADER_INFO_FROM_SQL_ZERO);
-        }
-        //List<Data> dataList = this.getRows(queryConditionsArr);
-        //if (dataList.size() == 0) {
-        List<String[]> dataArrList = this.getRows(queryConditionsArr);
-        if (dataArrList.size() == 0) {
-            Slf4jLogUtil.get().info(ResponseCodeEnum.EXPORT_GET_DATA_INFO_FROM_SQL_ZERO.getMessage());
-            return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_GET_DATA_INFO_FROM_SQL_ZERO);
-        }
-
         StringBuffer responseMsg = new StringBuffer();
         SXSSFWorkbook wb = new SXSSFWorkbook(ROW_ACCESS_WINDOW_SIZE);
+        SXSSFSheet sheet = wb.createSheet(DataService.EXPORT_EXCEL_SHEET_NAME);
         try {
-            SXSSFSheet sheet = wb.createSheet(DataService.EXPORT_EXCEL_SHEET_NAME);
-            //int rowIndex = this.writeExcel(wb, sheet, colsNameSet, dataList);
-            int rowIndex = this.writeExcel(wb, sheet, colsNameSet, dataArrList);
+            
+            Set<String> colsNameSet = this.getTitles(DataService.TABLE_DATA);
+            if (colsNameSet.size() == 0) {
+                Slf4jLogUtil.get().info(ResponseCodeEnum.EXPORT_GET_HEADER_INFO_FROM_SQL_ZERO.getMessage());
+                return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_GET_HEADER_INFO_FROM_SQL_ZERO);
+            }
+            int titleRowIndex = this.writeTitlesToExcel(wb, sheet, colsNameSet);
+            this.setSizeColumn(sheet, (colsNameSet.size() + 1));
+
+
+            long offset = 0;
+            long limit = DataService.DOWNLOAD_RECODE_STEPS;
+            Map<String, String> order = new LinkedHashMap<>();
+            order.put("id","asc");//T.B.D
+
+            long count = dataService.queryTableRows(DataService.TABLE_DATA,queryConditionsArr);
+
+            int dataRowIndex = 0;
+            for (int i = 0; i < (count/offset + 1); i++) {
+                List<String[]> dataArrList = this.getRows(queryConditionsArr, offset, limit, order);
+                if (dataArrList == null) {
+                    Slf4jLogUtil.get().info(ResponseCodeEnum.EXPORT_GET_DATA_INFO_FROM_SQL_NULL.getMessage());
+                    return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_GET_DATA_INFO_FROM_SQL_NULL);
+                }
+                if (dataArrList.size() == 0) {
+                    Slf4jLogUtil.get().info(ResponseCodeEnum.EXPORT_GET_DATA_INFO_FROM_SQL_ZERO.getMessage());
+                    return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_GET_DATA_INFO_FROM_SQL_ZERO);
+                }
+                int rowStartIndex = dataRowIndex + titleRowIndex;
+                dataRowIndex += this.writeRowsToExcel(wb, sheet, dataArrList, rowStartIndex);
+
+                offset += limit;
+            }
+
             Date date = new Date(System.currentTimeMillis());
             DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd");
             String fileName = dateFormat.format(date);//导出文件名是当天日期
             this.buildExcelDocument(fileName+".xlsx", wb, response);
 
+            int rowIndex = titleRowIndex + dataRowIndex;
             responseMsg.append("导出到文件的条目数：" + rowIndex);//包括title行
             Slf4jLogUtil.get().info("导出到文件的条目数：{}",rowIndex);//包括title行
         } catch (Exception e) {
@@ -75,17 +95,10 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
             return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_DATA_INFO_FAILED);
         } finally {
             wb.close();
+            wb.dispose();
         }
 
         return new ResponseResultUtil().success(ResponseCodeEnum.EXPORT_DATA_INFO_SUCCESS,responseMsg);
-    }
-
-    private int writeExcel(SXSSFWorkbook wb, SXSSFSheet sheet, Set<String> colsNameSet, List<String[]> rowList) {
-
-        int titleRowIndex = writeTitlesToExcel(wb, sheet, colsNameSet);
-        int dataRowIndex = writeRowsToExcel(wb, sheet, rowList, titleRowIndex);
-        setSizeColumn(sheet, (colsNameSet.size() + 1));
-        return (titleRowIndex + dataRowIndex);
     }
 
     private int writeTitlesToExcel(SXSSFWorkbook wb, SXSSFSheet sheet, Set<String> colsNameSet) {
@@ -235,9 +248,10 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
         response.setContentType("application/vnd.ms-excel");
         response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(filename, "gbk"));
         OutputStream outputStream = response.getOutputStream();
-            wb.write(outputStream);
+        wb.write(outputStream);
         outputStream.flush();
         outputStream.close();
+        wb.dispose();
     }
 
     private Set<String> getTitles(String tableName) throws Exception {
@@ -287,17 +301,13 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
         return dataList;
     }
 */
-    private List<String[]>  getRows(QueryCondition[] queryConditionsArr) throws Exception {
+    private List<String[]>  getRows(QueryCondition[] queryConditionsArr,
+                                    long offset,
+                                    long limit,
+                                    Map<String, String> order) throws Exception {
         List<String[]> dataArrList = null;
         try {
             Slf4jLogUtil.get().info("文件导出，查询数据开始");
-
-            long offset = 0;
-            long limit = DataService.DOWNLOAD_RECODE_STEPS;
-            Map<String, String> order = new LinkedHashMap<>();
-            order.put("id","asc");//T.B.D
-
-            long count = dataService.queryTableRows(DataService.TABLE_DATA,queryConditionsArr);
 
             dataArrList = dataService.searchDataForDownload(DataService.TABLE_DATA,queryConditionsArr, offset, limit,order);
 
