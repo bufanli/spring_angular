@@ -9,9 +9,11 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.streaming.SXSSFRow;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.usermodel.extensions.XSSFCellBorder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -33,6 +35,7 @@ import static org.apache.poi.ss.usermodel.CellType.STRING;
 @Component
 public class DownloadFileServiceImpl implements IDownloadFileService {
 
+    private static int ROW_ACCESS_WINDOW_SIZE = 10000;
     //注入DataService服务对象
     @Qualifier("dataService")
     @Autowired
@@ -55,7 +58,7 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
         }
 
         StringBuffer responseMsg = new StringBuffer();
-        SXSSFWorkbook wb = new SXSSFWorkbook();
+        SXSSFWorkbook wb = new SXSSFWorkbook(ROW_ACCESS_WINDOW_SIZE);
         try {
             SXSSFSheet sheet = wb.createSheet(DataService.EXPORT_EXCEL_SHEET_NAME);
             //int rowIndex = this.writeExcel(wb, sheet, colsNameSet, dataList);
@@ -96,10 +99,10 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
         // titleFont.setFontHeightInPoints((short) 14);
         titleFont.setColor(IndexedColors.BLACK.index);
 
-        CellStyle titleStyle = wb.createCellStyle();
+        XSSFCellStyle titleStyle = (XSSFCellStyle) wb.createCellStyle();
         titleStyle.setAlignment(HorizontalAlignment.CENTER);// 指定单元格居中对齐
         titleStyle.setVerticalAlignment(VerticalAlignment.CENTER);// 指定单元格垂直居中对齐
-        titleStyle.setFillForegroundColor((short)0);
+        titleStyle.setFillForegroundColor(new XSSFColor(new java.awt.Color(182, 184, 192)));
         titleStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         titleStyle.setFont(titleFont);
         setBorder(titleStyle, BorderStyle.THIN, new XSSFColor(new java.awt.Color(0, 0, 0)));
@@ -129,30 +132,12 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
         // dataFont.setFontHeightInPoints((short) 14);
         dataFont.setColor(IndexedColors.BLACK.index);
 
-        CellStyle dataStyle = wb.createCellStyle();
+        XSSFCellStyle dataStyle = (XSSFCellStyle) wb.createCellStyle();
         dataStyle.setAlignment(HorizontalAlignment.CENTER);// 指定单元格居中对齐
         dataStyle.setVerticalAlignment(VerticalAlignment.CENTER);// 指定单元格垂直居中对齐
         dataStyle.setFont(dataFont);
         setBorder(dataStyle, BorderStyle.THIN, new XSSFColor(new java.awt.Color(0, 0, 0)));
-/*
-        for (Data rowData : rowList) {
-            Row dataRow = sheet.createRow(rowIndex);
-            // dataRow.setHeightInPoints(25);
-            colIndex = 0;
 
-            Set<Map.Entry<String, String>> set = rowData.getKeyValue().entrySet();
-            Iterator<Map.Entry<String, String>> it = set.iterator();
-            while (it.hasNext()) {
-                Map.Entry<String,String> entry = it.next();
-                Cell cell = dataRow.createCell(colIndex);
-                cell.setCellValue(entry.getValue().toString());
-                cell.setCellStyle(dataStyle);
-                colIndex++;
-            }
-            rowIndex++;
-        }
-
- */
         for (String[] rowData : rowList) {
             Row dataRow = sheet.createRow(rowIndex);
             // dataRow.setHeightInPoints(25);
@@ -187,9 +172,16 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
 
     // 自适应宽度(中文支持)
     private void setSizeColumn(SXSSFSheet sheet, int columnNumber) {
+        // start row
+        int startRowNum = sheet.getLastRowNum() - ROW_ACCESS_WINDOW_SIZE;
+        if(startRowNum < 0 ) {
+            startRowNum = 0;
+        }else{
+            startRowNum = startRowNum + 1;
+        }
         for (int columnNum = 0; columnNum < columnNumber; columnNum++) {
             int columnWidth = sheet.getColumnWidth(columnNum) / 256;
-            for (int rowNum = 0; rowNum < sheet.getLastRowNum(); rowNum++) {
+            for (int rowNum = startRowNum; rowNum < sheet.getLastRowNum(); rowNum++) {
                 SXSSFRow currentRow;
                 //当前行未被使用过
                 if (sheet.getRow(rowNum) == null) {
@@ -215,15 +207,15 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
         }
     }
 
-    private void setBorder(CellStyle style, BorderStyle border, XSSFColor color) {
+    private void setBorder(XSSFCellStyle style, BorderStyle border, XSSFColor color) {
         style.setBorderTop(border);
         style.setBorderLeft(border);
         style.setBorderRight(border);
         style.setBorderBottom(border);
-//        style.setbsetBorderColor(XSSFCellBorder.BorderSide.TOP, color);
-//        style.setBorderColor(XSSFCellBorder.BorderSide.LEFT, color);
-//        style.setBorderColor(XSSFCellBorder.BorderSide.RIGHT, color);
-//        style.setBorderColor(XSSFCellBorder.BorderSide.BOTTOM, color);
+        style.setBorderColor(XSSFCellBorder.BorderSide.TOP, color);
+        style.setBorderColor(XSSFCellBorder.BorderSide.LEFT, color);
+        style.setBorderColor(XSSFCellBorder.BorderSide.RIGHT, color);
+        style.setBorderColor(XSSFCellBorder.BorderSide.BOTTOM, color);
     }
 
     //生成excel文件
