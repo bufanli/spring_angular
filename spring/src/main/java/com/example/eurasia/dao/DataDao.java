@@ -618,6 +618,9 @@ Mysql limit offset示例
                                             long limit,
                                             Map<String, String> order) throws Exception {
         StringBuffer sql = convertQueryConditionsToSQL(tableName, queryConditionsArr, false);
+        StringBuffer sqlOrder = convertOrderToSQL(order);
+        sql.append(sqlOrder);
+        sql.append(" LIMIT " + String.valueOf(offset) + "," + String.valueOf(limit));
 
         List<String[]> dataArrList = getJdbcTemplate().query(sql.toString(), new DownloadDataMapper());
         return dataArrList;
