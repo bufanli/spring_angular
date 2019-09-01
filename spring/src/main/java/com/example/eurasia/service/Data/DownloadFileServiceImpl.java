@@ -55,19 +55,20 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
                 return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_GET_HEADER_INFO_FROM_SQL_ZERO);
             }
             int titleRowIndex = this.writeTitlesToExcel(wb, sheet, colsNameSet);
-            this.setSizeColumn(sheet, (colsNameSet.size() + 1));
-
 
             long offset = 0;
-            long limit = DataService.DOWNLOAD_RECODE_STEPS;
             Map<String, String> order = new LinkedHashMap<>();
             order.put("id","asc");//T.B.D
 
             long count = dataService.queryTableRows(DataService.TABLE_DATA,queryConditionsArr);
-
+            long steps = count / DataService.DOWNLOAD_RECODE_STEPS + 1;
             int dataRowIndex = 0;
-            for (int i = 0; i < (count/offset + 1); i++) {
-                List<String[]> dataArrList = this.getRows(queryConditionsArr, offset, limit, order);
+            for (int i = 0; i < steps; i++) {
+                List<String[]> dataArrList = this.getRows(
+                        queryConditionsArr,
+                        offset,
+                        DataService.DOWNLOAD_RECODE_STEPS,
+                        order);
                 if (dataArrList == null) {
                     Slf4jLogUtil.get().info(ResponseCodeEnum.EXPORT_GET_DATA_INFO_FROM_SQL_NULL.getMessage());
                     return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_GET_DATA_INFO_FROM_SQL_NULL);
@@ -79,9 +80,11 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
                 int rowStartIndex = dataRowIndex + titleRowIndex;
                 dataRowIndex += this.writeRowsToExcel(wb, sheet, dataArrList, rowStartIndex);
 
-                offset += limit;
+                offset += DataService.DOWNLOAD_RECODE_STEPS;
             }
-
+            // adjust column size
+            this.setSizeColumn(sheet, (colsNameSet.size() + 1));
+           // response http file download
             Date date = new Date(System.currentTimeMillis());
             DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd");
             String fileName = dateFormat.format(date);//导出文件名是当天日期
