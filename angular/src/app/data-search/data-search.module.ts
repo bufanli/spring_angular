@@ -13,6 +13,7 @@ import { DataStatisticsService } from './services/data-statistics.service';
 import { CommonUtilitiesService } from '../common/services/common-utilities.service';
 import { DataStatisticsGraphComponent } from './components/data-statistics-graph/data-statistics-graph.component';
 import { DataStatisticsOriginalDataComponent } from './components/data-statistics-original-data/data-statistics-original-data.component';
+import { DataExcelReportSelectionComponent } from './components/data-excel-report-selection/data-excel-report-selection.component';
 
 const dataSearchRoutes: Routes = [
   {
@@ -28,6 +29,7 @@ const dataSearchRoutes: Routes = [
     DataStatisticsComponent,
     DataStatisticsGraphComponent,
     DataStatisticsOriginalDataComponent,
+    DataExcelReportSelectionComponent,
   ],
   imports: [
     RouterModule.forChild(<any>dataSearchRoutes),
