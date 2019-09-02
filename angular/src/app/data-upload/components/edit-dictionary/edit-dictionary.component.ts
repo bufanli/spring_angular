@@ -307,7 +307,7 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
       // save original column dictionaries
       this.saveOriginalColumnsDictionaries(
         this.EDIT_COLUMN,
-        deleteColumnDictionary
+        deleteColumnDictionary.clone()
       );
       deleteColumnDictionary.getSynonyms().splice(index, 1);
     }
@@ -393,7 +393,7 @@ export class EditDictionaryComponent extends EditSynonymBase implements OnInit, 
         // save original column dictionaries
         this.saveOriginalColumnsDictionaries(
           this.EDIT_COLUMN,
-          element
+          element.clone()
         );
         // if there is just one synonyms and this
         // synonym is delete column, then push this synonym
