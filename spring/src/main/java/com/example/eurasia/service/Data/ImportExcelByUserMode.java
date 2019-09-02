@@ -188,7 +188,6 @@ public class ImportExcelByUserMode {
         StringBuffer colErrorMsg = new StringBuffer();//列错误信息接收器
 
         List<Data> valueList = new ArrayList<>();
-        Map<String, String> keyValue = new LinkedHashMap<>();
 
         //int numRows = sheet.getPhysicalNumberOfRows();//得到Excel的行数,不包括那些空行（隔行）的情况。
         int numRows = sheet.getLastRowNum();//获取的是最后一行的编号（编号从0开始）。
@@ -201,6 +200,7 @@ public class ImportExcelByUserMode {
                 continue;
             }
 
+            Map<String, String> keyValue = new LinkedHashMap<>();
             for (Map<Integer, String> title : titleList) {//循环列
                 Set<Map.Entry<Integer, String>> set = title.entrySet();
                 Iterator<Map.Entry<Integer, String>> it = set.iterator();
@@ -228,7 +228,6 @@ public class ImportExcelByUserMode {
                 valueList.add(data);
             }
 
-            keyValue.clear();
         }
 
         dataList.addAll(valueList);//addAll实现的是浅拷贝

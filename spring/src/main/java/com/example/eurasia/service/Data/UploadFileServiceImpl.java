@@ -231,7 +231,6 @@ public class UploadFileServiceImpl implements IUploadFileService {
         ResponseResult responseResult;
 
         List<Data> dataList = new ArrayList<>();
-        Map<String, String> keyValue = new LinkedHashMap<>();
         List<String> addColList = new ArrayList<>();
 
         try {
@@ -253,11 +252,11 @@ public class UploadFileServiceImpl implements IUploadFileService {
                 }
 
                 for (String synonym : columnsDictionary.getSynonyms()) {
+                    Map<String, String> keyValue = new LinkedHashMap<>();
                     keyValue.put(DataService.COLUMNS_DICTIONARY_SYNONYM, synonym);
                     keyValue.put(DataService.COLUMNS_DICTIONARY_COLUMN_NAME, columnName);
                     Data data = new Data(keyValue);
                     dataList.add(data);
-                    keyValue.clear();
                 }
             }
 

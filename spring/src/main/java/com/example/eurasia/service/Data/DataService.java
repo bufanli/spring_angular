@@ -106,7 +106,6 @@ public class DataService {
                 }
             }
             if (this.createTable(DataService.TABLE_COLUMNS_DICTIONARY,DataService.BEAN_NAME_COLUMNS_DICTIONARY_NAME) == true) {
-                Map<String, String> columnsDicMap = new LinkedHashMap<String, String>();
                 String[] synonymArr = {"进口","商品编码","商品编号","商品编码2","产品名称","牛肉部位","贸易方式",
                         "申报单位","货主单位","经营单位","企业代码","进口关区","原产国","装/卸货港",
                         "规格型号","电子邮件","目的地（原产地）"};
@@ -114,11 +113,11 @@ public class DataService {
                         "申报单位名称","货主单位名称","经营单位名称","经营单位代码","报关口岸","贸易国","装货港",
                         "申报要素","Email","目的地"};
                 for (int i=0; i<synonymArr.length; i++) {
+                    Map<String, String> columnsDicMap = new LinkedHashMap<String, String>();
                     columnsDicMap.put(DataService.COLUMNS_DICTIONARY_SYNONYM,synonymArr[i]);
                     columnsDicMap.put(DataService.COLUMNS_DICTIONARY_COLUMN_NAME,columnNameArr[i]);
                     Data columnsDicData = new Data(columnsDicMap);
                     getDataDao().addData(DataService.TABLE_COLUMNS_DICTIONARY,columnsDicData);
-                    columnsDicMap.clear();
                 }
             }
 
