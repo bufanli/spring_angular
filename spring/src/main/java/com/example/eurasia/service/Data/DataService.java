@@ -100,7 +100,7 @@ public class DataService {
             Map<String, String> computeByNameType = new LinkedHashMap<String, String>();
             computeByNameType.put(DataService.STATISTICS_SETTING_COMPUTE_BY_COLUMN_NAME,"VARCHAR(50)");
             if (this.createTable(DataService.TABLE_STATISTICS_SETTING_COMPUTE_BY,computeByNameType) == true) {
-                String[] computeByArr = {"法定重量","申报数量","件数"};
+                String[] computeByArr = {"美元总价","法定重量","申报总价","申报数量","件数"};
                 for (int i=0; i<computeByArr.length; i++) {
                     getDataDao().addData(DataService.TABLE_STATISTICS_SETTING_COMPUTE_BY,DataService.STATISTICS_SETTING_COMPUTE_BY_COLUMN_NAME,computeByArr[i]);
                 }
