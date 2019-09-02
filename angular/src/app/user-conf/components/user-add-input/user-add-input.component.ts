@@ -140,8 +140,8 @@ export class UserAddInputComponent implements OnInit, OnDestroy, CommonDialogCal
       this,
       basicInfo,
       accessAuthorities,
-      this.currentUserHeaderDisplays,
-      queryConditionDisplays);
+      queryConditionDisplays,
+      this.currentUserHeaderDisplays);
   }
   // callback to add user
   public addUserInfoCallback(httpResponse: HttpResponse): void {
