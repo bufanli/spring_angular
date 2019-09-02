@@ -81,7 +81,7 @@ export class EditSynonymComponent extends EditSynonymBase implements OnInit {
       // save original column dictionaries
       this.saveOriginalColumnsDictionaries(
         this.EDIT_COLUMN,
-        columnsDictionary
+        columnsDictionary.clone()
       );
       const synonyms: string[] = columnsDictionary.getSynonyms();
       synonyms[this.editSynonymIndex] = this.synonym;
