@@ -61,7 +61,9 @@ public class UploadFileController {
     ResponseResult uploadFiles(@RequestParam("file") MultipartFile[] files, HttpServletRequest request) throws IOException {
         ResponseResult responseResult;
         try {
-            String userID = userInfoServiceImpl.getLoginUserID(request);
+            //String userID = userInfoServiceImpl.getLoginUserID(request);
+            // prevent session available when uploading files
+            String userID = "session_prevent";
             if (StringUtils.isEmpty(userID)) {
                 responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
             } else {
