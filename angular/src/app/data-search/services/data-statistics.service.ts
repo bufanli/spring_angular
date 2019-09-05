@@ -58,6 +58,12 @@ export class DataStatisticsService implements ProcessingDialogCallback {
       null,
       this.GET_STATISTICS_FIELDS_SOURCE_ID);
   }
+  // get excel report setting
+  public excelReportSetting(): void {
+    this.commonUtilitiesService.showProcessingDialog(this,
+      null,
+      this.GET_STATISTICS_FIELDS_SOURCE_ID);
+  }
   // callback on processing
   public callbackOnProcessing(sourceID: string, data: any): void {
     if (sourceID === this.GET_STATISTICS_FIELDS_SOURCE_ID) {

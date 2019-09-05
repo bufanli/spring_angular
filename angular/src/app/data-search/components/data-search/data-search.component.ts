@@ -442,6 +442,11 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
     const queryConditions: any = this.abstractInputQueryConditionsIntoParams();
     this.dataStatisticsService.statisticsSetting(queryConditions);
   }
+  // statistic report
+  public onExcelReport(): void {
+    // show excel report setting dialog
+    this.dataStatisticsService.excelReportSetting();
+  }
   // get query conditions caller
   private getQueryConditions(): void {
     this.getQueryConditionsImpl().subscribe(
