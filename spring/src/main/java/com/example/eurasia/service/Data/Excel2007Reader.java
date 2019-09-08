@@ -296,6 +296,9 @@ public class Excel2007Reader implements IExcelReaderByEventMode {
 
                 this.preRef = this.ref;
                 this.curCol++;
+                if(value.length() >255){
+                    value = value.substring(0,255);
+                }
                 this.rowList.add(this.curCol, value);
 
             } else if ("row".equals(qName)) {// 行结束标签
