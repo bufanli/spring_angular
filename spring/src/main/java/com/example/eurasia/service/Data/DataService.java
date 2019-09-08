@@ -222,9 +222,10 @@ public class DataService {
             if (numArr == null) {
                 return -1;
             }
-            if (numArr.length > 0) {
-                deleteNum = this.deleteSameData(tableName);
-            }
+ //do deleteSameData after uploadFiles
+ //           if (numArr.length > 0) {
+ //               deleteNum = this.deleteSameData(tableName);
+ //           }
             int num = numArr.length - deleteNum;//T.B.D
             return (num < 0) ? -1 : num;
         } else {

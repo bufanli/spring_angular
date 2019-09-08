@@ -312,4 +312,17 @@ public class UploadFileServiceImpl implements IUploadFileService {
         return responseResult;
     }
 
+    @Override
+    public ResponseResult deleteSameData() throws Exception {
+        ResponseResult responseResult;
+        try {
+            int deleteNum = dataService.deleteSameData(DataService.TABLE_DATA);
+            responseResult = new ResponseResultUtil().success(ResponseCodeEnum.DELETE_SAME_DATA_SUCCESS, deleteNum);
+        } catch (Exception e) {
+            e.printStackTrace();
+            responseResult = new ResponseResultUtil().error(ResponseCodeEnum.DELETE_SAME_DATA_FAILED);
+        }
+        return responseResult;
+    }
+
 }

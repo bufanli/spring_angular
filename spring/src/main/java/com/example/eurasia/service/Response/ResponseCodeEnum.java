@@ -201,6 +201,8 @@ public enum ResponseCodeEnum {
     DELETE_COLUMN_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "删除字段成功"),
     DELETE_COLUMN_FAILED(ResponseCode.RESPONSE_CODE_NG, "删除字段失败"),
     DELETE_COLUMN_DATA_IS_EXIST(ResponseCode.RESPONSE_CODE_NG, "删除字段已有数据，不可删除"),
+    DELETE_SAME_DATA_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "删除相同数据成功"),
+    DELETE_SAME_DATA_FAILED(ResponseCode.RESPONSE_CODE_NG, "删除相同数据失败"),
 
     /* 导出数据 */
     EXPORT_GET_HEADER_INFO_FROM_SQL_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "导出数据时,从数据库取得表头信息成功"),
