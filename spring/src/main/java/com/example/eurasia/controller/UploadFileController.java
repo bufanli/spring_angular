@@ -110,6 +110,34 @@ public class UploadFileController {
 
     /**
      * @author
+     * @date
+     * @description 删除相同数据
+     */
+    @RequestMapping(value="/deleteSameData", method = RequestMethod.GET)
+    public @ResponseBody
+    ResponseResult deleteSameData(HttpServletRequest request) throws IOException {
+        ResponseResult responseResult;
+        try {
+            Slf4jLogUtil.get().info("删除相同数据开始");
+            //String userID = userInfoServiceImpl.getLoginUserID(request);
+            // prevent session available when uploading files
+            String userID = "session_prevent";
+            if (StringUtils.isEmpty(userID)) {
+                responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
+            } else {
+                responseResult = uploadFileService.deleteSameData();
+            }
+            Slf4jLogUtil.get().info("删除相同数据结束");
+        } catch (Exception e) {
+            e.printStackTrace();
+            responseResult = new ResponseResultUtil().error(ResponseCodeEnum.DELETE_SAME_DATA_FAILED);
+        }
+
+        return responseResult;
+    }
+
+    /**
+     * @author
      * @date 2019-05-23
      * @description 取得数据字段的词典
      */

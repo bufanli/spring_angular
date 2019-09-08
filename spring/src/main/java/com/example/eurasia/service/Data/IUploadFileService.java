@@ -12,4 +12,5 @@ public interface IUploadFileService {
     ResponseResult getColumnsDictionary() throws Exception;
     ResponseResult setColumnsDictionary(ColumnsDictionary[] columnsDictionary) throws Exception;
     ResponseResult deleteColumn(String columnName) throws Exception;
+    ResponseResult deleteSameData() throws Exception;
 }
