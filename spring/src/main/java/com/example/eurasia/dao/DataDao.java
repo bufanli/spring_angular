@@ -315,7 +315,7 @@ GROUP BY 列1,列2,列3 having count(*) > 1;
         sql.append(" (select min(id) as minid");
         sql.append(" from " + tableName);
         sql.append(" group by " + strColsName);
-        sql.append(" having count(*) >= 1) as tempSameDataTable)");
+        sql.append(" ) as tempSameDataTable)");
 
         int num = getJdbcTemplate().update(sql.toString());//执行成功返回数据库当中受影响的记录条数，失败则返回-1
         return num;

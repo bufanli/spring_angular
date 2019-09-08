@@ -3,8 +3,12 @@ import { FileUploader } from 'ng2-file-upload';
 import { FileItem } from 'ng2-file-upload';
 import { ParsedResponseHeaders } from 'ng2-file-upload';
 import { CurrentUserContainerService } from 'src/app/common/services/current-user-container.service';
+import { HttpClient } from '@angular/common/http';
+import { HttpResponse } from '../../../common/entities/http-response';
+import { Observable } from 'rxjs';
 
 const URL = 'api/uploadFile';
+const DELETE_SAME_DATA_URL = 'api/deleteSameData';
 
 @Component({
   selector: 'app-file-upload',
@@ -14,7 +18,8 @@ const URL = 'api/uploadFile';
 export class DataUploadComponent implements AfterViewChecked {
   @Output() notifyOpenSynonym: EventEmitter<string> = new EventEmitter<string>();
   public uploader: FileUploader = new FileUploader({ url: URL });
-  constructor(private currentUserContainer: CurrentUserContainerService) {
+  constructor(private currentUserContainer: CurrentUserContainerService,
+    private http: HttpClient) {
     const that: any = this;
     this.uploader.onCompleteItem = function (item: FileItem,
       response: string, status: number, headers: ParsedResponseHeaders) {
@@ -62,6 +67,19 @@ export class DataUploadComponent implements AfterViewChecked {
         // nothing to do
       }
     };
+    this.uploader.onCompleteAll = function () {
+      // get query conditions caller
+      that.deleteSameData();
+    };
+  }
+  private deleteSameData(): void {
+    this.deleteSameDataImpl().subscribe(
+      httpResponse => {// nothing to do
+      });
+  }
+  // delete same data implementation
+  private deleteSameDataImpl(): Observable<HttpResponse> {
+    return this.http.get<HttpResponse>(DELETE_SAME_DATA_URL);
   }
   // show tooltip when completing to upload file
   ngAfterViewChecked() {
@@ -71,7 +89,7 @@ export class DataUploadComponent implements AfterViewChecked {
   }
   // click file select button
   selectFile(): void {
-// tslint:disable-next-line: deprecation
+    // tslint:disable-next-line: deprecation
     $('#file-select').click();
   }
   // emit synonym edit event
