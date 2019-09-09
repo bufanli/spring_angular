@@ -331,10 +331,21 @@ GROUP BY 列1,列2,列3 having count(*) > 1;
      * @Time 2019-09-09 00:00:00
      */
     public void deleteSameDataByDistinct(String tableName) throws Exception {
+        StringBuffer strColsName = new StringBuffer();
+        List<Map<String, Object>> colsNameList = this.queryListForColumnName(tableName);
+        for (Map<String, Object> colsName : colsNameList) {
+            strColsName.append(colsName.get("COLUMN_NAME").toString());
+            strColsName.append(CommonDao.COMMA);
+        }
+
+        strColsName.deleteCharAt(strColsName.length() - CommonDao.COMMA.length());
+        strColsName.replace(strColsName.indexOf(CommonDao.ID_COMMA), CommonDao.ID_COMMA.length(), "");//indexOf从0开始计算,没有查到指定的字符则该方法返回-1
+        String[] name = strColsName.toString().split(CommonDao.COMMA, -1);
+
         StringBuffer sql1 = new StringBuffer();
         StringBuffer sql2 = new StringBuffer();
         StringBuffer sql3 = new StringBuffer();
-        sql1.append("Create table tmp (Select distinct * from " + tableName + ")");
+        sql1.append("Create table tmp (Select distinct " + strColsName + " from " + tableName + ")");
         sql2.append("drop table " + tableName);
         sql3.append("RENAME TABLE tmp TO " + tableName);
         getJdbcTemplate().execute(sql1.toString());
