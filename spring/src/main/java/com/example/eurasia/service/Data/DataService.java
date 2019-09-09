@@ -181,6 +181,24 @@ public class DataService {
     }
 
     /**
+     * 删除表里的相同数据
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2019-09-09 00:00:00
+     */
+    public int deleteSameDataByDistinct(String tableName) throws Exception {
+        if (StringUtils.isEmpty(tableName)) {
+            return -1;
+        }
+
+        getDataDao().deleteSameDataByDistinct(tableName);
+
+        return 0;
+    }
+
+    /**
      * 删除表里的全部数据
      * @param
      * @return

@@ -322,6 +322,26 @@ GROUP BY 列1,列2,列3 having count(*) > 1;
     }
 
     /**
+     * 删除重复的数据，只保留一行
+     *
+     * @param
+     * @return
+     * @throws
+     * @author FuJia
+     * @Time 2019-09-09 00:00:00
+     */
+    public void deleteSameDataByDistinct(String tableName) throws Exception {
+        StringBuffer sql1 = new StringBuffer();
+        StringBuffer sql2 = new StringBuffer();
+        StringBuffer sql3 = new StringBuffer();
+        sql1.append("Create table tmp (Select distinct * from " + tableName + ")");
+        sql2.append("drop table " + tableName + ")");
+        sql3.append("RENAME TABLE tmp TO " + tableName + ")");
+        getJdbcTemplate().execute(sql1.toString());
+        getJdbcTemplate().execute(sql2.toString());
+        getJdbcTemplate().execute(sql3.toString());
+    }
+    /**
      * 删除全部的数据
      *
      * @param
