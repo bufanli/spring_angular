@@ -351,6 +351,9 @@ GROUP BY 列1,列2,列3 having count(*) > 1;
         getJdbcTemplate().execute(sql1.toString());
         getJdbcTemplate().execute(sql2.toString());
         getJdbcTemplate().execute(sql3.toString());
+
+        this.addIDColumn(tableName);
+
     }
     /**
      * 删除全部的数据
@@ -426,6 +429,23 @@ GROUP BY 列1,列2,列3 having count(*) > 1;
 
         int num = getJdbcTemplate().update(sql.toString());
         return num;//返回影响的行数。(成功的话，0 rows affected)
+    }
+
+    /**
+     * 添加ID字段
+     *
+     * @param
+     * @return
+     * @throws
+     * @author FuJia
+     * @Time 2019-09-10 00:00:00
+     */
+    public void addIDColumn(String tableName) throws Exception {
+
+        StringBuffer sql = new StringBuffer();
+        sql.append("alter table " + tableName + " add column id INT(16) NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST");
+
+        getJdbcTemplate().execute(sql.toString());
     }
 
     /**

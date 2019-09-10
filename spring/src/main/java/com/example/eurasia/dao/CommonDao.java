@@ -24,6 +24,11 @@ public class CommonDao {
     public static final String COMMA = ",";
     public static final String ID_COMMA = "id,";
 
+/*
+1.excute: 可以执行所有的SQL语句，一般用于执行DDL语句。
+2.update: 用于执行insert、update、delete等DML语句。
+3.QueryXxx: 用于DQL数据查询语句。
+*/
     // 属性注入
     // 加入JdbcTemplate作为成员变变量
     @Autowired
@@ -653,7 +658,7 @@ select PERIOD_DIFF(DATE_FORMAT(CURDATE(),'%Y%m'),DATE_FORMAT(日期,'%Y%m')) fro
     protected StringBuffer convertCreatingTableWithPrimaryKeyToSQL(String tableName, Map<String, String> columnNameType) {
         StringBuffer sql = new StringBuffer();
         sql.append("CREATE TABLE `" + tableName + "` (");
-        sql.append(" `id` int(11) NOT NULL AUTO_INCREMENT,");
+        sql.append(" `id` INT(16) NOT NULL AUTO_INCREMENT,");
         for (Map.Entry<String, String> entry : columnNameType.entrySet()) {
             //sql.append("`" + entry.getKey() + "` " + entry.getValue() + " NOT NULL,");//key字段名 value字段类型
             sql.append("`" + entry.getKey() + "` " + entry.getValue() + " DEFAULT \"\",");//key字段名 value字段类型

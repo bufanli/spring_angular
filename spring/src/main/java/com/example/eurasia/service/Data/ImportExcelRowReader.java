@@ -57,6 +57,33 @@ public class ImportExcelRowReader {
                 this.titleList = new ArrayList<>(Arrays.asList(new String[rowList.size()]));
                 Collections.copy(this.titleList, rowList);
                 //this.titleList.addAll(rowList);//addAll实现的是浅拷贝
+/*
+                //为了做成MD5数据库列，先进行升序。注意：是根据的汉字的拼音的字母排序的，而不是根据汉字一般的排序方法
+                Collections.sort(this.titleList, Collator.getInstance(java.util.Locale.CHINA));
+                StringBuffer src = new StringBuffer();
+                for (String title : this.titleList) {
+                    src.append(title.trim());
+                }
+                String strMD5 = DigestUtils.md5Hex(src.toString());
+
+ */
+/*例子
+                ArrayList<String>  newArray=  new ArrayList<String>();
+                newArray.add("汽车");//排序后：10
+                newArray.add("ab12");//排序后：0
+                newArray.add("AB12");//排序后：1
+                newArray.add("ab21");//排序后：2
+                newArray.add("Ab21");//排序后：4
+                newArray.add("aB21");//排序后：3
+                newArray.add("公安");//排序后：8
+                newArray.add("怡");//排序后：12
+                newArray.add("张新");//排序后：11
+                newArray.add("广州");//排序后：9
+                newArray.add("test");//排序后：6
+                newArray.add("pp");//排序后：5
+                newArray.add("？23");//排序后：7
+                Collections.sort(newArray, Collator.getInstance(java.util.Locale.CHINA));
+ */
             }
 
             /*
