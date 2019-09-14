@@ -12,6 +12,7 @@ import { StatisticsReportEntry } from '../entities/statistics-report-entry';
 import { ComputeValue } from '../entities/compute-value';
 import { CurrentUserContainerService } from 'src/app/common/services/current-user-container.service';
 import { NEXT } from '@angular/core/src/render3/interfaces/view';
+import { DataExcelReportSelectionComponent } from '../components/data-excel-report-selection/data-excel-report-selection.component';
 
 // json header for post
 const httpOptions = {
@@ -623,17 +624,8 @@ export class DataStatisticsService implements ProcessingDialogCallback {
     const service: NgbModal = this.modalService;
     // you can not call this.adjustModalOptions,
     // because showUserSettingModal called in html context
-    const modalRef = service.open(DataStatisticsComponent, this.adjustModalOptions());
+    const modalRef = service.open(DataExcelReportSelectionComponent, this.adjustModalOptions());
     // set statistics fields to statistics component
-    modalRef.componentInstance.setComputeFields(statisticsFields.getComputeFields());
-    modalRef.componentInstance.setGroupByFields(statisticsFields.getGroupByFields());
-    modalRef.componentInstance.setGroupBySubFields(statisticsFields.getGroupBySubFields());
-    modalRef.componentInstance.setStatisticsTypes(statisticsFields.getStatisticsTypes());
-    // set query conditions
-    modalRef.componentInstance.setQueryConditions(this.queryConditions);
-    // save component
-    this.dataStatisticsComponent = modalRef.componentInstance;
-    // save service
-    modalRef.componentInstance.setStatisticsService(this);
+    modalRef.componentInstance.setExcelReportTypes(statisticsFields.getGroupByFields());
   }
 }
