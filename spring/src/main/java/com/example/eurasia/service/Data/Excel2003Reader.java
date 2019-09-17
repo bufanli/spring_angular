@@ -346,32 +346,37 @@ public class Excel2003Reader implements HSSFListener,IExcelReaderByEventMode {
                 //前一个Sheet页内容
                 if (this.sheetIndex > -1) {
                     try {
-                        if (this.rowReader.getTitleIsNotExistList().size() > 0) {
-                            String titleIsNotExist = this.rowReader.titleIsNotExistListToString();
-                            Slf4jLogUtil.get().info("Sheet[{}]导入失败，{}在数据库中不存在！",this.currentSheetName,titleIsNotExist);
-                            this.message.append("Sheet[" + this.currentSheetName + "]导入失败，" + titleIsNotExist + " 在数据库中不存在！");
-
-                            this.rowReader.clearTitleIsNotExistList();
-                        }
-                        if (this.rowReader.getSameTitleSet().size() > 0) {
-                            String sameTitle = this.rowReader.sameTitleSetToString();
-                            Slf4jLogUtil.get().info("Sheet[{}]导入失败，{}重复！",this.currentSheetName,sameTitle);
-                            this.message.append("Sheet[" + this.currentSheetName + "]导入失败，" + sameTitle + " 重复！");
-
-                            this.rowReader.clearSameTitleSet();
-                        }
                         if (this.rowReader.getTitleIsNotExistList().size() == 0 && this.rowReader.getSameTitleSet().size() == 0) {
                             int addDataNum = this.rowReader.saveDataToSQL(DataService.TABLE_DATA);//导入数据。
                             if (addDataNum >= 0) {
-                                Slf4jLogUtil.get().info("Sheet[{}]导入成功，共{}条数据！",this.currentSheetName,addDataNum);
-                                this.message.append("Sheet[" + this.currentSheetName + "]导入成功，共" + addDataNum + "条数据！");
+                                Slf4jLogUtil.get().info("Sheet[{}]{}，共{}条数据！",DataService.IMPORT_EXCEL_SUCCESS_MESSAGE,this.currentSheetName,addDataNum);
+                                this.message.append("Sheet[" + this.currentSheetName + "]" + DataService.IMPORT_EXCEL_SUCCESS_MESSAGE + "，共" + addDataNum + "条数据！");
+                                this.message.append(System.getProperty("line.separator"));//java中依赖于系统的换行符
                             } else {
-                                Slf4jLogUtil.get().info("Sheet[{}]导入失败，数据库操作问题！",this.currentSheetName);
-                                this.message.append("Sheet[" + this.currentSheetName + "]导失败，数据库操作问题！");
+                                Slf4jLogUtil.get().info("Sheet[{}]{}，数据库操作问题！",DataService.IMPORT_EXCEL_FAILED_MESSAGE,this.currentSheetName);
+                                this.message.append("Sheet[" + this.currentSheetName + "]" + DataService.IMPORT_EXCEL_FAILED_MESSAGE + "，数据库操作问题！");
+                                this.message.append(System.getProperty("line.separator"));//java中依赖于系统的换行符
                             }
 
                             //清空保存前一个Sheet页内容用的List
                             this.rowReader.clearDataList();
+                        } else {
+                            if (this.rowReader.getTitleIsNotExistList().size() > 0) {
+                                String titleIsNotExist = this.rowReader.titleIsNotExistListToString();
+                                Slf4jLogUtil.get().info("Sheet[{}]{}，{}在数据库中不存在！",DataService.IMPORT_EXCEL_FAILED_MESSAGE,this.currentSheetName,titleIsNotExist);
+                                this.message.append("Sheet[" + this.currentSheetName + "]" + DataService.IMPORT_EXCEL_FAILED_MESSAGE + "，" + titleIsNotExist + " 在数据库中不存在！");
+                                this.message.append(System.getProperty("line.separator"));//java中依赖于系统的换行符
+
+                                this.rowReader.clearTitleIsNotExistList();
+                            }
+                            if (this.rowReader.getSameTitleSet().size() > 0) {
+                                String sameTitle = this.rowReader.sameTitleSetToString();
+                                Slf4jLogUtil.get().info("Sheet[{}]{}，{}重复！",DataService.IMPORT_EXCEL_FAILED_MESSAGE,this.currentSheetName,sameTitle);
+                                this.message.append("Sheet[" + this.currentSheetName + "]" + DataService.IMPORT_EXCEL_FAILED_MESSAGE + "，" + sameTitle + " 重复！");
+                                this.message.append(System.getProperty("line.separator"));//java中依赖于系统的换行符
+
+                                this.rowReader.clearSameTitleSet();
+                            }
                         }
                     } catch (Exception e) {
                         e.printStackTrace();

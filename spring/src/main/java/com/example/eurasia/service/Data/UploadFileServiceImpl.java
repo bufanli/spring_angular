@@ -42,14 +42,14 @@ public class UploadFileServiceImpl implements IUploadFileService {
         StringBuffer responseNG = new StringBuffer();
         int fileOKNum = 0;
         int fileNGNum = 0;
-        Slf4jLogUtil.get().info("文件上传目录:{}",uploadDir.getPath());
+        Slf4jLogUtil.get().info("文件保存目录:{}",uploadDir.getPath());
 
         //遍历文件数组
         for (int i=0; i<files.length; i++) {
             //上传文件名
             fileName = files[i].getOriginalFilename();
 
-            Slf4jLogUtil.get().info("第{}/{}个文件开始上传,文件名:{}",(i+1),fileNumber,fileName);
+            Slf4jLogUtil.get().info("第{}/{}个文件开始保存,文件名:{}",(i+1),fileNumber,fileName);
 
             try {
                 //需要自定义文件名的情况
@@ -62,36 +62,35 @@ public class UploadFileServiceImpl implements IUploadFileService {
                 }
                 //将上传的文件写入到服务器端的文件内
                 files[i].transferTo(serverFile);
+
+                fileOKNum++;
+                responseOK.append(fileName + DataService.BR);
+                Slf4jLogUtil.get().info("第{}/{}个文件保存OK结束,文件名:{}",(i+1),fileNumber,fileName);
             } catch (IOException e) {
                 e.printStackTrace();
                 fileNGNum++;
-                responseNG.append(fileName +":上传IO异常" + DataService.BR);
-                Slf4jLogUtil.get().error("第{}/{}个文件上传IO异常,文件名:{}",(i+1),fileNumber,fileName);
+                responseNG.append(fileName +":文件保存IO异常" + DataService.BR);
+                Slf4jLogUtil.get().error("第{}/{}个文件保存IO异常,文件名:{}",(i+1),fileNumber,fileName);
                 continue;
             } catch (IllegalStateException e) {
                 e.printStackTrace();
                 fileNGNum++;
-                responseNG.append(fileName + ":上传IllegalState异常" + DataService.BR);
-                Slf4jLogUtil.get().error("第{}/{}个文件上传IllegalState异常,文件名:{}",(i+1),fileNumber,fileName);
+                responseNG.append(fileName + ":文件保存IllegalState异常" + DataService.BR);
+                Slf4jLogUtil.get().error("第{}/{}个文件保存IllegalState异常,文件名:{}",(i+1),fileNumber,fileName);
                 continue;
             }
-
-            fileOKNum++;
-            Slf4jLogUtil.get().info("第{}/{}个文件上传OK结束,文件名:{}",(i+1),fileNumber,fileName);
-
-            responseOK.append(fileName + DataService.BR);
         }
 
         if (fileNGNum == 0) {
-            responseMsg.append(fileOKNum + "个文件导入成功。");
+            responseMsg.append(fileOKNum + "个文件保存成功。");
             responseOK.delete((responseOK.length() - DataService.BR.length()),responseOK.length());
             responseResult = new ResponseResultUtil().success(ResponseCodeEnum.UPLOAD_FILE_SUCCESS.getCode(), responseMsg.toString(), responseOK.toString());
         } else if (fileOKNum == 0 && fileNGNum != 0) {
-            responseMsg.append(fileNGNum + "个文件导入失败。");
+            responseMsg.append(fileNGNum + "个文件保存失败。");
             responseNG.delete((responseNG.length() - DataService.BR.length()),responseNG.length());
             responseResult = new ResponseResultUtil().error(ResponseCodeEnum.UPLOAD_FILE_FAILED.getCode(), responseMsg.toString(), responseNG.toString());
         } else {
-            responseMsg.append(fileOKNum + "个文件导入成功," + fileNGNum + "个文件导入失败。");
+            responseMsg.append(fileOKNum + "个文件保存成功," + fileNGNum + "个文件保存失败。");
             responseOK.delete((responseOK.length() - DataService.BR.length()),responseOK.length());
             responseNG.delete((responseNG.length() - DataService.BR.length()),responseNG.length());
 
@@ -114,7 +113,7 @@ public class UploadFileServiceImpl implements IUploadFileService {
         StringBuffer responseNG = new StringBuffer();
         int fileOKNum = 0;
         int fileNGNum = 0;
-        Slf4jLogUtil.get().info("文件读取目录:{}",fileDir);
+        Slf4jLogUtil.get().info("文件导入目录:{}",fileDir);
 
         //遍历文件数组
         File[] files = fileDir.listFiles();
@@ -131,50 +130,53 @@ public class UploadFileServiceImpl implements IUploadFileService {
                 //读取文件名
                 fileName = files[i].getName();
 
-                Slf4jLogUtil.get().info("第{}/{}个文件开始读取,文件名:{}",(i+1),fileNumber,fileName);
+                Slf4jLogUtil.get().info("第{}/{}个文件开始导入,文件名:{}",(i+1),fileNumber,fileName);
 
                 try {
                     if (ImportExcelUtils.isExcelFileValidata(files[i]) == true) {
                         //responseRead = importExcelByUserMode.readExcelFile(files[i]);//T.B.D UserMode，没有check列名的同义词
                         responseRead = importExcelByEventMode.readExcelFile(files[i]);
+                        if (responseRead.indexOf(DataService.IMPORT_EXCEL_SUCCESS_MESSAGE) != -1) {
+                            fileOKNum++;
+                            responseOK.append(fileName + ":" + responseRead + DataService.BR);
+                            Slf4jLogUtil.get().info("第{}/{}个文件导入OK结束,文件名:{}",(i+1),fileNumber,fileName);
+                        } else if (responseRead.indexOf(DataService.IMPORT_EXCEL_FAILED_MESSAGE) != -1) {
+                            fileNGNum++;
+                            responseNG.append(fileName + ": 文件表头在数据库中不存在或者重复" + DataService.BR);
+                            Slf4jLogUtil.get().error("第{}/{}个文件表头在数据库中不存在或者重复,文件名:{}",(i+1),fileNumber,fileName);
+                        }
                     } else {
                         fileNGNum++;
-                        responseNG.append(fileName +": 文件格式有问题" + DataService.BR);
+                        responseNG.append(fileName + ": 文件格式有问题" + DataService.BR);
                         Slf4jLogUtil.get().error("第{}/{}个文件格式有问题,文件名:{}",(i+1),fileNumber,fileName);
-                        continue;
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
                     fileNGNum++;
-                    responseNG.append(fileName +": 读取IO异常" + DataService.BR);
-                    Slf4jLogUtil.get().error("第{}/{}个文件读取IO异常,文件名:{}",(i+1),fileNumber,fileName);
+                    responseNG.append(fileName + ": 文件导入IO异常" + DataService.BR);
+                    Slf4jLogUtil.get().error("第{}/{}个文件导入IO异常,文件名:{}",(i+1),fileNumber,fileName);
                     continue;
                 } catch (Exception e) {
                     e.printStackTrace();
                     fileNGNum++;
-                    responseNG.append(fileName +": 读取或者保存到数据库异常" + DataService.BR);
-                    Slf4jLogUtil.get().error("第{}/{}个文件读取异常,文件名:{}",(i+1),fileNumber,fileName);
+                    responseNG.append(fileName + ": 文件导入或者保存到数据库异常" + DataService.BR);
+                    Slf4jLogUtil.get().error("第{}/{}个文件导入异常,文件名:{}",(i+1),fileNumber,fileName);
                     continue;
                 }
 
             }
-
-            fileOKNum++;
-            Slf4jLogUtil.get().info("第{}/{}个文件读取OK结束,文件名:{}",(i+1),fileNumber,fileName);
-
-            responseOK.append(fileName + ":" + responseRead + DataService.BR);
         }
 
         if (fileNGNum == 0) {
-            responseMsg.append(fileOKNum + "个文件读取完成。");
+            responseMsg.append(fileOKNum + "个文件导入完成。");
             responseOK.delete((responseOK.length() - DataService.BR.length()),responseOK.length());
             responseResult = new ResponseResultUtil().success(ResponseCodeEnum.READ_UPLOADED_FILE_SUCCESS.getCode(), responseMsg.toString(), responseOK.toString());
         } else if (fileOKNum == 0 && fileNGNum != 0) {
-            responseMsg.append(fileNGNum + "个文件读取异常。");
+            responseMsg.append(fileNGNum + "个文件导入异常。");
             responseNG.delete((responseNG.length() - DataService.BR.length()),responseNG.length());
             responseResult = new ResponseResultUtil().error(ResponseCodeEnum.READ_UPLOADED_FILE_FAILED.getCode(), responseMsg.toString(), responseNG.toString());
         } else {
-            responseMsg.append(fileOKNum + "个文件读取完成," + fileNGNum + "个文件读取异常。");
+            responseMsg.append(fileOKNum + "个文件导入完成," + fileNGNum + "个文件导入异常。");
             responseOK.delete((responseOK.length() - DataService.BR.length()),responseOK.length());
             responseNG.delete((responseNG.length() - DataService.BR.length()),responseNG.length());
 
