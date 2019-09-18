@@ -44,7 +44,7 @@
                 </td>
                 <td nowrap>
                   <button type="button" class="btn btn-primary btn-xs" (click)="item.upload()"
-                    [disabled]="item.isReady || item.isUploading || item.isSuccess">
+                    [disabled]="item.isReady || item.isUploading || item.formData['isUploadSucceeded']">
                     <span class="glyphicon glyphicon-upload"></span> 上传
                   </button>
                   <button type="button" class="btn btn-default btn-xs" (click)="item.cancel()"
@@ -57,7 +57,6 @@
                   <button type="button" class="btn btn-default btn-xs" (click)="this.synonymEdit(item)">
                     <span class="glyphicon glyphicon-edit"></span> 编辑同义词
                   </button>
-
                 </td>
               </tr>
             </tbody>
