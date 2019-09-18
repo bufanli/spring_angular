@@ -142,7 +142,7 @@ public class UploadFileServiceImpl implements IUploadFileService {
                             Slf4jLogUtil.get().info("第{}/{}个文件导入OK结束,文件名:{}",(i+1),fileNumber,fileName);
                         } else if (responseRead.indexOf(DataService.IMPORT_EXCEL_FAILED_MESSAGE) != -1) {
                             fileNGNum++;
-                            responseNG.append(fileName + ": 文件表头在数据库中不存在或者重复" + DataService.BR);
+                            responseNG.append(fileName + ":" + responseRead + DataService.BR);
                             Slf4jLogUtil.get().error("第{}/{}个文件表头在数据库中不存在或者重复,文件名:{}",(i+1),fileNumber,fileName);
                         }
                     } else {
