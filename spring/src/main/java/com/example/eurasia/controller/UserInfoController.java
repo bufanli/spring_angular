@@ -7,10 +7,7 @@ import com.example.eurasia.entity.User.UserInfo;
 import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;
-import com.example.eurasia.service.User.UserInfoForAddServiceImpl;
-import com.example.eurasia.service.User.UserInfoForUpdateServiceImpl;
-import com.example.eurasia.service.User.UserInfoServiceImpl;
-import com.example.eurasia.service.User.UserService;
+import com.example.eurasia.service.User.*;
 import com.example.eurasia.service.Util.HttpSessionEnum;
 import com.example.eurasia.service.Util.Slf4jLogUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +32,9 @@ public class UserInfoController {
     @Qualifier("UserInfoForAddServiceImpl")
     @Autowired
     private UserInfoForAddServiceImpl userInfoForAddServiceImpl;
+    @Qualifier("UserInfoForDeleteServiceImpl")
+    @Autowired
+    private UserInfoForDeleteServiceImpl userInfoForDeleteServiceImpl;
     @Qualifier("UserInfoForUpdateServiceImpl")
     @Autowired
     private UserInfoForUpdateServiceImpl userInfoForUpdateServiceImpl;
@@ -352,4 +352,28 @@ public class UserInfoController {
         return responseResult;
     }
 
+    /**
+     * @author
+     * @date 2019-09-21
+     * @description 删除用户
+     */
+    @RequestMapping(value = "/deleteUser/{editUserID}", method = RequestMethod.GET)
+    public @ResponseBody
+    ResponseResult deleteUser(HttpServletRequest request, @PathVariable(value = "editUserID") String editUserID) {
+        ResponseResult responseResult;
+        try {
+            Slf4jLogUtil.get().info("删除用户开始");
+            String userID = userInfoServiceImpl.getLoginUserID(request);
+            if (StringUtils.isEmpty(userID)) {
+                responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
+            } else {
+                responseResult = userInfoForDeleteServiceImpl.deleteUser(editUserID);
+            }
+            Slf4jLogUtil.get().info("删除用户结束");
+        } catch (Exception e) {
+            e.printStackTrace();
+            responseResult = new ResponseResultUtil().error();
+        }
+        return responseResult;
+    }
 }

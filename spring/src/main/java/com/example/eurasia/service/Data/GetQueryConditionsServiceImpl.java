@@ -187,36 +187,85 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
      * @author FuJia
      * @Time 2019-06-26 00:00:00
      */
-    public ResponseResult getListValueWithPagination(GetListValueParam getListValueParam) throws Exception {
+    public ResponseResult getListValueWithPagination(String userID, GetListValueParam getListValueParam) throws Exception {
 
         CategorySelectionsWithTotalCount categorySelectionsWithTotalCount = new CategorySelectionsWithTotalCount();
-        String category = getListValueParam.getCategory();
-        String term = getListValueParam.getTerm();
-        int offset = getListValueParam.getOffset();
-        int limit = getListValueParam.getLimit();
+        int totalCount = 0;
+
+        String category = getListValueParam.getCategory();  // List类型的查询条件(字段名)
+        String term = getListValueParam.getTerm().trim();   // 查询的关键词
+        int offset = getListValueParam.getOffset();         // 从(offset+1)行开始
+        int limit = getListValueParam.getLimit();           // 查询多少个
+        Map<String, String> order = new LinkedHashMap<>();
+
         try {
 
-            Map<String, String> order = new LinkedHashMap<>();
-            order.put(category,"asc");//T.B.D
+            switch (category) {
+                case UserService.MUST_PRODUCT_NUMBER:
+                    order.put(category,"asc");//T.B.D
 
-            List<Long> countsList = dataService.getColumnValueCounts(DataService.TABLE_DATA, category);
-            long count = countsList.size();
-            categorySelectionsWithTotalCount.setTotalCount(count);
+                    String queryConditionValue = userService.getOneUserCustom(UserService.TABLE_USER_ACCESS_AUTHORITY,
+                            UserService.MUST_PRODUCT_NUMBER,
+                            userID);
+                    if (queryConditionValue.equals(QueryCondition.QUERY_CONDITION_SPLIT)) {// 海关编码没有权限限制
+                        List<Long> countsList = dataService.getColumnValueCounts(DataService.TABLE_DATA, category);
+                        totalCount = countsList.size();
 
-            List<Map<String, Object>> colValuesListMap = dataService.getColumnValuesWithPagination(DataService.TABLE_DATA,
-                                                                                                    category,
-                                                                                                    term,
-                                                                                                    offset,
-                                                                                                    limit,
-                                                                                                    order);
+                        List<Map<String, Object>> colValuesListMap = dataService.getColumnValuesWithPagination(DataService.TABLE_DATA,
+                                category,
+                                term,
+                                offset,
+                                limit,
+                                order);
 
-            int i= offset+1;
-            for (Map<String, Object> map : colValuesListMap) {
-                for (Map.Entry<String, Object> m : map.entrySet()) {
-                    categorySelectionsWithTotalCount.pushSelection(new CategorySelectionsWithTotalCount.Selection(i+1,(String) m.getValue()));
-                    i++;
-                }
+                        int i= offset+1;
+                        for (Map<String, Object> map : colValuesListMap) {
+                            for (Map.Entry<String, Object> m : map.entrySet()) {
+                                categorySelectionsWithTotalCount.pushSelection(new CategorySelectionsWithTotalCount.Selection(i+1,(String) m.getValue()));
+                                i++;
+                            }
+                        }
+                    } else {
+                        String productNumberArr[] = queryConditionValue.split(QueryCondition.QUERY_CONDITION_SPLIT);
+                        totalCount = productNumberArr.length;
+
+                        int offsetMax = (offset+limit) < totalCount ? (offset+limit) : totalCount;
+                        if (term.equals("")) {
+                            for (int i=offset; i<offsetMax; i++) {
+                                categorySelectionsWithTotalCount.pushSelection(new CategorySelectionsWithTotalCount.Selection(i+1,productNumberArr[i]));
+                            }
+                        } else {
+                            for (int i=offset; i<offsetMax; i++) {
+                                if (productNumberArr[i].indexOf(term) >= 0) {
+                                    categorySelectionsWithTotalCount.pushSelection(new CategorySelectionsWithTotalCount.Selection(i+1,productNumberArr[i]));
+                                }
+                            }
+                        }
+                    }
+                    break;
+                default:
+                    order.put(category,"asc");//T.B.D
+
+                    List<Long> countsList = dataService.getColumnValueCounts(DataService.TABLE_DATA, category);
+                    totalCount = countsList.size();
+
+                    List<Map<String, Object>> colValuesListMap = dataService.getColumnValuesWithPagination(DataService.TABLE_DATA,
+                            category,
+                            term,
+                            offset,
+                            limit,
+                            order);
+
+                    int i= offset+1;
+                    for (Map<String, Object> map : colValuesListMap) {
+                        for (Map.Entry<String, Object> m : map.entrySet()) {
+                            categorySelectionsWithTotalCount.pushSelection(new CategorySelectionsWithTotalCount.Selection(i+1,(String) m.getValue()));
+                            i++;
+                        }
+                    }
+                    break;
             }
+            categorySelectionsWithTotalCount.setTotalCount(totalCount);
 
             if (categorySelectionsWithTotalCount.getResults() == null) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.QUERY_CONDITION_LIST_VALUE_FROM_SQL_NULL);

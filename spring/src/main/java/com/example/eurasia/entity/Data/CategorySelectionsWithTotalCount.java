@@ -32,8 +32,9 @@ public class CategorySelectionsWithTotalCount implements Cloneable {
     // constructor
     public CategorySelectionsWithTotalCount(long totalCount, ArrayList<Selection> results) {
         this.totalCount = totalCount;
-        this.results = new ArrayList<Selection>(results.size());
-        this.results.addAll(results);//这个是浅拷贝
+        //this.results = new ArrayList<Selection>(results.size());
+        //this.results.addAll(results);//这个是浅拷贝
+        this.results = results;
     }
 
     // set total count

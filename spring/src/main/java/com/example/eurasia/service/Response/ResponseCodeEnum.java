@@ -124,6 +124,9 @@ public enum ResponseCodeEnum {
     USER_UPDATE_PRODUCT_NUMBER_IS_NULL(ResponseCode.RESPONSE_CODE_USER_UPDATE_CHECK_NG, "更新可访问的海关/商品编码为空。"),
     USER_CATEGORY_SELECTIONS_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "取得字段分组值成功"),
     USER_CATEGORY_SELECTIONS_FAILED(ResponseCode.RESPONSE_CODE_NG, "取得字段分组值失败"),
+    USER_DELETE_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "删除用户成功"),
+    USER_DELETE_NOT_ALLOWED(ResponseCode.RESPONSE_CODE_USER_ADD_NG, "该用户不可删除"),
+    USER_DELETE_FAILED(ResponseCode.RESPONSE_CODE_USER_ADD_NG, "删除用户失败"),
 
     /* 取得表头 */
     HEADER_GET_ALL_INFO_FROM_SQL_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "从数据库取得表头信息成功"),
