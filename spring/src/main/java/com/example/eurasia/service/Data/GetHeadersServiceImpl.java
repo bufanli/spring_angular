@@ -7,6 +7,7 @@ import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;
 import com.example.eurasia.service.User.UserService;
+import com.example.eurasia.service.Util.Slf4jLogUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -56,6 +57,7 @@ public class GetHeadersServiceImpl implements IGetHeadersService {
                     headers[i] = new Header(entry.getValue().toString(), entry.getValue().toString());
                 }
             }
+            Slf4jLogUtil.get().info("取得的所有列名:" + headers);
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseResultUtil().error(ResponseCodeEnum.HEADER_GET_ALL_INFO_FROM_SQL_FAILED);
@@ -82,6 +84,7 @@ public class GetHeadersServiceImpl implements IGetHeadersService {
             for (int i = 0;i < headerDisplayList.size();i++) {
                 headers[i] = new Header(headerDisplayList.get(i), headerDisplayList.get(i));
             }
+            Slf4jLogUtil.get().info("取得的显示的列名:" + headers);
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseResultUtil().error(ResponseCodeEnum.HEADER_GET_BY_TRUE_FROM_SQL_FAILED);
@@ -117,6 +120,11 @@ public class GetHeadersServiceImpl implements IGetHeadersService {
     public ResponseResult setHeaderDisplay(String userID, UserCustom[] userHeaderDisplays) throws Exception {
 
         try {
+            StringBuffer strUserHeaderDisplays = new StringBuffer();
+            for (UserCustom userCustom:userHeaderDisplays) {
+                strUserHeaderDisplays.append(userCustom.toString() + " ");
+            }
+            Slf4jLogUtil.get().info("保存的显示非显示的列名:" + strUserHeaderDisplays);
             boolean isUpdateSuccessful = userService.updateUserHeaderDisplay(userID, userHeaderDisplays);
             if (isUpdateSuccessful == false) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.HEADER_SET_FAILED);

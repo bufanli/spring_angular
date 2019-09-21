@@ -32,6 +32,11 @@ public class UserCustom implements Cloneable {
     }
 
     @Override
+    public String toString() {
+        return key + ":" + value;
+    }
+
+    @Override
     protected Object clone() throws CloneNotSupportedException {
         return super.clone();
     }
