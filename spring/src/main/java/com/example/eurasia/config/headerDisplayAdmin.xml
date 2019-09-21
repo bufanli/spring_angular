@@ -12,7 +12,7 @@
     <column key="企业性质" value="FALSE" />
     <column key="运输工具名称" value="FALSE" />
     <column key="提运单号" value="FALSE" />
-    <column key="海关编码" value="FALSE" />
+    <column key="海关编码" value="TRUE" />
     <column key="附加码" value="FALSE" />
     <column key="商品名称" value="TRUE" />
     <column key="制作或保存方法" value="FALSE" />

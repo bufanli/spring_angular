@@ -1,6 +1,8 @@
 package com.example.eurasia.service.Data;
 
+import com.example.eurasia.entity.Data.Data;
 import com.example.eurasia.entity.Data.Header;
+import com.example.eurasia.entity.User.UserCustom;
 import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;
@@ -36,7 +38,7 @@ public class GetHeadersServiceImpl implements IGetHeadersService {
         Header[] headers;
         List<Map<String,String>> allHeadersList;
         try {
-            allHeadersList = this.getAllHeadersFromSQL();
+            allHeadersList = dataService.getAllColumns();
             if (allHeadersList == null) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.HEADER_GET_ALL_INFO_FROM_SQL_NULL);
             }
@@ -63,17 +65,17 @@ public class GetHeadersServiceImpl implements IGetHeadersService {
     }
 
     @Override
-    public ResponseResult getHeaderDisplay(String userID) throws Exception {
+    public ResponseResult getHeaderDisplayByTrue(String userID) throws Exception {
 
         Header[] headers;
         List<String> headerDisplayList;
         try {
-            headerDisplayList = this.getHeaderDisplayFromSQL(userID);
+            headerDisplayList = userService.getUserHeaderDisplayByTrue(userID);
             if (headerDisplayList == null) {
-                return new ResponseResultUtil().error(ResponseCodeEnum.HEADER_GET_INFO_FROM_SQL_NULL);
+                return new ResponseResultUtil().error(ResponseCodeEnum.HEADER_GET_BY_TRUE_FROM_SQL_NULL);
             }
             if (headerDisplayList.size() == 0) {
-                return new ResponseResultUtil().error(ResponseCodeEnum.HEADER_GET_INFO_FROM_SQL_ZERO);
+                return new ResponseResultUtil().error(ResponseCodeEnum.HEADER_GET_BY_TRUE_FROM_SQL_ZERO);
             }
 
             headers = new Header[headerDisplayList.size()];
@@ -82,18 +84,49 @@ public class GetHeadersServiceImpl implements IGetHeadersService {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return new ResponseResultUtil().error(ResponseCodeEnum.HEADER_GET_INFO_FROM_SQL_FAILED);
+            return new ResponseResultUtil().error(ResponseCodeEnum.HEADER_GET_BY_TRUE_FROM_SQL_FAILED);
         }
 
-        return new ResponseResultUtil().success(ResponseCodeEnum.HEADER_GET_INFO_FROM_SQL_SUCCESS, headers);
+        return new ResponseResultUtil().success(ResponseCodeEnum.HEADER_GET_BY_TRUE_FROM_SQL_SUCCESS, headers);
     }
 
-    private List<Map<String,String>> getAllHeadersFromSQL() throws Exception {
-        return dataService.getAllColumns();
+    @Override
+    public ResponseResult getHeaderDisplay(String userID) throws Exception {
+
+        UserCustom[] userHeaderDisplays;
+        List<Data> userHeaderDisplaysList;
+        try {
+            userHeaderDisplaysList = userService.getUserHeaderDisplay(userID);
+            if (userHeaderDisplaysList == null) {
+                return new ResponseResultUtil().error(ResponseCodeEnum.HEADER_GET_FROM_SQL_NULL);
+            }
+            if (userHeaderDisplaysList.size() != 1) {
+                return new ResponseResultUtil().error(ResponseCodeEnum.HEADER_GET_FROM_SQL_ZERO);
+            }
+
+            userHeaderDisplays = userHeaderDisplaysList.get(0).toUserCustomArr();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseResultUtil().error(ResponseCodeEnum.HEADER_GET_FROM_SQL_FAILED);
+        }
+
+        return new ResponseResultUtil().success(ResponseCodeEnum.HEADER_GET_FROM_SQL_SUCCESS, userHeaderDisplays);
     }
 
-    private List<String> getHeaderDisplayFromSQL(String userID) throws Exception {
-        return userService.getUserHeaderDisplayByTrue(userID);
+    @Override
+    public ResponseResult setHeaderDisplay(String userID, UserCustom[] userHeaderDisplays) throws Exception {
+
+        try {
+            boolean isUpdateSuccessful = userService.updateUserHeaderDisplay(userID, userHeaderDisplays);
+            if (isUpdateSuccessful == false) {
+                return new ResponseResultUtil().error(ResponseCodeEnum.HEADER_SET_FAILED);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseResultUtil().error(ResponseCodeEnum.HEADER_SET_FAILED);
+        }
+
+        return new ResponseResultUtil().success(ResponseCodeEnum.HEADER_SET_SUCCESS);
     }
 
 }

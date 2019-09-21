@@ -130,10 +130,18 @@ public enum ResponseCodeEnum {
     HEADER_GET_ALL_INFO_FROM_SQL_FAILED(ResponseCode.RESPONSE_CODE_NG, "从数据库取得表头信息失败"),
     HEADER_GET_ALL_INFO_FROM_SQL_NULL(ResponseCode.RESPONSE_CODE_NULL, "从数据库取得表头信息为NULL"),
     HEADER_GET_ALL_INFO_FROM_SQL_ZERO(ResponseCode.RESPONSE_CODE_OK, "从数据库取得表头信息为0"),
-    HEADER_GET_INFO_FROM_SQL_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "从数据库取得表头信息成功"),
-    HEADER_GET_INFO_FROM_SQL_FAILED(ResponseCode.RESPONSE_CODE_NG, "从数据库取得表头信息失败"),
-    HEADER_GET_INFO_FROM_SQL_NULL(ResponseCode.RESPONSE_CODE_NULL, "从数据库取得表头信息为NULL"),
-    HEADER_GET_INFO_FROM_SQL_ZERO(ResponseCode.RESPONSE_CODE_OK, "从数据库取得表头信息为0"),
+    HEADER_GET_FROM_SQL_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "从数据库取得所有的显示非显示的表头信息成功"),
+    HEADER_GET_FROM_SQL_FAILED(ResponseCode.RESPONSE_CODE_NG, "从数据库取得所有的显示非显示的表头信息失败"),
+    HEADER_GET_FROM_SQL_NULL(ResponseCode.RESPONSE_CODE_NULL, "从数据库取得所有的显示非显示的表头信息为NULL"),
+    HEADER_GET_FROM_SQL_ZERO(ResponseCode.RESPONSE_CODE_OK, "从数据库取得所有的显示非显示的表头信息为0"),
+    HEADER_GET_BY_TRUE_FROM_SQL_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "从数据库取得显示的表头信息成功"),
+    HEADER_GET_BY_TRUE_FROM_SQL_FAILED(ResponseCode.RESPONSE_CODE_NG, "从数据库取得显示的表头信息失败"),
+    HEADER_GET_BY_TRUE_FROM_SQL_NULL(ResponseCode.RESPONSE_CODE_NULL, "从数据库取得显示的表头信息为NULL"),
+    HEADER_GET_BY_TRUE_FROM_SQL_ZERO(ResponseCode.RESPONSE_CODE_OK, "从数据库取得显示的表头信息为0"),
+
+    /* 保存表头 */
+    HEADER_SET_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "所有的显示非显示的表头信息保存成功"),
+    HEADER_SET_FAILED(ResponseCode.RESPONSE_CODE_NG, "所有的显示非显示的表头信息保存失败"),
 
     /* 查询数据 */
     SEARCH_DATA_INFO_FROM_SQL_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "从数据库取得数据信息成功"),
