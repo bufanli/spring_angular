@@ -70,7 +70,7 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
   // api urls
   private readonly searchUrl = 'api/searchData';  // URL to web api
   private readonly exportUrl = 'api/downloadFile';  // URL to web api
-  private readonly headersUrl = 'api/getHeaders';  // URL to web api
+  private readonly headersUrl = 'api/getHeadersForTable';  // URL to web api
   private readonly getQueryConditionsUrl = 'api/getQueryConditions';  // URL to web api
   private readonly getListValueUrl = 'api/getListValueWithPagination';  // URL to web api
 
