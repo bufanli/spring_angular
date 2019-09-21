@@ -189,7 +189,7 @@ public class UserInfoController {
             } else {
 
                 if (null == userInfo) {
-                    new ResponseResultUtil().error(ResponseCodeEnum.USER_ADD_FAILED);
+                    return new ResponseResultUtil().error(ResponseCodeEnum.USER_ADD_FAILED);
                 }
 
                 responseResult = userInfoForAddServiceImpl.addUser(userInfo);

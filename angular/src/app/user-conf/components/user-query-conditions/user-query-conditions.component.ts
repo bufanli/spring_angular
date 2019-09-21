@@ -1,6 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Header } from 'src/app/common/entities/header';
-import { query } from '@angular/core/src/render3/query';
 import { UserAccessAuthorities } from '../../entities/user-access-authorities';
 import { CommonUtilitiesService } from 'src/app/common/services/common-utilities.service';
 
@@ -97,10 +96,6 @@ export class UserQueryConditionsComponent implements OnInit {
   // set query conditions
   public setQueryConditionDisplays(queryConditionDisplays: any) {
     this.queryConditionDisplays = queryConditionDisplays;
-  }
-  // set user access authorities
-  public setUserAccessAuthorities(currentUserAccessAuthorities: UserAccessAuthorities): void {
-    this.currentUserAccessAuthorities = currentUserAccessAuthorities;
   }
   // convert query conditions displays to table data
   private convertQueryConditionDisplaysToTableData(): any[] {

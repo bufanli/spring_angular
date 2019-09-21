@@ -32,6 +32,8 @@ export class UserAddInputComponent implements OnInit, OnDestroy, CommonDialogCal
   public currentUserQueryConditionDisplays: UserQueryConditionHeader = null;
   // user basic info
   public currentUserBasicInfo: UserBasicInfo = null;
+  // get user detail info ready
+  public getUserDetailInfoReady = false;
 
   @ViewChild('userEditContainer', { read: ViewContainerRef }) container: ViewContainerRef;
   componentRefBasicInfo: ComponentRef<UserBasicInfoComponent>;
@@ -65,10 +67,17 @@ export class UserAddInputComponent implements OnInit, OnDestroy, CommonDialogCal
   // set user access authorities
   public setUserAccessAuthorites(userAccessAuthorities: UserAccessAuthorities) {
     this.currentUserAccessAuthorities = userAccessAuthorities;
+    if (this.componentRefQueryConditionDisplays !== undefined) {
+      this.componentRefAccessAuthorities.instance.setCurrentUserAccessAuthorities(userAccessAuthorities);
+    }
   }
   // set user query conditions displays
   public setUserQueryConditionDisplays(userQueryConditionDisplays: UserQueryConditionHeader) {
     this.currentUserQueryConditionDisplays = userQueryConditionDisplays;
+    if (this.componentRefQueryConditionDisplays !== undefined) {
+      this.componentRefQueryConditionDisplays.instance.setQueryConditionDisplays(userQueryConditionDisplays);
+    }
+
   }
   // set user header displays
   public setUserHeaderDisplays(userHeaderDisplays: UserQueryConditionHeader) {
@@ -78,6 +87,8 @@ export class UserAddInputComponent implements OnInit, OnDestroy, CommonDialogCal
   public callbackToFinsihGetUserDetaildInfo() {
     // show basic info tab
     this.createComponent('basic-info');
+    // set get detail info ready to ok
+    this.getUserDetailInfoReady = true;
   }
   // set openid
   public setOpenID(openID: string) {
@@ -107,7 +118,6 @@ export class UserAddInputComponent implements OnInit, OnDestroy, CommonDialogCal
       this.currentUserQueryConditionDisplays.userID = this.openID;
       this.componentRefQueryConditionDisplays.instance.setQueryConditionDisplays(
         this.currentUserQueryConditionDisplays);
-      this.componentRefQueryConditionDisplays.instance.setUserAccessAuthorities(this.currentUserAccessAuthorities);
     }
   }
   // add user info to spring

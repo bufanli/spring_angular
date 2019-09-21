@@ -27,7 +27,7 @@ public class UserInfoForAddServiceImpl {
 
     public ResponseResult addUser(UserInfo userInfo) throws Exception {
         if (null == userInfo) {
-            new ResponseResultUtil().error(ResponseCodeEnum.USER_ADD_FAILED);
+            return new ResponseResultUtil().error(ResponseCodeEnum.USER_ADD_FAILED);
         }
 
         String retCheck = this.checkUserInfoForAdd(userInfo);

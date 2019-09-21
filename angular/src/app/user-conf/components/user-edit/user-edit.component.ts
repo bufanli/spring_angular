@@ -55,18 +55,14 @@ export class UserEditComponent implements OnInit, OnDestroy, CommonDialogCallbac
       const factory = this.resolver.resolveComponentFactory(UserBasicInfoComponent);
       this.componentRefBasicInfo = this.container.createComponent(factory);
       this.componentRefBasicInfo.instance.currentUser = this.currentUser;
-      // this.componentRef.instance.output.subscribe((msg: string) => console.log(msg));
     } else if (type === 'access-authorities') {
       const factory = this.resolver.resolveComponentFactory(UserAccessAuthoritiesComponent);
       this.componentRefAccessAuthorities = this.container.createComponent(factory);
       this.componentRefAccessAuthorities.instance.setCurrentUserAccessAuthorities(this.currentUserAccessAuthorities);
-      // this.componentRef.instance.output.subscribe((msg: string) => console.log(msg));
     } else if (type === 'query-condition-displays') {
       const factory = this.resolver.resolveComponentFactory(UserQueryConditionsComponent);
       this.componentRefQueryConditionDisplays = this.container.createComponent(factory);
       this.componentRefQueryConditionDisplays.instance.setQueryConditionDisplays(this.currentUserQueryConditionDisplay);
-      this.componentRefQueryConditionDisplays.instance.setUserAccessAuthorities(this.currentUserAccessAuthorities);
-      // this.componentRef.instance.output.subscribe((msg: string) => console.log(msg));
     }
 
   }
