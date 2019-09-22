@@ -28,8 +28,8 @@ export class DataHeaderDisplayService {
     public modalService: NgbModal,
     private currentUserContainer: CurrentUserContainerService) {
   }
-  // get statistic report
-  public getHeadersForTable(): void {
+  // get header for setting
+  public getHeadersForSetting(): void {
     this.commonUtilitiesService.showProcessingDialog(this,
       null,
       this.GET_HEADERS_FOR_SETTING_SOURCE_ID);

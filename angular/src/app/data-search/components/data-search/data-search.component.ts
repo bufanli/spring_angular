@@ -741,6 +741,6 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
   }
   // on set header selections
   public onSetHeaderSelections(): void {
-    this.dataHeaderDisplayService.getHeadersForTable();
+    this.dataHeaderDisplayService.getHeadersForSetting();
   }
 }

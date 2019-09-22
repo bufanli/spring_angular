@@ -141,6 +141,8 @@ export class DataSelectHeadersComponent implements OnInit, SaveHeaderDisplaysCal
     let checkedString = null;
     if (checked === true) {
       checkedString = 'TRUE';
+    } else {
+      checkedString = 'FALSE';
     }
     for (const headerDisplay of this.headerDisplays) {
       if (headerDisplay['key'] === header) {
@@ -180,10 +182,8 @@ export class DataSelectHeadersComponent implements OnInit, SaveHeaderDisplaysCal
     this.clearError();
     // set callback of saving header displays
     this.headerDisplaysService.setCallback(this);
-    // get rid of unnecessary header display, id and userID
-    this.filterHeaderDisplays();
     // save header displays
-    this.headerDisplaysService.saveHeaderDisplays(this.headerDisplays);
+    this.headerDisplaysService.saveHeaderDisplays(this.filterHeaderDisplays());
   }
   // save header display callback
   public callbackOnEndSaveHeaderDisplays(httpResponse: HttpResponse): void {
