@@ -1,8 +1,31 @@
-.data-detail-container {
-  height: 400px;
-  overflow-y: scroll;
-  overflow-x: hidden;
+@media (min-width: 1280px) {
+  .data-detail-container {
+    overflow-y: auto;
+    overflow-x: hidden;
+    font-size: 10px;
+  }
 }
-.my-control-label{
-  padding-top: 7px;
+
+@media (min-width: 1400px) {
+  .data-detail-container {
+    overflow-y: auto;
+    overflow-x: hidden;
+    font-size: 0.5em;
+  }
+}
+
+.my-control-label {
+  padding-top: 5px;
+}
+
+.my-modal-header {
+  padding: 5px;
+}
+
+.my-modal-footer {
+  padding: 5px;
+}
+.compact-col{
+  padding-right: 5px;
+  padding-left: 5px;
 }

@@ -382,7 +382,9 @@ export class DataSearchComponent implements OnInit, AfterViewChecked, SaveHeader
     const data: any = target.data.getCurrentData(this.id);
     // you can not call this.adjustModalOptions,
     // because showUserSettingModal called in html context
-    const modalRef = service.open(DataDetailComponent, target.data.adjustModalOptions());
+    const options = target.data.adjustModalOptions();
+    options.size = 'xl';
+    const modalRef = service.open(DataDetailComponent, options);
     modalRef.componentInstance.setCurrentData(data);
     modalRef.componentInstance.notifyClose.subscribe(response => target.data.callbackOfShowDataDetailEnd(response));
   }
@@ -401,7 +403,6 @@ export class DataSearchComponent implements OnInit, AfterViewChecked, SaveHeader
     const options: NgbModalOptions = new NgbModalConfig();
     options.backdrop = false;
     options.windowClass = 'modal fade in';
-    options.size = 'lg';
     return options;
   }
 

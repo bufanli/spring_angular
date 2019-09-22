@@ -75,7 +75,10 @@ export class DataDetailComponent implements OnInit {
     '联系人',
   ];
   public currentData: any = null;
-  public dataDetailFields: string[] = null;
+  private readonly NUMBER_PER_ROW = 6;
+  private readonly MAX_SHOWING_LENGTH = 12;
+  // detail fields by row
+  public dataDetailFieldsByRow: any[] = [];
   @Output() notifyClose: EventEmitter<string> = new EventEmitter<string>();
   constructor(
     private activeModal: NgbActiveModal,
@@ -87,16 +90,49 @@ export class DataDetailComponent implements OnInit {
 
   ngOnInit() {
     const allColumns = this.columnsContainerService.getAllColumns();
+    let dataDetailFields: any = null;
     if (allColumns !== null) {
-      this.dataDetailFields = allColumns;
+      dataDetailFields = allColumns;
     } else {
-      this.dataDetailFields = this.DATA_DETAIL_FIELDS;
+      dataDetailFields = this.DATA_DETAIL_FIELDS;
     }
+    // rearrange data fields by row
+    let startPos = 0;
+    for (let index = 0; index <= dataDetailFields.length / this.NUMBER_PER_ROW;) {
+      let endPos = 0;
+      if (startPos + this.NUMBER_PER_ROW > dataDetailFields.length) {
+        endPos = dataDetailFields.length;
+      } else {
+        endPos = startPos + this.NUMBER_PER_ROW;
+      }
+      // slice array into one row
+      const dataDetailFieldsOneRow = dataDetailFields.slice(startPos, endPos);
+      this.dataDetailFieldsByRow.push(dataDetailFieldsOneRow);
+      // increse start pos
+      startPos += this.NUMBER_PER_ROW;
+      index = index + 1;
+    }
+    // adjust modal size
+    // this.adjustModalSize();
+  }
+  // adjust modal size
+  private adjustModalSize(): void {
+    $('.data-detail-container').height($(window).height() * 0.9);
+    // tslint:disable-next-line: deprecation
+    $('.data-detail-container').resize(function () {
+      $('.data-detail-container').height($(window).height() * 0.9);
+    });
   }
   // close modal
   public close(): void {
     this.notifyClose.emit('closed');
     this.activeModal.close();
+  }
+  // get tooltip
+  public getTooltip(value: string): string {
+    return value;
+    // return '<span class = "text-primary" data-toggle = "tooltip" \
+    //               title = ' + value + '>' + value.substring(0, this.MAX_SHOWING_LENGTH) + '..' + '</span>';
   }
 
 }

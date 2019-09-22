@@ -5985,6 +5985,9 @@ button.close {
   .modal-lg {
     width: 900px;
   }
+    .modal-xl {
+    width: 98%;
+  }
 }
 .tooltip {
   position: absolute;

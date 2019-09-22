@@ -1,24 +1,28 @@
-<div class="modal-header bg-primary">
+<div class="modal-header bg-primary my-modal-header">
   <button type="button" class="close" data-dismiss="modal" aria-hidden="true" (click)="close()">
     &times;
   </button>
-  <h4 class="modal-title" id="data-detail-title">
+  <span class="modal-title" id="data-detail-title">
     数据详细
-  </h4>
+  </span>
 </div>
 <div class="modal-body">
   <div class="data-detail-container">
     <form role="form" class="form-horizental">
-      <div *ngFor="let field of this.dataDetailFields" class="col-md-6">
-        <div class="form-group">
-          <label class="control-label col-sm-6 my-control-label">{{field}}:</label>
-          <p class="form-control-static col-sm-6">{{this.currentData[field]}}</p>
+      <div *ngFor="let fields of this.dataDetailFieldsByRow" class="row">
+        <div *ngFor="let field of fields" class="col-md-2">
+          <div class="form-group">
+            <p class="col-sm-6 compact-col">{{field}}</p>
+            <div class=" col-sm-6 compact-col" [innerHTML]="this.getTooltip(this.currentData[field])">
+            </div>
+          </div>
         </div>
       </div>
     </form>
   </div>
-  <div class="modal-footer">
-    <button type="button" class="btn btn-default" data-dismiss="modal" (click)="close()">
-      <span class="glyphicon glyphicon-remove"></span>&nbsp;关闭
-    </button>
-  </div>
+</div>
+<div class="modal-footer my-modal-footer">
+  <button type="button" class="btn btn-default" data-dismiss="modal" (click)="close()">
+    <span class="glyphicon glyphicon-remove"></span>&nbsp;关闭
+  </button>
+</div>
