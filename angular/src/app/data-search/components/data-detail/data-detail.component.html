@@ -3,7 +3,7 @@
     &times;
   </button>
   <span class="modal-title" id="data-detail-title">
-    数据详细
+    数据详细(Esc关闭)
   </span>
 </div>
 <div class="modal-body">
@@ -12,7 +12,7 @@
       <div *ngFor="let fields of this.dataDetailFieldsByRow" class="row">
         <div *ngFor="let field of fields" class="col-md-2">
           <div class="form-group">
-            <p class="col-sm-6 compact-col">{{field}}</p>
+            <p class="col-sm-6 compact-col"><strong>{{field}}</strong></p>
             <div class=" col-sm-6 compact-col" [innerHTML]="this.getTooltip(this.currentData[field])">
             </div>
           </div>
