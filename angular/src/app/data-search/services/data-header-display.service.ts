@@ -69,7 +69,15 @@ export class DataHeaderDisplayService {
   }
   // set callback of save headers
   public appendSaveEndCallback(saveHeaderDisplayCallback: SaveHeaderDisplaysCallback): void {
-    this.saveEndCallbacks.push(saveHeaderDisplayCallback);
+    let appended = false;
+    this.saveEndCallbacks.forEach(element => {
+      if (element === saveHeaderDisplayCallback) {
+        appended = true;
+      }
+    });
+    if (appended === false) {
+      this.saveEndCallbacks.push(saveHeaderDisplayCallback);
+    }
   }
   // save header displays
   public saveHeaderDisplays(headerDisplays: any[]): void {

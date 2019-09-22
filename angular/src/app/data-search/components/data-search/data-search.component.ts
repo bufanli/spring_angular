@@ -171,8 +171,6 @@ export class DataSearchComponent implements OnInit, AfterViewChecked, SaveHeader
     if (httpResponse.code === 201) {
       this.currentUserContainer.sessionTimeout();
     }
-    // if donot destroy table at first, table will not be shown
-    $('#table').bootstrapTable('destroy');
     // get table's columns
     this.filterColumns(httpResponse.data);
     const allHeaders: Header[] = this.addFormatterToHeaders(httpResponse.data);
@@ -206,6 +204,8 @@ export class DataSearchComponent implements OnInit, AfterViewChecked, SaveHeader
   }
   // init data table
   private initDataTable(headers: Header[]): void {
+    // if donot destroy table at first, table will not be shown
+    $('#table').bootstrapTable('destroy');
     const that: any = this;
     $('#table').bootstrapTable({
       columns: headers,
