@@ -181,7 +181,7 @@ export class DataSelectHeadersComponent implements OnInit, SaveHeaderDisplaysCal
     // clear error
     this.clearError();
     // set callback of saving header displays
-    this.headerDisplaysService.setCallback(this);
+    this.headerDisplaysService.appendSaveEndCallback(this);
     // save header displays
     this.headerDisplaysService.saveHeaderDisplays(this.filterHeaderDisplays());
   }

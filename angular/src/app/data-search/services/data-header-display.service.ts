@@ -19,10 +19,8 @@ export class DataHeaderDisplayService {
   private getHeadersForSettingUrl = 'api/getHeadersForSetting';  // URL to web api
   private setHeadersForSettingUrl = 'api/setHeadersForSetting';  // URL to web api
   private GET_HEADERS_FOR_SETTING_SOURCE_ID = '001';
-  // data header select component
-  private dataSelectHeadersComponent: any = null;
   // set save end callback
-  private saveEndCallback: SaveHeaderDisplaysCallback = null;
+  private saveEndCallbacks: SaveHeaderDisplaysCallback[] = [];
   constructor(private commonUtilitiesService: CommonUtilitiesService,
     private http: HttpClient,
     public modalService: NgbModal,
@@ -57,8 +55,6 @@ export class DataHeaderDisplayService {
     const modalRef = service.open(DataSelectHeadersComponent, this.adjustModalOptions());
     // set statistics fields to statistics component
     modalRef.componentInstance.setHeaderDisplays(httpResponse.data);
-    // save component
-    this.dataSelectHeadersComponent = modalRef.componentInstance;
     // save service
     modalRef.componentInstance.setHeaderDisplaysService(this);
   }
@@ -71,9 +67,9 @@ export class DataHeaderDisplayService {
     options.size = 'lg';
     return options;
   }
-  // set callback of save column synonym end
-  public setCallback(saveHeaderDisplayCallback: SaveHeaderDisplaysCallback): void {
-    this.saveEndCallback = saveHeaderDisplayCallback;
+  // set callback of save headers
+  public appendSaveEndCallback(saveHeaderDisplayCallback: SaveHeaderDisplaysCallback): void {
+    this.saveEndCallbacks.push(saveHeaderDisplayCallback);
   }
   // save header displays
   public saveHeaderDisplays(headerDisplays: any[]): void {
@@ -89,6 +85,8 @@ export class DataHeaderDisplayService {
   }
   // notification of saving header displays
   private saveHeaderDisplaysNotification(httpResponse: HttpResponse): void {
-    this.saveEndCallback.callbackOnEndSaveHeaderDisplays(httpResponse);
+    this.saveEndCallbacks.forEach(element => {
+      element.callbackOnEndSaveHeaderDisplays(httpResponse);
+    });
   }
 }

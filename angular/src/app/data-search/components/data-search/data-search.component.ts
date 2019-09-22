@@ -33,6 +33,7 @@ import { UserQueryConditionsComponent } from 'src/app/user-conf/components/user-
 import { ColumnsContainerService } from 'src/app/common/services/columns-container.service';
 import { OptionData } from 'select2';
 import { DataHeaderDisplayService } from '../../services/data-header-display.service';
+import { SaveHeaderDisplaysCallback } from '../../entities/save-header-displays-callback';
 
 // json header for post
 const httpOptions = {
@@ -53,7 +54,7 @@ const httpDownloadOptions = {
   templateUrl: './data-search.component.html',
   styleUrls: ['./data-search.component.css']
 })
-export class DataSearchComponent implements OnInit, AfterViewChecked {
+export class DataSearchComponent implements OnInit, AfterViewChecked, SaveHeaderDisplaysCallback {
 
   // sequence field and title
   private static readonly SEQUENCE_FIELD = 'seq';
@@ -741,6 +742,16 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
   }
   // on set header selections
   public onSetHeaderSelections(): void {
+    // append callback
+    this.dataHeaderDisplayService.appendSaveEndCallback(this);
     this.dataHeaderDisplayService.getHeadersForSetting();
+  }
+  // save headers end callback
+  public callbackOnEndSaveHeaderDisplays(httpResponse: HttpResponse): void {
+    // if save headers end successfully, update headers and data
+    if (httpResponse.code === 200) {
+      this.getHeaders().subscribe(headersResponse =>
+        this.getHeadersNotification(headersResponse));
+    }
   }
 }
