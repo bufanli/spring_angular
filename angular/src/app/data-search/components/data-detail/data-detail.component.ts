@@ -76,7 +76,7 @@ export class DataDetailComponent implements OnInit {
   ];
   public currentData: any = null;
   private readonly NUMBER_PER_ROW = 6;
-  private readonly MAX_SHOWING_LENGTH = 12;
+  private readonly MAX_SHOWING_LENGTH = 20;
   // detail fields by row
   public dataDetailFieldsByRow: any[] = [];
   @Output() notifyClose: EventEmitter<string> = new EventEmitter<string>();
@@ -130,9 +130,12 @@ export class DataDetailComponent implements OnInit {
   }
   // get tooltip
   public getTooltip(value: string): string {
-    return value;
-    // return '<span class = "text-primary" data-toggle = "tooltip" \
-    //               title = ' + value + '>' + value.substring(0, this.MAX_SHOWING_LENGTH) + '..' + '</span>';
+    if (value.length > this.MAX_SHOWING_LENGTH) {
+      return '<span class = "text-primary" data-toggle = "tooltip" \
+                  title = ' + value + '>' + value.substring(0, this.MAX_SHOWING_LENGTH) + '..' + '</span>';
+    } else {
+      return value;
+    }
   }
 
 }
