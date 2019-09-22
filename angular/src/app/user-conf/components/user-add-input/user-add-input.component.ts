@@ -118,6 +118,7 @@ export class UserAddInputComponent implements OnInit, OnDestroy, CommonDialogCal
       this.currentUserQueryConditionDisplays.userID = this.openID;
       this.componentRefQueryConditionDisplays.instance.setQueryConditionDisplays(
         this.currentUserQueryConditionDisplays);
+      this.componentRefQueryConditionDisplays.instance.setUserAccessAuthorities(this.currentUserAccessAuthorities);
     }
   }
   // add user info to spring

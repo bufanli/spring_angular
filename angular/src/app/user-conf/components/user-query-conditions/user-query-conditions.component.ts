@@ -12,7 +12,7 @@ export class UserQueryConditionsComponent implements OnInit {
 
   // because query condition max number is defined in user
   // access authorities,it is necessary to get user access authorities here
-  @Input() currentUserAccessAuthorities: UserAccessAuthorities;
+  private currentUserAccessAuthorities: UserAccessAuthorities;
   // query condition title
   private readonly QUERY_CONDITION_TITLE = '查询条件';
   // disabled checkbox query conditions
@@ -132,5 +132,9 @@ export class UserQueryConditionsComponent implements OnInit {
     } else {
       return false;
     }
+  }
+  // set user access authorities
+  public setUserAccessAuthorities(currentUserAccessAuthorities: UserAccessAuthorities): void {
+    this.currentUserAccessAuthorities = currentUserAccessAuthorities;
   }
 }

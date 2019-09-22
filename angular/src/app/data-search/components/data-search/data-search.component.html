@@ -2,7 +2,8 @@
   <div class="accordion" id="query-conditions-all">
     <div class="accordion-group">
       <div class="accordion-heading">
-        <a class="accordion-toggle" data-toggle="collapse" data-parent="#query-conditions-all" href="#query-conditions-body">
+        <a class="accordion-toggle" data-toggle="collapse" data-parent="#query-conditions-all"
+          href="#query-conditions-body">
           <h5>产品检索</h5>
         </a>
       </div>
@@ -75,6 +76,14 @@
                   </button>
                 </div>
               </div>
+              <div class="col-md-2">
+                <div class="form-group">
+                  <button type="button" class="btn btn-default btn-block" (click)="onSetHeaderSelections()">
+                    <span class="glyphicon glyphicon-th-list"></span> 设置数据表头
+                  </button>
+                </div>
+              </div>
+
             </div>
           </form>
         </div>

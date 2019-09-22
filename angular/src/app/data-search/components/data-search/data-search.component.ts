@@ -32,6 +32,7 @@ import { QueryConditionRow } from '../../entities/query-conditions-row';
 import { UserQueryConditionsComponent } from 'src/app/user-conf/components/user-query-conditions/user-query-conditions.component';
 import { ColumnsContainerService } from 'src/app/common/services/columns-container.service';
 import { OptionData } from 'select2';
+import { DataHeaderDisplayService } from '../../services/data-header-display.service';
 
 // json header for post
 const httpOptions = {
@@ -160,7 +161,8 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
     private route: Router,
     public dataSearchConstListService: DataSearchConstListService,
     private dataStatisticsService: DataStatisticsService,
-    private columnsContainerService: ColumnsContainerService) {
+    private columnsContainerService: ColumnsContainerService,
+    private dataHeaderDisplayService: DataHeaderDisplayService) {
   }
 
   // notification for getting header of table
@@ -736,5 +738,9 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
     this.queryCondtions.forEach(element => {
       this.queryConditionInputModel[element.getUUID()] = '';
     });
+  }
+  // on set header selections
+  public onSetHeaderSelections(): void {
+    this.dataHeaderDisplayService.getHeadersForTable();
   }
 }

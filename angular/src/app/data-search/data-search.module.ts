@@ -14,6 +14,8 @@ import { CommonUtilitiesService } from '../common/services/common-utilities.serv
 import { DataStatisticsGraphComponent } from './components/data-statistics-graph/data-statistics-graph.component';
 import { DataStatisticsOriginalDataComponent } from './components/data-statistics-original-data/data-statistics-original-data.component';
 import { DataExcelReportSelectionComponent } from './components/data-excel-report-selection/data-excel-report-selection.component';
+import { DataSelectHeadersComponent } from './components/data-select-headers/data-select-headers.component';
+import { DataHeaderDisplayService } from './services/data-header-display.service';
 
 const dataSearchRoutes: Routes = [
   {
@@ -30,12 +32,14 @@ const dataSearchRoutes: Routes = [
     DataStatisticsGraphComponent,
     DataStatisticsOriginalDataComponent,
     DataExcelReportSelectionComponent,
+    DataSelectHeadersComponent,
   ],
   imports: [
     RouterModule.forChild(<any>dataSearchRoutes),
     FormsModule,
     CommonModule,
     HttpClientModule,
+    // tslint:disable-next-line: deprecation
     HttpModule,
     NgbModalModule,
     NgxEchartsModule,
@@ -45,9 +49,11 @@ const dataSearchRoutes: Routes = [
     DataStatisticsComponent,
     DataStatisticsGraphComponent,
     DataStatisticsOriginalDataComponent,
+    DataSelectHeadersComponent,
   ],
   providers: [
     DataStatisticsService,
+    DataHeaderDisplayService,
   ]
 })
 export class DataSearchModule { }
