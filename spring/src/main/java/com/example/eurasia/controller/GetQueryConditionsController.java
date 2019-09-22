@@ -74,7 +74,7 @@ public class GetQueryConditionsController {
             if (StringUtils.isEmpty(userID)) {
                 responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
             } else {
-                responseResult = getQueryConditionsService.getListValueWithPagination(getListValueParam);
+                responseResult = getQueryConditionsService.getListValueWithPagination(userID, getListValueParam);
             }
         } catch (Exception e) {
             e.printStackTrace();

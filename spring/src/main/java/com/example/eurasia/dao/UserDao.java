@@ -4,8 +4,7 @@ import com.example.eurasia.entity.Data.Data;
 import com.example.eurasia.entity.User.UserCustom;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Repository
 public class UserDao extends CommonDao {
@@ -32,6 +31,23 @@ public class UserDao extends CommonDao {
         sql.append(")");
         int num = getJdbcTemplate().update(sql.toString(),(Object[])columnsValuesArr);
         return num;//大于0，插入成功。
+    }
+
+    /**
+     * 添加用户以及其相关数据
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-12-08 00:00:00
+     */
+    public int deleteUser(String tableName, String userID) throws Exception {
+        StringBuffer sql = new StringBuffer();
+        sql.append("delete from " + tableName + " where ");
+        sql.append("userID='" + userID + "'");
+
+        int num = getJdbcTemplate().update(sql.toString());
+        return num;//大于0，插入成功。返回影响的行数。
     }
 
     /**

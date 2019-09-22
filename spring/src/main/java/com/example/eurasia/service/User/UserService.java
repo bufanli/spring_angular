@@ -212,6 +212,34 @@ public class UserService {
     }
 
     /**
+     * 删除用户
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-11-17 00:00:00
+     */
+    public boolean deleteUser(String userID) throws Exception {
+
+        if (StringUtils.isEmpty(userID)) {
+            return false;
+        }
+
+        int numBasic = getUserDao().deleteUser(UserService.TABLE_USER_BASIC_INFO, userID);
+        int numAccess = getUserDao().deleteUser(UserService.TABLE_USER_ACCESS_AUTHORITY, userID);
+        int numQuery = getUserDao().deleteUser(UserService.TABLE_USER_QUERY_CONDITION_DISPLAY, userID);
+        int numWidth = 1;
+        //int numWidth = getUserDao().deleteUser(UserService.TABLE_USER_HEADER_WIDTH, userID);
+        int numHeader = getUserDao().deleteUser(UserService.TABLE_USER_HEADER_DISPLAY, userID);
+
+        if ((numBasic == 1) && (numAccess == 1) && (numQuery == 1) && (numWidth == 1) && (numHeader == 1)) {
+            return true;
+        }
+        return false;
+
+    }
+
+    /**
      * 添加用户
      * @param
      * @return
