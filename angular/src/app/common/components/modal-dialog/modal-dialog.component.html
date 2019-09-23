@@ -9,7 +9,7 @@
 </div>
 <div class="modal-body" [innerHTML]="dialogBody">
 </div>
-<div *ngIf="dialogType !== 'processing'" class="modal-footer">
+<div *ngIf="!(dialogType === 'processing')" class="modal-footer">
   <button  class="btn btn-default" data-dismiss="modal" (click)="close()">
     <span class="glyphicon glyphicon-ok"></span> 确定
   </button>

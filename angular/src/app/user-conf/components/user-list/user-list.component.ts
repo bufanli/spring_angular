@@ -22,6 +22,9 @@ export class UserListComponent implements OnInit, AfterViewChecked {
   private id: string = null;
   private currentPageNumber = 1;
   private isShowLastPage = false;
+  // edit user button id's prefix
+  private readonly EDIT_USER_PREFIX = 'edit_user_';
+  private readonly DELETE_USER_PREFIX = 'delete_user_';
 
   private userListHeaders: Header[] = [
     new Header('userID', 'userID', true),
@@ -103,7 +106,7 @@ export class UserListComponent implements OnInit, AfterViewChecked {
       const currentPageData = $('#table').bootstrapTable('getData');
       // bind user edit event, this.modalService is passed as target.data
       for (let i = 0; i < currentPageData.length; i++) {
-        const buttonId = '#' + currentPageData[i]['userID'];
+        const buttonId = '#' + this.EDIT_USER_PREFIX +currentPageData[i]['userID'];
         $(buttonId).on('click', this, this.showUserSettingModal);
       }
     } else {
@@ -123,7 +126,7 @@ export class UserListComponent implements OnInit, AfterViewChecked {
   addOperationFormatter(operationHeader: Header) {
     operationHeader.formatter = function (value, row, index) {
       const buttonId = row.userID;
-      return '<button type=\'button\' id=' + buttonId + ' class=\'btn btn-primary btn-xs \'>\
+      return '<button type=\'button\' id=' + this.EDIT_USER_PREFIX + buttonId + ' class=\'btn btn-primary btn-xs \'>\
       <span class=\'glyphicon glyphicon-cog\'></span> 编辑</button>';
     };
   }
