@@ -27,7 +27,7 @@ export class UserAddBarcodeComponent implements OnInit {
       id: 'bar-code',
       appid: 'wx84fe1c3116fb46fa',
       scope: 'snsapi_login',
-      redirect_uri: 'http://www.sinoshuju.com:9090/weChatCallbackForAddUser',
+      redirect_uri: 'http://www.sinoshuju.com/weChatCallbackForAddUser',
       state: '20181226',
       style: '',
       href: '',
