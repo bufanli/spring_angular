@@ -37,10 +37,12 @@ export class ModalDialogComponent implements OnInit {
   ngOnInit() {
   }
 
-  // close modal dialog
-  public close(): void {
+  // press ok button
+  public onOK(): void {
     this.activeModal.close();
     this.notifier.emit(this.sourceID);
   }
-
+  public close(): void {
+    this.activeModal.close();
+  }
 }

@@ -1,5 +1,6 @@
-<div class="modal-header" [ngClass]="{'bg-success':dialogType==='success',
-'bg-info': dialogType==='info' || 'processing','bg-danger': dialogType==='danger','bg-warning':dialogType==='warning'}">
+<div class="modal-header"
+  [ngClass]="{'bg-success':dialogType==='success',
+'bg-info': dialogType==='info' || 'processing','bg-danger': dialogType==='danger','bg-warning':dialogType==='warning'||'confirmation'}">
   <button type="button" class="close" data-dismiss="modal" aria-hidden="true" (click)="close()">
     &times;
   </button>
@@ -9,8 +10,11 @@
 </div>
 <div class="modal-body" [innerHTML]="dialogBody">
 </div>
-<div *ngIf="!(dialogType === 'processing')" class="modal-footer">
-  <button  class="btn btn-default" data-dismiss="modal" (click)="close()">
+<div ngIf="!(dialogType === 'processing')" class="modal-footer">
+  <button class="btn btn-default" data-dismiss="modal" (click)="onOK()">
     <span class="glyphicon glyphicon-ok"></span> 确定
+  </button>
+  <button ngIf="(dialogType === 'confirmation')" class="btn btn-default" data-dismiss="modal" (click)="close()">
+    <span class="glyphicon glyphicon-ok"></span> 取消
   </button>
 </div>
