@@ -62,7 +62,7 @@ export class LoginComponent implements OnInit {
       id: 'bar-code',
       appid: 'wx84fe1c3116fb46fa',
       scope: 'snsapi_login',
-      redirect_uri: 'http://www.sinoshuju.com:9090/weChatCallbackForLogin',
+      redirect_uri: 'http://www.sinoshuju.com/weChatCallbackForLogin',
       state: '20181226',
       style: '',
       href: '',
