@@ -8,6 +8,7 @@ import { NgbModal, NgbModalOptions, NgbModalConfig } from '@ng-bootstrap/ng-boot
 import { UserEditComponent } from '../user-edit/user-edit.component';
 import { UserBasicInfo } from '../../entities/user-basic-info';
 import { CurrentUserContainerService } from 'src/app/common/services/current-user-container.service';
+import { CommonDialogCallback } from 'src/app/common/interfaces/common-dialog-callback';
 const OPERATION_HEADER_INDEX = 11;
 
 @Component({
@@ -15,7 +16,7 @@ const OPERATION_HEADER_INDEX = 11;
   templateUrl: './user-list.component.html',
   styleUrls: ['./user-list.component.css']
 })
-export class UserListComponent implements OnInit, AfterViewChecked {
+export class UserListComponent implements OnInit, AfterViewChecked, CommonDialogCallback {
 
   private getUsersUrl = 'api/getAllUserBasicInfo';  // URL to get user list
   // this id is just for compiling pass
@@ -25,6 +26,10 @@ export class UserListComponent implements OnInit, AfterViewChecked {
   // edit user button id's prefix
   private readonly EDIT_USER_PREFIX = 'edit_user_';
   private readonly DELETE_USER_PREFIX = 'delete_user_';
+  private readonly DELETE_USER_TITLE = '请确认删除用户';
+  private readonly DELETE_USER_BODY = '删除用户姓名:';
+  private readonly DELETE_USER_MODAL_TYPE = 'confirmation';
+  private readonly DELETE_USER_SOURCE_ID = '001';
 
   private userListHeaders: Header[] = [
     new Header('userID', 'userID', true),
@@ -106,8 +111,10 @@ export class UserListComponent implements OnInit, AfterViewChecked {
       const currentPageData = $('#table').bootstrapTable('getData');
       // bind user edit event, this.modalService is passed as target.data
       for (let i = 0; i < currentPageData.length; i++) {
-        const buttonId = '#' + this.EDIT_USER_PREFIX +currentPageData[i]['userID'];
-        $(buttonId).on('click', this, this.showUserSettingModal);
+        const editButtonId = '#' + this.EDIT_USER_PREFIX + currentPageData[i]['userID'];
+        const deleteButtonId = '#' + this.DELETE_USER_PREFIX + currentPageData[i]['userID'];
+        $(editButtonId).on('click', this, this.showUserSettingModal);
+        $(deleteButtonId).on('click', this, this.showUserSettingModal);
       }
     } else {
       // call from html context
@@ -116,18 +123,38 @@ export class UserListComponent implements OnInit, AfterViewChecked {
       const currentPageData = $('#table').bootstrapTable('getData');
       // bind user edit event, this.modalService is passed as target.data
       for (let i = 0; i < currentPageData.length; i++) {
-        const buttonId = '#' + currentPageData[i]['userID'];
-        $(buttonId).on('click', component, component.showUserSettingModal);
+        const editButtonId = '#' + component.EDIT_USER_PREFIX + currentPageData[i]['userID'];
+        const deleteButtonId = '#' + component.DELETE_USER_PREFIX + currentPageData[i]['userID'];
+        $(editButtonId).on('click', component, component.showUserSettingModal);
+        $(deleteButtonId).on('click', component, component.showDeleteUserModal);
       }
     }
+  }
+  // show delete user modal
+  private showDeleteUserModal(target: any): void {
+    const component = target.data;
+    component.commonUtilitiesService.showCommonDialog(component.DELETE_USER_TITLE,
+      component.DELETE_USER_BODY + this.id.substring(component.DELETE_USER_PREFIX.length),
+      component.DELETE_USER_MODAL_TYPE,
+      component,
+      component.DELETE_USER_SOURCE_ID);
+  }
+  // user delete confirmation dialog callback
+  public callbackOnConfirm(): void {
+    console.log('delete user!!');
   }
 
   // add formatter to user list
   addOperationFormatter(operationHeader: Header) {
     operationHeader.formatter = function (value, row, index) {
       const buttonId = row.userID;
-      return '<button type=\'button\' id=' + this.EDIT_USER_PREFIX + buttonId + ' class=\'btn btn-primary btn-xs \'>\
+      const editButton = '<button type=\'button\' class=\'margin-button btn btn-primary btn-xs\' id=' +
+        'edit_user_' + buttonId + ' class=\'btn btn-primary btn-xs \'>\
       <span class=\'glyphicon glyphicon-cog\'></span> 编辑</button>';
+      const deleteButton = '<button type=\'button\' class=\'margin-button btn btn-xs\' id=' +
+        'delete_user_' + buttonId + ' class=\'btn btn-primary btn-xs \'>\
+      <span class=\'glyphicon glyphicon-trash\'></span> 删除</button>';
+      return editButton + deleteButton;
     };
   }
   // show tooltip when completing to upload file
@@ -148,7 +175,7 @@ export class UserListComponent implements OnInit, AfterViewChecked {
   // show modal for user setting
   showUserSettingModal(target): void {
     const service: NgbModal = target.data.modalService;
-    const user: UserBasicInfo = target.data.getCurrentUser(this.id);
+    const user: UserBasicInfo = target.data.getCurrentUser(this.id.substring(target.data.EDIT_USER_PREFIX.length));
     // you can not call this.adjustModalOptions,
     // because showUserSettingModal called in html context
     const modalRef = service.open(UserEditComponent, target.data.adjustModalOptions());
