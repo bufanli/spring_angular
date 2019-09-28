@@ -215,8 +215,8 @@ export class CommonUtilitiesService {
   }
 
   // callback of modal dialog
-  private callbackOfModalDialog(response: any, callback: CommonDialogCallback) {
-    callback.callbackOnConfirm(response);
+  private callbackOfModalDialog(sourceID: any, callback: CommonDialogCallback) {
+    callback.callbackOnConfirm(sourceID);
   }
 
   // adjust show dialog options
