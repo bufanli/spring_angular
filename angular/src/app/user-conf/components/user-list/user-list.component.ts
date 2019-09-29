@@ -172,7 +172,7 @@ export class UserListComponent implements OnInit, AfterViewChecked, CommonDialog
       const editButton = '<button type=\'button\' class=\'margin-button btn btn-primary btn-xs\' id=' +
         'edit_user_' + buttonId + ' class=\'btn btn-primary btn-xs \'>\
       <span class=\'glyphicon glyphicon-cog\'></span> 编辑</button>';
-      const deleteButton = '<button type=\'button\' class=\'margin-button btn btn-xs\' id=' +
+      const deleteButton = '<button type=\'button\' class=\'margin-button btn btn-default btn-xs\' id=' +
         'delete_user_' + buttonId + ' class=\'btn btn-primary btn-xs \'>\
       <span class=\'glyphicon glyphicon-trash\'></span> 删除</button>';
       return editButton + deleteButton;
