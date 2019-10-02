@@ -8,6 +8,8 @@ import { NgbModal, NgbModalOptions, NgbModalConfig } from '@ng-bootstrap/ng-boot
 import { UserEditComponent } from '../user-edit/user-edit.component';
 import { UserBasicInfo } from '../../entities/user-basic-info';
 import { CurrentUserContainerService } from 'src/app/common/services/current-user-container.service';
+import { CommonDialogCallback } from 'src/app/common/interfaces/common-dialog-callback';
+import { UserInfoService } from '../../services/user-info.service';
 const OPERATION_HEADER_INDEX = 11;
 
 @Component({
@@ -15,13 +17,28 @@ const OPERATION_HEADER_INDEX = 11;
   templateUrl: './user-list.component.html',
   styleUrls: ['./user-list.component.css']
 })
-export class UserListComponent implements OnInit, AfterViewChecked {
+export class UserListComponent implements OnInit, AfterViewChecked, CommonDialogCallback {
 
   private getUsersUrl = 'api/getAllUserBasicInfo';  // URL to get user list
   // this id is just for compiling pass
   private id: string = null;
   private currentPageNumber = 1;
   private isShowLastPage = false;
+  // edit user button id's prefix
+  private readonly EDIT_USER_PREFIX = 'edit_user_';
+  // delete user button id's prefix
+  private readonly DELETE_USER_PREFIX = 'delete_user_';
+  private readonly DELETE_USER_TITLE = '请确认删除用户';
+  private readonly DELETE_USER_BODY = '删除用户姓名:';
+  private readonly DELETE_USER_MODAL_TYPE = 'confirmation';
+  private readonly DELETE_USER_SOURCE_ID = '001';
+  // deleting user id
+  private deletingUserID: string = null;
+  private deletingUserName: string = null;
+  private readonly DELETE_USER_NG_TITLE = '删除用户失败';
+  private readonly DELETE_USER_NG_BODY = '删除失败，用户姓名:';
+  private readonly DELETE_USER_MODAL_NG_TYPE = 'warning';
+  private readonly DELETE_USER_NG_SOURCE_ID = '002';
 
   private userListHeaders: Header[] = [
     new Header('userID', 'userID', true),
@@ -40,7 +57,9 @@ export class UserListComponent implements OnInit, AfterViewChecked {
   constructor(private http: HttpClient,
     private commonUtilitiesService: CommonUtilitiesService,
     public modalService: NgbModal,
-    private currentUserContainer: CurrentUserContainerService) {
+    private currentUserContainer: CurrentUserContainerService,
+    private userInfoService: UserInfoService,
+  ) {
   }
   public showLastPage(): void {
     this.isShowLastPage = true;
@@ -103,8 +122,10 @@ export class UserListComponent implements OnInit, AfterViewChecked {
       const currentPageData = $('#table').bootstrapTable('getData');
       // bind user edit event, this.modalService is passed as target.data
       for (let i = 0; i < currentPageData.length; i++) {
-        const buttonId = '#' + currentPageData[i]['userID'];
-        $(buttonId).on('click', this, this.showUserSettingModal);
+        const editButtonId = '#' + this.EDIT_USER_PREFIX + currentPageData[i]['userID'];
+        const deleteButtonId = '#' + this.DELETE_USER_PREFIX + currentPageData[i]['userID'];
+        $(editButtonId).on('click', this, this.showUserSettingModal);
+        $(deleteButtonId).on('click', this, this.showUserSettingModal);
       }
     } else {
       // call from html context
@@ -113,9 +134,42 @@ export class UserListComponent implements OnInit, AfterViewChecked {
       const currentPageData = $('#table').bootstrapTable('getData');
       // bind user edit event, this.modalService is passed as target.data
       for (let i = 0; i < currentPageData.length; i++) {
-        const buttonId = '#' + currentPageData[i]['userID'];
-        $(buttonId).on('click', component, component.showUserSettingModal);
+        const editButtonId = '#' + component.EDIT_USER_PREFIX + currentPageData[i]['userID'];
+        const deleteButtonId = '#' + component.DELETE_USER_PREFIX + currentPageData[i]['userID'];
+        $(editButtonId).on('click', component, component.showUserSettingModal);
+        $(deleteButtonId).on('click', component, component.showDeleteUserModal);
       }
+    }
+  }
+  // set deleting user ID
+  public setDeletingUserID(deletingUserID: string): void {
+    this.deletingUserID = deletingUserID;
+  }
+  // set deleting user name
+  public setDeletingUserName(deletingUserName: string): void {
+    this.deletingUserName = deletingUserName;
+  }
+  // show delete user modal
+  private showDeleteUserModal(target: any): void {
+    const component = target.data;
+    const deletingUserID = this.id.substring(component.DELETE_USER_PREFIX.length);
+    // set deleting user name
+    const deletingUser = $('#table').bootstrapTable('getRowByUniqueId', deletingUserID);
+    component.setDeletingUserName(deletingUser['昵称']);
+    // set deleting user id
+    component.setDeletingUserID(deletingUserID);
+    component.commonUtilitiesService.showCommonDialog(component.DELETE_USER_TITLE,
+      component.DELETE_USER_BODY + component.deletingUserName,
+      component.DELETE_USER_MODAL_TYPE,
+      component,
+      component.DELETE_USER_SOURCE_ID);
+  }
+  // user delete confirmation dialog callback
+  public callbackOnConfirm(sourceID: string): void {
+    if (sourceID === this.DELETE_USER_SOURCE_ID) {
+      this.userInfoService.deleteUser(this, this.deletingUserID);
+    } else if (sourceID === this.DELETE_USER_NG_SOURCE_ID) {
+      // nothing to do
     }
   }
 
@@ -123,8 +177,13 @@ export class UserListComponent implements OnInit, AfterViewChecked {
   addOperationFormatter(operationHeader: Header) {
     operationHeader.formatter = function (value, row, index) {
       const buttonId = row.userID;
-      return '<button type=\'button\' id=' + buttonId + ' class=\'btn btn-primary btn-xs \'>\
+      const editButton = '<button type=\'button\' class=\'margin-button btn btn-primary btn-xs\' id=' +
+        'edit_user_' + buttonId + ' class=\'btn btn-primary btn-xs \'>\
       <span class=\'glyphicon glyphicon-cog\'></span> 编辑</button>';
+      const deleteButton = '<button type=\'button\' class=\'margin-button btn btn-default btn-xs\' id=' +
+        'delete_user_' + buttonId + ' class=\'btn btn-primary btn-xs \'>\
+      <span class=\'glyphicon glyphicon-trash\'></span> 删除</button>';
+      return editButton + deleteButton;
     };
   }
   // show tooltip when completing to upload file
@@ -145,7 +204,7 @@ export class UserListComponent implements OnInit, AfterViewChecked {
   // show modal for user setting
   showUserSettingModal(target): void {
     const service: NgbModal = target.data.modalService;
-    const user: UserBasicInfo = target.data.getCurrentUser(this.id);
+    const user: UserBasicInfo = target.data.getCurrentUser(this.id.substring(target.data.EDIT_USER_PREFIX.length));
     // you can not call this.adjustModalOptions,
     // because showUserSettingModal called in html context
     const modalRef = service.open(UserEditComponent, target.data.adjustModalOptions());
@@ -165,5 +224,28 @@ export class UserListComponent implements OnInit, AfterViewChecked {
   getCurrentUser(userId: string): UserBasicInfo {
     const user: any = $('#table').bootstrapTable('getRowByUniqueId', userId);
     return user;
+  }
+  // check session timeout
+  public checkSessionTimeout(httpResponse: any): void {
+    if (httpResponse.code === 201) {
+      this.currentUserContainer.sessionTimeout();
+    }
+  }
+  // on delete user
+  public onDeleteUser(httpResponse: HttpResponse): void {
+    if (httpResponse.code === 200) {
+      // delete ok
+      $('#table').bootstrapTable('remove',
+        { field: 'userID', values: [this.deletingUserID] });
+    } else {
+      // delete ng
+      this.commonUtilitiesService.showCommonDialog(
+        this.DELETE_USER_NG_TITLE,
+        this.DELETE_USER_BODY + this.deletingUserName,
+        this.DELETE_USER_MODAL_NG_TYPE,
+        this,
+        this.DELETE_USER_NG_SOURCE_ID
+      );
+    }
   }
 }

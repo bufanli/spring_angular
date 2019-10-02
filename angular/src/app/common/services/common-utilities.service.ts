@@ -197,6 +197,16 @@ export class CommonUtilitiesService {
     // call callback to process
     callback.callbackOnProcessing(sourceID, data);
   }
+  // show confirmation dialog
+  showConfirmationDialog(callback: CommonDialogCallback, data: any, sourceID: string) {
+    // show processing dialog
+    const modalRef = this.modalService.open(ModalDialogComponent, this.adjustModalOptions());
+    modalRef.componentInstance.setTitle(this.PROCESSING_TITLE);
+    modalRef.componentInstance.setBody(this.PROCESSING_BODY);
+    modalRef.componentInstance.setType('confirmation');
+    this.processingDialog = modalRef;
+    modalRef.componentInstance.notifier.subscribe(response => this.callbackOfModalDialog(response, callback));
+  }
   // close processing dialog
   // it should be called on process finishing
   closeProcessingDialog() {
@@ -205,8 +215,8 @@ export class CommonUtilitiesService {
   }
 
   // callback of modal dialog
-  private callbackOfModalDialog(response: any, callback: CommonDialogCallback) {
-    callback.callbackOnConfirm(response);
+  private callbackOfModalDialog(sourceID: any, callback: CommonDialogCallback) {
+    callback.callbackOnConfirm(sourceID);
   }
 
   // adjust show dialog options

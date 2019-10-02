@@ -11,6 +11,7 @@ import { UserAddInputComponent } from '../components/user-add-input/user-add-inp
 import { UserAccessAuthoritiesComponent } from '../components/user-access-authorities/user-access-authorities.component';
 import { CategorySelections } from '../entities/category-selections';
 import { ColumnsContainerService } from 'src/app/common/services/columns-container.service';
+import { UserListComponent } from '../components/user-list/user-list.component';
 
 // json header for post
 const httpOptions = {
@@ -126,11 +127,13 @@ export class UserInfoService {
   private getDefaultUserBasicInfoUrl = 'api/getUserDefaultBasicInfo';  // URL to get user's basic info
   private getDefaultUserDetailedInfoUrl = 'api/getUserDefaultDetailedInfos';  // URL to get user's detailed info
   private updateUserInfoUrl = 'api/updateUser';  // URL to update user
+  private deleteUserInfoUrl = 'api/deleteUser';  // URL to delete user
   private addUserInfoUrl = 'api/addUser';  // URL to add user
   private getCategoryListUrl = 'api/getCategoryList';  // URL to get category list
   private userEditComponent: UserEditComponent = null;
   private userAddInputComponent: UserAddInputComponent = null;
   private userAccessAuthoritiesComponent: UserAccessAuthoritiesComponent = null;
+  private userListComponent: UserListComponent = null;
   // hs code catetory name
   private readonly HS_CODE_CATETORY_NAME = '海关编码';
   // query condition header dictionary
@@ -409,5 +412,26 @@ export class UserInfoService {
       categorySelections.push(categorySelectionsEntry);
     });
     return categorySelections;
+  }
+  // delete user
+  public deleteUser(userListComponent: UserListComponent, userID: string): void {
+    this.userListComponent = userListComponent;
+    this.deleteUserImpl(userID).subscribe(httpResponse =>
+      this.deleteUserNotification(httpResponse));
+  }
+  // get hs code selections implementation
+  private deleteUserImpl(userID: string): Observable<HttpResponse> {
+    return this.http.get<HttpResponse>(`${this.deleteUserInfoUrl}/${userID}`);
+  }
+  // get category list notification
+  private deleteUserNotification(httpResponse: HttpResponse): void {
+    if (httpResponse === null) {
+      return;
+    } else {
+      // check session timeout
+      this.userListComponent.checkSessionTimeout(httpResponse);
+      // on delete user
+      this.userListComponent.onDeleteUser(httpResponse);
+    }
   }
 }

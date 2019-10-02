@@ -226,13 +226,11 @@ public class UserService {
         }
 
         int numBasic = getUserDao().deleteUser(UserService.TABLE_USER_BASIC_INFO, userID);
-        int numAccess = getUserDao().deleteUser(UserService.TABLE_USER_ACCESS_AUTHORITY, userID);
-        int numQuery = getUserDao().deleteUser(UserService.TABLE_USER_QUERY_CONDITION_DISPLAY, userID);
-        int numWidth = 1;
-        //int numWidth = getUserDao().deleteUser(UserService.TABLE_USER_HEADER_WIDTH, userID);
-        int numHeader = getUserDao().deleteUser(UserService.TABLE_USER_HEADER_DISPLAY, userID);
+        getUserDao().deleteUser(UserService.TABLE_USER_ACCESS_AUTHORITY, userID);
+        getUserDao().deleteUser(UserService.TABLE_USER_QUERY_CONDITION_DISPLAY, userID);
+        getUserDao().deleteUser(UserService.TABLE_USER_HEADER_DISPLAY, userID);
 
-        if ((numBasic == 1) && (numAccess == 1) && (numQuery == 1) && (numWidth == 1) && (numHeader == 1)) {
+        if (numBasic == 1) {
             return true;
         }
         return false;
