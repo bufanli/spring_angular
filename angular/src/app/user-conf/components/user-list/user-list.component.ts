@@ -34,6 +34,7 @@ export class UserListComponent implements OnInit, AfterViewChecked, CommonDialog
   private readonly DELETE_USER_SOURCE_ID = '001';
   // deleting user id
   private deletingUserID: string = null;
+  private deletingUserName: string = null;
   private readonly DELETE_USER_NG_TITLE = '删除用户失败';
   private readonly DELETE_USER_NG_BODY = '删除失败，用户姓名:';
   private readonly DELETE_USER_MODAL_NG_TYPE = 'warning';
@@ -144,17 +145,24 @@ export class UserListComponent implements OnInit, AfterViewChecked, CommonDialog
   public setDeletingUserID(deletingUserID: string): void {
     this.deletingUserID = deletingUserID;
   }
+  // set deleting user name
+  public setDeletingUserName(deletingUserName: string): void {
+    this.deletingUserName = deletingUserName;
+  }
   // show delete user modal
   private showDeleteUserModal(target: any): void {
     const component = target.data;
     const deletingUserID = this.id.substring(component.DELETE_USER_PREFIX.length);
+    // set deleting user name
+    const deletingUser = $('#table').bootstrapTable('getRowByUniqueId', deletingUserID);
+    component.setDeletingUserName(deletingUser['昵称']);
+    // set deleting user id
+    component.setDeletingUserID(deletingUserID);
     component.commonUtilitiesService.showCommonDialog(component.DELETE_USER_TITLE,
-      component.DELETE_USER_BODY + this.id.substring(component.DELETE_USER_PREFIX.length),
+      component.DELETE_USER_BODY + component.deletingUserName,
       component.DELETE_USER_MODAL_TYPE,
       component,
       component.DELETE_USER_SOURCE_ID);
-    // set deleting user
-    component.setDeletingUserID(deletingUserID);
   }
   // user delete confirmation dialog callback
   public callbackOnConfirm(sourceID: string): void {
@@ -228,12 +236,12 @@ export class UserListComponent implements OnInit, AfterViewChecked, CommonDialog
     if (httpResponse.code === 200) {
       // delete ok
       $('#table').bootstrapTable('remove',
-        { field: 'userID', values: this.deletingUserID });
+        { field: 'userID', values: [this.deletingUserID] });
     } else {
       // delete ng
       this.commonUtilitiesService.showCommonDialog(
         this.DELETE_USER_NG_TITLE,
-        this.DELETE_USER_BODY + this.deletingUserID,
+        this.DELETE_USER_BODY + this.deletingUserName,
         this.DELETE_USER_MODAL_NG_TYPE,
         this,
         this.DELETE_USER_NG_SOURCE_ID

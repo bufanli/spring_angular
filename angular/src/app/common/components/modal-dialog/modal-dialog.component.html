@@ -14,7 +14,7 @@
   <button class="btn btn-default" data-dismiss="modal" (click)="onOK()">
     <span class="glyphicon glyphicon-ok"></span> 确定
   </button>
-  <button [hidden]="!(dialogType === 'confirmation')" class="btn btn-default" data-dismiss="modal" (click)="close()">
+  <button *ngIf="(dialogType === 'confirmation')" class="btn btn-default" data-dismiss="modal" (click)="close()">
     <span class="glyphicon glyphicon-remove"></span> 取消
   </button>
 </div>

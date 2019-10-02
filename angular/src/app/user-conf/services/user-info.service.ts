@@ -425,7 +425,7 @@ export class UserInfoService {
   }
   // get category list notification
   private deleteUserNotification(httpResponse: HttpResponse): void {
-    if (httpResponse.data === null) {
+    if (httpResponse === null) {
       return;
     } else {
       // check session timeout
