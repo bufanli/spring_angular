@@ -1,5 +1,4 @@
-import { Component, OnInit } from '@angular/core';
-import { DataStatisticsService } from '../../services/data-statistics.service';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { Header } from 'src/app/common/entities/header';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
@@ -8,13 +7,14 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
   templateUrl: './data-excel-report-selection.component.html',
   styleUrls: ['./data-excel-report-selection.component.css']
 })
-export class DataExcelReportSelectionComponent implements OnInit {
+export class DataExcelReportSelectionComponent implements OnInit, AfterViewInit {
   public readonly SELECT_STATISTICS_REPORT_TYPE = '请选择汇总设定';
   public readonly PRODUCT_CODE = '请选择商品编码';
   public readonly REPORT_MONTH = '请选择报告月份';
   public readonly EXPORT_OR_NOT = '请选择进出口';
   public readonly EXPORT = '出口';
   public readonly IMPORT = '进口';
+  public readonly EXPORT_OR_NOT_ARRAY = [this.EXPORT, this.IMPORT];
   public readonly CLOSE_BUTTON = '关闭';
   public readonly EXPORT_EXCEL_REPORT = '导出汇总报告';
   public readonly EXCEL_REPORT_TYPES_TITLE = '导出汇总报告';
@@ -26,20 +26,30 @@ export class DataExcelReportSelectionComponent implements OnInit {
   // excel report types
   public excelReportTypes = null;
   public excelReportTypesTableValues: any[] = null;
-  constructor(private dataStatisticsService: DataStatisticsService,
-    private activeModal: NgbActiveModal) { }
+  // data statistics service
+  private dataStatisticsService: any = null;
+  constructor(private activeModal: NgbActiveModal) { }
 
   ngOnInit() {
+  }
+  ngAfterViewInit() {
     // init excel report types table
     this.initExcelReportTypes();
     // convert excel report types to table data
     this.convertExcelReportTypesToTableData();
     // load data into excel report types table
     this.loadExcelReportTypesIntoTable();
+    // init selector
+    this.setSelectOptions('#export-or-not', false);
+
   }
   // excel report
   public excelReport(): void {
     // this.dataStatisticsService.excelReportSetting();
+  }
+  // public set data statistics service
+  public setDataStatisticsService(dataStatisticsService: any): void {
+    this.dataStatisticsService = dataStatisticsService;
   }
   // close dialogue
   public close(): void {
@@ -48,7 +58,7 @@ export class DataExcelReportSelectionComponent implements OnInit {
   // set group by fields
   // convert excel report types from string arrry to {}
   public setExcelReportTypes(excelReportTypes: any): void {
-    this.excelReportTypes = {};
+    this.excelReportTypes = [];
     excelReportTypes.forEach(element => {
       // set every excel report type to true in default
       this.excelReportTypes[element] = true;
@@ -110,5 +120,13 @@ export class DataExcelReportSelectionComponent implements OnInit {
   // load excel types data into table
   private loadExcelReportTypesIntoTable(): void {
     $('#excel-report-types').bootstrapTable('load', this.excelReportTypes);
+  }
+  // init select picker
+  private setSelectOptions(id: string, liveSearch: boolean): void {
+    $(id).selectpicker({
+      'liveSearch': liveSearch,
+    });
+    $(id).selectpicker('val', '');
+    $(id).selectpicker('refresh');
   }
 }

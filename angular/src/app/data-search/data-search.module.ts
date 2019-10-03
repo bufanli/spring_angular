@@ -45,6 +45,7 @@ const dataSearchRoutes: Routes = [
     DataStatisticsComponent,
     DataStatisticsGraphComponent,
     DataStatisticsOriginalDataComponent,
+    DataExcelReportSelectionComponent,
   ],
   providers: [
     DataStatisticsService,

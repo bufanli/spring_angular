@@ -627,5 +627,7 @@ export class DataStatisticsService implements ProcessingDialogCallback {
     const modalRef = service.open(DataExcelReportSelectionComponent, this.adjustModalOptions());
     // set statistics fields to statistics component
     modalRef.componentInstance.setExcelReportTypes(statisticsFields.getGroupByFields());
+    // set data statistics service
+    modalRef.componentInstance.setDataStatisticsService(this);
   }
 }
