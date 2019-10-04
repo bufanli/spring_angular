@@ -157,17 +157,10 @@ export class InMemoryDataService implements InMemoryDbService {
     ];
     let headers: Header[];
     headers = [
-      { field: 'id', title: '顺序号', visible: true, formatter: null, class: 'colStyle', width: 100, sortable: true, order: 'dsc' },
-      { field: 'date', title: '日期', visible: true, formatter: null, class: 'colStyle', width: 100, sortable: true , order: 'dsc' },
-      { field: 'hs_code', title: 'HS编码', visible: true, formatter: null, class: 'colStyle', width: 100, sortable: true , order: 'dsc' },
-      { field: 'enterprise', title: '进出口企业', visible: true, formatter: null, class: 'colStyle', width: 100, sortable: true , order: 'dsc' },
-      { field: 'client', title: '品牌及客户', visible: true, formatter: null, class: 'colStyle', width: 100, sortable: true , order: 'dsc' },
-      { field: 'description', title: '产品描述', visible: true, formatter: null, class: 'colStyle', width: 100, sortable: true , order: 'dsc' },
-      { field: 'country', title: '国家', visible: true, formatter: null, class: 'colStyle', width: 100, sortable: true , order: 'dsc' },
-      { field: 'unit_price', title: '申请单价', visible: true, formatter: null, class: 'colStyle', width: 100, sortable: true , order: 'dsc' },
-      { field: 'total_price', title: '申请总价', visible: true, formatter: null, class: 'colStyle', width: 100, sortable: true , order: 'dsc' },
-      { field: 'amount', title: '数量', visible: true, formatter: null, class: 'colStyle', width: 100, sortable: true , order: 'dsc' },
-      { field: 'amount_unit', title: '数量单位', visible: true, formatter: null, class: 'colStyle', width: 100, sortable: true , order: 'dsc' },
+      {
+        field: 'id', title: '顺序号', visible: true,
+        formatter: null, class: 'colStyle', width: 100, sortable: true, order: 'dsc', align: 'center'
+      },
     ];
     const headersResponse = {
       code: '200',

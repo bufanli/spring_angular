@@ -17,8 +17,9 @@ export class DataExcelReportSelectionComponent implements OnInit, AfterViewInit 
   public readonly EXPORT_OR_NOT_ARRAY = [this.EXPORT, this.IMPORT];
   public readonly CLOSE_BUTTON = '关闭';
   public readonly EXPORT_EXCEL_REPORT = '导出汇总报告';
-  public readonly EXCEL_REPORT_TYPES_TITLE = '导出汇总报告';
+  public readonly EXCEL_REPORT_TYPES_TITLE = '导出汇总报告类型';
   public readonly EXCEL_REPORT_TYPES_FIELD = 'excel-report-type';
+  public readonly SELECTED = 'selected';
   // model data
   public selectedProductCode = '';
   public selectedReportMonth = '';
@@ -35,12 +36,10 @@ export class DataExcelReportSelectionComponent implements OnInit, AfterViewInit 
   ngAfterViewInit() {
     // init excel report types table
     this.initExcelReportTypes();
-    // convert excel report types to table data
-    this.convertExcelReportTypesToTableData();
-    // load data into excel report types table
-    this.loadExcelReportTypesIntoTable();
     // init selector
     this.setSelectOptions('#export-or-not', false);
+    // load data into excel report types table
+    this.loadExcelReportTypesIntoTable();
 
   }
   // excel report
@@ -57,12 +56,17 @@ export class DataExcelReportSelectionComponent implements OnInit, AfterViewInit 
   }
   // set group by fields
   // convert excel report types from string arrry to {}
-  public setExcelReportTypes(excelReportTypes: any): void {
+  public setExcelReportTypes(tempExcelReportTypes: any): void {
     this.excelReportTypes = [];
-    excelReportTypes.forEach(element => {
+    tempExcelReportTypes.forEach(element => {
       // set every excel report type to true in default
-      this.excelReportTypes[element] = true;
+      const tempReportType = {};
+      tempReportType[this.EXCEL_REPORT_TYPES_FIELD] = element;
+      tempReportType[this.SELECTED] = true;
+      this.excelReportTypes.push(tempReportType);
     });
+    // convert excel report types to table data
+    this.convertExcelReportTypesToTableData();
   }
   // init excel report types table
   private initExcelReportTypes(): void {
@@ -84,7 +88,11 @@ export class DataExcelReportSelectionComponent implements OnInit, AfterViewInit 
     };
     excelReportTypesHeaders.push(checkboxHeader);
     // query conditions display header
-    const excelReportTypeHeader = new Header(this.EXCEL_REPORT_TYPES_FIELD, this.EXCEL_REPORT_TYPES_TITLE);
+    const excelReportTypeHeader = new Header(
+      this.EXCEL_REPORT_TYPES_FIELD,
+      this.EXCEL_REPORT_TYPES_TITLE,
+      true,
+      'center');
     excelReportTypesHeaders.push(excelReportTypeHeader);
     // load header of table
     $('#excel-report-types').bootstrapTable({
@@ -112,14 +120,15 @@ export class DataExcelReportSelectionComponent implements OnInit, AfterViewInit 
     this.excelReportTypesTableValues = [];
     this.excelReportTypes.forEach(element => {
       const entry = {};
-      entry[this.EXCEL_REPORT_TYPES_FIELD] = element;
-      entry['value'] = this.excelReportTypes[element];
+      entry[this.EXCEL_REPORT_TYPES_FIELD] = element[this.EXCEL_REPORT_TYPES_FIELD];
+      entry['value'] = element[this.SELECTED];
       this.excelReportTypesTableValues.push(entry);
     });
   }
   // load excel types data into table
   private loadExcelReportTypesIntoTable(): void {
-    $('#excel-report-types').bootstrapTable('load', this.excelReportTypes);
+    const that = this;
+    $('#excel-report-types').bootstrapTable('load', that.excelReportTypesTableValues);
   }
   // init select picker
   private setSelectOptions(id: string, liveSearch: boolean): void {

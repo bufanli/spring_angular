@@ -7,9 +7,11 @@ export class Header {
   width: number;
   sortable: boolean;
   order: string;
-  constructor(field: string, title: string, visible = true) {
+  align: string;
+  constructor(field: string, title: string, visible = true, align = '') {
     this.field = field;
     this.title = title;
     this.visible = visible;
+    this.align = align;
   }
 }

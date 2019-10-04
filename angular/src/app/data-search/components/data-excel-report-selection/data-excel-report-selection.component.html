@@ -9,21 +9,21 @@
 <div class="modal-body">
   <form role="form" (ngSubmit)="excelReport()">
     <div class="row">
-      <div class="col-md-3">
+      <div class="col-md-4">
         <div class="input-group">
           <span class="input-group-addon" id="product-code">{{this.PRODUCT_CODE}}</span>
           <input type="text" class="form-control grey-input" id="product-code-input" autocomplete="off"
             aria-describedby="product-code" name="product-code-input" [(ngModel)]="this.selectedProductCode">
         </div>
       </div>
-      <div class="col-md-3">
+      <div class="col-md-4">
         <div class="input-group">
           <span class="input-group-addon" id="report-month">{{this.REPORT_MONTH}}</span>
           <input type="text" class="form-control grey-input" id="report-month-input" autocomplete="off"
             aria-describedby="report-month" name="report-month-input" [(ngModel)]="this.selectedReportMonth">
         </div>
       </div>
-      <div class="col-md-3">
+      <div class="col-md-4">
         <div class="form-group">
           <select class="form-control selectpicker" title="{{EXPORT_OR_NOT}}" id="export-or-not" name="export-or-not"
             [ngModel]="this.selectedExportOrNot">
