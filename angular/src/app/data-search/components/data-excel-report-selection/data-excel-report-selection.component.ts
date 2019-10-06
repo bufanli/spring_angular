@@ -1,6 +1,9 @@
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { Header } from 'src/app/common/entities/header';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { QueryCondition } from '../../entities/query-condition';
+import { QueryConditionRow } from '../../entities/query-conditions-row';
+import 'select2';
 
 @Component({
   selector: 'app-data-excel-report-selection',
@@ -9,6 +12,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 })
 export class DataExcelReportSelectionComponent implements OnInit, AfterViewInit {
   public readonly SELECT_STATISTICS_REPORT_TYPE = '请选择汇总设定';
+  public readonly PLEASE_SELECT = '请选择';
   public readonly PRODUCT_CODE = '请选择商品编码';
   public readonly REPORT_MONTH = '请选择报告月份';
   public readonly EXPORT_OR_NOT = '请选择进出口';
@@ -20,15 +24,21 @@ export class DataExcelReportSelectionComponent implements OnInit, AfterViewInit 
   public readonly EXCEL_REPORT_TYPES_TITLE = '导出汇总报告类型';
   public readonly EXCEL_REPORT_TYPES_FIELD = 'excel-report-type';
   public readonly SELECTED = 'selected';
+  public readonly QUERY_CONDITIONS_NUMBER_EACH_ROW = 3;
+  public readonly LIST_VALUE_QUERY_NUMBER_PER_PAGE = 100;
+  private readonly GET_LIST_VALUE_URL = 'api/getListValueWithPagination';  // URL to web api
   // model data
   public selectedProductCode = '';
   public selectedReportMonth = '';
   public selectedExportOrNot = '';
+  // excel report query conditions
+  public queryConditions: QueryCondition[] = null;
+  public queryConditionRows: any[] = null;
   // excel report types
-  public excelReportTypes = null;
+  public excelReportTypes: any[] = null;
   public excelReportTypesTableValues: any[] = null;
   // data statistics service
-  private dataStatisticsService: any = null;
+  private excelReportService: any = null;
   constructor(private activeModal: NgbActiveModal) { }
 
   ngOnInit() {
@@ -37,7 +47,7 @@ export class DataExcelReportSelectionComponent implements OnInit, AfterViewInit 
     // init excel report types table
     this.initExcelReportTypes();
     // init selector
-    this.setSelectOptions('#export-or-not', false);
+    this.setSelectOptions();
     // load data into excel report types table
     this.loadExcelReportTypesIntoTable();
 
@@ -47,14 +57,19 @@ export class DataExcelReportSelectionComponent implements OnInit, AfterViewInit 
     // this.dataStatisticsService.excelReportSetting();
   }
   // public set data statistics service
-  public setDataStatisticsService(dataStatisticsService: any): void {
-    this.dataStatisticsService = dataStatisticsService;
+  public setExcelReportService(excelReportService: any): void {
+    this.excelReportService = excelReportService;
   }
   // close dialogue
   public close(): void {
     this.activeModal.close();
   }
-  // set group by fields
+  // set query conditions
+  public setExcelReportQueryConditions(queryConditions: QueryCondition[]) {
+    this.queryConditions = queryConditions;
+    // reshape query conditions to rows
+    this.reshapeQueryConditionsIntoRows();
+  }
   // convert excel report types from string arrry to {}
   public setExcelReportTypes(tempExcelReportTypes: any): void {
     this.excelReportTypes = [];
@@ -131,11 +146,64 @@ export class DataExcelReportSelectionComponent implements OnInit, AfterViewInit 
     $('#excel-report-types').bootstrapTable('load', that.excelReportTypesTableValues);
   }
   // init select picker
-  private setSelectOptions(id: string, liveSearch: boolean): void {
-    $(id).selectpicker({
-      'liveSearch': liveSearch,
+  private setSelectOptions(): void {
+    this.queryConditions.forEach(element => {
+      this.setEachSelectOptions(element);
     });
-    $(id).selectpicker('val', '');
-    $(id).selectpicker('refresh');
+  }
+  // reshape query condition into row
+  private reshapeQueryConditionsIntoRows(): void {
+    // rows amount
+    let rowsNumber = Math.floor(this.queryConditions.length / this.QUERY_CONDITIONS_NUMBER_EACH_ROW);
+    const extra = this.queryConditions.length % this.QUERY_CONDITIONS_NUMBER_EACH_ROW;
+    if (extra > 0) {
+      rowsNumber = rowsNumber + 1;
+    }
+    // prepare query condition row
+    this.queryConditionRows = [];
+    for (let i = 0; i < rowsNumber; i++) {
+      this.queryConditionRows.push(new QueryConditionRow());
+    }
+    // put every query condition into ervery fix row
+    for (let i = 0; i < this.queryConditions.length; i++) {
+      const row = Math.floor(i / this.QUERY_CONDITIONS_NUMBER_EACH_ROW);
+      this.queryConditionRows[row].pushQueryCondition(this.queryConditions[i]);
+    }
+  }
+  // set select options to select2
+  private setEachSelectOptions(listQueryCondition: QueryCondition): void {
+    const that = this;
+    $('#' + listQueryCondition.getUUID()).select2({
+      placeholder: this.PLEASE_SELECT + listQueryCondition.getKey(),
+      multiple: true,
+      width: 'resolve',
+      closeOnSelect: false,
+      ajax: {
+        url: this.GET_LIST_VALUE_URL,
+        type: 'POST',
+        dataType: 'json',
+        contentType: 'application/json',
+        delay: 500, // wait 500 milliseconds before triggering the request
+        data: function (params): any {
+          const currentPage = params.page || 1;
+          const query = {
+            category: listQueryCondition.getKey(),
+            term: params.term || '',
+            offset: (currentPage - 1) * that.LIST_VALUE_QUERY_NUMBER_PER_PAGE,
+            limit: that.LIST_VALUE_QUERY_NUMBER_PER_PAGE,
+          };
+          return JSON.stringify(query);
+        },
+        processResults: function (data, params) {
+          params.page = params.page || 1;
+          return {
+            results: data.data.results,
+            pagination: {
+              more: ((params.page * that.LIST_VALUE_QUERY_NUMBER_PER_PAGE) < data.data.totalCount),
+            },
+          };
+        },
+      }
+    });
   }
 }

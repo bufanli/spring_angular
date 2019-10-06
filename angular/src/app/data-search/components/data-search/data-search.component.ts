@@ -32,6 +32,7 @@ import { QueryConditionRow } from '../../entities/query-conditions-row';
 import { UserQueryConditionsComponent } from 'src/app/user-conf/components/user-query-conditions/user-query-conditions.component';
 import { ColumnsContainerService } from 'src/app/common/services/columns-container.service';
 import { OptionData } from 'select2';
+import { ExcelReportService } from '../../services/excel-report.service';
 
 // json header for post
 const httpOptions = {
@@ -160,6 +161,7 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
     private route: Router,
     public dataSearchConstListService: DataSearchConstListService,
     private dataStatisticsService: DataStatisticsService,
+    private excelReportService: ExcelReportService,
     private columnsContainerService: ColumnsContainerService) {
   }
 
@@ -445,7 +447,7 @@ export class DataSearchComponent implements OnInit, AfterViewChecked {
   // statistic report
   public onExcelReport(): void {
     // show excel report setting dialog
-    this.dataStatisticsService.excelReportSetting();
+    this.excelReportService.excelReportSetting();
   }
   // get query conditions caller
   private getQueryConditions(): void {

@@ -11,8 +11,6 @@ import { StatisticsFields } from '../entities/statistics-fields';
 import { StatisticsReportEntry } from '../entities/statistics-report-entry';
 import { ComputeValue } from '../entities/compute-value';
 import { CurrentUserContainerService } from 'src/app/common/services/current-user-container.service';
-import { NEXT } from '@angular/core/src/render3/interfaces/view';
-import { DataExcelReportSelectionComponent } from '../components/data-excel-report-selection/data-excel-report-selection.component';
 
 // json header for post
 const httpOptions = {
@@ -23,7 +21,6 @@ export class DataStatisticsService implements ProcessingDialogCallback {
 
   // get statistics report processing source id
   private readonly GET_STATISTICS_FIELDS_SOURCE_ID = '001';
-  private readonly GET_EXCEL_REPORT_TYPE_ID = '002';
   // query conditions
   private queryConditions: any = null;
   // statistics report url
@@ -60,24 +57,13 @@ export class DataStatisticsService implements ProcessingDialogCallback {
       null,
       this.GET_STATISTICS_FIELDS_SOURCE_ID);
   }
-  // get excel report setting
-  public excelReportSetting(): void {
-    this.commonUtilitiesService.showProcessingDialog(this,
-      null,
-      this.GET_EXCEL_REPORT_TYPE_ID);
-  }
+
   // callback on processing
   public callbackOnProcessing(sourceID: string, data: any): void {
     if (sourceID === this.GET_STATISTICS_FIELDS_SOURCE_ID) {
       // post get statistics fields request
       this.http.post<HttpResponse>(this.statisticsSettingUrl, null, httpOptions).subscribe(
         httpResponse => { this.callbackGettingStatisticsFields(httpResponse); }
-      );
-    } else if (sourceID === this.GET_EXCEL_REPORT_TYPE_ID) {
-      this.http.post<HttpResponse>(this.statisticsSettingUrl, null, httpOptions).subscribe(
-        httpResponse => {
-          this.callbackGettingExcelReportType(httpResponse);
-        }
       );
     }
   }
@@ -606,28 +592,5 @@ export class DataStatisticsService implements ProcessingDialogCallback {
   // convert chart name to chart type
   private convertChartNameToChartType(chartName: string): string {
     return this.CHART_NAME_TO_CHART_TYPE_TABLE[chartName];
-  }
-  // callback when getting statistics fields
-  private callbackGettingExcelReportType(httpResponse: HttpResponse) {
-    if (httpResponse.code === 201) {
-      this.currentUserContainer.sessionTimeout();
-      return;
-    }
-    // statistics fields
-    const statisticsFields: StatisticsFields = new StatisticsFields();
-    statisticsFields.setComputeFields(httpResponse.data.computeFields);
-    statisticsFields.setGroupByFields(httpResponse.data.groupByFields);
-    statisticsFields.setGroupBySubFields(httpResponse.data.groupBySubFields);
-    statisticsFields.setStatisticsTypes(httpResponse.data.statisticsTypes);
-    // close processing dialog
-    this.commonUtilitiesService.closeProcessingDialog();
-    const service: NgbModal = this.modalService;
-    // you can not call this.adjustModalOptions,
-    // because showUserSettingModal called in html context
-    const modalRef = service.open(DataExcelReportSelectionComponent, this.adjustModalOptions());
-    // set statistics fields to statistics component
-    modalRef.componentInstance.setExcelReportTypes(statisticsFields.getGroupByFields());
-    // set data statistics service
-    modalRef.componentInstance.setDataStatisticsService(this);
   }
 }

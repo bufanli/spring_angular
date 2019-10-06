@@ -14,6 +14,7 @@ import { CommonUtilitiesService } from '../common/services/common-utilities.serv
 import { DataStatisticsGraphComponent } from './components/data-statistics-graph/data-statistics-graph.component';
 import { DataStatisticsOriginalDataComponent } from './components/data-statistics-original-data/data-statistics-original-data.component';
 import { DataExcelReportSelectionComponent } from './components/data-excel-report-selection/data-excel-report-selection.component';
+import { ExcelReportService } from './services/excel-report.service';
 
 const dataSearchRoutes: Routes = [
   {
@@ -49,6 +50,7 @@ const dataSearchRoutes: Routes = [
   ],
   providers: [
     DataStatisticsService,
+    ExcelReportService,
   ]
 })
 export class DataSearchModule { }
