@@ -37,6 +37,7 @@ const dataSearchRoutes: Routes = [
     FormsModule,
     CommonModule,
     HttpClientModule,
+    // tslint:disable-next-line: deprecation
     HttpModule,
     NgbModalModule,
     NgxEchartsModule,

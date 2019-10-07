@@ -10,7 +10,7 @@
   <form role="form" (ngSubmit)="excelReport()">
     <div *ngFor="let queryConditionRow of this.queryConditionRows" class="row">
       <div *ngFor="let queryCondition of queryConditionRow.getQueryConditions()" class="col-md-4">
-        <div class="form-group" *ngIf="queryCondition.getType() === 'List'">
+        <div class="form-group required" *ngIf="queryCondition.getType() === 'List'">
           <select style="width: 100%" class="form-control" id="{{queryCondition.getUUID()}}"
             name="{{queryCondition.getUUID()}}">
           </select>
@@ -28,7 +28,7 @@
   <button type="button" class="btn btn-default" data-dismiss="modal" (click)="close()">
     <span class="glyphicon glyphicon-remove"></span>&nbsp;{{this.CLOSE_BUTTON}}
   </button>
-  <button type="submit" class="btn btn-primary">
+  <button type="button" class="btn btn-primary" (click)="excelReport()">
     <span class="glyphicon glyphicon-ok"></span>&nbsp;{{this.EXPORT_EXCEL_REPORT}}
   </button>
 </div>

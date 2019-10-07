@@ -1,4 +1,4 @@
-import { Injectable, Query } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { CommonUtilitiesService } from 'src/app/common/services/common-utilities.service';
 import { HttpResponse } from 'src/app/common/entities/http-response';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
@@ -8,10 +8,20 @@ import { QueryCondition } from '../entities/query-condition';
 import { UUID } from 'angular2-uuid';
 import { DataExcelReportSelectionComponent } from '../components/data-excel-report-selection/data-excel-report-selection.component';
 import { NgbModalOptions, NgbModalConfig, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ExcelReportSettingData } from '../entities/excel-report-setting-data';
+import { Http, ResponseContentType, Headers } from '@angular/http';
+import { saveAs as importedSaveAs } from 'file-saver';
 
 // json header for post
 const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+};
+// tslint:disable-next-line: deprecation
+const head = new Headers({ 'Content-Type': 'application/json' });
+const httpDownloadOptions = {
+  headers: head,
+  // tslint:disable-next-line: deprecation
+  responseType: ResponseContentType.Blob,
 };
 @Injectable()
 export class ExcelReportService implements ProcessingDialogCallback {
@@ -20,6 +30,8 @@ export class ExcelReportService implements ProcessingDialogCallback {
   private excelReportQueryConditionsUrl = 'api/getExcelReportConditions';  // URL to web api
   // excel report types
   private excelReportTypesUrl = 'api/getExcelReportTypes';  // URL to web api
+  // export excel report
+  private exportExcelReportUrl = 'api/exportExcelReport';
 
   // excel report query conditions
   private excelReportQueryConditions = null;
@@ -31,7 +43,9 @@ export class ExcelReportService implements ProcessingDialogCallback {
     private commonUtilitiesService: CommonUtilitiesService,
     private http: HttpClient,
     private currentUserContainer: CurrentUserContainerService,
-    private modalService: NgbModal) {
+    private modalService: NgbModal,
+    // tslint:disable-next-line: deprecation
+    private httpDownload: Http) {
   }
   // get excel report setting
   public excelReportSetting(): void {
@@ -109,5 +123,31 @@ export class ExcelReportService implements ProcessingDialogCallback {
     options.windowClass = 'modal fade in';
     options.size = 'lg';
     return options;
+  }
+  // excel report
+  public excelReport(excelReportSettingData: ExcelReportSettingData): void {
+    this.excelReportImpl(excelReportSettingData);
+  }
+  // download data to file
+  private async excelReportImpl(excelReportSettingData: ExcelReportSettingData): Promise<void> {
+    const excelReportSettingJson = JSON.stringify(excelReportSettingData);
+    return this.httpDownload.post(this.exportExcelReportUrl, excelReportSettingJson, httpDownloadOptions).toPromise().then(
+      res => {
+        const tempRes: any = res;
+        if (tempRes._body.size === 0) {
+          this.currentUserContainer.sessionTimeout();
+        } else {
+          // get file name from responose
+          const contentDisposition = tempRes.headers._headers.get('content-disposition');
+          const attachmentAndFileName: string = contentDisposition[0];
+          const fileNameIndex = attachmentAndFileName.indexOf('filename=');
+          if (fileNameIndex >= 0) {
+            const fileName = attachmentAndFileName.substring(fileNameIndex + 'filename='.length);
+            importedSaveAs(res.blob(), fileName);
+          } else {
+            importedSaveAs(res.blob());
+          }
+        }
+      });
   }
 }

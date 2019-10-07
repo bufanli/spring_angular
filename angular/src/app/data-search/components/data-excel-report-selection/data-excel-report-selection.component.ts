@@ -4,33 +4,31 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { QueryCondition } from '../../entities/query-condition';
 import { QueryConditionRow } from '../../entities/query-conditions-row';
 import 'select2';
+import { OptionData } from 'select2';
+import { CommonUtilitiesService } from 'src/app/common/services/common-utilities.service';
+import { CommonDialogCallback } from 'src/app/common/interfaces/common-dialog-callback';
+import { ExcelReportSettingData } from '../../entities/excel-report-setting-data';
 
 @Component({
   selector: 'app-data-excel-report-selection',
   templateUrl: './data-excel-report-selection.component.html',
   styleUrls: ['./data-excel-report-selection.component.css']
 })
-export class DataExcelReportSelectionComponent implements OnInit, AfterViewInit {
+export class DataExcelReportSelectionComponent implements OnInit, AfterViewInit, CommonDialogCallback {
+
   public readonly SELECT_STATISTICS_REPORT_TYPE = '请选择汇总设定';
   public readonly PLEASE_SELECT = '请选择';
-  public readonly PRODUCT_CODE = '请选择商品编码';
-  public readonly REPORT_MONTH = '请选择报告月份';
-  public readonly EXPORT_OR_NOT = '请选择进出口';
-  public readonly EXPORT = '出口';
-  public readonly IMPORT = '进口';
-  public readonly EXPORT_OR_NOT_ARRAY = [this.EXPORT, this.IMPORT];
   public readonly CLOSE_BUTTON = '关闭';
   public readonly EXPORT_EXCEL_REPORT = '导出汇总报告';
   public readonly EXCEL_REPORT_TYPES_TITLE = '导出汇总报告类型';
+  public readonly NO_EXCEL_REPORT_TYPES_SELECTED = '请至少选择一个汇总报告类型';
+  public readonly EXPORT_EXCEL_SEETING_ERROR_TITLE = '请检查汇总报告设定';
   public readonly EXCEL_REPORT_TYPES_FIELD = 'excel-report-type';
   public readonly SELECTED = 'selected';
   public readonly QUERY_CONDITIONS_NUMBER_EACH_ROW = 3;
   public readonly LIST_VALUE_QUERY_NUMBER_PER_PAGE = 100;
   private readonly GET_LIST_VALUE_URL = 'api/getListValueWithPagination';  // URL to web api
-  // model data
-  public selectedProductCode = '';
-  public selectedReportMonth = '';
-  public selectedExportOrNot = '';
+  private readonly NO_EXCEL_REPORT_TYPE_SOURCE_ID = '001';
   // excel report query conditions
   public queryConditions: QueryCondition[] = null;
   public queryConditionRows: any[] = null;
@@ -39,7 +37,10 @@ export class DataExcelReportSelectionComponent implements OnInit, AfterViewInit 
   public excelReportTypesTableValues: any[] = null;
   // data statistics service
   private excelReportService: any = null;
-  constructor(private activeModal: NgbActiveModal) { }
+  // check parameter error msg
+  private checkParametersErrorMsg = null;
+  constructor(private activeModal: NgbActiveModal,
+    private commonUtilitiesService: CommonUtilitiesService) { }
 
   ngOnInit() {
   }
@@ -51,10 +52,6 @@ export class DataExcelReportSelectionComponent implements OnInit, AfterViewInit 
     // load data into excel report types table
     this.loadExcelReportTypesIntoTable();
 
-  }
-  // excel report
-  public excelReport(): void {
-    // this.dataStatisticsService.excelReportSetting();
   }
   // public set data statistics service
   public setExcelReportService(excelReportService: any): void {
@@ -116,12 +113,40 @@ export class DataExcelReportSelectionComponent implements OnInit, AfterViewInit 
       height: $(window).height() * 0.5,
       onCheck: function (row: any, $element: any): void {
         const excelReportType = row[that.EXCEL_REPORT_TYPES_FIELD];
-        that.excelReportTypes[excelReportType] = true;
+        that.excelReportTypes.forEach(element => {
+          if (element[that.EXCEL_REPORT_TYPES_FIELD] === excelReportType) {
+            element[that.SELECTED] = true;
+          }
+        });
+      },
+      onCheckAll: function (rows: any[]): void {
+        rows.forEach(row => {
+          const excelReportType = row[that.EXCEL_REPORT_TYPES_FIELD];
+          that.excelReportTypes.forEach(element => {
+            if (element[that.EXCEL_REPORT_TYPES_FIELD] === excelReportType) {
+              element[that.SELECTED] = true;
+            }
+          });
+        });
       },
       onUncheck: function (row: any, $element: any): void {
         const excelReportType = row[that.EXCEL_REPORT_TYPES_FIELD];
-        that.excelReportTypes[excelReportType] = false;
+        that.excelReportTypes.forEach(element => {
+          if (element[that.EXCEL_REPORT_TYPES_FIELD] === excelReportType) {
+            element[that.SELECTED] = false;
+          }
+        });
       },
+      onUncheckAll: function (rows: any[]): void {
+        rows.forEach(row => {
+          const excelReportType = row[that.EXCEL_REPORT_TYPES_FIELD];
+          that.excelReportTypes.forEach(element => {
+            if (element[that.EXCEL_REPORT_TYPES_FIELD] === excelReportType) {
+              element[that.SELECTED] = false;
+            }
+          });
+        });
+      }
     });
     // tslint:disable-next-line: deprecation
     $(window).resize(function () {
@@ -175,9 +200,9 @@ export class DataExcelReportSelectionComponent implements OnInit, AfterViewInit 
     const that = this;
     $('#' + listQueryCondition.getUUID()).select2({
       placeholder: this.PLEASE_SELECT + listQueryCondition.getKey(),
-      multiple: true,
+      multiple: false,
       width: 'resolve',
-      closeOnSelect: false,
+      closeOnSelect: true,
       ajax: {
         url: this.GET_LIST_VALUE_URL,
         type: 'POST',
@@ -205,5 +230,92 @@ export class DataExcelReportSelectionComponent implements OnInit, AfterViewInit 
         },
       }
     });
+  }
+  // check excel report parameters
+  private checkExcleReportParameters(): boolean {
+    // clear error msg
+    this.checkParametersErrorMsg = '';
+    // check query conditions
+    this.queryConditions.forEach(element => {
+      // get selected options
+      const selections: OptionData[] = $('#' + element.getUUID()).select2('data');
+      if (selections.length === 0) {
+        this.checkParametersErrorMsg =
+          this.checkParametersErrorMsg +
+          this.PLEASE_SELECT +
+          element.getKey() + '<br/>';
+      }
+    });
+    // check excel report types
+    let checkedCount = 0;
+    this.excelReportTypes.forEach(element => {
+      if (element[this.SELECTED] === true) {
+        checkedCount++;
+      }
+    });
+    if (checkedCount === 0) {
+      this.checkParametersErrorMsg =
+        this.checkParametersErrorMsg +
+        this.NO_EXCEL_REPORT_TYPES_SELECTED + '<br/>';
+    }
+    if (this.checkParametersErrorMsg !== '') {
+      return false;
+    } else {
+      return true;
+    }
+  }
+  // excel report
+  public excelReport(): void {
+    // check excel report parameters
+    if (this.checkExcleReportParameters() === false) {
+      this.commonUtilitiesService.showCommonDialog(
+        this.EXPORT_EXCEL_SEETING_ERROR_TITLE,
+        this.checkParametersErrorMsg,
+        'warning',
+        this,
+        this.NO_EXCEL_REPORT_TYPE_SOURCE_ID
+      );
+      return;
+    } else {
+      // prepare excel report data -- query conditions
+      const queryConditions: QueryCondition[] = [];
+      this.queryConditions.forEach(element => {
+        this.abstractInputQueryConditionWithListType(queryConditions, element);
+      });
+      // prepare excel report data -- excel report types
+      const excelReportTypes: string[] = [];
+      this.excelReportTypes.forEach(element => {
+        if (element[this.SELECTED] === true) {
+          excelReportTypes.push(element[this.EXCEL_REPORT_TYPES_FIELD]);
+        }
+      });
+      // excel report setting data
+      const excelReportSettingData: ExcelReportSettingData = new ExcelReportSettingData();
+      excelReportSettingData.setQueryConditions(queryConditions);
+      excelReportSettingData.setExcxelReportTypes(excelReportTypes);
+      this.excelReportService.excelReport(excelReportSettingData);
+    }
+  }
+  // abstract input query condition of list type
+  private abstractInputQueryConditionWithListType(
+    queryParams: QueryCondition[],
+    queryCondition: QueryCondition): void {
+    // if nothing is selected, then do not put into query params
+    const selections: OptionData[] = $('#' + queryCondition.getUUID()).select2('data');
+    const selectionsArray = [];
+    selections.forEach(element => {
+      selectionsArray.push(element.text);
+    });
+    // convert selection from comma to dash
+    const selectionsStr = this.commonUtilitiesService.convertArrayCommaSeperatorToDash(selectionsArray);
+    const inputQueryCondition = queryCondition.clone();
+    inputQueryCondition.setStringValue(selectionsStr);
+    queryParams.push(inputQueryCondition);
+  }
+  // common dialog callback
+  callbackOnConfirm(sourceID: any): void {
+    if (sourceID === this.NO_EXCEL_REPORT_TYPE_SOURCE_ID) {
+      // nothing to do
+    }
   }
 }
