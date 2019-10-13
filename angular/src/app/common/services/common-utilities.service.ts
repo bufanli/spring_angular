@@ -96,7 +96,7 @@ export class CommonUtilitiesService {
         if (length && length > 12) {
           length = 12;
           return '<span class = "text-primary" data-toggle = "tooltip" \
-                  title = ' + value + '>' + value.substring(0, length) + '...' + '</span>';
+                  title = ' + '"' + value + '"' + '>' + value.substring(0, length) + '...' + '</span>';
         } else {
           return value;
         }
