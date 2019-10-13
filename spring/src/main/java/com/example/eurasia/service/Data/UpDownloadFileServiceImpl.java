@@ -54,7 +54,7 @@ public class UpDownloadFileServiceImpl implements IUpDownloadFileService {
     private ImportExcelByEventMode importExcelByEventMode;
 
     @Override
-    public ResponseResult batchUpload(File uploadDir, MultipartFile[] files) throws Exception {
+    public ResponseResult batchUploadExcel(File uploadDir, MultipartFile[] files) throws Exception {
         ResponseResult responseResult;
         String fileName = null;
         int fileNumber = files.length;
@@ -125,7 +125,7 @@ public class UpDownloadFileServiceImpl implements IUpDownloadFileService {
     }
 
     @Override
-    public ResponseResult readFile(File fileDir) throws Exception {
+    public ResponseResult readExcel(File fileDir) throws Exception {
         ResponseResult responseResult;
         String fileName = null;
         int fileNumber = 0;
@@ -361,7 +361,7 @@ public class UpDownloadFileServiceImpl implements IUpDownloadFileService {
     private static int ROW_ACCESS_WINDOW_SIZE = 10000;
 
     @Override
-    public ResponseResult exportExcel(HttpServletResponse response, QueryCondition[] queryConditionsArr) throws Exception {
+    public ResponseResult downloadExcel(HttpServletResponse response, QueryCondition[] queryConditionsArr) throws Exception {
 
         StringBuffer responseMsg = new StringBuffer();
         SXSSFWorkbook wb = new SXSSFWorkbook(ROW_ACCESS_WINDOW_SIZE);
@@ -639,5 +639,19 @@ public class UpDownloadFileServiceImpl implements IUpDownloadFileService {
             throw new Exception(ResponseCodeEnum.EXPORT_GET_DATA_INFO_FROM_SQL_FAILED.getMessage());
         }
         return dataArrList;
+    }
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//下面是导入csv部分
+    @Override
+    public ResponseResult importCSVFile(File csvFile) throws Exception {
+        return null;
+    }
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//下面是导入csv部分
+    @Override
+    public ResponseResult exportCSVFile(HttpServletResponse response) throws Exception {
+        return null;
     }
 }

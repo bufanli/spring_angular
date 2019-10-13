@@ -9,11 +9,18 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 
 public interface IUpDownloadFileService {
-    ResponseResult batchUpload(File uploadDir, MultipartFile[] files) throws Exception;
-    ResponseResult readFile(File uploadDir) throws Exception;
+    // upload excel
+    ResponseResult batchUploadExcel(File uploadDir, MultipartFile[] files) throws Exception;
+    ResponseResult readExcel(File uploadDir) throws Exception;
     ResponseResult getColumnsDictionary() throws Exception;
     ResponseResult setColumnsDictionary(ColumnsDictionary[] columnsDictionary) throws Exception;
     ResponseResult deleteColumn(String columnName) throws Exception;
     ResponseResult deleteSameData() throws Exception;
-    ResponseResult exportExcel(HttpServletResponse response, QueryCondition[] queryConditionsArr) throws Exception;
+    // download excel
+    ResponseResult downloadExcel(HttpServletResponse response, QueryCondition[] queryConditionsArr) throws Exception;
+
+    // upload csv
+    ResponseResult importCSVFile(File csvFile) throws Exception;
+    // download csv
+    ResponseResult exportCSVFile(HttpServletResponse response) throws Exception;
 }
