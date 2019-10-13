@@ -318,6 +318,9 @@ public class UploadFileServiceImpl implements IUploadFileService {
     public ResponseResult deleteSameData() throws Exception {
         ResponseResult responseResult;
         try {
+/*
+删除规则是：1、如果有“提运单号”的优先保留  2、如果“提运单号”是空白的，则保留列数比较多的那一条数据。
+*/
             //int deleteNum = dataService.deleteSameData(DataService.TABLE_DATA);
             int ret = dataService.deleteSameDataByDistinct(DataService.TABLE_DATA);
             if (ret == 0) {
