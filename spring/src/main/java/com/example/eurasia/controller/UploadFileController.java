@@ -1,7 +1,7 @@
 package com.example.eurasia.controller;
 
 import com.example.eurasia.entity.Data.ColumnsDictionary;
-import com.example.eurasia.service.Data.IUploadFileService;
+import com.example.eurasia.service.Data.IUpDownloadFileService;
 import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;
@@ -36,9 +36,9 @@ public class UploadFileController {
 
 
     //注入Service服务对象
-    @Qualifier("UploadFileServiceImpl")
+    @Qualifier("UpDownloadFileServiceImpl")
     @Autowired
-    private IUploadFileService uploadFileService;
+    private IUpDownloadFileService upDownloadFileService;
     @Qualifier("UserInfoServiceImpl")
     @Autowired
     private UserInfoServiceImpl userInfoServiceImpl;
@@ -93,11 +93,11 @@ public class UploadFileController {
 
                 Slf4jLogUtil.get().info("IP:{},进行文件上传开始",request.getRemoteAddr());
                 //responseResult = uploadFileService.batchUpload(filePath, files);
-                uploadFileService.batchUpload(uploadDir, files);//T.B.D 返回结果暂时不做处理
+                upDownloadFileService.batchUpload(uploadDir, files);//T.B.D 返回结果暂时不做处理
                 Slf4jLogUtil.get().info("IP:{},进行文件上传结束",request.getRemoteAddr());
 
                 Slf4jLogUtil.get().info("Dir:{},进行文件读取开始",uploadDir);
-                responseResult = uploadFileService.readFile(uploadDir);
+                responseResult = upDownloadFileService.readFile(uploadDir);
                 Slf4jLogUtil.get().info("Dir:{},进行文件读取结束",uploadDir);
             }
         } catch (Exception e) {
@@ -125,7 +125,7 @@ public class UploadFileController {
             if (StringUtils.isEmpty(userID)) {
                 responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
             } else {
-                responseResult = uploadFileService.deleteSameData();
+                responseResult = upDownloadFileService.deleteSameData();
             }
             Slf4jLogUtil.get().info("删除相同数据结束");
         } catch (Exception e) {
@@ -151,7 +151,7 @@ public class UploadFileController {
             if (StringUtils.isEmpty(userID)) {
                 responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
             } else {
-                responseResult = uploadFileService.getColumnsDictionary();
+                responseResult = upDownloadFileService.getColumnsDictionary();
             }
             Slf4jLogUtil.get().info("取得数据字段的词典结束");
         } catch (Exception e) {
@@ -176,7 +176,7 @@ public class UploadFileController {
             if (StringUtils.isEmpty(userID)) {
                 responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
             } else {
-                responseResult = uploadFileService.setColumnsDictionary(columnsDictionaryArr);
+                responseResult = upDownloadFileService.setColumnsDictionary(columnsDictionaryArr);
             }
             Slf4jLogUtil.get().info("保存数据字段的词典结束");
         } catch (Exception e) {

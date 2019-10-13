@@ -1,7 +1,7 @@
 package com.example.eurasia.controller;
 
 import com.example.eurasia.entity.Data.QueryCondition;
-import com.example.eurasia.service.Data.IDownloadFileService;
+import com.example.eurasia.service.Data.IUpDownloadFileService;
 import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;
@@ -25,9 +25,9 @@ import java.io.IOException;
 public class DownloadFileController {
 
     //注入Service服务对象
-    @Qualifier("DownloadFileServiceImpl")
+    @Qualifier("UpDownloadFileServiceImpl")
     @Autowired
-    private IDownloadFileService downloadFileService;
+    private IUpDownloadFileService upDownloadFileService;
     @Qualifier("UserInfoServiceImpl")
     @Autowired
     private UserInfoServiceImpl userInfoServiceImpl;
@@ -55,7 +55,7 @@ public class DownloadFileController {
                  *  填充一列数据; row.createCell(0).setCellValue("数据")
                  *  设置一个单元格样式；cell.setCellStyle(style)
                  */
-                responseResult = downloadFileService.exportExcel(response,queryConditionsArr);
+                responseResult = upDownloadFileService.exportExcel(response,queryConditionsArr);
             }
             Slf4jLogUtil.get().info("进行excel文件导出结束");
         } catch (Exception e) {
