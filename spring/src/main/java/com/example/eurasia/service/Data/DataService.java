@@ -1,7 +1,11 @@
 package com.example.eurasia.service.Data;
 
+import com.example.eurasia.dao.CommonDao;
 import com.example.eurasia.dao.DataDao;
-import com.example.eurasia.entity.Data.*;
+import com.example.eurasia.entity.Data.ComputeField;
+import com.example.eurasia.entity.Data.Data;
+import com.example.eurasia.entity.Data.DataXMLReader;
+import com.example.eurasia.entity.Data.QueryCondition;
 import com.example.eurasia.service.Util.Slf4jLogUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -32,6 +36,7 @@ public class DataService {
     public static final String TABLE_STATISTICS_SETTING_TYPE = "statisticsSettingTypeTable";
     public static final String TABLE_STATISTICS_SETTING_COMPUTE_BY = "statisticsSettingComputeByTable";
     public static final String TABLE_COLUMNS_DICTIONARY = "columnsDictionaryTable";
+    public static final String TABLE_DATA_COLUMNS_FOR_SAME_DATA = "columnsForSameDataTable";
 
     public static final String BEAN_NAME_COLUMNS_DEFAULT_NAME = "columnDefaultName";
     public static final String BEAN_NAME_QUERY_CONDITION_TYPE_NAME = "queryConditionTypeName";
@@ -44,6 +49,7 @@ public class DataService {
 
     public static final String COLUMNS_DICTIONARY_SYNONYM = "synonym";
     public static final String COLUMNS_DICTIONARY_COLUMN_NAME = "columnName";
+    public static final String COLUMNS_FOR_SAME_DATA_COLUMN_NAME = "columnName";
 
     public static final String STATISTICS_REPORT_PRODUCT_DATE = "日期";
     public static final String STATISTICS_REPORT_PRODUCT_DATE_YEAR = "年";
@@ -101,7 +107,7 @@ public class DataService {
                 }
             }
             Map<String, String> computeByNameType = new LinkedHashMap<String, String>();
-            computeByNameType.put(DataService.STATISTICS_SETTING_COMPUTE_BY_COLUMN_NAME,"VARCHAR(50)");
+            computeByNameType.put(DataService.STATISTICS_SETTING_COMPUTE_BY_COLUMN_NAME,"VARCHAR(255)");
             if (this.createTable(DataService.TABLE_STATISTICS_SETTING_COMPUTE_BY,computeByNameType) == true) {
                 String[] computeByArr = {"美元总价","法定重量","申报总价","申报数量","件数"};
                 for (int i=0; i<computeByArr.length; i++) {
@@ -121,6 +127,17 @@ public class DataService {
                     columnsDicMap.put(DataService.COLUMNS_DICTIONARY_COLUMN_NAME,columnNameArr[i]);
                     Data columnsDicData = new Data(columnsDicMap);
                     getDataDao().addData(DataService.TABLE_COLUMNS_DICTIONARY,columnsDicData);
+                }
+            }
+            Map<String, String> columnsForSameData = new LinkedHashMap<String, String>();
+            columnsForSameData.put(DataService.COLUMNS_FOR_SAME_DATA_COLUMN_NAME,"VARCHAR(255)");
+            if (this.createTable(DataService.TABLE_DATA_COLUMNS_FOR_SAME_DATA,columnsForSameData) == true) {
+                String[] columnsForSameDataArr = {"日期","进出口","申报单位名称","货主单位名称","经营单位名称", "海关编码",
+                        "附加码","商品名称","申报要素","成交方式","申报单价","申报总价","美元总价","申报数量", "申报数量单位",
+                        "法定重量","毛重","净重","件数","监管方式","运输方式","目的地","主管关区","装货港","贸易国"};
+
+                for (int i=0; i<columnsForSameDataArr.length; i++) {
+                    getDataDao().addData(DataService.TABLE_DATA_COLUMNS_FOR_SAME_DATA,DataService.COLUMNS_FOR_SAME_DATA_COLUMN_NAME,columnsForSameDataArr[i]);
                 }
             }
 
@@ -178,7 +195,7 @@ public class DataService {
             return -1;
         }
 
-        int deleteNum = getDataDao().deleteSameData(tableName);//失败时，返回-1
+        int deleteNum = getDataDao().deleteSameData(tableName, this.getColumnsForSameData(false));//失败时，返回-1
 
         return deleteNum;
     }
@@ -196,9 +213,43 @@ public class DataService {
             return -1;
         }
 
-        getDataDao().deleteSameDataByDistinct(tableName);
+        getDataDao().deleteSameDataByDistinct(tableName, this.getColumnsForSameData(false));
 
         return 0;
+    }
+
+    /**
+     * 取得判断数据表(DataService.TABLE_DATA)相同数据的列名
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2019-10-12 00:00:00
+     */
+    public String getColumnsForSameData(boolean isCustomize) throws Exception {
+
+        List<Map<String, Object>> colsNameList = null;
+        if (isCustomize) {
+            //自定义判断数据表相同数据的列名
+            colsNameList = getDataDao().queryListForColumnName(TABLE_DATA_COLUMNS_FOR_SAME_DATA);
+        } else {
+            //全部列名
+            colsNameList = getDataDao().queryListForColumnName(DataService.TABLE_DATA);
+        }
+
+        StringBuffer strColsName = new StringBuffer();
+        for (Map<String, Object> colsName : colsNameList) {
+            strColsName.append(colsName.get("COLUMN_NAME").toString());
+            strColsName.append(CommonDao.COMMA);
+        }
+
+        strColsName.deleteCharAt(strColsName.length() - CommonDao.COMMA.length());
+        strColsName.replace(strColsName.indexOf(CommonDao.ID_COMMA), CommonDao.ID_COMMA.length(), "");//indexOf从0开始计算,没有查到指定的字符则该方法返回-1
+
+        // For debug
+        //String[] name = strColsName.toString().split(CommonDao.COMMA, -1);
+
+        return strColsName.toString();
     }
 
     /**

@@ -34,6 +34,8 @@ export class UserAccessAuthoritiesComponent implements OnInit, AfterViewInit, Af
   // set hs code selections
   public setHsCodeSelections(hsCodeSelections: string[]): void {
     this.hsCodes = hsCodeSelections;
+    // concatenate hs code selection with selected hs codes
+    this.hsCodes = this.hsCodes.concat(this.selectedHsCodes);
     this.hsCodesChanged = true;
   }
 

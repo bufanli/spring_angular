@@ -283,18 +283,8 @@ sbf = new StringBuffer("");//重新new
      * @author FuJia
      * @Time 2018-09-20 00:00:00
      */
-    public int deleteSameData(String tableName) throws Exception {
+    public int deleteSameData(String tableName, String columnsName) throws Exception {
 
-        StringBuffer strColsName = new StringBuffer();
-        List<Map<String, Object>> colsNameList = this.queryListForColumnName(tableName);
-        for (Map<String, Object> colsName : colsNameList) {
-            strColsName.append(colsName.get("COLUMN_NAME").toString());
-            strColsName.append(CommonDao.COMMA);
-        }
-
-        strColsName.deleteCharAt(strColsName.length() - CommonDao.COMMA.length());
-        strColsName.replace(strColsName.indexOf(CommonDao.ID_COMMA), CommonDao.ID_COMMA.length(), "");//indexOf从0开始计算,没有查到指定的字符则该方法返回-1
-        String[] name = strColsName.toString().split(CommonDao.COMMA, -1);
 /*
 mysql根据两个字段判断重复的数据并且删除，只保留一条。
 DELETE from table
@@ -314,7 +304,7 @@ GROUP BY 列1,列2,列3 having count(*) > 1;
         sql.append(" (select minid from");
         sql.append(" (select min(id) as minid");
         sql.append(" from " + tableName);
-        sql.append(" group by " + strColsName);
+        sql.append(" group by " + columnsName);
         sql.append(" ) as tempSameDataTable)");
 
         int num = getJdbcTemplate().update(sql.toString());//执行成功返回数据库当中受影响的记录条数，失败则返回-1
@@ -330,22 +320,12 @@ GROUP BY 列1,列2,列3 having count(*) > 1;
      * @author FuJia
      * @Time 2019-09-09 00:00:00
      */
-    public void deleteSameDataByDistinct(String tableName) throws Exception {
-        StringBuffer strColsName = new StringBuffer();
-        List<Map<String, Object>> colsNameList = this.queryListForColumnName(tableName);
-        for (Map<String, Object> colsName : colsNameList) {
-            strColsName.append(colsName.get("COLUMN_NAME").toString());
-            strColsName.append(CommonDao.COMMA);
-        }
-
-        strColsName.deleteCharAt(strColsName.length() - CommonDao.COMMA.length());
-        strColsName.replace(strColsName.indexOf(CommonDao.ID_COMMA), CommonDao.ID_COMMA.length(), "");//indexOf从0开始计算,没有查到指定的字符则该方法返回-1
-        String[] name = strColsName.toString().split(CommonDao.COMMA, -1);
+    public void deleteSameDataByDistinct(String tableName, String columnsName) throws Exception {
 
         StringBuffer sql1 = new StringBuffer();
         StringBuffer sql2 = new StringBuffer();
         StringBuffer sql3 = new StringBuffer();
-        sql1.append("Create table tmp (Select distinct " + strColsName + " from " + tableName + ")");
+        sql1.append("Create table tmp (Select distinct " + columnsName + " from " + tableName + ")");
         sql2.append("drop table " + tableName);
         sql3.append("RENAME TABLE tmp TO " + tableName);
         getJdbcTemplate().execute(sql1.toString());

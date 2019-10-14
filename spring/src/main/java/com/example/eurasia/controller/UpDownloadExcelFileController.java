@@ -1,7 +1,8 @@
 package com.example.eurasia.controller;
 
 import com.example.eurasia.entity.Data.ColumnsDictionary;
-import com.example.eurasia.service.Data.IUploadFileService;
+import com.example.eurasia.entity.Data.QueryCondition;
+import com.example.eurasia.service.Data.IUpDownloadFileService;
 import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -26,7 +28,7 @@ import java.util.Date;
 //@Slf4j
 @Controller
 @RequestMapping("api")
-public class UploadFileController {
+public class UpDownloadExcelFileController {
 
     @GetMapping("/greeting")
     public String greeting(@RequestParam(name = "name", required = false, defaultValue = "World") String name, Model model) {
@@ -36,9 +38,9 @@ public class UploadFileController {
 
 
     //注入Service服务对象
-    @Qualifier("UploadFileServiceImpl")
+    @Qualifier("UpDownloadFileServiceImpl")
     @Autowired
-    private IUploadFileService uploadFileService;
+    private IUpDownloadFileService upDownloadFileService;
     @Qualifier("UserInfoServiceImpl")
     @Autowired
     private UserInfoServiceImpl userInfoServiceImpl;
@@ -92,12 +94,12 @@ public class UploadFileController {
                 }
 
                 Slf4jLogUtil.get().info("IP:{},进行文件上传开始",request.getRemoteAddr());
-                //responseResult = uploadFileService.batchUpload(filePath, files);
-                uploadFileService.batchUpload(uploadDir, files);//T.B.D 返回结果暂时不做处理
+                //responseResult = uploadFileService.batchUploadExcel(filePath, files);
+                upDownloadFileService.batchUploadExcel(uploadDir, files);//T.B.D 返回结果暂时不做处理
                 Slf4jLogUtil.get().info("IP:{},进行文件上传结束",request.getRemoteAddr());
 
                 Slf4jLogUtil.get().info("Dir:{},进行文件读取开始",uploadDir);
-                responseResult = uploadFileService.readFile(uploadDir);
+                responseResult = upDownloadFileService.readExcel(uploadDir);
                 Slf4jLogUtil.get().info("Dir:{},进行文件读取结束",uploadDir);
             }
         } catch (Exception e) {
@@ -125,7 +127,7 @@ public class UploadFileController {
             if (StringUtils.isEmpty(userID)) {
                 responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
             } else {
-                responseResult = uploadFileService.deleteSameData();
+                responseResult = upDownloadFileService.deleteSameData();
             }
             Slf4jLogUtil.get().info("删除相同数据结束");
         } catch (Exception e) {
@@ -151,7 +153,7 @@ public class UploadFileController {
             if (StringUtils.isEmpty(userID)) {
                 responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
             } else {
-                responseResult = uploadFileService.getColumnsDictionary();
+                responseResult = upDownloadFileService.getColumnsDictionary();
             }
             Slf4jLogUtil.get().info("取得数据字段的词典结束");
         } catch (Exception e) {
@@ -176,7 +178,7 @@ public class UploadFileController {
             if (StringUtils.isEmpty(userID)) {
                 responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
             } else {
-                responseResult = uploadFileService.setColumnsDictionary(columnsDictionaryArr);
+                responseResult = upDownloadFileService.setColumnsDictionary(columnsDictionaryArr);
             }
             Slf4jLogUtil.get().info("保存数据字段的词典结束");
         } catch (Exception e) {
@@ -186,4 +188,36 @@ public class UploadFileController {
         return responseResult;
     }
 
+    /**
+     * @author
+     * @date
+     * @description 导出数据到文件
+     */
+    @RequestMapping(value="/downloadFile", method = RequestMethod.POST)
+    public ResponseResult downloadFiles(HttpServletRequest request, HttpServletResponse response, @RequestBody QueryCondition[] queryConditionsArr) throws IOException {
+        ResponseResult responseResult;
+        //导出excel
+        try {
+            Slf4jLogUtil.get().info("进行excel文件导出开始");
+            String userID = userInfoServiceImpl.getLoginUserID(request);
+            if (StringUtils.isEmpty(userID)) {
+                responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
+            } else {
+                /**
+                 * 导出excel比较重要的api有以下几个。
+                 *  创建一个excel文件工作薄；（HSSFWorkbook workbook = new HSSFWorkbook()）
+                 *  创建一张表；HSSFSheet sheet = workbook.createSheet("统计表")
+                 *  创建一行；HSSFRow row = sheet.createRow(0)
+                 *  填充一列数据; row.createCell(0).setCellValue("数据")
+                 *  设置一个单元格样式；cell.setCellStyle(style)
+                 */
+                responseResult = upDownloadFileService.downloadExcel(response,queryConditionsArr);
+            }
+            Slf4jLogUtil.get().info("进行excel文件导出结束");
+        } catch (Exception e) {
+            e.printStackTrace();
+            responseResult = new ResponseResultUtil().error();
+        }
+        return responseResult;
+    }
 }

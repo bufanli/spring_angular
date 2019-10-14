@@ -132,7 +132,7 @@ export class DataDetailComponent implements OnInit {
   public getTooltip(value: string): string {
     if (value.length > this.MAX_SHOWING_LENGTH) {
       return '<span class = "text-primary" data-toggle = "tooltip" \
-                  title = ' + value + '>' + value.substring(0, this.MAX_SHOWING_LENGTH) + '..' + '</span>';
+                  title = ' + '"' + value + '"' + '>' + value.substring(0, this.MAX_SHOWING_LENGTH) + '..' + '</span>';
     } else {
       return value;
     }
