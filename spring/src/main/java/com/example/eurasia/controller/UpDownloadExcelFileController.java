@@ -56,11 +56,11 @@ public class UpDownloadExcelFileController {
     /**
      * @author
      * @date
-     * @description 导入数据
+     * @description 导入excel文件
      */
     @RequestMapping(value="/uploadFile", method = RequestMethod.POST)
     public @ResponseBody
-    ResponseResult uploadFiles(@RequestParam("file") MultipartFile[] files, HttpServletRequest request) throws IOException {
+    ResponseResult uploadFiles(HttpServletRequest request, @RequestParam("file") MultipartFile[] files) throws IOException {
         ResponseResult responseResult;
         try {
             //String userID = userInfoServiceImpl.getLoginUserID(request);
@@ -113,7 +113,7 @@ public class UpDownloadExcelFileController {
     /**
      * @author
      * @date
-     * @description 删除相同数据
+     * @description 导入excel文件后删除相同数据
      */
     @RequestMapping(value="/deleteSameData", method = RequestMethod.GET)
     public @ResponseBody
@@ -141,7 +141,7 @@ public class UpDownloadExcelFileController {
     /**
      * @author
      * @date 2019-05-23
-     * @description 取得数据字段的词典
+     * @description 取得数据字段的同义词词典
      */
     @RequestMapping(value="/getColumnsDictionary", method = RequestMethod.GET)
     public @ResponseBody
@@ -166,11 +166,11 @@ public class UpDownloadExcelFileController {
     /**
      * @author
      * @date 2019-05-23
-     * @description 保存数据字段的词典
+     * @description 保存数据字段的同义词词典
      */
     @RequestMapping(value="/setColumnsDictionary", method = RequestMethod.POST)
     public @ResponseBody
-    ResponseResult setColumnsDictionary(HttpServletRequest request,@RequestBody ColumnsDictionary[] columnsDictionaryArr) {
+    ResponseResult setColumnsDictionary(HttpServletRequest request, @RequestBody ColumnsDictionary[] columnsDictionaryArr) {
         ResponseResult responseResult;
         try {
             Slf4jLogUtil.get().info("保存数据字段的词典开始");
@@ -191,12 +191,11 @@ public class UpDownloadExcelFileController {
     /**
      * @author
      * @date
-     * @description 导出数据到文件
+     * @description 导出数据到excel文件
      */
     @RequestMapping(value="/downloadFile", method = RequestMethod.POST)
     public ResponseResult downloadFiles(HttpServletRequest request, HttpServletResponse response, @RequestBody QueryCondition[] queryConditionsArr) throws IOException {
         ResponseResult responseResult;
-        //导出excel
         try {
             Slf4jLogUtil.get().info("进行excel文件导出开始");
             String userID = userInfoServiceImpl.getLoginUserID(request);

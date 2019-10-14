@@ -565,7 +565,7 @@ public class UpDownloadFileServiceImpl implements IUpDownloadFileService {
     }
 
     //浏览器下载excel
-    private void buildExcelDocument(String filename,SXSSFWorkbook wb ,HttpServletResponse response) throws Exception{
+    private void buildExcelDocument(String filename, SXSSFWorkbook wb, HttpServletResponse response) throws Exception{
         //String filename = StringUtils.encodeFilename(StringUtils.trim(filename), request);//处理中文文件名
         response.setContentType("application/vnd.ms-excel");
         response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(filename, "gbk"));
@@ -641,17 +641,4 @@ public class UpDownloadFileServiceImpl implements IUpDownloadFileService {
         return dataArrList;
     }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//下面是导入csv部分
-    @Override
-    public ResponseResult importCSVFile(File csvFile) throws Exception {
-        return null;
-    }
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//下面是导入csv部分
-    @Override
-    public ResponseResult exportCSVFile(HttpServletResponse response) throws Exception {
-        return null;
-    }
 }

@@ -36,7 +36,8 @@ public class DataService {
     public static final String TABLE_STATISTICS_SETTING_TYPE = "statisticsSettingTypeTable";
     public static final String TABLE_STATISTICS_SETTING_COMPUTE_BY = "statisticsSettingComputeByTable";
     public static final String TABLE_COLUMNS_DICTIONARY = "columnsDictionaryTable";
-    public static final String TABLE_DATA_COLUMNS_FOR_SAME_DATA = "columnsForSameDataTable";
+    public static final String TABLE_COLUMNS_FOR_SAME_DATA = "columnsForSameDataTable";
+    public static final String TABLE_DATA_DICTIONARY_SUMMARY = "dataDictionarySummaryTable";
 
     public static final String BEAN_NAME_COLUMNS_DEFAULT_NAME = "columnDefaultName";
     public static final String BEAN_NAME_QUERY_CONDITION_TYPE_NAME = "queryConditionTypeName";
@@ -50,6 +51,7 @@ public class DataService {
     public static final String COLUMNS_DICTIONARY_SYNONYM = "synonym";
     public static final String COLUMNS_DICTIONARY_COLUMN_NAME = "columnName";
     public static final String COLUMNS_FOR_SAME_DATA_COLUMN_NAME = "columnName";
+    public static final String DATA_DICTIONARY_NAME = "dictionaryName";
 
     public static final String STATISTICS_REPORT_PRODUCT_DATE = "日期";
     public static final String STATISTICS_REPORT_PRODUCT_DATE_YEAR = "年";
@@ -131,14 +133,19 @@ public class DataService {
             }
             Map<String, String> columnsForSameData = new LinkedHashMap<String, String>();
             columnsForSameData.put(DataService.COLUMNS_FOR_SAME_DATA_COLUMN_NAME,"VARCHAR(255)");
-            if (this.createTable(DataService.TABLE_DATA_COLUMNS_FOR_SAME_DATA,columnsForSameData) == true) {
+            if (this.createTable(DataService.TABLE_COLUMNS_FOR_SAME_DATA,columnsForSameData) == true) {
                 String[] columnsForSameDataArr = {"日期","进出口","申报单位名称","货主单位名称","经营单位名称", "海关编码",
                         "附加码","商品名称","申报要素","成交方式","申报单价","申报总价","美元总价","申报数量", "申报数量单位",
                         "法定重量","毛重","净重","件数","监管方式","运输方式","目的地","主管关区","装货港","贸易国"};
 
                 for (int i=0; i<columnsForSameDataArr.length; i++) {
-                    getDataDao().addData(DataService.TABLE_DATA_COLUMNS_FOR_SAME_DATA,DataService.COLUMNS_FOR_SAME_DATA_COLUMN_NAME,columnsForSameDataArr[i]);
+                    getDataDao().addData(DataService.TABLE_COLUMNS_FOR_SAME_DATA,DataService.COLUMNS_FOR_SAME_DATA_COLUMN_NAME,columnsForSameDataArr[i]);
                 }
+            }
+            Map<String, String> dataDictionarySummary = new LinkedHashMap<String, String>();
+            dataDictionarySummary.put(DataService.DATA_DICTIONARY_NAME,"VARCHAR(255)");
+            if (this.createTable(DataService.TABLE_DATA_DICTIONARY_SUMMARY,dataDictionarySummary) == true) {
+
             }
 
         } catch (Exception e) {
@@ -231,7 +238,7 @@ public class DataService {
         List<Map<String, Object>> colsNameList = null;
         if (isCustomize) {
             //自定义判断数据表相同数据的列名
-            colsNameList = getDataDao().queryListForColumnName(TABLE_DATA_COLUMNS_FOR_SAME_DATA);
+            colsNameList = getDataDao().queryListForColumnName(TABLE_COLUMNS_FOR_SAME_DATA);
         } else {
             //全部列名
             colsNameList = getDataDao().queryListForColumnName(DataService.TABLE_DATA);

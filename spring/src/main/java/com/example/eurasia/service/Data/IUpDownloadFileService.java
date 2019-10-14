@@ -18,9 +18,4 @@ public interface IUpDownloadFileService {
     ResponseResult deleteSameData() throws Exception;
     // download excel
     ResponseResult downloadExcel(HttpServletResponse response, QueryCondition[] queryConditionsArr) throws Exception;
-
-    // upload csv
-    ResponseResult importCSVFile(File csvFile) throws Exception;
-    // download csv
-    ResponseResult exportCSVFile(HttpServletResponse response) throws Exception;
 }
