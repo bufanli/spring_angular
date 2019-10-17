@@ -78,7 +78,13 @@ spring.datasource.continueOnError＝true|false 有了错误是否继续运行
 			<version>3.17</version>
 		</dependency>
 
-		<!-- 解析或者生成Xml文件 -->
+		<!-- 读写CSV文件 -->
+		<dependency>
+			<groupId>net.sourceforge.javacsv</groupId>
+			<artifactId>javacsv</artifactId>
+			<version>2.0</version>
+		</dependency>
+
 		<dependency>
 			<groupId>dom4j</groupId>
 			<artifactId>dom4j</artifactId>

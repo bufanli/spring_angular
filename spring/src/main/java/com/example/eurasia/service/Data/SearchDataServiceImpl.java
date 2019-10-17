@@ -154,19 +154,19 @@ public class SearchDataServiceImpl implements ISearchDataService {
         List<Map<String, Object>> computeByFieldsList = null;
         try {
 
-            statisticsTypesList = dataService.getStatisticsSetting(DataService.TABLE_STATISTICS_SETTING_TYPE,
+            statisticsTypesList = dataService.getColumnsValues(DataService.TABLE_STATISTICS_SETTING_TYPE,
                     new String[]{DataService.STATISTICS_SETTING_TYPE_COLUMN_NAME});
             if (statisticsTypesList == null) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.STATISTICS_SETTING_TYPE_FROM_SQL_NULL);
             }
 
-            groupByFieldsList = dataService.getStatisticsSetting(DataService.TABLE_STATISTICS_SETTING_GROUP_BY,
+            groupByFieldsList = dataService.getColumnsValues(DataService.TABLE_STATISTICS_SETTING_GROUP_BY,
                     new String[]{DataService.STATISTICS_SETTING_GROUP_BY_COLUMN_NAME});
             if (groupByFieldsList == null) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.STATISTICS_SETTING_GROUP_BY_FROM_SQL_NULL);
             }
 
-            computeByFieldsList = dataService.getStatisticsSetting(DataService.TABLE_STATISTICS_SETTING_COMPUTE_BY,
+            computeByFieldsList = dataService.getColumnsValues(DataService.TABLE_STATISTICS_SETTING_COMPUTE_BY,
                     new String[]{DataService.STATISTICS_SETTING_COMPUTE_BY_COLUMN_NAME});
             if (computeByFieldsList == null) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.STATISTICS_SETTING_COMPUTE_BY_FROM_SQL_NULL);

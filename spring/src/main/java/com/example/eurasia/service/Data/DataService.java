@@ -233,7 +233,7 @@ public class DataService {
      * @author FuJia
      * @Time 2019-10-12 00:00:00
      */
-    public String getColumnsForSameData(boolean isCustomize) throws Exception {
+    private String getColumnsForSameData(boolean isCustomize) throws Exception {
 
         List<Map<String, Object>> colsNameList = null;
         if (isCustomize) {
@@ -606,14 +606,14 @@ as不是给表里的字段取别名，而是给查询的结果字段取别名。
     }
 
     /**
-     * 取得统计数据用的GroupBY，Type，ComputeBy等
+     * 取得表指定列的内容(如：统计数据用的GroupBY，Type，ComputeBy等)
      * @param
      * @return
      * @exception
      * @author FuJia
      * @Time 2019-03-10 00:00:00
      */
-    public List<Map<String, Object>> getStatisticsSetting(String tableName, String[] columnNames) throws Exception {
+    public List<Map<String, Object>> getColumnsValues(String tableName, String[] columnNames) throws Exception {
         if (StringUtils.isEmpty(tableName) || columnNames == null || columnNames.length == 0) {
             return null;
         }
