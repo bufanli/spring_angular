@@ -57,7 +57,8 @@ public class DataDictionaryController {
      */
     @RequestMapping(value="/importDataDictionary", method = RequestMethod.POST)
     public @ResponseBody
-    ResponseResult importDataDictionary(@RequestParam("file") File files, HttpServletRequest request) throws IOException {
+    ResponseResult importDataDictionary(@RequestParam("dictionaryName") String dictionaryName,
+                                        @RequestParam("file") File files, HttpServletRequest request) throws IOException {
         ResponseResult responseResult;
         try {
             Slf4jLogUtil.get().info("进行导入数据对应关系的字典开始");

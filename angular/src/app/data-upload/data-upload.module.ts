@@ -10,6 +10,7 @@ import { EditSynonymComponent } from './components/edit-synonym/edit-synonym.com
 import { NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { AddCustomColumnComponent } from './components/add-custom-column/add-custom-column.component';
 import { DataDictionaryComponent } from './components/data-dictionary/data-dictionary.component';
+import { DataDictionaryUploadComponent } from './components/data-dictionary-upload/data-dictionary-upload.component';
 
 const dataUploadRoutes: Routes = [
   {
@@ -33,11 +34,13 @@ const dataUploadRoutes: Routes = [
     EditSynonymComponent,
     AddCustomColumnComponent,
     DataDictionaryComponent,
+    DataDictionaryUploadComponent,
   ],
   entryComponents: [
     EditSynonymComponent,
     AddCustomColumnComponent,
     DataDictionaryComponent,
+    DataDictionaryUploadComponent,
   ],
 })
 export class DataUploadModule { }

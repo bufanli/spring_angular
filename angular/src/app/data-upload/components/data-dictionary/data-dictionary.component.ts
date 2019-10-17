@@ -5,6 +5,8 @@ import { HttpResponse } from 'src/app/common/entities/http-response';
 import { CurrentUserContainerService } from 'src/app/common/services/current-user-container.service';
 import { UUID } from 'angular2-uuid';
 import { HttpClient } from '@angular/common/http';
+import { NgbModal, NgbModalOptions, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
+import { DataDictionaryUploadComponent } from '../data-dictionary-upload/data-dictionary-upload.component';
 
 @Component({
   selector: 'app-data-dictionary',
@@ -29,7 +31,8 @@ export class DataDictionaryComponent implements OnInit {
   // data dictionary names
   private dataDictionaryNames: string[] = null;
   constructor(private currentUserContainer: CurrentUserContainerService,
-    private http: HttpClient) { }
+    private http: HttpClient,
+    private modalService: NgbModal) { }
 
   ngOnInit() {
     // init table headers
@@ -99,14 +102,27 @@ export class DataDictionaryComponent implements OnInit {
       const importDictionaryButtonId = '#' + this.IMPORT_DICTIONARY_PREFIX + currentPageData[i][this.UUID_FIELD];
       const exportDictionaryButtonId = '#' + this.EXPORT_DICTIONARY_PREFIX + currentPageData[i][this.UUID_FIELD];
       const deleteDictionaryButtonId = '#' + this.DELETE_DICTIONARY_PREFIX + currentPageData[i][this.UUID_FIELD];
-      $(importDictionaryButtonId).on('click', this, this.importDictionary);
+      // import button
+      $(importDictionaryButtonId).on('click', currentPageData[i][this.DATA_DICTIONARY_NAME_FIELD], this.importDictionary);
+      // export button
       $(exportDictionaryButtonId).on('click', this, this.exportDictionary);
+      // delete button
       $(deleteDictionaryButtonId).on('click', this, this.deleteDictionary);
     }
   }
   // import dictionary
-  private importDictionary(): void {
-
+  private importDictionary(dictinoaryName: any): void {
+    const service: NgbModal = this.modalService;
+    const modalRef = service.open(DataDictionaryUploadComponent, this.adjustModalOptions());
+    modalRef.componentInstance.dictinoaryName = dictinoaryName;
+  }
+  // adjust modal options
+  // if don't adjust modal options, modal will not be shown correctly
+  private adjustModalOptions(): NgbModalOptions {
+    const options: NgbModalOptions = new NgbModalConfig();
+    options.backdrop = false;
+    options.windowClass = 'modal fade in';
+    return options;
   }
   // export dictionary
   private exportDictionary(): void {
