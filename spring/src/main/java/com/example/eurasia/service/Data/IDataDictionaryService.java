@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 
 public interface IDataDictionaryService {
+    ResponseResult getDataDictionaries() throws Exception;
     // upload csv
     ResponseResult importCSVFile(File csvFile) throws Exception;
     // download csv

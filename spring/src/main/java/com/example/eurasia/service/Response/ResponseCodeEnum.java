@@ -235,6 +235,16 @@ public enum ResponseCodeEnum {
     SET_COLUMNS_DICTIONARY_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "保存数据字段的词典成功"),
     SET_COLUMNS_DICTIONARY_FAILED(ResponseCode.RESPONSE_CODE_NG, "保存数据字段的词典失败"),
 
+    /* 数据对应关系的字典 */
+    GET_DATA_DICTIONARIES_FROM_SQL_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "从数据库取得所有的数据对应关系的字典列表成功"),
+    GET_DATA_DICTIONARIES_FROM_SQL_FAILED(ResponseCode.RESPONSE_CODE_NG, "从数据库取得所有的数据对应关系的字典列表失败"),
+    GET_DATA_DICTIONARIES_FROM_SQL_NULL(ResponseCode.RESPONSE_CODE_NG, "从数据库取得所有的数据对应关系的字典列表为NULL"),
+    IMPORT_CSV_FILE_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "上传数据对应关系的字典csv文件成功"),
+    IMPORT_CSV_FILE_FAILED(ResponseCode.RESPONSE_CODE_NG, "上传数据对应关系的字典csv文件失败"),
+    IMPORT_CSV_FILE_ZERO(ResponseCode.RESPONSE_CODE_NG, "上传数据对应关系的字典csv文件长度为0"),
+    IMPORT_DATA_DICTIONARY_GET_HEADER_INFO_FROM_SQL_NULL(ResponseCode.RESPONSE_CODE_NULL, "导入数据对应关系的词典时,从数据库取得表头信息为NULL"),
+    IMPORT_DATA_DICTIONARY_HEADER_IS_NOT_EXIST(ResponseCode.RESPONSE_CODE_NULL, "导入数据对应关系的词典时,字段名不在数据库中,请插入"),
+
     /* 取得查询条件 */
 
     /* 创建表 */

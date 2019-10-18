@@ -154,7 +154,7 @@ public class UpDownloadFileServiceImpl implements IUpDownloadFileService {
                 Slf4jLogUtil.get().info("第{}/{}个文件开始导入,文件名:{}",(i+1),fileNumber,fileName);
 
                 try {
-                    if (ImportExcelUtils.isExcelFileValidata(files[i]) == true) {
+                    if (ImportExcelUtils.isExcelFileValidate(files[i]) == true) {
                         //responseRead = importExcelByUserMode.readExcelFile(files[i]);//T.B.D UserMode，没有check列名的同义词
                         responseRead = importExcelByEventMode.readExcelFile(files[i]);
                         if (responseRead.indexOf(DataService.IMPORT_EXCEL_SUCCESS_MESSAGE) != -1) {

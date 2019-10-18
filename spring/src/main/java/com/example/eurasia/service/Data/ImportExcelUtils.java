@@ -44,7 +44,7 @@ public class ImportExcelUtils {
      * @param file
      * @return
      */
-    public static boolean isExcelFileValidata(File file) {
+    public static boolean isExcelFileValidate(File file) {
         //判断文件是否为空
         if (file == null) {
             //"文件为空";
