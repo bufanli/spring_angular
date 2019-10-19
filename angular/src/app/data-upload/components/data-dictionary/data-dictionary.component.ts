@@ -9,6 +9,7 @@ import { NgbModal, NgbModalOptions, NgbModalConfig } from '@ng-bootstrap/ng-boot
 import { DataDictionaryUploadComponent } from '../data-dictionary-upload/data-dictionary-upload.component';
 import { ResponseContentType, Http, Headers } from '@angular/http';
 import { saveAs as importedSaveAs } from 'file-saver';
+import { CommonDialogCallback } from 'src/app/common/interfaces/common-dialog-callback';
 
 // json header for download post
 // tslint:disable-next-line: deprecation
@@ -23,7 +24,8 @@ const httpDownloadOptions = {
   templateUrl: './data-dictionary.component.html',
   styleUrls: ['./data-dictionary.component.css']
 })
-export class DataDictionaryComponent implements OnInit {
+export class DataDictionaryComponent implements OnInit, CommonDialogCallback {
+
   private readonly IMPORT_DICTIONARY_PREFIX = 'import_dictionary_';
   private readonly EXPORT_DICTIONARY_PREFIX = 'export_dictionary_';
   private readonly DELETE_DICTIONARY_PREFIX = 'delete_dictionary_';
@@ -43,6 +45,14 @@ export class DataDictionaryComponent implements OnInit {
   ];
   // data dictionary names
   private dataDictionaryNames: string[] = null;
+  // deleting dictionary name
+  private deletingDictionaryName: string = null;
+  // delete dictionary tips
+  private readonly DELETE_DICTIONARY_TITLE = '请确认删除数据字典';
+  private readonly DELETE_DICTIONARY_BODY = '删除数据字典姓名:';
+  private readonly DELETE_DICTIONARY_MODAL_TYPE = 'confirmation';
+  private readonly DELETE_DICTIONARY_SOURCE_ID = '001';
+
   constructor(private currentUserContainer: CurrentUserContainerService,
     private http: HttpClient,
     private modalService: NgbModal,
@@ -118,12 +128,17 @@ export class DataDictionaryComponent implements OnInit {
       const importDictionaryButtonId = '#' + this.IMPORT_DICTIONARY_PREFIX + currentPageData[i][this.UUID_FIELD];
       const exportDictionaryButtonId = '#' + this.EXPORT_DICTIONARY_PREFIX + currentPageData[i][this.UUID_FIELD];
       const deleteDictionaryButtonId = '#' + this.DELETE_DICTIONARY_PREFIX + currentPageData[i][this.UUID_FIELD];
+      const currentDictionaryName = currentPageData[i][this.DATA_DICTIONARY_NAME_FIELD];
       // import button
-      $(importDictionaryButtonId).on('click', currentPageData[i][this.DATA_DICTIONARY_NAME_FIELD], this.importDictionary);
+      $(importDictionaryButtonId).on('click', currentDictionaryName, this.importDictionary);
       // export button
-      $(exportDictionaryButtonId).on('click', this, this.exportDictionary);
+      $(exportDictionaryButtonId).on('click', currentDictionaryName, this.exportDictionary);
       // delete button
-      $(deleteDictionaryButtonId).on('click', this, this.deleteDictionary);
+      const deleteDictionaryParam = {
+        component: this,
+        dictinoaryName: currentDictionaryName,
+      };
+      $(deleteDictionaryButtonId).on('click', deleteDictionaryParam, this.deleteDictionary);
     }
   }
   // import dictionary
@@ -169,9 +184,26 @@ export class DataDictionaryComponent implements OnInit {
       });
   }
   // delete dictionaory
-  private deleteDictionary(): void {
-
+  private deleteDictionary(target: any): void {
+    this.showDeleteDataDictionaryModal(target['component'], target['dictionaryName']);
   }
+  // set deleting dictionary name to component
+  private setDeletingDictionaryName(deletingDictionaryName: string): void {
+    this.deletingDictionaryName = deletingDictionaryName;
+  }
+  // show delete dictionary modal
+  private showDeleteDataDictionaryModal(target: any, currentDictionaryName: any): void {
+    const component = target.data;
+    // set deleting user name
+    component.setDeletingDictionaryName(currentDictionaryName);
+    // set deleting user id
+    component.commonUtilitiesService.showCommonDialog(component.DELETE_USER_TITLE,
+      component.DELETE_DICTIONARY_BODY + component.deletingUserName,
+      component.DELETE_DICTIONARY_MODAL_TYPE,
+      component,
+      component.DELETE_DICTIONARY_SOURCE_ID);
+  }
+
   // load data dictionaries into table
   private loadDataDictionariesIntoTable(): void {
     // data dictionary table data
@@ -186,5 +218,10 @@ export class DataDictionaryComponent implements OnInit {
       tableDataEntry[this.UUID_FIELD] = uuid;
     });
     $('#table').bootstrapTable('load', dataDictionaryTableData);
+  }
+  callbackOnConfirm(sourceID: any): void {
+    if (sourceID === this.DELETE_DICTIONARY_SOURCE_ID) {
+      // delete dictionary
+    }
   }
 }
