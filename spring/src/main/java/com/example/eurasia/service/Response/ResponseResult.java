@@ -3,7 +3,7 @@ package com.example.eurasia.service.Response;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class ResponseResult implements Cloneable {
+public class ResponseResult extends Throwable implements Cloneable {
 
     /**
      * @description 响应码

@@ -144,6 +144,33 @@ SELECT information_schema.SCHEMATA.SCHEMA_NAME FROM information_schema.SCHEMATA 
     }
 
     /**
+     * 根据表名称删除一张表
+     *
+     * @param tableName
+     * @return
+     * @throws
+     * @author FuJia
+     * @Time 2019-10-18 00:00:00
+     */
+    public boolean deleteTable(String tableName) throws Exception {
+        try {
+            // 判断数据库是否已经存在这个名称的表，如果没有某表，直接返回；否则删除之后再返回
+            if (!isExistTableName(tableName)) {
+                return false;
+            } else {
+
+                StringBuffer sql = new StringBuffer();
+                sql.append("DROP TABLE " + tableName);
+                int count = getJdbcTemplate().update(sql.toString());
+                return true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
      * 给表中某个字段添加唯一属性
      *
      * @param tableName

@@ -215,7 +215,7 @@ public class UpDownloadFileServiceImpl implements IUpDownloadFileService {
         ResponseResult responseResult;
         // 取得数据表的所有列名
         Set<String> colsNameSet = dataService.getAllColumnNamesWithoutID(DataService.TABLE_DATA);
-        if (colsNameSet == null) {
+        if (colsNameSet.isEmpty()) {
             throw new Exception(ResponseCodeEnum.GET_COLUMNS_DICTIONARY_GET_HEADER_INFO_FROM_SQL_NULL.getMessage());
         }
 

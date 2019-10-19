@@ -1,5 +1,6 @@
 package com.example.eurasia.controller;
 
+import com.example.eurasia.service.Data.DataDictionaryServiceImpl;
 import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;
@@ -9,7 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -21,6 +25,9 @@ import java.io.IOException;
 @RequestMapping("api")
 public class DataDictionaryController {
 
+    @Qualifier("DataDictionaryServiceImpl")
+    @Autowired
+    private DataDictionaryServiceImpl dataDictionaryServiceImpl;
     @Qualifier("UserInfoServiceImpl")
     @Autowired
     private UserInfoServiceImpl userInfoServiceImpl;
@@ -40,7 +47,7 @@ public class DataDictionaryController {
             if (StringUtils.isEmpty(userID)) {
                 responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
             } else {
-                responseResult = null;
+                responseResult = dataDictionaryServiceImpl.getDataDictionaries();
             }
             Slf4jLogUtil.get().info("进行取得所有的数据对应关系的字典列表结束");
         } catch (Exception e) {
@@ -58,7 +65,7 @@ public class DataDictionaryController {
     @RequestMapping(value="/importDataDictionary", method = RequestMethod.POST)
     public @ResponseBody
     ResponseResult importDataDictionary(@RequestParam("dictionaryName") String dictionaryName,
-                                        @RequestParam("file") File files, HttpServletRequest request) throws IOException {
+                                        @RequestParam("file") File file, HttpServletRequest request) throws IOException {
         ResponseResult responseResult;
         try {
             Slf4jLogUtil.get().info("进行导入数据对应关系的字典开始");
@@ -66,7 +73,7 @@ public class DataDictionaryController {
             if (StringUtils.isEmpty(userID)) {
                 responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
             } else {
-                responseResult = null;
+                responseResult = dataDictionaryServiceImpl.importCSVFile(dictionaryName,file);
             }
             Slf4jLogUtil.get().info("进行导入数据对应关系的字典结束");
         } catch (Exception e) {
@@ -82,7 +89,8 @@ public class DataDictionaryController {
      * @description 导出数据对应关系的字典到csv文件
      */
     @RequestMapping(value="/exportDataDictionary", method = RequestMethod.POST)
-    public ResponseResult exportDataDictionary(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public ResponseResult exportDataDictionary(HttpServletRequest request, HttpServletResponse response,
+                                               @RequestParam("dictionaryName") String dictionaryName) throws IOException {
         ResponseResult responseResult;
         try {
             Slf4jLogUtil.get().info("进行导出数据对应关系的字典开始");
@@ -90,7 +98,7 @@ public class DataDictionaryController {
             if (StringUtils.isEmpty(userID)) {
                 responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
             } else {
-                responseResult = null;
+                responseResult = dataDictionaryServiceImpl.exportCSVFile(response,dictionaryName);
             }
             Slf4jLogUtil.get().info("进行导出数据对应关系的字典结束");
         } catch (Exception e) {
@@ -106,7 +114,8 @@ public class DataDictionaryController {
      * @description 创建数据对应关系的字典
      */
     @RequestMapping(value="/createDataDictionary", method = RequestMethod.POST)
-    public ResponseResult createDataDictionary(HttpServletRequest request, @RequestBody String dictionaryName) throws IOException {
+    public ResponseResult createDataDictionary(HttpServletRequest request,
+                                               @RequestParam("dictionaryName") String dictionaryName) throws IOException {
         ResponseResult responseResult;
         try {
             Slf4jLogUtil.get().info("进行创建数据对应关系的字典开始");
@@ -114,7 +123,7 @@ public class DataDictionaryController {
             if (StringUtils.isEmpty(userID)) {
                 responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
             } else {
-                responseResult = null;
+                responseResult = dataDictionaryServiceImpl.createDataDictionary(dictionaryName);
             }
             Slf4jLogUtil.get().info("进行创建数据对应关系的字典结束");
         } catch (Exception e) {
@@ -130,7 +139,8 @@ public class DataDictionaryController {
      * @description 删除数据对应关系的字典
      */
     @RequestMapping(value="/deleteDataDictionary", method = RequestMethod.POST)
-    public ResponseResult deleteDataDictionary(HttpServletRequest request, @RequestBody String dictionaryName) throws IOException {
+    public ResponseResult deleteDataDictionary(HttpServletRequest request,
+                                               @RequestParam("dictionaryName") String dictionaryName) throws IOException {
         ResponseResult responseResult;
         try {
             Slf4jLogUtil.get().info("进行删除数据对应关系的字典开始");
@@ -138,7 +148,7 @@ public class DataDictionaryController {
             if (StringUtils.isEmpty(userID)) {
                 responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
             } else {
-                responseResult = null;
+                responseResult = dataDictionaryServiceImpl.deleteDataDictionary(dictionaryName);
             }
             Slf4jLogUtil.get().info("进行删除数据对应关系的字典结束");
         } catch (Exception e) {

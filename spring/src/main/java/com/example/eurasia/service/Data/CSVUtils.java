@@ -1,8 +1,11 @@
 package com.example.eurasia.service.Data;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class CSVUtils {
 
@@ -83,11 +86,12 @@ public class CSVUtils {
 
     /**
      * 导出CSV文件
-     * @param file     @param file csv文件，csv文件不存在会自动创建
+     * @param file csv文件
+     * @param headDataSet 标题数据
      * @param dataList 数据
      * @return
      */
-    public static boolean exportCSV(File file, List<String> dataList) {
+    public static boolean exportCSV(File file, Set<String> headDataSet, List<String[]> dataList) {
         boolean isSuccess = false;
 
         FileOutputStream out = null;
@@ -98,11 +102,19 @@ public class CSVUtils {
             out = new FileOutputStream(file);
             osw = new OutputStreamWriter(out, "UTF-8");
             bw = new BufferedWriter(osw);
-            if (dataList != null && !dataList.isEmpty()) {
-                for (String data : dataList) {
+            //if (headDataSet != null && !headDataSet.isEmpty()) {
+                for (String data : headDataSet) {
                     bw.append(data).append("\r");
                 }
-            }
+            //}
+            //if (dataList != null && !dataList.isEmpty()) {
+                for (String[] dataArr : dataList) {
+                    for (String data : dataArr) {
+                        bw.append(data);
+                    }
+                    bw.append("\r");
+                }
+            //}
             isSuccess = true;
         } catch (Exception e) {
             isSuccess = false;
@@ -134,6 +146,45 @@ public class CSVUtils {
         }
 
         return isSuccess;
+    }
+
+    /**
+     * 写入csv结束，写出流
+     * @return
+     */
+    public static void outCSVStream(HttpServletResponse response, File tempFile, String dictionaryName) throws IOException {
+        InputStream input = new BufferedInputStream(new FileInputStream(tempFile.getCanonicalPath()));
+        byte[] buffer = new byte[input.available()];
+        input.read(buffer);
+        input.close();
+        // 清空response
+        response.reset();
+        // 设置response的Header
+        String fileName = dictionaryName + ".csv";
+        response.setContentType("application/csv");
+        response.addHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, "UTF-8"));
+        OutputStream output = new BufferedOutputStream(response.getOutputStream());
+        //output.write(new   byte []{( byte ) 0xEF ,( byte ) 0xBB ,( byte ) 0xBF });//为了保证excel打开csv不出现中文乱码
+        output.write(buffer);
+        output.flush();
+    }
+
+    /**
+     * 删除单个文件
+     *
+     * @return 单个文件删除成功返回true，否则返回false
+     */
+    public static boolean deleteFile( File file) {
+        // 如果文件路径所对应的文件存在，并且是一个文件，则直接删除
+        if (file.exists() && file.isFile()) {
+            if (file.delete()) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
     }
 
 }

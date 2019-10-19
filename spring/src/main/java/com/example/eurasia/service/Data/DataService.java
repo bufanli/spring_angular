@@ -313,7 +313,7 @@ public class DataService {
     }
 
     /**
-     * 添加新字段
+     * 添加新字段(For同义词)
      * @param
      * @return
      * @exception
@@ -342,7 +342,7 @@ public class DataService {
     }
 
     /**
-     * 删除字段
+     * 删除字段(For同义词)
      * @param
      * @return
      * @exception
@@ -367,7 +367,7 @@ public class DataService {
     }
 
     /**
-     * 删除字段
+     * 删除字段(For同义词)
      * @param
      * @return
      * @exception
@@ -385,8 +385,10 @@ public class DataService {
 
             Map<String, String> keyValue = new LinkedHashMap<>();
             keyValue.put(DataService.STATISTICS_SETTING_GROUP_BY_COLUMN_NAME, columnName);
-            Data data = new Data(keyValue);
-            int delStaticSettingGroupByNum = getDataDao().deleteData(DataService.TABLE_STATISTICS_SETTING_GROUP_BY, data);
+            Data deleteData = new Data(keyValue);
+            List<Data> deleteDataList = new ArrayList<>();
+            deleteDataList.add(deleteData);
+            int delStaticSettingGroupByNum = this.deleteDataFromSQL(DataService.TABLE_STATISTICS_SETTING_GROUP_BY, deleteDataList);
 
             Slf4jLogUtil.get().info("删除字段 {} ！",columnName);
             return true;
@@ -394,7 +396,26 @@ public class DataService {
     }
 
     /**
-     * 判断数据字段名或同义词，是否存在
+     * 删除数据
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2019-06-07 00:00:00
+     */
+    public int deleteDataFromSQL(String tableName, List<Data> dataList) throws Exception {
+
+        int delDataNum = 0;
+        for (Data data : dataList) {
+            delDataNum += getDataDao().deleteData(tableName, data);
+        }
+        return delDataNum;
+    }
+
+    /**
+     * 判断数据字段名或同义词，是否存在(For同义词)
+     * 1.如果查询的字段有空格,则将空格去掉。
+     * 2.如果在同义词表里，则替换成数据表中的字段名。
      * @param
      * @return
      * @exception
@@ -403,8 +424,8 @@ public class DataService {
      */
     public List<String> isTitleExist(List<String> titleList) throws Exception {
 
-        boolean isInTableData = false;
-        boolean isInTableColsDicData = false;
+        boolean isInTableData;
+        boolean isInTableColsDicData;
 
         List<String> titleIsNotExistList = new ArrayList<>();
 
@@ -420,7 +441,7 @@ public class DataService {
             isInTableColsDicData = false;
 
             String title = titleList.get(i);
-            if (title.indexOf(" ") == -1) {
+            if (!title.contains(" ")) {
 
             } else {
                 String newTitle = org.apache.commons.lang3.StringUtils.deleteWhitespace(title);
@@ -441,6 +462,76 @@ public class DataService {
                         String colNameValue = (String) map.get(DataService.COLUMNS_DICTIONARY_COLUMN_NAME);
                         //替换同义词
                         titleList.set(i, colNameValue);
+                        break;
+                    }
+                }
+
+                if (isInTableColsDicData == false) {
+                    //不存在的字段
+                    titleIsNotExistList.add(title);
+                } else {
+                    //存在的字段
+                }
+
+            } else {
+                //在数据表中找到该字段
+            }
+
+        }
+
+        return titleIsNotExistList;
+    }
+
+    /**
+     * 判断数据字段名或同义词，是否存在(For数据对应关系的词典)
+     * 1.如果查询的字段有空格,则将空格去掉。
+     * 2.如果在同义词表里，则替换成数据表中的字段名。
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-09-20 00:00:00
+     */
+    public List<String> isTitleExist(String[] titleArr) throws Exception {
+
+        boolean isInTableData;
+        boolean isInTableColsDicData;
+
+        List<String> titleIsNotExistList = new ArrayList<>();
+
+        // 取得数据表的所有列名
+        Set<String> colsNameSet = this.getAllColumnNames(DataService.TABLE_DATA);
+
+        // 取得数据字典表指定列的所有值
+        List<Map<String, Object>> colValuesListMap = this.getColumnAllValuesByGroup(DataService.TABLE_COLUMNS_DICTIONARY,
+                new String[]{DataService.COLUMNS_DICTIONARY_SYNONYM, DataService.COLUMNS_DICTIONARY_COLUMN_NAME});
+
+        for (int i=0; i<titleArr.length; i++) {
+            isInTableData = false;
+            isInTableColsDicData = false;
+
+            String title = titleArr[i];
+            if (!title.contains(" ")) {
+
+            } else {
+                String newTitle = org.apache.commons.lang3.StringUtils.deleteWhitespace(title);
+                titleArr[i] = newTitle;
+            }
+
+            title = titleArr[i];
+            if (colsNameSet.contains(title)) {//在数据表中找到该字段
+                isInTableData = true;
+            }
+
+            if (isInTableData == false) {
+                //在数据表中没找到该字段
+                for (Map<String, Object> map : colValuesListMap) {//在数据字典表中找该字段
+                    String synonymValue = (String) map.get(DataService.COLUMNS_DICTIONARY_SYNONYM);
+                    if (synonymValue.equals(title)) {//在数据字典表的同义词里找到该字段
+                        isInTableColsDicData = true;
+                        String colNameValue = (String) map.get(DataService.COLUMNS_DICTIONARY_COLUMN_NAME);
+                        //替换同义词
+                        titleArr[i] = colNameValue;
                         break;
                     }
                 }
@@ -551,6 +642,22 @@ public class DataService {
         }
 
         return getDataDao().queryListForAllObject(tableName,queryConditionsArr,offset,limit,order);
+    }
+
+    /**
+     * 数据查询
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2019-10-19 00:00:00
+     */
+    public List<String[]> searchDataForDownload(String tableName) throws Exception {
+        if (StringUtils.isEmpty(tableName)) {
+            return null;
+        }
+
+        return getDataDao().queryListStringForAllObject(tableName);
     }
 
     /**
@@ -748,6 +855,28 @@ as不是给表里的字段取别名，而是给查询的结果字段取别名。
         return false;
     }
 
+
+    /**
+     * 根据表名称删除一张表
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2019-10-18 00:00:00
+     */
+    public boolean deleteTable(String tableName) throws Exception {
+        if (StringUtils.isEmpty(tableName)) {
+            return false;
+        }
+
+        try {
+            return getDataDao().deleteTable(tableName);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     /**
      * 创建数据库
      * @param
@@ -854,4 +983,31 @@ as不是给表里的字段取别名，而是给查询的结果字段取别名。
         return getDataDao().getColumnValueCounts(tableName, columnName);
     }
 
+    /**
+     * 导出表的数据到csv文件(带表头)
+     *
+     * @param
+     * @return
+     * @throws
+     * @author FuJia
+     * @Time 2019-10-19 00:00:00
+     */
+    public List<String[]> getDataToCSV(String tableName, String filePath) throws Exception {
+
+        return getDataDao().queryListStringForAllObjectToCSV(tableName, filePath);
+    }
+
+    /**
+     * 导出表的数据到csv文件(不带表头)
+     *
+     * @param
+     * @return
+     * @throws
+     * @author FuJia
+     * @Time 2019-10-19 00:00:00
+     */
+    public List<String[]> getDataToCSVWithoutHeaders(String tableName, String filePath) throws Exception {
+
+        return getDataDao().queryListStringForAllObjectToCSVWithoutHeaders(tableName, filePath);
+    }
 }

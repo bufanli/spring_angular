@@ -1,6 +1,7 @@
 package com.example.eurasia.service.Data;
 
 import com.example.eurasia.entity.Data.Data;
+import com.example.eurasia.service.Util.DataProcessingUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -139,37 +140,12 @@ public class ImportExcelRowReader {
     }
 
     /**
-     * 检查是否为空行
-     * @param rowList
-     * @return
-     */
-    public boolean checkNullRow(List<String> rowList){
-        boolean isNull = false;
-        String temp;
-        for(int i=0,size = rowList.size();i<size;i++){
-            temp = rowList.get(i);
-            if(temp == null || temp.trim().length() == 0)continue;
-            isNull = true;
-            break;
-        }
-        return isNull;
-    }
-
-    /**
      * 不存在的列名List转String
      * @param
      * @return
      */
     public String titleIsNotExistListToString() {
-        StringBuilder sb = new StringBuilder();
-
-        for (String title : this.getTitleIsNotExistList()) {
-            sb.append(title);
-            sb.append(",");
-        }
-
-        sb.deleteCharAt(sb.length() - ",".length());
-        return sb.toString();
+        return DataProcessingUtil.listToStringWithComma(this.getTitleIsNotExistList());
     }
 
     /**
@@ -178,14 +154,6 @@ public class ImportExcelRowReader {
      * @return
      */
     public String sameTitleSetToString() {
-        StringBuilder sb = new StringBuilder();
-
-        for (String title : this.getSameTitleSet()) {
-            sb.append(title);
-            sb.append(",");
-        }
-
-        sb.deleteCharAt(sb.length() - ",".length());
-        return sb.toString();
+        return DataProcessingUtil.setToStringWithComma(this.getSameTitleSet());
     }
 }

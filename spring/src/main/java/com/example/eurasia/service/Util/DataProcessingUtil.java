@@ -4,6 +4,7 @@ import com.example.eurasia.entity.Data.QueryCondition;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @ClassName: DataProcessingUtil
@@ -42,5 +43,56 @@ public class DataProcessingUtil {
             values.delete((values.length() - QueryCondition.QUERY_CONDITION_SPLIT.length()),values.length());
         }
         return values.toString();
+    }
+
+    /**
+     * 检查是否为空行
+     * @param rowList
+     * @return
+     */
+    public static boolean checkNullRow(List<String> rowList){
+        boolean isNull = false;
+        String temp;
+        for(int i=0,size = rowList.size();i<size;i++){
+            temp = rowList.get(i);
+            if(temp == null || temp.trim().length() == 0)continue;
+            isNull = true;
+            break;
+        }
+        return isNull;
+    }
+
+    /**
+     * List转String
+     * @param
+     * @return
+     */
+    public static String listToStringWithComma(List<String> src) {
+        StringBuilder sb = new StringBuilder();
+
+        for (String str : src) {
+            sb.append(str);
+            sb.append(",");
+        }
+
+        sb.deleteCharAt(sb.length() - ",".length());
+        return sb.toString();
+    }
+
+    /**
+     * Set转String
+     * @param
+     * @return
+     */
+    public static String setToStringWithComma(Set<String> src) {
+        StringBuilder sb = new StringBuilder();
+
+        for (String str : src) {
+            sb.append(str);
+            sb.append(",");
+        }
+
+        sb.deleteCharAt(sb.length() - ",".length());
+        return sb.toString();
     }
 }
