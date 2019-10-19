@@ -51,37 +51,6 @@ public class UserDao extends CommonDao {
     }
 
     /**
-     * 查询某表某字段指定值的个数
-     * @param
-     * @return
-     * @exception
-     * @author FuJia
-     * @Time 2018-11-29 23:11:00
-     */
-    public Long queryCountOfColumnValue(String tableName, String columnName, String value)
-    {
-        //String sql = "select 1 from " + tableName +" where userID = '" + userID + "' limit 1";
-        String sql = "select count(*) from " + tableName +" where " + columnName + " = '" + value + "'";
-        Long count = getJdbcTemplate().queryForObject(sql,Long.class);
-        return count;
-    }
-
-    /**
-     * 查询某表某字段指定值的个数,本条数据以外。
-     * @param
-     * @return
-     * @exception
-     * @author FuJia
-     * @Time 2018-11-29 23:11:00
-     */
-    public Long queryCountOfColumnValueExcept(String id, String tableName, String columnName, String value)
-    {
-        String sql = "select count(*) from " + tableName +" where " + columnName + " = '" + value + "' and id not in ('" + id + "')";
-        Long count = getJdbcTemplate().queryForObject(sql,Long.class);
-        return count;
-    }
-
-    /**
      * 获取用户自定义属性是TRUE的属性
      * @param
      * @return

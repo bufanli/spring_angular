@@ -247,6 +247,7 @@ public enum ResponseCodeEnum {
     IMPORT_CSV_FILE_FAILED(ResponseCode.RESPONSE_CODE_NG, "上传数据对应关系的字典csv文件失败"),
     IMPORT_CSV_FILE_ZERO(ResponseCode.RESPONSE_CODE_NG, "上传数据对应关系的字典csv文件长度为0"),
     IMPORT_DATA_DICTIONARY_NAME_NULL(ResponseCode.RESPONSE_CODE_NULL, "导入数据对应关系的词典的名字为空"),
+    IMPORT_DATA_DICTIONARY_IS_NOT_EXIST(ResponseCode.RESPONSE_CODE_NULL, "导入数据对应关系的词典不存在"),
     IMPORT_DATA_DICTIONARY_GET_HEADER_INFO_FROM_SQL_NULL(ResponseCode.RESPONSE_CODE_NULL, "导入数据对应关系的词典时,从数据库取得表头信息为NULL"),
     IMPORT_DATA_DICTIONARY_HEADER_IS_NOT_EXIST(ResponseCode.RESPONSE_CODE_NULL, "导入数据对应关系的词典时,字段名不在数据库中,请插入"),
     DELETE_DATA_DICTIONARY_IS_NOT_EXIST(ResponseCode.RESPONSE_CODE_NULL, "删除数据对应关系的词典不存在"),

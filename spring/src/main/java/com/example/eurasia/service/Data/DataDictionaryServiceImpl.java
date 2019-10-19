@@ -107,7 +107,15 @@ public class DataDictionaryServiceImpl implements IDataDictionaryService {
                 dictionaryName = newTitle;
             }
 
-            // 前提：dictionaryName在DataService.TABLE_DATA_DICTIONARY_SUMMARY中是存在的。
+            // dictionaryName在DataService.TABLE_DATA_DICTIONARY_SUMMARY中是否存在，所对应的词典表是否存在。
+            long numInDataDicSummary = dataService.getColumnValueNumber(DataService.TABLE_DATA_DICTIONARY_SUMMARY,
+                    DataService.DATA_DICTIONARY_NAME,
+                    dictionaryName);
+            boolean isTableExist = dataService.isExistTableName(dictionaryName);
+            if (numInDataDicSummary != 1 || isTableExist == false) {
+                Slf4jLogUtil.get().info(ResponseCodeEnum.IMPORT_DATA_DICTIONARY_IS_NOT_EXIST.getMessage());
+                return new ResponseResultUtil().error(ResponseCodeEnum.IMPORT_DATA_DICTIONARY_IS_NOT_EXIST);
+            }
 
             // 取得csv文件的数据
             List<String> csvDataList = CSVUtils.importCSV(csvFile);

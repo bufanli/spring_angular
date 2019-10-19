@@ -136,7 +136,16 @@ public class ImportExcelRowReader {
     }
 
     public int saveDataToSQL(String tableName, List<Data> dataList) throws Exception {
-        return dataService.saveDataToSQL(tableName, dataList);
+        // 利用数据关系对应的词典，扩张要保存的数据
+
+        // 保存到临时表
+
+        // 将临时表的数据保存到数据表
+        int num = dataService.saveDataToSQL(tableName, dataList);// DataService.TABLE_DATA = "eurasiaTable"
+
+        // 删除临时表
+
+        return num;
     }
 
     /**

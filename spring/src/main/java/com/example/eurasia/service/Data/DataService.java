@@ -878,6 +878,22 @@ as不是给表里的字段取别名，而是给查询的结果字段取别名。
     }
 
     /**
+     * 根据表名称删除一张表
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2019-10-18 00:00:00
+     */
+    public boolean isExistTableName(String tableName) throws Exception {
+        if (StringUtils.isEmpty(tableName)) {
+            return false;
+        }
+
+        return getDataDao().isExistTableName(tableName);
+    }
+
+    /**
      * 创建数据库
      * @param
      * @return
@@ -981,6 +997,21 @@ as不是给表里的字段取别名，而是给查询的结果字段取别名。
     public List<Long> getColumnValueCounts(String tableName, String columnName) throws Exception {
 
         return getDataDao().getColumnValueCounts(tableName, columnName);
+    }
+
+    /**
+     * 字段中指定值的数。
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-11-29 00:00:00
+     */
+    public long getColumnValueNumber(String tableName, String columnName, String value) throws Exception {
+        if (StringUtils.isEmpty(tableName)) {
+            return -1;
+        }
+        return getDataDao().queryCountOfColumnValue(tableName,columnName,value).longValue();
     }
 
     /**
