@@ -1,26 +1,37 @@
 <div class="container-fluid">
   <ul class="nav nav-tabs">
-    <li class="active" [ngClass]="{active: (this.isSynonymEditActive === false)}"
-      (click)="this.setSynonymEditActive(false)">
+    <li class="active" [ngClass]="{active: (this.showType=== ShowType.SHOW_DATA_UPLOAD)}"
+      (click)="this.showDataUpload()">
       <a href="#data-upload" data-toggle="tab">
         上传数据
       </a>
     </li>
-    <li class="active" [ngClass]="{active: (this.isSynonymEditActive === true)}"
-      (click)="this.setSynonymEditActive(true)">
+    <li class="active" [ngClass]="{active: (this.showType=== ShowType.SHOW_SYNONYM_EDIT)}"
+      (click)="this.showSynonymEdit()">
       <a href="#edit-dictionary" data-toggle="tab">
         编辑同义词
       </a>
     </li>
+    <li class="active" [ngClass]="{active: (this.showType=== ShowType.SHOW_DATA_DICTIONARY_EDIT)}"
+      (click)="this.showDataDictionaryEdit()">
+      <a href="#edit-data-dictionary" data-toggle="tab">
+        编辑数据字典
+      </a>
   </ul>
   <div class="tab-content">
-    <div class="tab-pane fade in" id="data-upload" [ngClass]="{active: (this.isSynonymEditActive === false)}">
+    <div class="tab-pane fade in" id="data-upload" [ngClass]="{active: (this.showType=== ShowType.SHOW_DATA_UPLOAD)}">
       <div class=" clearfix" style="margin-bottom: 1em;"></div>
       <app-file-upload #dataUpload></app-file-upload>
     </div>
-    <div class="tab-pane fade in" id="edit-dictionary" [ngClass]="{active: (this.isSynonymEditActive === true)}">
+    <div class="tab-pane fade in" id="edit-dictionary"
+      [ngClass]="{active: (this.showType===ShowType.SHOW_SYNONYM_EDIT )}">
       <div class="clearfix" style="margin-bottom: 1em;"></div>
       <app-edit-dictionary #editDictionary></app-edit-dictionary>
+    </div>
+    <div class="tab-pane fade in" id="edit-data-dictionary"
+      [ngClass]="{active: (this.showType===ShowType.SHOW_DATA_DICTIONARY_EDIT)}">
+      <div class="clearfix" style="margin-bottom: 1em;"></div>
+      <app-data-dictionary #editDataDictionary></app-data-dictionary>
     </div>
   </div>
 </div>

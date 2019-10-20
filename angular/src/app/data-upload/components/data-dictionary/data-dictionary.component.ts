@@ -1,19 +1,25 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { Header } from 'src/app/common/entities/header';
 import { Observable } from 'rxjs';
 import { HttpResponse } from 'src/app/common/entities/http-response';
 import { CurrentUserContainerService } from 'src/app/common/services/current-user-container.service';
 import { UUID } from 'angular2-uuid';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { NgbModal, NgbModalOptions, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
 import { DataDictionaryUploadComponent } from '../data-dictionary-upload/data-dictionary-upload.component';
 import { ResponseContentType, Http, Headers } from '@angular/http';
 import { saveAs as importedSaveAs } from 'file-saver';
 import { CommonDialogCallback } from 'src/app/common/interfaces/common-dialog-callback';
+import { CommonUtilitiesService } from 'src/app/common/services/common-utilities.service';
 
 // json header for download post
 // tslint:disable-next-line: deprecation
 const head = new Headers({ 'Content-Type': 'application/json' });
+// json header for post
+const httpOptions = {
+  // tslint:disable-next-line: deprecation
+  headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+};
 const httpDownloadOptions = {
   headers: head,
   // tslint:disable-next-line: deprecation
@@ -25,14 +31,17 @@ const httpDownloadOptions = {
   styleUrls: ['./data-dictionary.component.css']
 })
 export class DataDictionaryComponent implements OnInit, CommonDialogCallback {
-
+  @Output() notifyOpenSynonym: EventEmitter<string> = new EventEmitter<string>();
   private readonly IMPORT_DICTIONARY_PREFIX = 'import_dictionary_';
   private readonly EXPORT_DICTIONARY_PREFIX = 'export_dictionary_';
   private readonly DELETE_DICTIONARY_PREFIX = 'delete_dictionary_';
   // get data dictionaries
   private getDataDictionariesUrl = 'api/getDataDictionaries';  // URL to get data dictionaries
   // export
-  private exportDataDictionaryUrl = 'api/exportDataDictionary';  // URL to get data dictionaries
+  private exportDataDictionaryUrl = 'api/exportDataDictionary';  // URL to export data dictionaries
+  // delete
+  private deleteDataDictionaryUrl = 'api/deleteDataDictionary';  // URL to delete data dictionaries
+
   // operation header index
   private readonly OPERATION_HEADER_INDEX = 2;
   private readonly DATA_DICTIONARY_NAME_FIELD = 'dataDictionaryName';
@@ -47,17 +56,35 @@ export class DataDictionaryComponent implements OnInit, CommonDialogCallback {
   private dataDictionaryNames: string[] = null;
   // deleting dictionary name
   private deletingDictionaryName: string = null;
-  // delete dictionary tips
+  // delete data dictionary tips
   private readonly DELETE_DICTIONARY_TITLE = '请确认删除数据字典';
   private readonly DELETE_DICTIONARY_BODY = '删除数据字典姓名:';
   private readonly DELETE_DICTIONARY_MODAL_TYPE = 'confirmation';
   private readonly DELETE_DICTIONARY_SOURCE_ID = '001';
+  // delete data dictionary error tips
+  private readonly DELETE_DICTIONARY_ERROR_TITLE = '删除数据字典错误';
+  private readonly DELETE_DICTIONARY_ERROR_BODY = '删除数据字典错误信息:';
+  private readonly DELETE_DICTIONARY_ERROR_MODAL_TYPE = 'confirmation';
+  private readonly DELETE_DICTIONARY_ERROR_SOURCE_ID = '002';
+
+  // error exist and message
+  public errorExist = false;
+  public errorMsg: string = null;
+  // info exist and message
+  public infoExist = false;
+  public infoMsg: string = null;
+  // data dictionary title
+  public readonly ADD_DATA_DICTIONARY_TITLE = '数据字典名';
+  // input data dictionary name
+  public addedDictionaryName: string = null;
 
   constructor(private currentUserContainer: CurrentUserContainerService,
     private http: HttpClient,
     private modalService: NgbModal,
     // tslint:disable-next-line: deprecation
     private downloadHttp: Http,
+    private currentUserConstainer: CurrentUserContainerService,
+    private commonUtilitiesService: CommonUtilitiesService,
   ) { }
 
   ngOnInit() {
@@ -66,13 +93,6 @@ export class DataDictionaryComponent implements OnInit, CommonDialogCallback {
     // get columns and synonyms
     this.getDataDictionaries().subscribe(httpResponse =>
       this.getDataDictionariesNotification(httpResponse));
-    // set size of synonym container
-    // tslint:disable-next-line: deprecation
-    $(window).resize(function () {
-      $('#table').height($(window).height() * 0.6);
-    });
-    // set size of synonym container
-    $('#table').height($(window).height() * 0.6);
   }
   // get data dictionaries
   private getDataDictionaries(): Observable<HttpResponse> {
@@ -146,6 +166,9 @@ export class DataDictionaryComponent implements OnInit, CommonDialogCallback {
     const service: NgbModal = this.modalService;
     const modalRef = service.open(DataDictionaryUploadComponent, this.adjustModalOptions());
     modalRef.componentInstance.setDictionaryName(dictinoaryName);
+    // notify edit synonym
+    modalRef.componentInstance.notifyOpenSynonym.subscribe(response =>
+      this.notifyOpenSynonym.emit(response));
   }
   // adjust modal options
   // if don't adjust modal options, modal will not be shown correctly
@@ -194,11 +217,11 @@ export class DataDictionaryComponent implements OnInit, CommonDialogCallback {
   // show delete dictionary modal
   private showDeleteDataDictionaryModal(target: any, currentDictionaryName: any): void {
     const component = target.data;
-    // set deleting user name
+    // set deleting data dictionary
     component.setDeletingDictionaryName(currentDictionaryName);
     // set deleting user id
-    component.commonUtilitiesService.showCommonDialog(component.DELETE_USER_TITLE,
-      component.DELETE_DICTIONARY_BODY + component.deletingUserName,
+    component.commonUtilitiesService.showCommonDialog(component.DELETE_DICTIONARY_TITLE,
+      component.DELETE_DICTIONARY_BODY + component.deletingDictionaryName,
       component.DELETE_DICTIONARY_MODAL_TYPE,
       component,
       component.DELETE_DICTIONARY_SOURCE_ID);
@@ -222,6 +245,83 @@ export class DataDictionaryComponent implements OnInit, CommonDialogCallback {
   callbackOnConfirm(sourceID: any): void {
     if (sourceID === this.DELETE_DICTIONARY_SOURCE_ID) {
       // delete dictionary
+      this.deleteDataDictionary(this.deletingDictionaryName);
+    } else if (sourceID === this.DELETE_DICTIONARY_ERROR_SOURCE_ID) {
+      // nothing to do
     }
+  }
+  // delete user
+  public deleteDataDictionary(dictinoaryName: string): void {
+    this.deleteDataDictionaryImpl(dictinoaryName).subscribe(httpResponse =>
+      this.deleteDataDictionaryNotification(httpResponse));
+  }
+  // get hs code selections implementation
+  private deleteDataDictionaryImpl(dictionaryName: string): Observable<HttpResponse> {
+    // form data
+    const formData = {
+      dictinoaryName: dictionaryName,
+    };
+    return this.http.post<HttpResponse>(
+      this.deleteDataDictionaryUrl,
+      formData,
+      httpOptions);
+  }
+  // get category list notification
+  private deleteDataDictionaryNotification(httpResponse: HttpResponse): void {
+    if (httpResponse === null) {
+      return;
+    } else {
+      // check session timeout
+      if (httpResponse.code !== 200) {
+        if (httpResponse.code === 201) {
+          // session timeout
+          this.currentUserConstainer.sessionTimeout();
+          return;
+        } else {
+          // other error
+          this.commonUtilitiesService.showCommonDialog(
+            this.DELETE_DICTIONARY_ERROR_TITLE,
+            this.DELETE_DICTIONARY_ERROR_BODY + httpResponse.message,
+            this.DELETE_DICTIONARY_ERROR_MODAL_TYPE,
+            this,
+            this.DELETE_DICTIONARY_ERROR_SOURCE_ID);
+
+        }
+        // on deleted data dictionary
+        this.onDeletedDataDictionary();
+      }
+    }
+  }
+  // on deleted data dictionary
+  private onDeletedDataDictionary(): void {
+    // deleted dictinaries
+    const deletedDictionaries = [
+      this.deletingDictionaryName,
+    ];
+    // delete them from bootstrap table
+    $('#table').bootstrapTable('remove',
+      {
+        field: this.DATA_DICTIONARY_NAME_FIELD,
+        ids: deletedDictionaries
+      });
+  }
+  // clear error msg
+  private clearErrorMsg(): void {
+    this.errorExist = false;
+    this.errorMsg = null;
+  }
+  // clear info msg
+  private clearInfoMsg(): void {
+    this.infoExist = false;
+    this.infoMsg = null;
+  }
+  // on enter data dictionary name, clear error and info msg
+  public onEnterDataDictionaryName(event: any): void {
+    this.clearErrorMsg();
+    this.clearInfoMsg();
+  }
+  // on create data dictionary
+  public onCreateDataDictionary(): void {
+    // if()
   }
 }

@@ -4,8 +4,7 @@ import { FileItem } from 'ng2-file-upload';
 import { ParsedResponseHeaders } from 'ng2-file-upload';
 import { CurrentUserContainerService } from 'src/app/common/services/current-user-container.service';
 import { HttpClient } from '@angular/common/http';
-import { HttpResponse } from '../../../common/entities/http-response';
-import { Observable } from 'rxjs';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 const URL = 'api/importDataDictionary';
 
@@ -15,11 +14,14 @@ const URL = 'api/importDataDictionary';
   styleUrls: ['./data-dictionary-upload.component.css']
 })
 export class DataDictionaryUploadComponent implements AfterViewChecked {
+  @Output() notifyOpenSynonym: EventEmitter<string> = new EventEmitter<string>();
   // dictionary name which is imported
   private dictionaryName: string = null;
   public uploader: FileUploader = new FileUploader({ url: URL });
-  constructor(private currentUserContainer: CurrentUserContainerService,
-    private http: HttpClient) {
+  constructor(
+    private currentUserContainer: CurrentUserContainerService,
+    private http: HttpClient,
+    private activeModal: NgbActiveModal) {
     const that: any = this;
     this.uploader.onCompleteItem = function (item: FileItem,
       response: string, status: number, headers: ParsedResponseHeaders) {
@@ -67,10 +69,6 @@ export class DataDictionaryUploadComponent implements AfterViewChecked {
         // nothing to do
       }
     };
-    this.uploader.onCompleteAll = function () {
-      // get query conditions caller
-      that.deleteSameData();
-    };
   }
   // show tooltip when completing to upload file
   public ngAfterViewChecked() {
@@ -96,5 +94,13 @@ export class DataDictionaryUploadComponent implements AfterViewChecked {
   // set dictionary name
   public setDictionaryName(dictionaryName: string): void {
     this.dictionaryName = dictionaryName;
+  }
+  // add custom column
+  public addCustomColumn(item: FileItem): void {
+    this.notifyOpenSynonym.emit(item['failedDetail']);
+  }
+  // close modal
+  public close(): void {
+    this.activeModal.close();
   }
 }

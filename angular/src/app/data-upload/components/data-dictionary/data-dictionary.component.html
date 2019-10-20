@@ -1,3 +1,31 @@
-<table id="table" data-toggle="table" data-pagination=true data-striped="true" data-side-pagination="client"
-  data-unique-id="userID">
-</table>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-9">
+      <div *ngIf="this.errorExist" class="alert alert-danger">{{this.errorMsg}}</div>
+      <div *ngIf="this.infoExist" class="alert alert-info">{{this.infoMsg}}</div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <div class="input-group">
+        <span class="input-group-addon">{{this.ADD_DATA_DICTIONARY_TITLE}}</span>
+        <input type="text" class="form-control" id="synonym" [(ngModel)]="this.addedDictionaryName"
+          (keyup)="onEnterDataDictionaryName($event)">
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="form-group">
+        <button type="button" class="btn btn-primary btn-block" (click)="this.onCreateDataDictionary()">
+          <span class="glyphicon glyphicon-plus"></span> 添加字典
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md12">
+      <table id="table" data-toggle="table" data-pagination=true data-striped="true" data-side-pagination="client"
+        data-unique-id="userID">
+      </table>
+    </div>
+  </div>
