@@ -2,11 +2,6 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { DataUploadComponent } from '../data-upload/data-upload.component';
 import { EditDictionaryComponent } from '../edit-dictionary/edit-dictionary.component';
 import { DataDictionaryComponent } from '../data-dictionary/data-dictionary.component';
-enum ShowType {
-  SHOW_SYNONYM_EDIT,
-  SHOW_DATA_UPLOAD,
-  SHOW_DATA_DICTIONARY_EDIT,
-}
 @Component({
   selector: 'app-data-upload-conf',
   templateUrl: './data-upload-conf.component.html',
@@ -16,7 +11,10 @@ enum ShowType {
 export class DataUploadConfComponent implements OnInit {
 
   // showing tab type
-  public showType: ShowType = ShowType.SHOW_DATA_UPLOAD;
+  public showType = 0;
+  private readonly SHOW_DATA_UPLOAD = 1;
+  private readonly SHOW_SYNONYM_EDIT = 2;
+  private readonly SHOW_DATA_DICTIONARY_EDIT = 3;
   constructor() { }
 
   @ViewChild('dataUpload')
@@ -27,6 +25,7 @@ export class DataUploadConfComponent implements OnInit {
   editDataDictionaryComponent: DataDictionaryComponent;
 
   ngOnInit() {
+    this.showType = this.SHOW_DATA_UPLOAD;
     this.dataUploadComponent.notifyOpenSynonym.subscribe(response =>
       this.openSynonymEdit(response));
     this.editDataDictionaryComponent.notifyOpenSynonym.subscribe(response =>
@@ -36,24 +35,24 @@ export class DataUploadConfComponent implements OnInit {
   // open synonym edit
   private openSynonymEdit(errorMsg: string) {
     // show synonym edit tab
-    this.showType = ShowType.SHOW_SYNONYM_EDIT;
+    this.showType = this.SHOW_SYNONYM_EDIT;
     // set error msg to synonym edit tab
     this.editDictionaryComponent.setUploadDataErrorMsg(errorMsg);
   }
   // set synonym edit active
-  private setShowType(showType: ShowType): void {
+  private setShowType(showType): void {
     this.showType = showType;
   }
   // show data upload
   public showDataUpload(): void {
-    this.setShowType(ShowType.SHOW_DATA_UPLOAD);
+    this.setShowType(this.SHOW_DATA_UPLOAD);
   }
   // show synonym edit
   public showSynonymEdit(): void {
-    this.setShowType(ShowType.SHOW_SYNONYM_EDIT)
+    this.setShowType(this.SHOW_SYNONYM_EDIT);
   }
   // show data dictionary edit
   public showDataDictionaryEdit(): void {
-    this.setShowType(ShowType.SHOW_DATA_DICTIONARY_EDIT);
+    this.setShowType(this.SHOW_DATA_DICTIONARY_EDIT);
   }
 }
