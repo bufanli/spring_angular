@@ -77,6 +77,12 @@ export class DataDictionaryComponent implements OnInit, CommonDialogCallback {
   public readonly ADD_DATA_DICTIONARY_TITLE = '数据字典名';
   // input data dictionary name
   public addedDictionaryName: string = null;
+  // dictionary name null error
+  private readonly DICTIONARY_NAME_IS_NULL_ERROR = '输入的数据字典名为空';
+  private readonly DICTIONARY_NAME_INCLUDES_BLANK_ERROR = '输入的数据字典名包含空格';
+  // create dictionary url
+  private createDataDictionaryUrl = 'api/createDataDictionary';  // URL to create data dictionaries
+  private readonly CREATE_DICTIOINARY_OK = '创建数据字典成功';
 
   constructor(private currentUserContainer: CurrentUserContainerService,
     private http: HttpClient,
@@ -250,12 +256,12 @@ export class DataDictionaryComponent implements OnInit, CommonDialogCallback {
       // nothing to do
     }
   }
-  // delete user
+  // delete data dictionary
   public deleteDataDictionary(dictinoaryName: string): void {
     this.deleteDataDictionaryImpl(dictinoaryName).subscribe(httpResponse =>
       this.deleteDataDictionaryNotification(httpResponse));
   }
-  // get hs code selections implementation
+  // delete data dictionary implementation
   private deleteDataDictionaryImpl(dictionaryName: string): Observable<HttpResponse> {
     // form data
     const formData = {
@@ -266,7 +272,7 @@ export class DataDictionaryComponent implements OnInit, CommonDialogCallback {
       formData,
       httpOptions);
   }
-  // get category list notification
+  // delete dictionary notification
   private deleteDataDictionaryNotification(httpResponse: HttpResponse): void {
     if (httpResponse === null) {
       return;
@@ -322,6 +328,72 @@ export class DataDictionaryComponent implements OnInit, CommonDialogCallback {
   }
   // on create data dictionary
   public onCreateDataDictionary(): void {
-    // if()
+    // check added dictionary name
+    if (this.addedDictionaryName === null ||
+      this.addedDictionaryName === '') {
+      this.errorExist = true;
+      this.errorMsg = this.DICTIONARY_NAME_IS_NULL_ERROR;
+    } else if (this.addedDictionaryName.includes(' ')) {
+      this.errorExist = true;
+      this.errorMsg = this.DICTIONARY_NAME_INCLUDES_BLANK_ERROR;
+    } else {
+      // add dictionary name is valid
+      this.addDataDictionary(this.addedDictionaryName);
+    }
+  }
+
+  // add data dictionary
+  private addDataDictionary(dictinoaryName: string): void {
+    this.addDataDictionaryImpl(dictinoaryName).subscribe(httpResponse =>
+      this.addDataDictionaryNotification(httpResponse, dictinoaryName));
+  }
+  // get hs code selections implementation
+  private addDataDictionaryImpl(dictionaryName: string): Observable<HttpResponse> {
+    // form data
+    const formData = {
+      dictinoaryName: dictionaryName,
+    };
+    return this.http.post<HttpResponse>(
+      this.createDataDictionaryUrl,
+      formData,
+      httpOptions);
+  }
+  // add datat dictionary notification
+  private addDataDictionaryNotification(
+    httpResponse: HttpResponse,
+    dictinoaryName: string): void {
+    if (httpResponse === null) {
+      return;
+    } else {
+      // check session timeout
+      if (httpResponse.code !== 200) {
+        if (httpResponse.code === 201) {
+          // session timeout
+          this.currentUserConstainer.sessionTimeout();
+          return;
+        } else {
+          // show error msg
+          this.errorExist = true;
+          this.errorMsg = httpResponse.message;
+        }
+      } else {
+        // create dictionary succefully
+        this.clearErrorMsg();
+        this.infoExist = true;
+        this.infoMsg = this.CREATE_DICTIOINARY_OK;
+        // add this dictionary into table
+        const that = this;
+        const uuid = UUID.UUID();
+        $('#table').bootstrapTable('insertRow', {
+          index: 0,
+          row: {
+            'uuid': uuid,
+            'dictionaryName': dictinoaryName,
+          },
+        });
+        // bind event handler again
+        this.bindEventHandler();
+      }
+    }
   }
 }
