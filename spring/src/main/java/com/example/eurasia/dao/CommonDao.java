@@ -144,6 +144,33 @@ SELECT information_schema.SCHEMATA.SCHEMA_NAME FROM information_schema.SCHEMATA 
     }
 
     /**
+     * 根据表名称删除一张表
+     *
+     * @param tableName
+     * @return
+     * @throws
+     * @author FuJia
+     * @Time 2019-10-18 00:00:00
+     */
+    public boolean deleteTable(String tableName) throws Exception {
+        try {
+            // 判断数据库是否已经存在这个名称的表，如果没有某表，直接返回；否则删除之后再返回
+            if (!isExistTableName(tableName)) {
+                return false;
+            } else {
+
+                StringBuffer sql = new StringBuffer();
+                sql.append("DROP TABLE " + tableName);
+                int count = getJdbcTemplate().update(sql.toString());
+                return true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
      * 给表中某个字段添加唯一属性
      *
      * @param tableName
@@ -304,6 +331,38 @@ CREATE TABLE SPRING_SESSION_ATTRIBUTES (
             // 格式不正确的时候至少返回原来的时间字符串
             return dateFromAngular;
         }
+    }
+
+
+    /**
+     * 查询某表某字段指定值的个数
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-11-29 23:11:00
+     */
+    public Long queryCountOfColumnValue(String tableName, String columnName, String value)
+    {
+        //String sql = "select 1 from " + tableName +" where userID = '" + userID + "' limit 1";
+        String sql = "select count(*) from " + tableName +" where " + columnName + " = '" + value + "'";
+        Long count = getJdbcTemplate().queryForObject(sql,Long.class);
+        return count;
+    }
+
+    /**
+     * 查询某表某字段指定值的个数,本条数据以外。
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2018-11-29 23:11:00
+     */
+    public Long queryCountOfColumnValueExcept(String id, String tableName, String columnName, String value)
+    {
+        String sql = "select count(*) from " + tableName +" where " + columnName + " = '" + value + "' and id not in ('" + id + "')";
+        Long count = getJdbcTemplate().queryForObject(sql,Long.class);
+        return count;
     }
 
     /**

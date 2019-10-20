@@ -35,7 +35,7 @@ public class StatisticsReportController {
     /**
      * @author
      * @date
-     * @description 数据统计报告
+     * @description 数据统计选项设定
      */
     @RequestMapping(value="/statisticsSetting", method = RequestMethod.POST)
     public @ResponseBody

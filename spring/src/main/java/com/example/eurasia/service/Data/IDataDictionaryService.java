@@ -7,8 +7,8 @@ import java.io.File;
 
 public interface IDataDictionaryService {
     ResponseResult getDataDictionaries() throws Exception;
-    // upload csv
-    ResponseResult importCSVFile(File csvFile) throws Exception;
-    // download csv
-    ResponseResult exportCSVFile(HttpServletResponse response) throws Exception;
+    ResponseResult createDataDictionary(String dictionaryName) throws Exception;
+    ResponseResult deleteDataDictionary(String dictionaryName) throws Exception;
+    ResponseResult importCSVFile(String dictionaryName, File csvFile) throws Exception;
+    ResponseResult exportCSVFile(HttpServletResponse response, String dictionaryName) throws Exception;
 }

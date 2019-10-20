@@ -1,6 +1,7 @@
 package com.example.eurasia.service.Data;
 
 import com.example.eurasia.entity.Data.QueryCondition;
+import com.example.eurasia.service.Util.DataProcessingUtil;
 import com.example.eurasia.service.Util.Slf4jLogUtil;
 import org.apache.poi.hssf.eventusermodel.*;
 import org.apache.poi.hssf.eventusermodel.EventWorkbookBuilder.SheetRecordCollectingListener;
@@ -416,7 +417,7 @@ public class Excel2003Reader implements HSSFListener,IExcelReaderByEventMode {
                 //T.B.D
             }
 
-            if (this.lastColumnNumber > -1 && this.rowReader.checkNullRow(this.rowList)) {
+            if (this.lastColumnNumber > -1 && DataProcessingUtil.checkNullRow(this.rowList)) {
                 // 每行结束时， 调用getRows() 方法
                 this.rowReader.getRows(this.sheetIndex, this.lastRowNumber, this.rowList);
             }

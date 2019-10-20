@@ -429,7 +429,7 @@ GROUP BY 列1,列2,列3 having count(*) > 1;
     }
 
     /**
-     * 字段
+     * 删除一个字段列
      *
      * @param
      * @return
@@ -441,6 +441,29 @@ GROUP BY 列1,列2,列3 having count(*) > 1;
 
         StringBuffer sql = new StringBuffer();
         sql.append("alter table " + tableName + " drop column " + columnName);
+
+        int num = getJdbcTemplate().update(sql.toString());
+        return num;//返回影响的行数。(成功的话，0 rows affected)
+    }
+
+    /**
+     * 删除多个字段列
+     *
+     * @param
+     * @return
+     * @throws
+     * @author FuJia
+     * @Time 2019-06-08 00:00:00
+     */
+    public int deleteColumns(String tableName, String[] columnNames) throws Exception {
+
+        StringBuffer sql = new StringBuffer();
+        sql.append("alter table " + tableName + " drop (");
+        for (String columnName : columnNames) {
+            sql.append(columnName + CommonDao.COMMA);
+        }
+        sql.deleteCharAt(sql.length() - CommonDao.COMMA.length());
+        sql.append(")");
 
         int num = getJdbcTemplate().update(sql.toString());
         return num;//返回影响的行数。(成功的话，0 rows affected)
@@ -705,6 +728,23 @@ Mysql limit offset示例
      * @author FuJia
      * @Time 2018-10-27 00:00:00
      */
+    public List<String[]> queryListStringForAllObject(String tableName) throws Exception {
+        StringBuffer sql = new StringBuffer();
+        sql.append("select * from " + tableName);
+
+        List<String[]> dataArrList = getJdbcTemplate().query(sql.toString(), new DownloadDataMapper());
+        return dataArrList;
+    }
+
+    /**
+     * 查询并返回List集合
+     *
+     * @param
+     * @return
+     * @throws
+     * @author FuJia
+     * @Time 2018-10-27 00:00:00
+     */
     public List<Map<String, Object>> queryListForColumnAllValues(String tableName, String[] selectionCols) throws Exception {
         StringBuffer sql = convertSelectionsToSQL(tableName, selectionCols);
 
@@ -864,6 +904,44 @@ group by 与order by 一起使用是要遵守一定原则的：
 
         return selectionColsList;
     }
+
+    /**
+     * 导出表的数据到csv文件(带表头)
+     *
+     * @param
+     * @return
+     * @throws
+     * @author FuJia
+     * @Time 2019-10-19 00:00:00
+     */
+    public List<String[]> queryListStringForAllObjectToCSV(String tableName, String filePath) throws Exception {
+        StringBuffer sql = new StringBuffer();
+        sql.append("select * from ");
+        sql.append("select 'id','ecode','type','timeid','start_time','end_time'");
+        sql.append(" union all select " + "id,ecode,type,timeid,start_time,end_time" + " from " + tableName + ")");
+        sql.append(" b  into outfile '" + filePath + "' fields terminated by ','enclosed by '\"'lines terminated by '\\r\\n'");
+
+        List<String[]> dataArrList = getJdbcTemplate().query(sql.toString(), new DownloadDataMapper());
+        return dataArrList;
+    }
+
+    /**
+     * 导出表的数据到csv文件(不带表头)
+     *
+     * @param
+     * @return
+     * @throws
+     * @author FuJia
+     * @Time 2019-10-19 00:00:00
+     */
+    public List<String[]> queryListStringForAllObjectToCSVWithoutHeaders(String tableName, String filePath) throws Exception {
+        StringBuffer sql = new StringBuffer();
+        sql.append("select * from " + tableName + " into outfile '" + filePath + "' fields terminated by ','enclosed by '\"' lines terminated by '\\r\\n'");
+
+        List<String[]> dataArrList = getJdbcTemplate().query(sql.toString(), new DownloadDataMapper());
+        return dataArrList;
+    }
+
     private String formatDate(String dateStr) {
         Date date = null;
         try {

@@ -1,6 +1,7 @@
 package com.example.eurasia.service.Data;
 
 import com.example.eurasia.entity.Data.Data;
+import com.example.eurasia.service.Util.DataProcessingUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -135,24 +136,16 @@ public class ImportExcelRowReader {
     }
 
     public int saveDataToSQL(String tableName, List<Data> dataList) throws Exception {
-        return dataService.saveDataToSQL(tableName, dataList);
-    }
+        // 利用数据关系对应的词典，扩张要保存的数据
 
-    /**
-     * 检查是否为空行
-     * @param rowList
-     * @return
-     */
-    public boolean checkNullRow(List<String> rowList){
-        boolean isNull = false;
-        String temp;
-        for(int i=0,size = rowList.size();i<size;i++){
-            temp = rowList.get(i);
-            if(temp == null || temp.trim().length() == 0)continue;
-            isNull = true;
-            break;
-        }
-        return isNull;
+        // 保存到临时表
+
+        // 将临时表的数据保存到数据表
+        int num = dataService.saveDataToSQL(tableName, dataList);// DataService.TABLE_DATA = "eurasiaTable"
+
+        // 删除临时表
+
+        return num;
     }
 
     /**
@@ -161,15 +154,7 @@ public class ImportExcelRowReader {
      * @return
      */
     public String titleIsNotExistListToString() {
-        StringBuilder sb = new StringBuilder();
-
-        for (String title : this.getTitleIsNotExistList()) {
-            sb.append(title);
-            sb.append(",");
-        }
-
-        sb.deleteCharAt(sb.length() - ",".length());
-        return sb.toString();
+        return DataProcessingUtil.listToStringWithComma(this.getTitleIsNotExistList());
     }
 
     /**
@@ -178,14 +163,6 @@ public class ImportExcelRowReader {
      * @return
      */
     public String sameTitleSetToString() {
-        StringBuilder sb = new StringBuilder();
-
-        for (String title : this.getSameTitleSet()) {
-            sb.append(title);
-            sb.append(",");
-        }
-
-        sb.deleteCharAt(sb.length() - ",".length());
-        return sb.toString();
+        return DataProcessingUtil.setToStringWithComma(this.getSameTitleSet());
     }
 }
