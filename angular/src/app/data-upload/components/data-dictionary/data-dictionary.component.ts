@@ -18,7 +18,7 @@ const head = new Headers({ 'Content-Type': 'application/json' });
 // json header for post
 const httpOptions = {
   // tslint:disable-next-line: deprecation
-  headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+  headers: new HttpHeaders({ 'Content-Type': 'application/x-www-form-urlencoded' })
 };
 const httpDownloadOptions = {
   headers: head,
@@ -116,24 +116,29 @@ export class DataDictionaryComponent implements OnInit, CommonDialogCallback {
   }
   // add formatter to user list
   private addOperationFormatter(operationHeader: Header) {
+    const that: any = this;
     operationHeader.formatter = function (value, row, index) {
-      const buttonId = row[this.UUID_FIELD];
-      const exportDataDictionaryButton = '<button type=\'button\' class=\'margin-button btn btn-primary btn-xs\' id=' +
-        this.EXPORT_DICTIONARY_PREFIX + buttonId + ' class=\'btn btn-primary btn-xs \'>\
+      const buttonId = row[that.UUID_FIELD];
+      const exportDataDictionaryButton = '<button type=\'button\' class=\'margin-button btn btn-primary btn-xs\' id=\'' +
+        that.EXPORT_DICTIONARY_PREFIX + buttonId + '\'' + ' class=\'btn btn-primary btn-xs \'>\
       <span class=\'glyphicon glyphicon-cog\'></span> 导出字典</button>';
-      const importDataDictionaryButton = '<button type=\'button\' class=\'margin-button btn btn-default btn-xs\' id=' +
-        this.IMPORT_DICTIONARY_PREFIX + buttonId + ' class=\'btn btn-primary btn-xs \'>\
+      const importDataDictionaryButton = '<button type=\'button\' class=\'margin-button btn btn-default btn-xs\' id=\'' +
+        that.IMPORT_DICTIONARY_PREFIX + buttonId + '\'' + ' class=\'btn btn-primary btn-xs \'>\
       <span class=\'glyphicon glyphicon-trash\'></span> 导入字典</button>';
-      const deleteDataDictionaryButton = '<button type=\'button\' class=\'margin-button btn btn-default btn-xs\' id=' +
-        this.DELETE_DICTIONARY_PREFIX + buttonId + ' class=\'btn btn-primary btn-xs \'>\
+      const deleteDataDictionaryButton = '<button type=\'button\' class=\'margin-button btn btn-default btn-xs\' id=\'' +
+        that.DELETE_DICTIONARY_PREFIX + buttonId + '\'' + ' class=\'btn btn-primary btn-xs \'>\
       <span class=\'glyphicon glyphicon-trash\'></span> 删除字典</button>';
       return exportDataDictionaryButton + importDataDictionaryButton + deleteDataDictionaryButton;
     };
   }
   // init data dictionaries table
   private initDataDictionariesTable(): void {
+    const that: any = this;
     // set headers for user list
     $('#table').bootstrapTable('destroy');
+    this.dataDictionariesHeaders.forEach(element => {
+      element.width = 0.5;
+    });
     // add operation formatter to header
     this.addOperationFormatter(this.dataDictionariesHeaders[this.OPERATION_HEADER_INDEX]);
     $('#table').bootstrapTable({
@@ -141,9 +146,18 @@ export class DataDictionaryComponent implements OnInit, CommonDialogCallback {
       pagination: true,
       pageSize: 8,
       pageList: [],
+      height: $(window).height() * 0.6,
     });
     // bind event handler for every page
     $('#table').on('page-change.bs.table', this, this.bindEventHandler);
+    // tslint:disable-next-line: deprecation
+    $(window).resize(function () {
+      $('#table').bootstrapTable('resetView', {
+        // 60 px is for pagination
+        height: $(window).height() * 0.8 - 60,
+      });
+    });
+
   }
   // bind event handler for delete, import csv and export csv event
   private bindEventHandler(): void {
@@ -162,7 +176,7 @@ export class DataDictionaryComponent implements OnInit, CommonDialogCallback {
       // delete button
       const deleteDictionaryParam = {
         component: this,
-        dictinoaryName: currentDictionaryName,
+        dictionaryName: currentDictionaryName,
       };
       $(deleteDictionaryButtonId).on('click', deleteDictionaryParam, this.deleteDictionary);
     }
@@ -214,7 +228,8 @@ export class DataDictionaryComponent implements OnInit, CommonDialogCallback {
   }
   // delete dictionaory
   private deleteDictionary(target: any): void {
-    this.showDeleteDataDictionaryModal(target['component'], target['dictionaryName']);
+    const component = target.data['component'];
+    component.showDeleteDataDictionaryModal(target.data['component'], target.data['dictionaryName']);
   }
   // set deleting dictionary name to component
   private setDeletingDictionaryName(deletingDictionaryName: string): void {
@@ -222,7 +237,7 @@ export class DataDictionaryComponent implements OnInit, CommonDialogCallback {
   }
   // show delete dictionary modal
   private showDeleteDataDictionaryModal(target: any, currentDictionaryName: any): void {
-    const component = target.data;
+    const component = target;
     // set deleting data dictionary
     component.setDeletingDictionaryName(currentDictionaryName);
     // set deleting user id
@@ -247,6 +262,8 @@ export class DataDictionaryComponent implements OnInit, CommonDialogCallback {
       tableDataEntry[this.UUID_FIELD] = uuid;
     });
     $('#table').bootstrapTable('load', dataDictionaryTableData);
+    // bind event table of data dictionaries
+    this.bindEventHandler();
   }
   callbackOnConfirm(sourceID: any): void {
     if (sourceID === this.DELETE_DICTIONARY_SOURCE_ID) {
@@ -264,9 +281,10 @@ export class DataDictionaryComponent implements OnInit, CommonDialogCallback {
   // delete data dictionary implementation
   private deleteDataDictionaryImpl(dictionaryName: string): Observable<HttpResponse> {
     // form data
-    const formData = {
-      dictinoaryName: dictionaryName,
-    };
+    // const formData = {
+    //   dictionaryName: dictionaryName,
+    // };
+    const formData = 'dictionaryName=' + dictionaryName;
     return this.http.post<HttpResponse>(
       this.deleteDataDictionaryUrl,
       formData,
