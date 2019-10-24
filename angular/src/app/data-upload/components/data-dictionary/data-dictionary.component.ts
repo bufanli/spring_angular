@@ -154,7 +154,7 @@ export class DataDictionaryComponent implements OnInit, CommonDialogCallback {
     $(window).resize(function () {
       $('#table').bootstrapTable('resetView', {
         // 60 px is for pagination
-        height: $(window).height() * 0.8 - 60,
+        height: $(window).height() * 0.6,
       });
     });
 
@@ -182,10 +182,10 @@ export class DataDictionaryComponent implements OnInit, CommonDialogCallback {
     }
   }
   // import dictionary
-  public importDictionary(dictinoaryName: any): void {
+  public importDictionary(dictionaryName: any): void {
     const service: NgbModal = this.modalService;
     const modalRef = service.open(DataDictionaryUploadComponent, this.adjustModalOptions());
-    modalRef.componentInstance.setDictionaryName(dictinoaryName);
+    modalRef.componentInstance.setDictionaryName(dictionaryName);
     // notify edit synonym
     modalRef.componentInstance.notifyOpenSynonym.subscribe(response =>
       this.notifyOpenSynonym.emit(response));
@@ -199,13 +199,13 @@ export class DataDictionaryComponent implements OnInit, CommonDialogCallback {
     return options;
   }
   // export dictionary
-  public exportDictionary(dictinoaryName: any): void {
-    this.exoprtDictionaryImpl(dictinoaryName);
+  public exportDictionary(dictionaryName: any): void {
+    this.exoprtDictionaryImpl(dictionaryName);
   }
   // download data to file
-  private async exoprtDictionaryImpl(dictinoaryName: any): Promise<void> {
+  private async exoprtDictionaryImpl(dictionaryName: any): Promise<void> {
     const formData = {
-      dictionaryName: dictinoaryName,
+      dictionaryName: dictionaryName,
     };
     return this.downloadHttp.post(this.exportDataDictionaryUrl, JSON.stringify(formData), httpDownloadOptions).toPromise().then(
       res => {
@@ -274,8 +274,8 @@ export class DataDictionaryComponent implements OnInit, CommonDialogCallback {
     }
   }
   // delete data dictionary
-  public deleteDataDictionary(dictinoaryName: string): void {
-    this.deleteDataDictionaryImpl(dictinoaryName).subscribe(httpResponse =>
+  public deleteDataDictionary(dictionaryName: string): void {
+    this.deleteDataDictionaryImpl(dictionaryName).subscribe(httpResponse =>
       this.deleteDataDictionaryNotification(httpResponse));
   }
   // delete data dictionary implementation
@@ -357,20 +357,19 @@ export class DataDictionaryComponent implements OnInit, CommonDialogCallback {
     } else {
       // add dictionary name is valid
       this.addDataDictionary(this.addedDictionaryName);
+      this.addedDictionaryName = '';
     }
   }
 
   // add data dictionary
-  private addDataDictionary(dictinoaryName: string): void {
-    this.addDataDictionaryImpl(dictinoaryName).subscribe(httpResponse =>
-      this.addDataDictionaryNotification(httpResponse, dictinoaryName));
+  private addDataDictionary(dictionaryName: string): void {
+    this.addDataDictionaryImpl(dictionaryName).subscribe(httpResponse =>
+      this.addDataDictionaryNotification(httpResponse, dictionaryName));
   }
   // get hs code selections implementation
   private addDataDictionaryImpl(dictionaryName: string): Observable<HttpResponse> {
     // form data
-    const formData = {
-      dictinoaryName: dictionaryName,
-    };
+    const formData = 'dictionaryName=' + dictionaryName;
     return this.http.post<HttpResponse>(
       this.createDataDictionaryUrl,
       formData,
@@ -379,7 +378,7 @@ export class DataDictionaryComponent implements OnInit, CommonDialogCallback {
   // add datat dictionary notification
   private addDataDictionaryNotification(
     httpResponse: HttpResponse,
-    dictinoaryName: string): void {
+    dictionaryName: string): void {
     if (httpResponse === null) {
       return;
     } else {
@@ -406,7 +405,7 @@ export class DataDictionaryComponent implements OnInit, CommonDialogCallback {
           index: 0,
           row: {
             'uuid': uuid,
-            'dictionaryName': dictinoaryName,
+            'dataDictionaryName': dictionaryName,
           },
         });
         // bind event handler again

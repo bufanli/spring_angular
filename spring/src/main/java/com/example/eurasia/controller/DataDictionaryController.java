@@ -89,7 +89,7 @@ public class DataDictionaryController {
      * @description 导出数据对应关系的字典到csv文件
      */
     @RequestMapping(value="/exportDataDictionary", method = RequestMethod.POST)
-    public ResponseResult exportDataDictionary(HttpServletRequest request, HttpServletResponse response,
+    public @ResponseBody ResponseResult exportDataDictionary(HttpServletRequest request, HttpServletResponse response,
                                                @RequestParam("dictionaryName") String dictionaryName) throws IOException {
         ResponseResult responseResult;
         try {
@@ -114,7 +114,7 @@ public class DataDictionaryController {
      * @description 创建数据对应关系的字典
      */
     @RequestMapping(value="/createDataDictionary", method = RequestMethod.POST)
-    public ResponseResult createDataDictionary(HttpServletRequest request,
+    public @ResponseBody ResponseResult createDataDictionary(HttpServletRequest request,
                                                @RequestParam("dictionaryName") String dictionaryName) throws IOException {
         ResponseResult responseResult;
         try {
@@ -139,7 +139,7 @@ public class DataDictionaryController {
      * @description 删除数据对应关系的字典
      */
     @RequestMapping(value="/deleteDataDictionary", method = RequestMethod.POST)
-    public ResponseResult deleteDataDictionary(HttpServletRequest request,
+    public @ResponseBody ResponseResult deleteDataDictionary(HttpServletRequest request,
                                                @RequestParam("dictionaryName") String dictionaryName) throws IOException {
         ResponseResult responseResult;
         try {
