@@ -309,11 +309,11 @@ export class DataDictionaryComponent implements OnInit, CommonDialogCallback {
             this.DELETE_DICTIONARY_ERROR_MODAL_TYPE,
             this,
             this.DELETE_DICTIONARY_ERROR_SOURCE_ID);
-
+          return;
         }
-        // on deleted data dictionary
-        this.onDeletedDataDictionary();
       }
+      // on deleted data dictionary
+      this.onDeletedDataDictionary();
     }
   }
   // on deleted data dictionary
@@ -326,7 +326,7 @@ export class DataDictionaryComponent implements OnInit, CommonDialogCallback {
     $('#table').bootstrapTable('remove',
       {
         field: this.DATA_DICTIONARY_NAME_FIELD,
-        ids: deletedDictionaries
+        values: deletedDictionaries
       });
   }
   // clear error msg

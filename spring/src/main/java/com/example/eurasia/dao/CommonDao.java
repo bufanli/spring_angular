@@ -156,7 +156,7 @@ SELECT information_schema.SCHEMATA.SCHEMA_NAME FROM information_schema.SCHEMATA 
         try {
             // 判断数据库是否已经存在这个名称的表，如果没有某表，直接返回；否则删除之后再返回
             if (!isExistTableName(tableName)) {
-                return false;
+                return true;
             } else {
 
                 StringBuffer sql = new StringBuffer();
