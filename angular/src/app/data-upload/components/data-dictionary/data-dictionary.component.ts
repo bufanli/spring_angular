@@ -169,22 +169,24 @@ export class DataDictionaryComponent implements OnInit, CommonDialogCallback {
       const exportDictionaryButtonId = '#' + this.EXPORT_DICTIONARY_PREFIX + currentPageData[i][this.UUID_FIELD];
       const deleteDictionaryButtonId = '#' + this.DELETE_DICTIONARY_PREFIX + currentPageData[i][this.UUID_FIELD];
       const currentDictionaryName = currentPageData[i][this.DATA_DICTIONARY_NAME_FIELD];
-      // import button
-      $(importDictionaryButtonId).on('click', currentDictionaryName, this.importDictionary);
-      // export button
-      $(exportDictionaryButtonId).on('click', currentDictionaryName, this.exportDictionary);
-      // delete button
-      const deleteDictionaryParam = {
+      const dictionaryParam = {
         component: this,
         dictionaryName: currentDictionaryName,
       };
-      $(deleteDictionaryButtonId).on('click', deleteDictionaryParam, this.deleteDictionary);
+      // import button
+      $(importDictionaryButtonId).on('click', dictionaryParam, this.importDictionary);
+      // export button
+      $(exportDictionaryButtonId).on('click', dictionaryParam, this.exportDictionary);
+      // delete button
+      $(deleteDictionaryButtonId).on('click', dictionaryParam, this.deleteDictionary);
     }
   }
   // import dictionary
-  public importDictionary(dictionaryName: any): void {
-    const service: NgbModal = this.modalService;
-    const modalRef = service.open(DataDictionaryUploadComponent, this.adjustModalOptions());
+  public importDictionary(target: any): void {
+    const component = target.data['component'];
+    const dictionaryName = target.data['dictionaryName'];
+    const service: NgbModal = component.modalService;
+    const modalRef = service.open(DataDictionaryUploadComponent, component.adjustModalOptions());
     modalRef.componentInstance.setDictionaryName(dictionaryName);
     // notify edit synonym
     modalRef.componentInstance.notifyOpenSynonym.subscribe(response =>
