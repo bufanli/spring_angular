@@ -17,13 +17,17 @@ export class DataDictionaryUploadComponent implements AfterViewChecked {
   @Output() notifyOpenSynonym: EventEmitter<string> = new EventEmitter<string>();
   // dictionary name which is imported
   private dictionaryName: string = null;
-  public uploader: FileUploader = new FileUploader({ url: URL });
+  public dataDictionaryUploader: FileUploader = new FileUploader({ url: URL });
   constructor(
     private currentUserContainer: CurrentUserContainerService,
     private http: HttpClient,
     private activeModal: NgbActiveModal) {
     const that: any = this;
-    this.uploader.onCompleteItem = function (item: FileItem,
+    this.dataDictionaryUploader.onAfterAddingFile = function (item: FileItem) {
+      that.dataDictionaryUploader.clearQueue();
+      that.dataDictionaryUploader.queue.push(item);
+    };
+    this.dataDictionaryUploader.onCompleteItem = function (item: FileItem,
       response: string, status: number, headers: ParsedResponseHeaders) {
       // success
       if (status === 200) {
@@ -79,7 +83,7 @@ export class DataDictionaryUploadComponent implements AfterViewChecked {
   // click file select button
   public selectFile(): void {
     // tslint:disable-next-line: deprecation
-    $('#file-select').click();
+    $('#data-dictionary-file-select').click();
   }
   // import dictionary
   public importDictionary(item: FileItem): void {

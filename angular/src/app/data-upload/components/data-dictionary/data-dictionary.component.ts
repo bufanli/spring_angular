@@ -198,6 +198,7 @@ export class DataDictionaryComponent implements OnInit, CommonDialogCallback {
     const options: NgbModalOptions = new NgbModalConfig();
     options.backdrop = false;
     options.windowClass = 'modal fade in';
+    options.size = 'lg';
     return options;
   }
   // export dictionary
