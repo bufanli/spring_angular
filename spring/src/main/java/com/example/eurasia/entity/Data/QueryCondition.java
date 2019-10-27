@@ -21,7 +21,8 @@ public class QueryCondition implements Cloneable {
 
     public static final String PRODUCT_DATE_FORMAT_1 = "yyyy/MM/dd";//日期条件的格式
     public static final String PRODUCT_DATE_FORMAT_2 = "yyyy-MM-dd";//日期条件的格式
-    public static final String PRODUCT_DATE_FORMAT_3= "yyyyMMdd";//日期条件的格式
+    public static final String PRODUCT_DATE_FORMAT_3 = "yyyyMMdd";//日期条件的格式
+    public static final String PRODUCT_DATE_FORMAT_4 = "yyyy-MM";//日期条件的格式
 
     private String key;
     private String value;

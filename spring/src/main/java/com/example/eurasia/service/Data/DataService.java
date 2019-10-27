@@ -1,7 +1,10 @@
 package com.example.eurasia.service.Data;
 
 import com.example.eurasia.dao.DataDao;
-import com.example.eurasia.entity.Data.*;
+import com.example.eurasia.entity.Data.ComputeField;
+import com.example.eurasia.entity.Data.Data;
+import com.example.eurasia.entity.Data.DataXMLReader;
+import com.example.eurasia.entity.Data.QueryCondition;
 import com.example.eurasia.service.Util.Slf4jLogUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -54,7 +57,10 @@ public class DataService {
     public static final String STATISTICS_REPORT_NAME_EX = "汇总报表";
     public static final String BR = "<br/>";
 
+    public static final String QUERY_CONDITION_YEAR_MONTH = "月份";
+
     public static final int DOWNLOAD_RECODE_STEPS = 10000;
+    public static final int ROW_ACCESS_WINDOW_SIZE = 10000;
 
     /**
      * 初始化数据表
@@ -775,4 +781,57 @@ as不是给表里的字段取别名，而是给查询的结果字段取别名。
         return getDataDao().getColumnValueCounts(tableName, columnName);
     }
 
+    /**
+     * 取得日期列的最大值和最小值
+     *
+     * @param
+     * @return
+     * @throws
+     * @author FuJia
+     * @Time 2019-10-26 00:00:00
+     */
+    public List<Map<String, Object>> getDateMinMaxValues() throws Exception {
+        return getDataDao().queryListForColumnMinMaxValues(DataService.TABLE_DATA, "日期");
+    }
+
+    public Set<String> getTitles(String tableName) throws Exception {
+        Set<String> colsNameSet = null;
+        try {
+            Slf4jLogUtil.get().info("取得表头开始");
+
+            colsNameSet = this.getAllColumnNames(tableName);
+            if (colsNameSet == null) {
+                //throw new Exception(ResponseCodeEnum.EXPORT_GET_HEADER_INFO_FROM_SQL_NULL.getMessage());
+            }
+
+            Slf4jLogUtil.get().info("取得表头结束");
+        } catch (Exception e) {
+            e.printStackTrace();
+            //throw new Exception(ResponseCodeEnum.EXPORT_GET_HEADER_INFO_FROM_SQL_FAILED.getMessage());
+        }
+
+        return colsNameSet;
+    }
+
+    public List<String[]>  getRows(String tableName, QueryCondition[] queryConditionsArr) throws Exception {
+        List<String[]> dataArrList = null;
+        try {
+            Slf4jLogUtil.get().info("取得数据开始");
+
+            long offset = 0;
+            long limit = DataService.DOWNLOAD_RECODE_STEPS;
+            Map<String, String> order = new LinkedHashMap<>();
+            order.put("id","asc");//T.B.D
+
+            long count = this.queryTableRows(tableName,queryConditionsArr);
+
+            dataArrList = this.searchDataForDownload(tableName, queryConditionsArr, offset, limit, order);
+
+            Slf4jLogUtil.get().info("取得数据结束");
+        } catch (Exception e) {
+            e.printStackTrace();
+            //throw new Exception(ResponseCodeEnum.EXPORT_GET_DATA_INFO_FROM_SQL_FAILED.getMessage());
+        }
+        return dataArrList;
+    }
 }

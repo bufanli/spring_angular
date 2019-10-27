@@ -1,6 +1,5 @@
 package com.example.eurasia.controller;
 
-import com.example.eurasia.entity.Data.CategorySelectionsWithTotalCount;
 import com.example.eurasia.entity.Data.GetListValueParam;
 import com.example.eurasia.service.Data.IGetQueryConditionsService;
 import com.example.eurasia.service.Response.ResponseCodeEnum;
@@ -70,16 +69,6 @@ public class GetQueryConditionsController {
             @RequestBody GetListValueParam getListValueParam) {
         ResponseResult responseResult;
         try {
-            if(getListValueParam.getCategory().equals("月份")){
-                CategorySelectionsWithTotalCount cswc =
-                        new CategorySelectionsWithTotalCount();
-                cswc.pushSelection(new CategorySelectionsWithTotalCount.Selection(1,"2019-01"));
-                cswc.pushSelection(new CategorySelectionsWithTotalCount.Selection(2,"2019-02"));
-                cswc.pushSelection(new CategorySelectionsWithTotalCount.Selection(3,"2019-03"));
-                cswc.setTotalCount(3);
-                responseResult = new ResponseResultUtil().success(200,"ok",cswc);
-                return responseResult;
-            }
             Slf4jLogUtil.get().info("取得List类型的查询条件的值开始");
             String userID = userInfoServiceImpl.getLoginUserID(request);
             if (StringUtils.isEmpty(userID)) {

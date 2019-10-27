@@ -4,6 +4,7 @@ import com.example.eurasia.entity.Data.QueryCondition;
 import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;
+import com.example.eurasia.service.Util.ImportExcelUtils;
 import com.example.eurasia.service.Util.Slf4jLogUtil;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.streaming.SXSSFRow;
@@ -12,7 +13,6 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.xssf.usermodel.extensions.XSSFCellBorder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -20,9 +20,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
-import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -35,7 +32,6 @@ import static org.apache.poi.ss.usermodel.CellType.STRING;
 @Component
 public class DownloadFileServiceImpl implements IDownloadFileService {
 
-    private static int ROW_ACCESS_WINDOW_SIZE = 10000;
     //注入DataService服务对象
     @Qualifier("dataService")
     @Autowired
@@ -44,21 +40,21 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
     @Override
     public ResponseResult exportExcel(HttpServletResponse response, QueryCondition[] queryConditionsArr) throws Exception {
 
-        Set<String> colsNameSet = this.getTitles(DataService.TABLE_DATA);
-        if (colsNameSet.size() == 0) {
+        Set<String> colsNameSet = dataService.getTitles(DataService.TABLE_DATA);
+        if (colsNameSet == null || colsNameSet.size() == 0) {
             Slf4jLogUtil.get().info(ResponseCodeEnum.EXPORT_GET_HEADER_INFO_FROM_SQL_ZERO.getMessage());
             return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_GET_HEADER_INFO_FROM_SQL_ZERO);
         }
         //List<Data> dataList = this.getRows(queryConditionsArr);
         //if (dataList.size() == 0) {
-        List<String[]> dataArrList = this.getRows(queryConditionsArr);
-        if (dataArrList.size() == 0) {
+        List<String[]> dataArrList = dataService.getRows(DataService.TABLE_DATA, queryConditionsArr);
+        if (dataArrList == null || dataArrList.size() == 0) {
             Slf4jLogUtil.get().info(ResponseCodeEnum.EXPORT_GET_DATA_INFO_FROM_SQL_ZERO.getMessage());
             return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_GET_DATA_INFO_FROM_SQL_ZERO);
         }
 
         StringBuffer responseMsg = new StringBuffer();
-        SXSSFWorkbook wb = new SXSSFWorkbook(ROW_ACCESS_WINDOW_SIZE);
+        SXSSFWorkbook wb = new SXSSFWorkbook(DataService.ROW_ACCESS_WINDOW_SIZE);
         try {
             SXSSFSheet sheet = wb.createSheet(DataService.EXPORT_EXCEL_SHEET_NAME);
             //int rowIndex = this.writeExcel(wb, sheet, colsNameSet, dataList);
@@ -66,7 +62,7 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
             Date date = new Date(System.currentTimeMillis());
             DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd");
             String fileName = dateFormat.format(date);//导出文件名是当天日期
-            this.buildExcelDocument(fileName+".xlsx", wb, response);
+            ImportExcelUtils.buildExcelDocument(fileName+".xlsx", wb, response);
 
             responseMsg.append("导出到文件的条目数：" + rowIndex);//包括title行
             Slf4jLogUtil.get().info("导出到文件的条目数：{}",rowIndex);//包括title行
@@ -74,7 +70,7 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
             e.printStackTrace();
             return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_DATA_INFO_FAILED);
         } finally {
-            wb.close();
+            wb.dispose();
         }
 
         return new ResponseResultUtil().success(ResponseCodeEnum.EXPORT_DATA_INFO_SUCCESS,responseMsg);
@@ -173,7 +169,7 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
     // 自适应宽度(中文支持)
     private void setSizeColumn(SXSSFSheet sheet, int columnNumber) {
         // start row
-        int startRowNum = sheet.getLastRowNum() - ROW_ACCESS_WINDOW_SIZE;
+        int startRowNum = sheet.getLastRowNum() - DataService.ROW_ACCESS_WINDOW_SIZE;
         if(startRowNum < 0 ) {
             startRowNum = 0;
         }else{
@@ -218,46 +214,7 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
         style.setBorderColor(XSSFCellBorder.BorderSide.BOTTOM, color);
     }
 
-    //生成excel文件
-    private void buildExcelFile(String filename, XSSFWorkbook workbook) throws Exception{
-        FileOutputStream fos = new FileOutputStream(filename);
-        workbook.write(fos);
-        fos.flush();
-        fos.close();
 
-        // flush()其实是继承于其父类OutputStream的。而OutputStream类的flush()却什么也没做
-        // 当OutputStream是BufferedOutputStream时,flush()才有效.
-    }
-
-    //浏览器下载excel
-    private void buildExcelDocument(String filename,SXSSFWorkbook wb ,HttpServletResponse response) throws Exception{
-        //String filename = StringUtils.encodeFilename(StringUtils.trim(filename), request);//处理中文文件名
-        response.setContentType("application/vnd.ms-excel");
-        response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(filename, "gbk"));
-        OutputStream outputStream = response.getOutputStream();
-            wb.write(outputStream);
-        outputStream.flush();
-        outputStream.close();
-    }
-
-    private Set<String> getTitles(String tableName) throws Exception {
-        Set<String> colsNameSet;
-        try {
-            Slf4jLogUtil.get().info("文件导出，取得表头开始");
-
-            colsNameSet = dataService.getAllColumnNames(tableName);
-            if (colsNameSet == null) {
-                throw new Exception(ResponseCodeEnum.EXPORT_GET_HEADER_INFO_FROM_SQL_NULL.getMessage());
-            }
-
-            Slf4jLogUtil.get().info("文件导出，取得表头结束");
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new Exception(ResponseCodeEnum.EXPORT_GET_HEADER_INFO_FROM_SQL_FAILED.getMessage());
-        }
-
-        return colsNameSet;
-    }
 /*
     private List<Data> getRows(QueryCondition[] queryConditionsArr) throws Exception {
         List<Data> dataList = new ArrayList<>();;
@@ -287,25 +244,5 @@ public class DownloadFileServiceImpl implements IDownloadFileService {
         return dataList;
     }
 */
-    private List<String[]>  getRows(QueryCondition[] queryConditionsArr) throws Exception {
-        List<String[]> dataArrList = null;
-        try {
-            Slf4jLogUtil.get().info("文件导出，查询数据开始");
 
-            long offset = 0;
-            long limit = DataService.DOWNLOAD_RECODE_STEPS;
-            Map<String, String> order = new LinkedHashMap<>();
-            order.put("id","asc");//T.B.D
-
-            long count = dataService.queryTableRows(DataService.TABLE_DATA,queryConditionsArr);
-
-            dataArrList = dataService.searchDataForDownload(DataService.TABLE_DATA,queryConditionsArr, offset, limit,order);
-
-            Slf4jLogUtil.get().info("文件导出，查询数据结束");
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new Exception(ResponseCodeEnum.EXPORT_GET_DATA_INFO_FROM_SQL_FAILED.getMessage());
-        }
-        return dataArrList;
-    }
 }

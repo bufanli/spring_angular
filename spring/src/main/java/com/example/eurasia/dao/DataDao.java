@@ -20,6 +20,7 @@ public class DataDao extends CommonDao {
     public static final SimpleDateFormat SIMPLE_DATE_FORMAT_1 = new SimpleDateFormat(QueryCondition.PRODUCT_DATE_FORMAT_1);
     public static final SimpleDateFormat SIMPLE_DATE_FORMAT_2 = new SimpleDateFormat(QueryCondition.PRODUCT_DATE_FORMAT_2);
     public static final SimpleDateFormat SIMPLE_DATE_FORMAT_3 = new SimpleDateFormat(QueryCondition.PRODUCT_DATE_FORMAT_3);
+    public static final SimpleDateFormat SIMPLE_DATE_FORMAT_4 = new SimpleDateFormat(QueryCondition.PRODUCT_DATE_FORMAT_4);
 
     /**
      * 添加数据
@@ -737,6 +738,24 @@ group by 与order by 一起使用是要遵守一定原则的：
     }
 
     /**
+     * 查询并返回List集合
+     *
+     * @param
+     * @return
+     * @throws
+     * @author FuJia
+     * @Time 2018-10-27 00:00:00
+     */
+    public List<Map<String, Object>> queryListForColumnMinMaxValues(String tableName, String category) throws Exception {
+        StringBuffer sql = new StringBuffer();
+        sql.append("select min(" + category + "),max(" + category + ") from " + tableName);
+
+        List<Map<String, Object>> selectionColsList = getJdbcTemplate().queryForList(sql.toString());
+
+        return selectionColsList;
+    }
+
+    /**
      * 拼接语句，往表里面插入数据
      *
      * @param tableName
@@ -833,15 +852,15 @@ group by 与order by 一起使用是要遵守一定原则的：
     private String formatDate(String dateStr) {
         Date date = null;
         try {
-            date = SIMPLE_DATE_FORMAT_1.parse(dateStr);
+            date = DataDao.SIMPLE_DATE_FORMAT_1.parse(dateStr);
             return DataDao.SIMPLE_DATE_FORMAT_1.format(date);
         } catch (ParseException e) {
             try {
-                date = SIMPLE_DATE_FORMAT_2.parse(dateStr);
+                date = DataDao.SIMPLE_DATE_FORMAT_2.parse(dateStr);
                 return DataDao.SIMPLE_DATE_FORMAT_1.format(date);
             } catch (ParseException e1) {
                 try {
-                    date = SIMPLE_DATE_FORMAT_3.parse(dateStr);
+                    date = DataDao.SIMPLE_DATE_FORMAT_3.parse(dateStr);
                     return DataDao.SIMPLE_DATE_FORMAT_1.format(date);
                 } catch (ParseException e2) {
                     int daysFrom1900 = Integer.parseInt(dateStr);
