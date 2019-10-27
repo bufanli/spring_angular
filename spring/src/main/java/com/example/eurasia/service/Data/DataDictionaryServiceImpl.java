@@ -79,8 +79,8 @@ public class DataDictionaryServiceImpl implements IDataDictionaryService {
 
             // 删除表（删除语句执行前判断表是否存在）
             if (dataService.deleteTable(dictionaryName) == false) {
-                Slf4jLogUtil.get().info(ResponseCodeEnum.DELETE_DATA_DICTIONARY_IS_NOT_EXIST.getMessage());
-                return new ResponseResultUtil().error(ResponseCodeEnum.DELETE_DATA_DICTIONARY_IS_NOT_EXIST);
+                Slf4jLogUtil.get().info(ResponseCodeEnum.DELETE_DATA_DICTIONARY_FAILED.getMessage());
+                return new ResponseResultUtil().error(ResponseCodeEnum.DELETE_DATA_DICTIONARY_FAILED);
             }
 
         } catch (Exception e) {
@@ -111,8 +111,7 @@ public class DataDictionaryServiceImpl implements IDataDictionaryService {
             long numInDataDicSummary = dataService.getColumnValueNumber(DataService.TABLE_DATA_DICTIONARY_SUMMARY,
                     DataService.DATA_DICTIONARY_NAME,
                     dictionaryName);
-            boolean isTableExist = dataService.isExistTableName(dictionaryName);
-            if (numInDataDicSummary != 1 || isTableExist == false) {
+            if (numInDataDicSummary != 1 ) {
                 Slf4jLogUtil.get().info(ResponseCodeEnum.IMPORT_DATA_DICTIONARY_IS_NOT_EXIST.getMessage());
                 return new ResponseResultUtil().error(ResponseCodeEnum.IMPORT_DATA_DICTIONARY_IS_NOT_EXIST);
             }
@@ -135,8 +134,8 @@ public class DataDictionaryServiceImpl implements IDataDictionaryService {
 
             // 删除之前的表（删除语句执行前判断表是否存在）
             if (dataService.deleteTable(dictionaryName) == false) {
-                Slf4jLogUtil.get().info(ResponseCodeEnum.DELETE_DATA_DICTIONARY_IS_NOT_EXIST.getMessage());
-                return new ResponseResultUtil().error(ResponseCodeEnum.DELETE_DATA_DICTIONARY_IS_NOT_EXIST);
+                Slf4jLogUtil.get().info(ResponseCodeEnum.DELETE_DATA_DICTIONARY_FAILED.getMessage());
+                return new ResponseResultUtil().error(ResponseCodeEnum.DELETE_DATA_DICTIONARY_FAILED);
             }
 
             // 将第一行数据作为表的字段名，进行创建新表
