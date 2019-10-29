@@ -27,6 +27,9 @@ export class DataDictionaryUploadComponent implements AfterViewChecked {
       that.dataDictionaryUploader.clearQueue();
       that.dataDictionaryUploader.queue.push(item);
     };
+    this.dataDictionaryUploader.onBuildItemForm = function (item: FileItem, form: any) {
+      form.append('dictionaryName', that.dictionaryName);
+    };
     this.dataDictionaryUploader.onCompleteItem = function (item: FileItem,
       response: string, status: number, headers: ParsedResponseHeaders) {
       // success
@@ -87,12 +90,6 @@ export class DataDictionaryUploadComponent implements AfterViewChecked {
   }
   // import dictionary
   public importDictionary(item: FileItem): void {
-    // form data with dictionary name
-    const formData = {
-      dictionaryName: this.dictionaryName,
-    };
-    item.formData = formData;
-    // upload
     item.upload();
   }
   // set dictionary name

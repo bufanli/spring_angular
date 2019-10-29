@@ -9,16 +9,21 @@ import com.example.eurasia.service.Util.Slf4jLogUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 //@Slf4j
 @Controller
@@ -65,15 +70,28 @@ public class DataDictionaryController {
     @RequestMapping(value="/importDataDictionary", method = RequestMethod.POST)
     public @ResponseBody
     ResponseResult importDataDictionary(@RequestParam("dictionaryName") String dictionaryName,
-                                        @RequestParam("file") File file, HttpServletRequest request) throws IOException {
+                                         @RequestParam("file") MultipartFile[] files,
+                                        HttpServletRequest request) throws IOException {
         ResponseResult responseResult;
         try {
             Slf4jLogUtil.get().info("进行导入数据对应关系的字典开始");
+            //获取跟目录
+            Date date = new Date(System.currentTimeMillis());
+                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+                String strFormat = dateFormat.format(date);
+            File path = new File(ResourceUtils.getURL("classpath:").getPath());
+            if(!path.exists()) {
+                path = new File("");
+            }
+            File uploadDir = new File(path.getAbsolutePath(),"static/uploadFile/" + strFormat);
+           if (!uploadDir.exists()) {
+                uploadDir.mkdirs();
+           }
             String userID = userInfoServiceImpl.getLoginUserID(request);
             if (StringUtils.isEmpty(userID)) {
                 responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
             } else {
-                responseResult = dataDictionaryServiceImpl.importCSVFile(dictionaryName,file);
+                responseResult = dataDictionaryServiceImpl.importCSVFile(dictionaryName,uploadDir,files[0]);
             }
             Slf4jLogUtil.get().info("进行导入数据对应关系的字典结束");
         } catch (Exception e) {

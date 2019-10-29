@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
@@ -93,7 +94,7 @@ public class DataDictionaryServiceImpl implements IDataDictionaryService {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //下面是导入csv部分
     @Override
-    public ResponseResult importCSVFile(String dictionaryName, File csvFile) throws Exception {
+    public ResponseResult importCSVFile(String dictionaryName, File uploadDir,MultipartFile csvFile) throws Exception {
         try {
             if (StringUtils.isEmpty(dictionaryName)) {
                 Slf4jLogUtil.get().info(ResponseCodeEnum.IMPORT_DATA_DICTIONARY_NAME_NULL.getMessage());
@@ -116,8 +117,15 @@ public class DataDictionaryServiceImpl implements IDataDictionaryService {
                 return new ResponseResultUtil().error(ResponseCodeEnum.IMPORT_DATA_DICTIONARY_IS_NOT_EXIST);
             }
 
+            //服务器端保存端文件对象
+            File serverFile = new File(uploadDir.getPath() + "/" +csvFile.getOriginalFilename());
+            if (!serverFile.exists()) {
+                Slf4jLogUtil.get().info("文件名:{}存在的话，则覆盖。",csvFile.getOriginalFilename());
+            }
+           //将上传的文件写入到服务器端的文件内
+           csvFile.transferTo(serverFile);
             // 取得csv文件的数据
-            List<String> csvDataList = CSVUtils.importCSV(csvFile);
+            List<String> csvDataList = CSVUtils.importCSV(serverFile);
             if (csvDataList.size() == 0) {
                 Slf4jLogUtil.get().info(ResponseCodeEnum.IMPORT_CSV_FILE_ZERO.getMessage());
                 return new ResponseResultUtil().error(ResponseCodeEnum.IMPORT_CSV_FILE_ZERO);
