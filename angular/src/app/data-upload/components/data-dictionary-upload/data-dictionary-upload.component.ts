@@ -47,29 +47,15 @@ export class DataDictionaryUploadComponent implements AfterViewChecked {
           isUploadSucceeded = false;
         }
         // get message from response
-        const message = result.message;
-        let fileName = null;
-        let failedDetail = null;
+        let message = result.message;
         // analyse extra data
         if (result.data != null) {
-          const extraData = result.data;
-          const index = extraData.indexOf(':');
-          if (index !== -1) {
-            fileName = extraData.substring(0, index);
-            failedDetail = extraData.substring(index + 1);
-          } else {
-            fileName = extraData;
-            failedDetail = '';
-          }
-        } else {
-          fileName = '';
-          failedDetail = '';
+          message = message + result.data;
         }
         // compose result to item
         item.formData = {
           'upload_succeeded': isUploadSucceeded,
           'summary': message,
-          'failedDetail': failedDetail
         };
       } else {
         // failed
@@ -98,7 +84,8 @@ export class DataDictionaryUploadComponent implements AfterViewChecked {
   }
   // add custom column
   public addCustomColumn(item: FileItem): void {
-    this.notifyOpenSynonym.emit(item['failedDetail']);
+    this.close();
+    this.notifyOpenSynonym.emit(item['formData'].summary);
   }
   // close modal
   public close(): void {

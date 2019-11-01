@@ -49,8 +49,7 @@
                     <span *ngIf="item.isError"><i class="glyphicon glyphicon-remove"></i></span>
                   </td>
                   <td class="text-left">
-                    <span class="text-primary" data-toggle="tooltip"
-                      title="{{item.formData['failedDetail']}}">{{item.formData['summary']}}</span>
+                    <span class="text-primary" data-toggle="tooltip">{{item.formData['summary']}}</span>
                   </td>
                   <td nowrap>
                     <button type="button" class="btn btn-primary btn-xs" (click)="this.importDictionary(item)"
@@ -65,7 +64,7 @@
                       <span class="glyphicon glyphicon-trash"></span> 删除
                     </button>
                     <button type="button" class="btn btn-default btn-xs" (click)="this.addCustomColumn(item)"
-                      [disabled]="!item['formData'].isUploadedSucceed">
+                      [disabled]="item['formData'].upload_succeeded|| item['formData'].upload_succeeded=== undefined">
                       <span class="glyphicon glyphicon-trash"></span> 添加自定义列
                     </button>
                   </td>
