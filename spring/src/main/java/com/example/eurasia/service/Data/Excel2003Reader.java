@@ -348,7 +348,7 @@ public class Excel2003Reader implements HSSFListener,IExcelReaderByEventMode {
                 if (this.sheetIndex > -1) {
                     try {
                         if (this.rowReader.getTitleIsNotExistList().size() == 0 && this.rowReader.getSameTitleSet().size() == 0) {
-                            int addDataNum = this.rowReader.saveDataToSQL(DataService.TABLE_DATA);//导入数据。
+                            int addDataNum = this.rowReader.saveDataToSQLForEventMode(DataService.TABLE_DATA);//导入数据。
                             if (addDataNum >= 0) {
                                 Slf4jLogUtil.get().info("Sheet[{}]{}，共{}条数据！",DataService.IMPORT_EXCEL_SUCCESS_MESSAGE,this.currentSheetName,addDataNum);
                                 this.message.append("Sheet[" + this.currentSheetName + "]" + DataService.IMPORT_EXCEL_SUCCESS_MESSAGE + "，共" + addDataNum + "条数据！");

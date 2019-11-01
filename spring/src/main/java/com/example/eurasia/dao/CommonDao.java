@@ -171,6 +171,50 @@ SELECT information_schema.SCHEMATA.SCHEMA_NAME FROM information_schema.SCHEMATA 
     }
 
     /**
+     * 复制旧表结构到新表（包含主键、索引、分区等）
+     *
+     * @param src 旧表名字
+     * @param des 新表名字
+     * @return
+     * @throws
+     * @author FuJia
+     * @Time 2019-10-31 00:00:00
+     */
+    public boolean copyTableStructure(String src, String des) throws Exception {
+        try {
+            // 判断数据库是否已经存在这个名称的表，如果没有某表，直接创建；否则删除之后再创建
+            if (this.deleteTable(des)) {
+                StringBuffer sql = new StringBuffer();
+                sql.append("CREATE TABLE " + des + " LIKE " + src);
+                int count = getJdbcTemplate().update(sql.toString());
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
+     * 复制旧表数据到新表（俩表的字段名相同）
+     *
+     * @param src 旧表名字
+     * @param des 新表名字
+     * @return
+     * @throws
+     * @author FuJia
+     * @Time 2019-10-31 00:00:00
+     */
+    public int copyTableData(String src, String des) throws Exception {
+        StringBuffer sql = new StringBuffer();
+        sql.append("INSERT INTO " + des + " SELECT * FROM " + src);
+        int num = getJdbcTemplate().update(sql.toString());
+        return num;
+    }
+
+    /**
      * 给表中某个字段添加唯一属性
      *
      * @param tableName

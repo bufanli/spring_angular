@@ -942,6 +942,30 @@ group by 与order by 一起使用是要遵守一定原则的：
         return dataArrList;
     }
 
+    /**
+     * 根据数据对应关系的词典表进行数据的扩充
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2019-10-30 00:00:00
+     */
+    public int reMakeUpDataByDataDictionary(String tempTableName, Set<String> colsNameSet, String dataDictionaryName, Set<String> dataDicColNames) throws Exception {
+        //"update A a, B b set a.a1=b.b1,a.a2=b.b2 where a.a3=b.b3"；
+        StringBuffer sql = new StringBuffer();
+        sql.append("update " + tempTableName + " a, " + dataDictionaryName + " b set ");
+        String[] dataDicColNamesArr = (String[])dataDicColNames.toArray();
+        for (int i=1; i<dataDicColNamesArr.length; i++) {
+            sql.append("a." + dataDicColNamesArr[i] + "=b." + dataDicColNamesArr[i]);
+            sql.append(CommonDao.COMMA);
+        }
+        sql.deleteCharAt(sql.length() - CommonDao.COMMA.length());
+        sql.append(" where a." + dataDicColNamesArr[0] + "=b." + dataDicColNamesArr[0]);
+
+        int num = getJdbcTemplate().update(sql.toString());
+        return num;
+    }
+
     private String formatDate(String dateStr) {
         Date date = null;
         try {
