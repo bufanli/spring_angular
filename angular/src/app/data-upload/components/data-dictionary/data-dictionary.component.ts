@@ -190,7 +190,7 @@ export class DataDictionaryComponent implements OnInit, CommonDialogCallback {
     modalRef.componentInstance.setDictionaryName(dictionaryName);
     // notify edit synonym
     modalRef.componentInstance.notifyOpenSynonym.subscribe(response =>
-      this.notifyOpenSynonym.emit(response));
+      component.notifyOpenSynonym.emit(response));
   }
   // adjust modal options
   // if don't adjust modal options, modal will not be shown correctly
