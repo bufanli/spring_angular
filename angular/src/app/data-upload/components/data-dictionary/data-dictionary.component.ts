@@ -14,7 +14,7 @@ import { CommonUtilitiesService } from 'src/app/common/services/common-utilities
 
 // json header for download post
 // tslint:disable-next-line: deprecation
-const head = new Headers({ 'Content-Type': 'application/json' });
+const head = new Headers({ 'Content-Type': 'application/x-www-form-urlencoded' });
 // json header for post
 const httpOptions = {
   // tslint:disable-next-line: deprecation
@@ -202,15 +202,15 @@ export class DataDictionaryComponent implements OnInit, CommonDialogCallback {
     return options;
   }
   // export dictionary
-  public exportDictionary(dictionaryName: any): void {
-    this.exoprtDictionaryImpl(dictionaryName);
+  public exportDictionary(target: any): void {
+    const component = target.data['component'];
+    const dictionaryName = target.data['dictionaryName'];
+    component.exoprtDictionaryImpl(dictionaryName);
   }
   // download data to file
   private async exoprtDictionaryImpl(dictionaryName: any): Promise<void> {
-    const formData = {
-      dictionaryName: dictionaryName,
-    };
-    return this.downloadHttp.post(this.exportDataDictionaryUrl, JSON.stringify(formData), httpDownloadOptions).toPromise().then(
+    const formData = 'dictionaryName=' + dictionaryName;
+    return this.downloadHttp.post(this.exportDataDictionaryUrl, formData, httpDownloadOptions).toPromise().then(
       res => {
         const tempRes: any = res;
         if (tempRes._body.size === 0) {
@@ -222,7 +222,7 @@ export class DataDictionaryComponent implements OnInit, CommonDialogCallback {
           const fileNameIndex = attachmentAndFileName.indexOf('filename=');
           if (fileNameIndex >= 0) {
             const fileName = attachmentAndFileName.substring(fileNameIndex + 'filename='.length);
-            importedSaveAs(res.blob(), fileName);
+            importedSaveAs(res.blob(), decodeURI(fileName));
           } else {
             importedSaveAs(res.blob());
           }

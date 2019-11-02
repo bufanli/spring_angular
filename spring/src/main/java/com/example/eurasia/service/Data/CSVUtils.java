@@ -104,7 +104,7 @@ public class CSVUtils {
         try {
 
             out = new FileOutputStream(file);
-            osw = new OutputStreamWriter(out, "UTF-8");
+            osw = new OutputStreamWriter(out, "gbk");
             bw = new BufferedWriter(osw);
             //if (headDataSet != null && !headDataSet.isEmpty()) {
                 for (String data : headDataSet) {

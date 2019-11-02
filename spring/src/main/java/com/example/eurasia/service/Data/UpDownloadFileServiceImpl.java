@@ -568,7 +568,7 @@ public class UpDownloadFileServiceImpl implements IUpDownloadFileService {
     private void buildExcelDocument(String filename, SXSSFWorkbook wb, HttpServletResponse response) throws Exception{
         //String filename = StringUtils.encodeFilename(StringUtils.trim(filename), request);//处理中文文件名
         response.setContentType("application/vnd.ms-excel");
-        response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(filename, "gbk"));
+        response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(filename, "UTF-8"));
         OutputStream outputStream = response.getOutputStream();
         wb.write(outputStream);
         outputStream.flush();
