@@ -241,6 +241,7 @@ public enum ResponseCodeEnum {
     GET_DATA_DICTIONARIES_FROM_SQL_NULL(ResponseCode.RESPONSE_CODE_NG, "从数据库取得所有的数据对应关系的字典列表为NULL"),
     CREATE_DATA_DICTIONARIES_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "创建数据对应关系的字典表成功"),
     CREATE_DATA_DICTIONARIES_FAILED(ResponseCode.RESPONSE_CODE_NG, "创建数据对应关系的字典表失败"),
+    CREATE_DATA_TEMP_TABLE_FAILED(ResponseCode.RESPONSE_CODE_NG, "创建数据临时表失败"),
     DELETE_DATA_DICTIONARIES_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "删除数据对应关系的字典表成功"),
     DELETE_DATA_DICTIONARIES_FAILED(ResponseCode.RESPONSE_CODE_NG, "删除数据对应关系的字典表失败"),
     IMPORT_CSV_FILE_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "上传数据对应关系的字典csv文件成功"),

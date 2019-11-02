@@ -117,7 +117,7 @@ public class Excel2007Reader implements IExcelReaderByEventMode {
      */
     private void rowReaderSaveDataSQL(XSSFReader.SheetIterator sheets) throws Exception {
         if (this.rowReader.getTitleIsNotExistList().size() == 0 && this.rowReader.getSameTitleSet().size() == 0) {
-            addDataNumber += this.rowReader.saveDataToSQL(DataService.TABLE_DATA);//导入数据。
+            addDataNumber += this.rowReader.saveDataToSQLForEventMode(DataService.TABLE_DATA);//导入数据。
 
             //清空保存前一个Sheet页内容用的List
             this.rowReader.clearDataList();

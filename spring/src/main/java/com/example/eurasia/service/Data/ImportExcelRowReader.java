@@ -1,7 +1,9 @@
 package com.example.eurasia.service.Data;
 
 import com.example.eurasia.entity.Data.Data;
+import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Util.DataProcessingUtil;
+import com.example.eurasia.service.Util.Slf4jLogUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -131,21 +133,50 @@ public class ImportExcelRowReader {
         this.sameTitleSet.clear();
     }
 
-    public int saveDataToSQL(String tableName) throws Exception {
-        return dataService.saveDataToSQL(tableName, this.getDataList());
+    /*
+     * Event Mode用
+     */
+    public int saveDataToSQLForEventMode(String tableName) throws Exception {
+        return this.saveDataToSQLCommon(tableName, this.getDataList());
     }
 
-    public int saveDataToSQL(String tableName, List<Data> dataList) throws Exception {
-        // 利用数据关系对应的词典，扩张要保存的数据
+    /*
+     * User Mode用
+     */
+    public int saveDataToSQLForUserMode(String tableName, List<Data> dataList) throws Exception {
+        return this.saveDataToSQLCommon(tableName, dataList);
+    }
 
-        // 保存到临时表
+    private int saveDataToSQLCommon(String tableName, List<Data> dataList) throws Exception {
+        // 取得数据表的所有列名
+        Set<String> colsNameSet = dataService.getAllColumnNames(DataService.TABLE_DATA);
 
-        // 将临时表的数据保存到数据表
-        int num = dataService.saveDataToSQL(tableName, dataList);// DataService.TABLE_DATA = "eurasiaTable"
+        // 取得数据对应关系的词典名，并取得其列名
+        Map<String, Set<String>> dataDicColNamesMap = dataService.getDataDictionariesColumnNamesMap();
+        if (dataDicColNamesMap.size() > 0) {//有数据对应关系的词典
+            // 创建临时表，保存数据到临时表
+            if (dataService.copyTableStructure(DataService.TABLE_DATA, DataService.TABLE_DATA_TEMP)) {
+                int saveNum = dataService.saveDataToSQL(DataService.TABLE_DATA_TEMP, dataList);
 
-        // 删除临时表
+                // 利用数据关系对应的词典，扩张要保存的数据
+                Map<String, Integer> reMakeUpRet = dataService.reMakeUpDataByDataDictionaries(DataService.TABLE_DATA_TEMP, colsNameSet, dataDicColNamesMap);
 
-        return num;
+                // 将临时表的数据保存到数据表
+                int copyNum = dataService.copyTableData(DataService.TABLE_DATA_TEMP, DataService.TABLE_DATA);
+
+                // 删除临时表
+                boolean deleteRet = dataService.deleteTable(DataService.TABLE_DATA_TEMP);
+
+                return copyNum;
+
+            } else {
+                //T.B.D
+                Slf4jLogUtil.get().info("创建临时表失败");
+                throw new Exception(ResponseCodeEnum.CREATE_DATA_TEMP_TABLE_FAILED.getMessage());
+            }
+        } else {//没数据对应关系的词典
+            return dataService.saveDataToSQL(tableName, dataList);
+        }
     }
 
     /**

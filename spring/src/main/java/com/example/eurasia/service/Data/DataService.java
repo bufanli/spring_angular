@@ -31,6 +31,7 @@ public class DataService {
     }
 
     public static final String TABLE_DATA = "eurasiaTable";
+    public static final String TABLE_DATA_TEMP = "eurasiaTempTable";
     public static final String TABLE_QUERY_CONDITION_TYPE = "queryConditionTypeTable";
     public static final String TABLE_STATISTICS_SETTING_GROUP_BY = "statisticsSettingGroupByTable";
     public static final String TABLE_STATISTICS_SETTING_TYPE = "statisticsSettingTypeTable";
@@ -275,6 +276,77 @@ public class DataService {
         int deleteNum = getDataDao().deleteAllData(tableName);//失败时，返回-1
 
         return deleteNum;
+    }
+
+    /**
+     * 取得数据对应关系的词典名，并取得其列名
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2019-10-30 00:00:00
+     */
+    public Map<String, Set<String>> getDataDictionariesColumnNamesMap() throws Exception {
+
+        // 取得数据对应关系的词典名
+        Map<String, Set<String>> dataDicColNamesMap = new HashMap<>();
+        List<Map<String, Object>> dataDictionariesList = this.getColumnsValues(DataService.TABLE_DATA_DICTIONARY_SUMMARY,
+                new String[]{DataService.DATA_DICTIONARY_NAME});
+        if (dataDictionariesList != null && dataDictionariesList.size() != 0) {//有数据对应关系的词典
+            for (Map<String, Object> map : dataDictionariesList) {
+                for (Map.Entry<String, Object> m : map.entrySet()) {
+                    //System.out.print(m.getKey());
+                    //System.out.println(m.getValue());
+                    String dictionaryName = (String) m.getValue();
+
+                    // 逐个取得数据对应关系的词典中的列名(在使用的地方要注意其是否为空和为0)
+                    Set<String> dataDicHeadersSet = this.getAllColumnNamesWithoutID(dictionaryName);// 取得所有列名(不包括id)
+                    dataDicColNamesMap.put(dictionaryName, dataDicHeadersSet);
+                }
+            }
+        } else {//没有数据对应关系的词典
+            Slf4jLogUtil.get().info("取得数据对应关系的词典列表为空");
+        }
+        return dataDicColNamesMap;
+    }
+
+    /**
+     * 根据数据对应关系的词典表进行数据的扩充
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2019-10-30 00:00:00
+     */
+    public Map<String, Integer> reMakeUpDataByDataDictionaries(String tempTableName, Set<String> colsNameSet, Map<String, Set<String>> dataDicColNamesMap) throws Exception {
+        Map<String, Integer> ret = new HashMap<>();//key:词典名，value:影响的条目数
+        for (Map.Entry<String, Set<String>> m : dataDicColNamesMap.entrySet()) {
+            //System.out.print(m.getKey());
+            //System.out.println(m.getValue());
+            String dataDictionaryName = m.getKey();
+            Set<String> dataDicHeadersSet = m.getValue();
+            if (dataDicHeadersSet == null || dataDicHeadersSet.isEmpty()) {
+                Slf4jLogUtil.get().error("取得数据对应关系的词典" + dataDictionaryName + "时,从数据库取得表头信息为空");
+            } else {
+                int num = getDataDao().reMakeUpDataByDataDictionary(tempTableName, colsNameSet, dataDictionaryName, dataDicHeadersSet);
+                ret.put(dataDictionaryName, num);
+            }
+        }
+        return ret;
+    }
+
+    /**
+     * 复制旧表数据到新表（俩表的字段名相同）
+     *
+     * @param src 旧表名字
+     * @param des 新表名字
+     * @return
+     * @throws
+     * @author FuJia
+     * @Time 2019-10-31 00:00:00
+     */
+    public int copyTableData(String src, String des) throws Exception {
+        return getDataDao().copyTableData(src, des);
     }
 
     /**
@@ -758,7 +830,7 @@ as不是给表里的字段取别名，而是给查询的结果字段取别名。
      * @Time 2018-11-06 00:00:00
      */
     public Set<String> getAllColumnNames(String tableName) throws Exception {
-        if (StringUtils.isEmpty(tableName)) {
+        if (StringUtils.isEmpty(tableName) || this.isExistTableName(tableName)) {
             return null;
         }
 
@@ -781,7 +853,7 @@ as不是给表里的字段取别名，而是给查询的结果字段取别名。
      * @Time 2019-06-03 00:00:00
      */
     public Set<String> getAllColumnNamesWithoutID(String tableName) throws Exception {
-        if (StringUtils.isEmpty(tableName)) {
+        if (StringUtils.isEmpty(tableName) || this.isExistTableName(tableName)) {
             return null;
         }
 
@@ -875,6 +947,24 @@ as不是给表里的字段取别名，而是给查询的结果字段取别名。
             e.printStackTrace();
         }
         return false;
+    }
+
+    /**
+     * 复制旧表结构到新表
+     *
+     * @param src 旧表名字
+     * @param des 新表名字
+     * @return
+     * @throws
+     * @author FuJia
+     * @Time 2019-10-31 00:00:00
+     */
+    public boolean copyTableStructure(String src, String des) throws Exception {
+        if (StringUtils.isEmpty(src) || StringUtils.isEmpty(des)) {
+            return false;
+        }
+
+        return getDataDao().copyTableStructure(src, des);
     }
 
     /**

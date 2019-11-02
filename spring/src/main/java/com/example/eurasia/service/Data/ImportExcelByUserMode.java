@@ -116,7 +116,7 @@ public class ImportExcelByUserMode {
                 Slf4jLogUtil.get().info("导入数据内容失败,{}!",dataErrMsg);
                 sheetMsg.append("导入数据内容失败," + dataErrMsg);
             } else {
-                int addDataNum = this.rowReader.saveDataToSQL(DataService.TABLE_DATA, dataList);//导入数据。
+                int addDataNum = this.rowReader.saveDataToSQLForUserMode(DataService.TABLE_DATA, dataList);//导入数据。
                 Slf4jLogUtil.get().info("导入成功，共{}条数据！",addDataNum);
                 sheetMsg.append("导入成功，共" + addDataNum + "条数据！");
             }
