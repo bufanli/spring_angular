@@ -50,6 +50,10 @@ public class CSVUtils {
                 //String item[] = line.split(",");//CSV格式文件为逗号分隔符文件，这里根据逗号切分
                 //String last = item[item.length-1];//这就是你要的数据了
                 //int value = Integer.parseInt(last);//如果是数值，可以转化为数值
+                // resolve utf8 bom problem
+                if(line.startsWith("\uFEFF")){
+                   line = line.replace("\uFEFF","");
+                }
                 dataList.add(line);
             }
         } catch (Exception e) {

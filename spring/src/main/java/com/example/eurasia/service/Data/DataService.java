@@ -830,7 +830,7 @@ as不是给表里的字段取别名，而是给查询的结果字段取别名。
      * @Time 2018-11-06 00:00:00
      */
     public Set<String> getAllColumnNames(String tableName) throws Exception {
-        if (StringUtils.isEmpty(tableName) || this.isExistTableName(tableName)) {
+        if (StringUtils.isEmpty(tableName) || !this.isExistTableName(tableName)) {
             return null;
         }
 
@@ -853,7 +853,7 @@ as不是给表里的字段取别名，而是给查询的结果字段取别名。
      * @Time 2019-06-03 00:00:00
      */
     public Set<String> getAllColumnNamesWithoutID(String tableName) throws Exception {
-        if (StringUtils.isEmpty(tableName) || this.isExistTableName(tableName)) {
+        if (StringUtils.isEmpty(tableName) || !this.isExistTableName(tableName)) {
             return null;
         }
 
