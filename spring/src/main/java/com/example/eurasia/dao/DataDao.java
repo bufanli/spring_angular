@@ -954,7 +954,7 @@ group by 与order by 一起使用是要遵守一定原则的：
         //"update A a, B b set a.a1=b.b1,a.a2=b.b2 where a.a3=b.b3"；
         StringBuffer sql = new StringBuffer();
         sql.append("update " + tempTableName + " a, " + dataDictionaryName + " b set ");
-        String[] dataDicColNamesArr = (String[])dataDicColNames.toArray();
+        Object[] dataDicColNamesArr = dataDicColNames.toArray();
         for (int i=1; i<dataDicColNamesArr.length; i++) {
             sql.append("a." + dataDicColNamesArr[i] + "=b." + dataDicColNamesArr[i]);
             sql.append(CommonDao.COMMA);
