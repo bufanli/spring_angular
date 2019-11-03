@@ -42,7 +42,7 @@ public class ExcelReportConditionsController {
      * @author
      * @param
      * @date 2019-10-19
-     * @description 取得Excel报表的过滤条件
+     * @description 取得Excel报表的过滤条件(备注：目前在页面上固定为"商品编码","月份","进出口")
      */
     @RequestMapping(value="/getExcelReportConditions", method = RequestMethod.POST)
     public @ResponseBody ResponseResult getExcelReportCondition(HttpServletRequest request) {
@@ -57,8 +57,9 @@ public class ExcelReportConditionsController {
                 responseResult = getQueryConditionsService.getQueryConditionDisplay(userID);
                 QueryCondition[] queryConditions = (QueryCondition[])responseResult.getData();
 
-                // 在可显示的查询条件中，添加"月份"查询条件
+                // 在可显示的查询条件中，添加"月份"查询条件(T.B.D 作为List类型，需要页面再调用getListValueWithPagination ???)
                 responseResult = excelReportConditions.getExcelReportCondition(userID, queryConditions);
+
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -73,6 +74,8 @@ public class ExcelReportConditionsController {
      * @param
      * @date 2019-10-19
      * @description 取得Excel报表的汇总类型
+     *              (备注：1.页面上不应该有"美元总价","法定重量","平均单价",因为是报告表格里用到的数据.
+     *              2.明细表,固定.)
      */
     @RequestMapping(value="/getExcelReportTypes", method = RequestMethod.POST)
     public @ResponseBody ResponseResult getExcelReportTypes(HttpServletRequest request) {
@@ -110,7 +113,7 @@ public class ExcelReportConditionsController {
             if (StringUtils.isEmpty(userID)) {
                 responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
             } else {
-                responseResult = excelReportConditions.exportExcelReport(data, response);
+                responseResult = excelReportConditions.exportExcelReport(userID, data, response);
             }
         } catch (Exception e) {
             e.printStackTrace();

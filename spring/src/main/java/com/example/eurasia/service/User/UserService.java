@@ -9,6 +9,7 @@ import com.example.eurasia.entity.User.UserCustom;
 import com.example.eurasia.entity.User.UserInfo;
 import com.example.eurasia.service.Data.DataService;
 import com.example.eurasia.service.Response.ResponseCodeEnum;
+import com.example.eurasia.service.Util.DataProcessingUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -636,6 +637,8 @@ public class UserService {
                     queryConditionValue = this.getOneUserCustom(UserService.TABLE_USER_ACCESS_AUTHORITY,
                             UserService.MUST_PRODUCT_NUMBER,
                             userID);
+                } else if (key.equals(QueryCondition.QUERY_CONDITION_YEAR_MONTH)) {
+                    queryConditionValue = this.getUserAccessMouth(userID);
                 } else {
                     queryConditionValue = "";
                 }
@@ -975,6 +978,57 @@ public class UserService {
         }
 
         return dataList.get(0).getKeyValue().get(columnName);
+    }
+
+    /**
+     * 取得用户可访问的月份
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2019-10-20 00:00:00
+     */
+    public String getUserAccessMouth(String userID) throws Exception {
+
+            // 获取用户可访问的日期范围
+            String[] productDateArr = this.getUserAccessDate(userID);
+            if (productDateArr == null) {
+                return null;
+            }
+            // 数据库中日期的最大值和最小值
+            List<Map<String, Object>> dateMinMaxValuesListMap = getUserDao().queryListForColumnMinMaxValues(DataService.TABLE_DATA, UserService.MUST_PRODUCT_DATE);
+            if (dateMinMaxValuesListMap == null || dateMinMaxValuesListMap.size() == 0) {
+                return null;
+            }
+            String[] dateMinMaxValues  = DataProcessingUtil.getListMapValuesOfOneColumn(dateMinMaxValuesListMap);
+            if (productDateArr[0].equals("")) {//可访问的开始日期为空的话，使用数据库中日期的最小值
+                productDateArr[0] = dateMinMaxValues[0];
+            }
+            if (productDateArr[1].equals("")) {//可访问的结束日期为空的话，使用数据库中日期的最大值
+                productDateArr[1] = dateMinMaxValues[1];
+            }
+
+            // 获取用户可访问的月份
+            List<String> mouthList = DataProcessingUtil.getMonthBetween(productDateArr[0], productDateArr[1]);
+            StringBuffer mouths = new StringBuffer();
+            for (int i=0; i<mouthList.size(); i++) {
+                mouths.append(mouthList.get(i) + QueryCondition.QUERY_CONDITION_SPLIT);
+            }
+            mouths.deleteCharAt(mouths.length() - QueryCondition.QUERY_CONDITION_SPLIT.length());
+
+            return mouths.toString();
+    }
+
+    /**
+     * 查询表的记录数
+     *
+     * @param
+     * @return
+     * @throws
+     * @author FuJia
+     * @Time 2018-09-20 00:00:00
+     */
+    public long queryTableRows(String tableName) throws Exception {
+        return getUserDao().queryTableRows(tableName).longValue();
     }
 }
 

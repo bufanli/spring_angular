@@ -1,7 +1,7 @@
 package com.example.eurasia.service.Data;
 
-import com.example.eurasia.entity.Data.ExcelReportSettingData;
-import com.example.eurasia.entity.Data.QueryCondition;
+import com.example.eurasia.entity.Data.*;
+import com.example.eurasia.service.Common.CommonService;
 import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;
@@ -9,8 +9,14 @@ import com.example.eurasia.service.User.UserService;
 import com.example.eurasia.service.Util.DataProcessingUtil;
 import com.example.eurasia.service.Util.ImportExcelUtils;
 import com.example.eurasia.service.Util.Slf4jLogUtil;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.streaming.SXSSFRow;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFColor;
+import org.apache.poi.xssf.usermodel.extensions.XSSFCellBorder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -22,14 +28,16 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URLEncoder;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
+import static org.apache.poi.ss.usermodel.CellType.STRING;
 
 //@Slf4j
 /*@Transactional(readOnly = true)事物注解*/
 @Service("ExcelReportConditionsServiceImpl")
 @Component
-public class ExcelReportConditionsServiceImpl implements IExcelReportConditionsService {
+public class ExcelReportConditionsServiceImpl extends CommonService implements IExcelReportConditionsService {
 
     //注入DataService服务对象
     @Qualifier("dataService")
@@ -50,45 +58,27 @@ public class ExcelReportConditionsServiceImpl implements IExcelReportConditionsS
      */
     @Override
     public ResponseResult getExcelReportCondition(String userID, QueryCondition[] queryConditions) throws Exception {
+        QueryCondition[] newQueryConditions = null;
         try {
-
-            //获取用户可访问的日期范围
-            String[] productDateArr = userService.getUserAccessDate(userID);
-            if (productDateArr == null) {
+            // 获取用户可访问的月份范围
+            String mouth = userService.getUserAccessMouth(userID);
+            if (mouth == null) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.GET_EXCEL_REPORT_CONDITION_DATE_USER_DEFAULT_VALUE_WRONG);
             }
-            List<Map<String, Object>> dateMinMaxValuesListMap = dataService.getDateMinMaxValues();//获取数据库中日期的最大值和最小值
-            if (dateMinMaxValuesListMap == null || dateMinMaxValuesListMap.size() == 0) {
-                return new ResponseResultUtil().error(ResponseCodeEnum.GET_EXCEL_REPORT_CONDITION_DATE_DEFAULT_VALUE_WRONG);
-            }
-            String[] dateMinMaxValues  = DataProcessingUtil.getListMapValuesOfOneColumn(dateMinMaxValuesListMap);
-            if (productDateArr[0].equals("")) {//可访问的开始日期为空的话，使用数据库中日期的最小值
-                productDateArr[0] = dateMinMaxValues[0];
-            }
-            if (productDateArr[1].equals("")) {//可访问的结束日期为空的话，使用数据库中日期的最大值
-                productDateArr[1] = dateMinMaxValues[1];
-            }
 
-            //获取用户可访问的月份
-            List<String> mouthList = DataProcessingUtil.getMonthBetween(productDateArr[0], productDateArr[1]);
-            StringBuffer mouths = new StringBuffer();
-            for (int i=0; i<mouthList.size(); i++) {
-                mouths.append(mouthList.get(i) + QueryCondition.QUERY_CONDITION_SPLIT);
-            }
-            mouths.deleteCharAt(mouths.length() - QueryCondition.QUERY_CONDITION_SPLIT.length());
-
-            QueryCondition[] newQueryConditions = new QueryCondition[queryConditions.length + 1];
+            // 将月份范围添加到条件里
+            newQueryConditions = new QueryCondition[queryConditions.length + 1];
             System.arraycopy(queryConditions, 0, newQueryConditions, 0, queryConditions.length);//将数组内容复制新数组
             newQueryConditions[queryConditions.length] = new QueryCondition();
-            newQueryConditions[queryConditions.length].setKey(dataService.QUERY_CONDITION_YEAR_MONTH);
-            newQueryConditions[queryConditions.length].setValue(mouths.toString());
+            newQueryConditions[queryConditions.length].setKey(QueryCondition.QUERY_CONDITION_YEAR_MONTH);
+            newQueryConditions[queryConditions.length].setValue(mouth);
             newQueryConditions[queryConditions.length].setType(QueryCondition.QUERY_CONDITION_TYPE_LIST);//type，条件类型
 
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseResultUtil().error(ResponseCodeEnum.GET_EXCEL_REPORT_CONDITION_FAILED);
         }
-        return new ResponseResultUtil().success(ResponseCodeEnum.GET_EXCEL_REPORT_CONDITION_SUCCESS, queryConditions);
+        return new ResponseResultUtil().success(ResponseCodeEnum.GET_EXCEL_REPORT_CONDITION_SUCCESS, newQueryConditions);
     }
 
     /**
@@ -104,8 +94,16 @@ public class ExcelReportConditionsServiceImpl implements IExcelReportConditionsS
         String[] excelReportTypes = null;
         try {
             List<Map<String,String>> allHeadersList = dataService.getAllColumns();
-            excelReportTypes = DataProcessingUtil.getListMapValuesOfOneColumnForString(allHeadersList);
             //List<String> headerDisplayList = userService.getUserHeaderDisplayByTrue(userID);
+
+            // ListMap -> String[],并在后面添加"报告"
+            String[] excelReportTypesTemp = DataProcessingUtil.getListMapValuesOfOneColumnForString(allHeadersList, DataService.EXCEL_EXPORT_SHEET_CONTENTS_EXTEND);
+
+            // 添加"明细表"
+            excelReportTypes = new String[excelReportTypesTemp.length + 1];
+            System.arraycopy(excelReportTypesTemp, 0, excelReportTypes, 0, excelReportTypesTemp.length);//将数组内容复制新数组
+            excelReportTypes[excelReportTypesTemp.length] = DataService.EXCEL_EXPORT_TYPE_DETAIL;
+
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseResultUtil().error(ResponseCodeEnum.GET_EXCEL_REPORT_TYPES_FAILED);
@@ -122,7 +120,7 @@ public class ExcelReportConditionsServiceImpl implements IExcelReportConditionsS
      * @Time 2019-10-20 00:00:00
      */
     @Override
-    public ResponseResult exportExcelReport(ExcelReportSettingData data, HttpServletResponse response) throws Exception {
+    public ResponseResult exportExcelReport(String userID, ExcelReportSettingData excelReportSettingData, HttpServletResponse response) throws Exception {
 /*
 spring-boot默认读取的资源资源文件根路径有4个：
     classpath:/META-INF/resources/
@@ -134,11 +132,21 @@ spring-boot默认读取的资源资源文件根路径有4个：
 Resources目录下新建一个“resources”文件夹，此时“resources”文件夹的路径才是“classpath:/resources/”。
 */
         try {
+            QueryCondition[] queryConditionsArr = excelReportSettingData.getQueryConditions();
+            String[] excelReportTypesArr = excelReportSettingData.getExcelReportTypes();
+            ExcelReportOutputData excelReportOutputData = new ExcelReportOutputData();
+
             String path = System.getProperty("user.dir") + "\\src\\main\\resource\\";
-            String fileName = "33061010_201907_进口_报告_10HS.xlsx";//文件模板路径
-            FileInputStream stream = new FileInputStream(fileName);
+            String templateFileName = "33061010_201907_进口_报告_10HS.xlsx";//文件模板
+            StringBuffer newFileName = new StringBuffer();
+            for (QueryCondition queryCondition : queryConditionsArr) {
+                newFileName.append(queryCondition.getValue() + "_");
+            }
+            newFileName.append("报告_10HS.xlsx");
+            FileInputStream stream = new FileInputStream(templateFileName);
             response.setContentType("application/vnd.ms-excel");
-            response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(new File(fileName).getName(), "utf-8"));
+            response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(
+                    new File(newFileName.toString()).getName(), "gbk"));
             OutputStream outputStream = response.getOutputStream();
             byte[] buffer = new byte[1024];
             int len = 0;
@@ -148,17 +156,150 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
             outputStream.flush();
             outputStream.close();
 
-            QueryCondition[] queryConditions = data.getQueryConditions();
-            String[] excelReportTypes = data.getExcelReportTypes();
-            List<String[]> dataArrList = dataService.getRows(DataService.TABLE_DATA, queryConditions);
-            if (dataArrList.size() == 0) {
-                Slf4jLogUtil.get().info(ResponseCodeEnum.EXPORT_EXCEL_REPORT_GET_DATA_INFO_FROM_SQL_ZERO.getMessage());
-                return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_EXCEL_REPORT_GET_DATA_INFO_FROM_SQL_ZERO);
+
+            // 封面Cover（Query Conditions[商品编号，月份，进出口]，报告日期，Copyright，电话）
+            String coverTitle = queryConditionsArr[queryConditionsArr.length-1].getKey();
+            int coverItemNum = queryConditionsArr.length + DataService.EXCEL_EXPORT_SHEET_COVER_FIXED_ITEM_NUM;
+            String[] coverKeys = new String[coverItemNum];
+            String[] coverValues = new String[coverItemNum];
+            DataService.EXCEL_EXPORT_SHEET_COVER_FIXED_ITEM_VALUE[0] = new SimpleDateFormat("yyyy-MM-dd").format(new Date());//报告日期:今天
+
+            for (int i = 0; i< queryConditionsArr.length; i++) {
+                coverKeys[i] = queryConditionsArr[i].getKey();
+                coverValues[i] = queryConditionsArr[i].getValue();
+
+                // 月份转日期
+                if (queryConditionsArr[i].getKey().equals(QueryCondition.QUERY_CONDITION_YEAR_MONTH)) {
+                    queryConditionsArr[i].setKey(userService.MUST_PRODUCT_DATE);
+                    String[] dateArr = DataProcessingUtil.getDateBetween(queryConditionsArr[i].getValue());
+                    queryConditionsArr[i].setValue(dateArr[0] + QueryCondition.QUERY_CONDITION_SPLIT + dateArr[1]);
+                    queryConditionsArr[i].setType(QueryCondition.QUERY_CONDITION_TYPE_DATE);
+                }
+
             }
+            for (int i = queryConditionsArr.length; i<(queryConditionsArr.length+DataService.EXCEL_EXPORT_SHEET_COVER_FIXED_ITEM_NUM); i++) {
+                coverKeys[i] = DataService.EXCEL_EXPORT_SHEET_COVER_FIXED_ITEM_NAME[i- queryConditionsArr.length];
+                coverValues[i] = DataService.EXCEL_EXPORT_SHEET_COVER_FIXED_ITEM_VALUE[i- queryConditionsArr.length];
+            }
+            excelReportOutputData.setCoverTitle(coverTitle);
+            excelReportOutputData.setCoverKeys(coverKeys);
+            excelReportOutputData.setCoverValues(coverValues);
+
+            // 目录Content（Report Types[01.汇总类型1，02.汇总类型2，03.汇总类型3...]）
+            excelReportOutputData.setContentTitle(DataService.EXCEL_EXPORT_SHEET_CONTENTS);
+            excelReportOutputData.setContentValues(DataService.EXCEL_EXPORT_SHEET_CONTENTS, excelReportTypesArr);
+
+            // 汇总类型（Report Types[申报单位汇总，货主单位汇总，...明细表]）
+            excelReportOutputData.setReportTypes(excelReportTypesArr);
+
+
+            //检查查询条件的格式和内容
+            String retCheck = checkQueryConditions(userID,queryConditionsArr);
+            if (!StringUtils.isEmpty(retCheck)) {
+                return new ResponseResultUtil().error(ResponseCodeEnum.STATISTICS_REPORT_QUERY_CONDITION_ERROR.getCode(),retCheck);
+            }
+            //为未输入的查询条件进行默认值设定
+            setUserQueryConditionDefaultValue(userID,queryConditionsArr);
+            //该用户可查询的条数
+            long userMax = getUserMax(userID);
+
+
+            // 创建EXCEL
             SXSSFWorkbook wb = new SXSSFWorkbook(DataService.ROW_ACCESS_WINDOW_SIZE);
-            SXSSFSheet sheet = wb.createSheet(DataService.EXPORT_EXCEL_SHEET_NAME);
-            //int rowIndex = this.writeExcel(wb, sheet, colsNameSet, dataArrList);
-            ImportExcelUtils.buildExcelDocument(fileName+".xlsx", wb, response);
+
+            // 做成封面Sheet
+            SXSSFSheet coverSheet = wb.createSheet(DataService.EXCEL_EXPORT_SHEET_COVER);
+            this.writeCellToExcel(wb, coverSheet, excelReportOutputData.getCoverTitle(), 6, 1);
+            for (int i=0; i<coverItemNum; i++) {
+                this.writeCellToExcel(wb, coverSheet, excelReportOutputData.getCoverKeys()[i], (11+3*i), 1);
+                this.writeCellToExcel(wb, coverSheet, excelReportOutputData.getCoverValues()[i], (12+3*i), 1);
+            }
+
+            // 做成目录Sheet
+            SXSSFSheet contentSheet = wb.createSheet(DataService.EXCEL_EXPORT_SHEET_CONTENTS);
+            this.writeCellToExcel(wb, contentSheet, excelReportOutputData.getContentTitle(), 6, 1);
+            for (int i=0; i<coverItemNum; i++) {
+                this.writeCellToExcel(wb, contentSheet, excelReportOutputData.getContentValues()[i], (11+2*i), 1);
+            }
+
+            // 按照汇总类型做成相应的Sheet
+            // "明细表"以外的Sheet里的汇总数据格式：序号，Report Types[汇总类型]，美元总价合计，美元总价占比，法定重量合计，法定重量占比，平均单价
+            for (int i=0; i<excelReportOutputData.getReportTypes().length-1; i++) {
+                String groupByField = StringUtils.substringBefore(excelReportOutputData.getReportTypes()[i],
+                        DataService.EXCEL_EXPORT_SHEET_CONTENTS_EXTEND);
+                ComputeField[] computeFields = new ComputeField[2];
+                computeFields[0] = new ComputeField("美元总价", ComputeField.SUM);
+                computeFields[1] = new ComputeField("法定重量", ComputeField.SUM);
+
+                List<Data> dataList = dataService.searchDataForExcelReport(DataService.TABLE_DATA,groupByField,computeFields,queryConditionsArr);
+                if (dataList == null) {
+                    Slf4jLogUtil.get().info(ResponseCodeEnum.EXPORT_EXCEL_REPORT_FROM_SQL_NULL.getMessage());
+                    return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_EXCEL_REPORT_FROM_SQL_NULL);
+                }
+                if (dataList.size() <= 0) {
+                    Slf4jLogUtil.get().info(ResponseCodeEnum.EXPORT_EXCEL_REPORT_FROM_SQL_ZERO.getMessage());
+                    return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_EXCEL_REPORT_FROM_SQL_ZERO);
+                }
+
+                Set<String> colsNameSet = new HashSet<>();
+                colsNameSet.add("序号");
+                colsNameSet.add(groupByField);
+                colsNameSet.add("美元总价合计");
+                colsNameSet.add("美元总价占比");
+                colsNameSet.add("法定重量合计");
+                colsNameSet.add("法定重量占比");
+                colsNameSet.add("平均单价");
+
+                //sql结果List，ExcelReportValue
+                List<String[]> dataArrList = new ArrayList<>();
+                for (int j=0; i<dataList.size(); i++) {
+                    Data data = dataList.get(j);
+                    Map<String, String> keyValue = data.getKeyValue();
+
+                    String groupByValue = keyValue.get(groupByField);
+                    String dollarPriceTotal = keyValue.get(computeFields[0].getFieldName());
+                    String legalWeightTotal = keyValue.get(computeFields[1].getFieldName());
+                    String averageUnitPrice = String.valueOf(Long.parseLong(dollarPriceTotal)/Long.parseLong(legalWeightTotal));
+                    dataArrList.add(new String[]{
+                            String.valueOf(j + 1),  // A列，序号
+                            groupByValue,           // B列，Report Types[汇总类型]
+                            dollarPriceTotal,       // C列，美元总价合计
+                            "=(C21" + j + "/C" + String.valueOf(20 + dataList.size() + 1) + ").NumberFormat = \"0.00%\"",     // D列，美元总价占比
+                            legalWeightTotal,       // E列，法定重量合计
+                            "=(E21" + j + "/E" + String.valueOf(20 + dataList.size() + 1) + ").NumberFormat = \"0.00%\"",    // F列，法定重量合计
+                            averageUnitPrice        // G列，平均单价
+                    });
+                }
+                dataArrList.add(new String[]{
+                        "",
+                        "合计",
+                        "=SUM(C21:C" + String.valueOf(20 + dataList.size()) + ")",
+                        "=SUM(D21:D" + String.valueOf(20 + dataList.size()) + ")",
+                        "=SUM(E21:E" + String.valueOf(20 + dataList.size()) + ")",
+                        "=SUM(F21:F" + String.valueOf(20 + dataList.size()) + ")",
+                        "=SUM(G21:G" + String.valueOf(20 + dataList.size()) + ")"
+                });
+                SXSSFSheet reportSheet = wb.createSheet(excelReportOutputData.getReportTypes()[i]);
+                int rowIndex = this.writeExcel(wb, reportSheet, colsNameSet, dataArrList);
+            }
+
+            // "明细表"Sheet：汇总条件下的所有数据
+            String groupByField = excelReportOutputData.getReportTypes()[excelReportOutputData.getReportTypes().length-1];
+            SXSSFSheet detailSheet = wb.createSheet(groupByField);
+
+            Set<String> colsNameSet = dataService.getTitles(DataService.TABLE_DATA);
+            if (colsNameSet == null || colsNameSet.size() == 0) {
+                Slf4jLogUtil.get().info(ResponseCodeEnum.EXPORT_EXCEL_REPORT_FROM_SQL_NULL.getMessage());
+                return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_EXCEL_REPORT_FROM_SQL_NULL);
+            }
+            List<String[]> dataArrList = dataService.getRows(DataService.TABLE_DATA, queryConditionsArr);
+            if (dataArrList.size() == 0) {
+                Slf4jLogUtil.get().info(ResponseCodeEnum.EXPORT_EXCEL_REPORT_FROM_SQL_ZERO.getMessage());
+                return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_EXCEL_REPORT_FROM_SQL_ZERO);
+            }
+            int rowIndex = this.writeExcel(wb, detailSheet, colsNameSet, dataArrList);
+
+            ImportExcelUtils.buildExcelDocument(newFileName.toString(), wb, response);
             wb.dispose();
         } catch (IOException exception){
             exception.printStackTrace();
@@ -169,4 +310,152 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
         return new ResponseResultUtil().success(ResponseCodeEnum.EXPORT_EXCEL_REPORT_SUCCESS);
     }
 
+    private int writeExcel(SXSSFWorkbook wb, SXSSFSheet sheet, Set<String> colsNameSet, List<String[]> rowList) {
+
+        int titleRowIndex = writeTitlesToExcel(wb, sheet, colsNameSet);
+        int dataRowIndex = writeRowsToExcel(wb, sheet, rowList, titleRowIndex);
+        this.setSizeColumn(sheet, (colsNameSet.size() + 1));
+        return (titleRowIndex + dataRowIndex);
+    }
+
+    private int writeTitlesToExcel(SXSSFWorkbook wb, SXSSFSheet sheet, Set<String> colsNameSet) {
+        int rowIndex = 20;
+        int colIndex = 0;
+
+        // 设置字体
+        Font titleFont = wb.createFont();
+        titleFont.setFontName("simsun");
+        titleFont.setBold(true);
+        // titleFont.setFontHeightInPoints((short) 14);
+        titleFont.setColor(IndexedColors.BLACK.index);
+
+        XSSFCellStyle titleStyle = (XSSFCellStyle) wb.createCellStyle();
+        titleStyle.setAlignment(HorizontalAlignment.CENTER);// 指定单元格居中对齐
+        titleStyle.setVerticalAlignment(VerticalAlignment.CENTER);// 指定单元格垂直居中对齐
+        titleStyle.setFillForegroundColor(new XSSFColor(new java.awt.Color(0, 0, 128)));// 海军蓝
+        titleStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        titleStyle.setFont(titleFont);
+        this.setBorder(titleStyle, BorderStyle.THIN, new XSSFColor(new java.awt.Color(0, 0, 0)));
+
+        Row titleRow = sheet.createRow(rowIndex);
+        // titleRow.setHeightInPoints(25);
+        colIndex = 0;
+
+        for(String colsName: colsNameSet) {
+            Cell cell = titleRow.createCell(colIndex);
+            cell.setCellValue(colsName);
+            cell.setCellStyle(titleStyle);
+            colIndex++;
+        }
+
+        rowIndex++;
+        return rowIndex;
+    }
+
+    private int writeRowsToExcel(SXSSFWorkbook wb, SXSSFSheet sheet, List<String[]> rowList, int rowStartIndex) {
+        int rowIndex = rowStartIndex;
+
+        // 设置字体
+        Font dataFont = wb.createFont();
+        dataFont.setFontName("simsun");
+        // dataFont.setFontHeightInPoints((short) 14);
+        dataFont.setColor(IndexedColors.BLACK.index);
+
+        XSSFCellStyle dataStyle = (XSSFCellStyle) wb.createCellStyle();
+        dataStyle.setAlignment(HorizontalAlignment.CENTER);// 指定单元格居中对齐
+        dataStyle.setVerticalAlignment(VerticalAlignment.CENTER);// 指定单元格垂直居中对齐
+        dataStyle.setFont(dataFont);
+        this.setBorder(dataStyle, BorderStyle.THIN, new XSSFColor(new java.awt.Color(0, 0, 0)));
+
+        for (String[] rowData : rowList) {
+            Row dataRow = sheet.createRow(rowIndex);
+            // dataRow.setHeightInPoints(25);
+
+            for (int colIndex=0; colIndex<rowData.length; colIndex++) {
+                Cell cell = dataRow.createCell(colIndex);
+                if (colIndex == 3 || colIndex == 5) {
+                    cell.setCellFormula(rowData[colIndex]);
+                } else {
+                    cell.setCellValue(rowData[colIndex]);
+                }
+                cell.setCellStyle(dataStyle);
+            }
+            rowIndex++;
+        }
+        return rowList.size();
+    }
+
+    private int writeCellToExcel(SXSSFWorkbook wb, SXSSFSheet sheet, String cellValue, int rowIndex, int colIndex) {
+
+        // 设置字体
+        Font dataFont = wb.createFont();
+        dataFont.setFontName("simsun");
+        // dataFont.setFontHeightInPoints((short) 14);
+        dataFont.setColor(IndexedColors.BLACK.index);
+
+        XSSFCellStyle dataStyle = (XSSFCellStyle) wb.createCellStyle();
+        dataStyle.setAlignment(HorizontalAlignment.CENTER);// 指定单元格居中对齐
+        dataStyle.setVerticalAlignment(VerticalAlignment.CENTER);// 指定单元格垂直居中对齐
+        dataStyle.setFont(dataFont);
+        this.setBorder(dataStyle, BorderStyle.THIN, new XSSFColor(new java.awt.Color(0, 0, 0)));
+
+
+        Row dataRow = sheet.createRow(rowIndex);
+        // dataRow.setHeightInPoints(25);
+
+        Cell cell = dataRow.createCell(colIndex);
+        cell.setCellValue(cellValue);
+        cell.setCellStyle(dataStyle);
+
+
+        return 1;
+    }
+
+    // 自适应宽度(中文支持)
+    private void setSizeColumn(SXSSFSheet sheet, int columnNumber) {
+        // start row
+        int startRowNum = sheet.getLastRowNum() - DataService.ROW_ACCESS_WINDOW_SIZE;
+        if(startRowNum < 0 ) {
+            startRowNum = 0;
+        }else{
+            startRowNum = startRowNum + 1;
+        }
+        for (int columnNum = 0; columnNum < columnNumber; columnNum++) {
+            int columnWidth = sheet.getColumnWidth(columnNum) / 256;
+            for (int rowNum = startRowNum; rowNum < sheet.getLastRowNum(); rowNum++) {
+                SXSSFRow currentRow;
+                //当前行未被使用过
+                if (sheet.getRow(rowNum) == null) {
+                    currentRow = sheet.createRow(rowNum);
+                } else {
+                    currentRow = sheet.getRow(rowNum);
+                }
+
+                if (currentRow.getCell(columnNum) != null) {
+                    Cell currentCell = currentRow.getCell(columnNum);
+                    if (currentCell.getCellTypeEnum() == STRING) {
+                        int length = currentCell.getStringCellValue().getBytes().length;
+                        if (columnWidth < length) {
+                            columnWidth = length;
+                        }
+                    }
+                }
+            }
+            if (columnWidth > 30) {
+                columnWidth = 30;
+            }
+            sheet.setColumnWidth(columnNum, columnWidth * 256);
+        }
+    }
+
+    private void setBorder(XSSFCellStyle style, BorderStyle border, XSSFColor color) {
+        style.setBorderTop(border);
+        style.setBorderLeft(border);
+        style.setBorderRight(border);
+        style.setBorderBottom(border);
+        style.setBorderColor(XSSFCellBorder.BorderSide.TOP, color);
+        style.setBorderColor(XSSFCellBorder.BorderSide.LEFT, color);
+        style.setBorderColor(XSSFCellBorder.BorderSide.RIGHT, color);
+        style.setBorderColor(XSSFCellBorder.BorderSide.BOTTOM, color);
+    }
 }

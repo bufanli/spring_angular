@@ -48,6 +48,21 @@ public class DataProcessingUtil {
         return values;
     }
 
+    public static String[] getListMapValuesOfOneColumnForString(List<Map<String, String>> listMaps, String strExtend) {
+        String[] values = new String[listMaps.size()];
+        int i = 0;
+        for (Map<String, String> map : listMaps) {
+            for (Map.Entry<String, String> m : map.entrySet()) {
+                //System.out.print(m.getKey());
+                //System.out.println(m.getValue());
+                values[i] = new String();
+                values[i] = m.getValue() + strExtend;
+                i++;
+            }
+        }
+        return values;
+    }
+
     public static String getListMapValuesOfOneColumnWithQueryConditionSplit(List<Map<String, Object>> listMaps) {
         StringBuffer values = new StringBuffer();
         for (Map<String, Object> map : listMaps) {
@@ -83,5 +98,19 @@ public class DataProcessingUtil {
         }
 
         return result;
+    }
+
+    public static String[] getDateBetween(String mouth) throws ParseException {
+        String[] dateArr = new String[2];
+        SimpleDateFormat sdf = new SimpleDateFormat(QueryCondition.PRODUCT_DATE_FORMAT_4);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(sdf.parse(mouth));
+        int days = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+
+        dateArr[0] = "1";
+        dateArr[1] = String.valueOf(days);
+
+        return dateArr;
     }
 }

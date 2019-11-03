@@ -9,5 +9,5 @@ import javax.servlet.http.HttpServletResponse;
 public interface IExcelReportConditionsService {
     ResponseResult getExcelReportCondition(String userID, QueryCondition[] queryConditions) throws Exception;
     ResponseResult getExcelReportTypes() throws Exception;
-    ResponseResult exportExcelReport(ExcelReportSettingData data, HttpServletResponse response) throws Exception;
+    ResponseResult exportExcelReport(String userID, ExcelReportSettingData data, HttpServletResponse response) throws Exception;
 }

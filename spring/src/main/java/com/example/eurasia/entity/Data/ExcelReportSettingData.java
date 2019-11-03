@@ -19,13 +19,13 @@ public class ExcelReportSettingData {
         this.queryConditions = queryConditions;
     }
     public QueryCondition[] getQueryConditions() {
-        return queryConditions;
+        return this.queryConditions;
     }
     // set/get excel report types
     public void setExcelReportTypes(String[] excelReportTypes) {
         this.excelReportTypes = excelReportTypes;
     }
     public String[] getExcelReportTypes() {
-        return excelReportTypes;
+        return this.excelReportTypes;
     }
 }

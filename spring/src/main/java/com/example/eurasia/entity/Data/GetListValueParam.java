@@ -2,7 +2,7 @@ package com.example.eurasia.entity.Data;
 
 public class GetListValueParam {
 
-    private String category;        // List类型的查询条件(字段名)
+    private String queryCondition;  // List类型的查询条件(字段名)
     private String term;            // 查询的关键词
     private int offset ;            // 从(offset+1)行开始
     private int limit;              // 查询多少个
@@ -10,12 +10,12 @@ public class GetListValueParam {
     public GetListValueParam(){
         // default no param constructor
     }
-    public void setCategory(String category) {
-        this.category = category;
+    public void setQueryCondition(String queryCondition) {
+        this.queryCondition = queryCondition;
     }
 
-    public String getCategory(){
-        return this.category;
+    public String getQueryCondition(){
+        return this.queryCondition;
     }
 
     public void setTerm(String term) {

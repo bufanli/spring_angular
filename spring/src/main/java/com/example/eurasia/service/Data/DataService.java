@@ -53,11 +53,18 @@ public class DataService {
     public static final String STATISTICS_REPORT_PRODUCT_DATE_MONTH = "月";
     public static final String STATISTICS_REPORT_PRODUCT_DATE_QUARTER = "季度";
 
-    public static final String EXPORT_EXCEL_SHEET_NAME = "统计表";
+    public static final String EXCEL_EXPORT_SHEET_COVER = "封面";
+    public static final String EXCEL_EXPORT_SHEET_COVER_TITLE_EXTEND = "报告";
+    public static final int EXCEL_EXPORT_SHEET_COVER_FIXED_ITEM_NUM = 3;
+    public static final String[] EXCEL_EXPORT_SHEET_COVER_FIXED_ITEM_NAME = {"报告日期","Copyright","电话"};
+    public static String[] EXCEL_EXPORT_SHEET_COVER_FIXED_ITEM_VALUE = {"","大连伟亚信息","0411-39337158"};
+    public static final String EXCEL_EXPORT_SHEET_CONTENTS = "目录";
+    public static final String EXCEL_EXPORT_SHEET_CONTENTS_EXTEND = "汇总";
+    public static final String EXCEL_EXPORT_TYPE_DETAIL = "明细表";
+
+    public static final String DOWNLOAD_EXCEL_SHEET_NAME = "统计表";
     public static final String STATISTICS_REPORT_NAME_EX = "汇总报表";
     public static final String BR = "<br/>";
-
-    public static final String QUERY_CONDITION_YEAR_MONTH = "月份";
 
     public static final int DOWNLOAD_RECODE_STEPS = 10000;
     public static final int ROW_ACCESS_WINDOW_SIZE = 10000;
@@ -495,18 +502,18 @@ public class DataService {
         StringBuffer selectFieldSql = new StringBuffer();
         StringBuffer groupByFieldSql = new StringBuffer();
         Map<String, String> order = new LinkedHashMap<>();
-        StringBuffer orderSql = new StringBuffer();
-        /*
+        StringBuffer orderSql = new StringBuffer();//T.B.D
+/*
 as不是给表里的字段取别名，而是给查询的结果字段取别名。
 其目的是让查询的结果展现更符合人们观看习惯,在多张表查询的时候可以直接的区别多张表的同名的字段。
- */
+*/
         if (groupByField.equals(DataService.STATISTICS_REPORT_PRODUCT_DATE_YEAR)) {
             //报告类型是周期(年)的情况
             String yearFormat = "date_format(" + DataService.STATISTICS_REPORT_PRODUCT_DATE + ",'%Y')";
             selectFieldSql.append(yearFormat + " as " + DataService.STATISTICS_REPORT_PRODUCT_DATE);
             groupByFieldSql.append(yearFormat);
 
-            order.put(yearFormat,"desc");
+            order.put(yearFormat,"asc");
             orderSql.append(getDataDao().convertOrderToSQL(order));
         } else if (groupByField.equals(DataService.STATISTICS_REPORT_PRODUCT_DATE_MONTH)) {
             //报告类型是周期(月)的情况
@@ -514,7 +521,7 @@ as不是给表里的字段取别名，而是给查询的结果字段取别名。
             selectFieldSql.append(monthFormat + " as " + DataService.STATISTICS_REPORT_PRODUCT_DATE);
             groupByFieldSql.append(monthFormat);
 
-            order.put(monthFormat,"desc");
+            order.put(monthFormat,"asc");
             orderSql.append(getDataDao().convertOrderToSQL(order));
         } else if (groupByField.equals(DataService.STATISTICS_REPORT_PRODUCT_DATE_QUARTER)) {
             //报告类型是周期(季度)的情况
@@ -523,11 +530,14 @@ as不是给表里的字段取别名，而是给查询的结果字段取别名。
             selectFieldSql.append(quarterFormat + " as " + DataService.STATISTICS_REPORT_PRODUCT_DATE);
             groupByFieldSql.append(quarterFormat);
 
-            order.put(quarterFormat,"desc");
+            order.put(quarterFormat,"asc");
             orderSql.append(getDataDao().convertOrderToSQL(order));
         } else {
             selectFieldSql.append(groupByField);
             groupByFieldSql.append(groupByField);
+
+            order.put(groupByField,"asc");
+            orderSql.append(getDataDao().convertOrderToSQL(order));
         }
         return getDataDao().queryListForAllObject(tableName,selectFieldSql,groupByFieldSql,orderSql,computeFields,queryConditionsArr);
     }
@@ -549,6 +559,31 @@ as不是给表里的字段取别名，而是给查询的结果字段取别名。
     }
 
     /**
+     * 根据查询条件进行数据查询
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2019-11-02 00:00:00
+     */
+    public List<Data> searchDataForExcelReport(String tableName, String groupByField, ComputeField[] computeFields, QueryCondition[] queryConditionsArr) throws Exception {
+        if (StringUtils.isEmpty(tableName) || StringUtils.isEmpty(groupByField) || computeFields == null || queryConditionsArr == null) {
+            return null;
+        }
+        StringBuffer selectFieldSql = new StringBuffer();
+        StringBuffer groupByFieldSql = new StringBuffer();
+        Map<String, String> order = new LinkedHashMap<>();
+        StringBuffer orderSql = new StringBuffer();//T.B.D
+
+        selectFieldSql.append(groupByField);
+        groupByFieldSql.append(groupByField);
+        order.put(groupByField,"asc");
+        orderSql.append(getDataDao().convertOrderToSQL(order));
+
+        return getDataDao().queryListForAllObject(tableName,selectFieldSql,groupByFieldSql,orderSql,computeFields,queryConditionsArr);
+    }
+
+    /**
      * 取得指定表的所有表头[COLUMN_NAME,名字]
      * @param
      * @return
@@ -562,7 +597,7 @@ as不是给表里的字段取别名，而是给查询的结果字段取别名。
         List<Map<String, Object>> colsNameList = getDataDao().queryListForColumnName(DataService.TABLE_DATA);
         for(Map<String,Object> colsName: colsNameList) {
             Map<String,String> nameMap = new LinkedHashMap<String,String>();
-            nameMap.put(colsName.get("ORDINAL_POSITION").toString(),colsName.get("COLUMN_NAME").toString());
+            nameMap.put(colsName.get("ORDINAL_POSITION").toString(),colsName.get("COLUMN_NAME").toString());//列位置，列名
             colsList.add(nameMap);
         }
 
@@ -779,19 +814,6 @@ as不是给表里的字段取别名，而是给查询的结果字段取别名。
     public List<Long> getColumnValueCounts(String tableName, String columnName) throws Exception {
 
         return getDataDao().getColumnValueCounts(tableName, columnName);
-    }
-
-    /**
-     * 取得日期列的最大值和最小值
-     *
-     * @param
-     * @return
-     * @throws
-     * @author FuJia
-     * @Time 2019-10-26 00:00:00
-     */
-    public List<Map<String, Object>> getDateMinMaxValues() throws Exception {
-        return getDataDao().queryListForColumnMinMaxValues(DataService.TABLE_DATA, "日期");
     }
 
     public Set<String> getTitles(String tableName) throws Exception {

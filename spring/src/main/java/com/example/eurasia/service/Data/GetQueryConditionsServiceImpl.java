@@ -148,28 +148,28 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
     public ResponseResult getListValueWithPagination(GetListValueParam getListValueParam) throws Exception {
 
         CategorySelectionsWithTotalCount categorySelectionsWithTotalCount = new CategorySelectionsWithTotalCount();
-        String category = getListValueParam.getCategory();
+        String queryCondition = getListValueParam.getQueryCondition();
         String term = getListValueParam.getTerm();
         int offset = getListValueParam.getOffset();
         int limit = getListValueParam.getLimit();
         try {
 
-            if (category.equals(DataService.QUERY_CONDITION_YEAR_MONTH)) {
+            if (queryCondition.equals(QueryCondition.QUERY_CONDITION_YEAR_MONTH)) {
                 StringBuffer dateFormatSql = new StringBuffer();
-                dateFormatSql.append("DATE_FORMAT('" + "日期" + "',");
+                dateFormatSql.append("DATE_FORMAT('" + userService.MUST_PRODUCT_DATE + "',");
                 dateFormatSql.append("'%Y-%m')");
-                category = dateFormatSql.toString();
+                queryCondition = dateFormatSql.toString();
             }
 
             Map<String, String> order = new LinkedHashMap<>();
-            order.put(category,"asc");//T.B.D
+            order.put(queryCondition,"asc");//T.B.D
 
-            List<Long> countsList = dataService.getColumnValueCounts(DataService.TABLE_DATA, category);
+            List<Long> countsList = dataService.getColumnValueCounts(DataService.TABLE_DATA, queryCondition);
             long count = countsList.size();
             categorySelectionsWithTotalCount.setTotalCount(count);
 
             List<Map<String, Object>> colValuesListMap = dataService.getColumnValuesWithPagination(DataService.TABLE_DATA,
-                                                                                                    category,
+                                                                                                    queryCondition,
                                                                                                     term,
                                                                                                     offset,
                                                                                                     limit,

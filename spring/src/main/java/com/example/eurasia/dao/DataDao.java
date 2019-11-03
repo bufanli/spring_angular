@@ -641,7 +641,7 @@ Mysql limit offset示例
                                             ComputeField[] computeFields,
                                             QueryCondition[] queryConditionsArr) throws Exception {
 
-        StringBuffer sql = convertStatisticsReportQueryDataToSQL(tableName, selectFieldSql, groupByFieldSql, computeFields, queryConditionsArr);
+        StringBuffer sql = convertReportQueryDataToSQL(tableName, selectFieldSql, groupByFieldSql, computeFields, queryConditionsArr);
         sql.append(orderSql);
 
         List<Data> dataList = getJdbcTemplate().query(sql.toString(), new DataMapper());
@@ -731,24 +731,6 @@ group by 与order by 一起使用是要遵守一定原则的：
         sql.append(sqlGroupBys);
         sql.append(sqlOrder);
         sql.append(" LIMIT " + String.valueOf(offset) + "," + String.valueOf(limit));
-
-        List<Map<String, Object>> selectionColsList = getJdbcTemplate().queryForList(sql.toString());
-
-        return selectionColsList;
-    }
-
-    /**
-     * 查询并返回List集合
-     *
-     * @param
-     * @return
-     * @throws
-     * @author FuJia
-     * @Time 2018-10-27 00:00:00
-     */
-    public List<Map<String, Object>> queryListForColumnMinMaxValues(String tableName, String category) throws Exception {
-        StringBuffer sql = new StringBuffer();
-        sql.append("select min(" + category + "),max(" + category + ") from " + tableName);
 
         List<Map<String, Object>> selectionColsList = getJdbcTemplate().queryForList(sql.toString());
 

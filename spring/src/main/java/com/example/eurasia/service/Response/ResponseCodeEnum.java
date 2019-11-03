@@ -214,6 +214,7 @@ public enum ResponseCodeEnum {
     EXPORT_DATA_INFO_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "导出数据成功"),
     EXPORT_DATA_INFO_FAILED(ResponseCode.RESPONSE_CODE_NG, "导出数据失败"),
     EXPORT_DATA_FILE_NAME_NULL(ResponseCode.RESPONSE_CODE_NG, "导出文件名字为NULL"),
+    EXPORT_DATA_QUERY_CONDITION_ERROR(ResponseCode.RESPONSE_CODE_NG, "导出数据的查询条件错误"),
 
     /* 导出报表 */
     GET_EXCEL_REPORT_CONDITION_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "取得Excel报表的过滤条件成功"),
@@ -227,6 +228,8 @@ public enum ResponseCodeEnum {
     EXPORT_EXCEL_REPORT_QUERY_CONDITION_FROM_SQL_NULL(ResponseCode.RESPONSE_CODE_NULL, "导出报表,从数据库取得查询条件为NULL"),
     EXPORT_EXCEL_REPORT_QUERY_CONDITION_FROM_SQL_SIZE_WRONG(ResponseCode.RESPONSE_CODE_OK, "导出报表,从数据库取得查询条件数目错误"),
     EXPORT_EXCEL_REPORT_GET_DATA_INFO_FROM_SQL_ZERO(ResponseCode.RESPONSE_CODE_OK, "导出报表,从数据库取得数据信息为0"),
+    EXPORT_EXCEL_REPORT_FROM_SQL_NULL(ResponseCode.RESPONSE_CODE_NULL, "从数据库取得数据统计信息为NULL"),
+    EXPORT_EXCEL_REPORT_FROM_SQL_ZERO(ResponseCode.RESPONSE_CODE_OK, "从数据库取得数据统计信息为0"),
 
     /* 数据字段的词典 */
     GET_COLUMNS_DICTIONARY_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "取得数据字段的词典成功"),
