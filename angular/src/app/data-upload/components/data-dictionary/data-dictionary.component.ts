@@ -66,6 +66,10 @@ export class DataDictionaryComponent implements OnInit, CommonDialogCallback {
   private readonly DELETE_DICTIONARY_ERROR_BODY = '删除数据字典错误信息:';
   private readonly DELETE_DICTIONARY_ERROR_MODAL_TYPE = 'confirmation';
   private readonly DELETE_DICTIONARY_ERROR_SOURCE_ID = '002';
+  // export an empty data dictionary error tips
+  private readonly EXPORT_EMPTY_DATA_DICTIONARY_TITLE = '导出数据字典';
+  private readonly EXPORT_EMPTY_DATA_DICTIONARY_TYPE = 'info';
+  private readonly EXPORT_EMPTY_DATA_DICTIONARY_SOURCE_ID = '003';
 
   // error exist and message
   public errorExist = false;
@@ -210,6 +214,7 @@ export class DataDictionaryComponent implements OnInit, CommonDialogCallback {
   // download data to file
   private async exoprtDictionaryImpl(dictionaryName: any): Promise<void> {
     const formData = 'dictionaryName=' + dictionaryName;
+    const that = this;
     return this.downloadHttp.post(this.exportDataDictionaryUrl, formData, httpDownloadOptions).toPromise().then(
       res => {
         const tempRes: any = res;
@@ -218,13 +223,17 @@ export class DataDictionaryComponent implements OnInit, CommonDialogCallback {
         } else {
           // get file name from responose
           const contentDisposition = tempRes.headers._headers.get('content-disposition');
-          const attachmentAndFileName: string = contentDisposition[0];
-          const fileNameIndex = attachmentAndFileName.indexOf('filename=');
-          if (fileNameIndex >= 0) {
-            const fileName = attachmentAndFileName.substring(fileNameIndex + 'filename='.length);
-            importedSaveAs(res.blob(), decodeURI(fileName));
+          if (contentDisposition === undefined) {
+            that.showEmptyDataDictonary(that, dictionaryName);
           } else {
-            importedSaveAs(res.blob());
+            const attachmentAndFileName: string = contentDisposition[0];
+            const fileNameIndex = attachmentAndFileName.indexOf('filename=');
+            if (fileNameIndex >= 0) {
+              const fileName = attachmentAndFileName.substring(fileNameIndex + 'filename='.length);
+              importedSaveAs(res.blob(), decodeURI(fileName));
+            } else {
+              importedSaveAs(res.blob());
+            }
           }
         }
       });
@@ -251,7 +260,16 @@ export class DataDictionaryComponent implements OnInit, CommonDialogCallback {
       component,
       component.DELETE_DICTIONARY_SOURCE_ID);
   }
-
+  // show export empty dictionary modal
+  private showEmptyDataDictonary(target: any, currentDictionaryName: any): void {
+    const component = target;
+    const exportEmptyDataDictionaryBody = `字典(${currentDictionaryName})没有数据`;
+    component.commonUtilitiesService.showCommonDialog(component.EXPORT_EMPTY_DATA_DICTIONARY_TITLE,
+      exportEmptyDataDictionaryBody,
+      component.EXPORT_EMPTY_DATA_DICTIONARY_TYPE,
+      component,
+      component.EXPORT_EMPTY_DATA_DICTIONARY_SOURCE_ID);
+  }
   // load data dictionaries into table
   private loadDataDictionariesIntoTable(): void {
     // data dictionary table data
@@ -275,7 +293,10 @@ export class DataDictionaryComponent implements OnInit, CommonDialogCallback {
       this.deleteDataDictionary(this.deletingDictionaryName);
     } else if (sourceID === this.DELETE_DICTIONARY_ERROR_SOURCE_ID) {
       // nothing to do
+    } else if (sourceID === this.EXPORT_EMPTY_DATA_DICTIONARY_SOURCE_ID) {
+      // nothing to do
     }
+
   }
   // delete data dictionary
   public deleteDataDictionary(dictionaryName: string): void {
