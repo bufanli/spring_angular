@@ -11,6 +11,8 @@ public class CSVUtils {
 
     // 预览或者正式上传（true 为预览）
     private boolean isPreview = true;
+    private final static String CSV_SEPERATOR = ",";
+    private final static String CSV_NEW_LINE= "\r";
 
     public CSVUtils() {
     }
@@ -102,21 +104,43 @@ public class CSVUtils {
         OutputStreamWriter osw = null;
         BufferedWriter bw = null;
         try {
-
             out = new FileOutputStream(file);
             osw = new OutputStreamWriter(out, "gbk");
             bw = new BufferedWriter(osw);
             //if (headDataSet != null && !headDataSet.isEmpty()) {
-                for (String data : headDataSet) {
-                    bw.append(data).append("\r");
-                }
+            // set header
+            StringBuffer headerBuffer = new StringBuffer();
+            for (String data : headDataSet) {
+                headerBuffer.append(data).append(CSV_SEPERATOR);
+            }
+            String header = headerBuffer.toString();
+            if(header.endsWith(CSV_SEPERATOR)){
+                header = header.substring(0,header.length() - CSV_SEPERATOR.length());
+            }
+            bw.append(header).append(CSV_NEW_LINE);
             //}
+            // set data list
+            StringBuffer dataBuffer = null;
             //if (dataList != null && !dataList.isEmpty()) {
                 for (String[] dataArr : dataList) {
+                    dataBuffer = new StringBuffer();
+                    // for one data entry
+                    int index = 0;// skip first column(id)
                     for (String data : dataArr) {
-                        bw.append(data);
+                        if(index == 0){
+                            index++;
+                            continue;
+                        }else {
+                            dataBuffer.append(data).append(CSV_SEPERATOR);
+                            index++;
+                        }
                     }
-                    bw.append("\r");
+                    // get rid of last CSV_SEPERATOR
+                    String dataStr = dataBuffer.toString();
+                    if(dataStr.endsWith(CSV_SEPERATOR)){
+                        dataStr= dataStr.substring(0,dataStr.length() - CSV_SEPERATOR.length());
+                    }
+                    bw.append(dataStr).append(CSV_NEW_LINE);
                 }
             //}
             isSuccess = true;
