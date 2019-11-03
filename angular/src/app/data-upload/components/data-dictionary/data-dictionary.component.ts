@@ -232,7 +232,8 @@ export class DataDictionaryComponent implements OnInit, CommonDialogCallback {
   // delete dictionaory
   private deleteDictionary(target: any): void {
     const component = target.data['component'];
-    component.showDeleteDataDictionaryModal(target.data['component'], target.data['dictionaryName']);
+    const dictionaryName = target.data['dictionaryName'];
+    component.showDeleteDataDictionaryModal(dictionaryName);
   }
   // set deleting dictionary name to component
   private setDeletingDictionaryName(deletingDictionaryName: string): void {
