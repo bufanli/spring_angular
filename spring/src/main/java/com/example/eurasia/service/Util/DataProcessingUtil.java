@@ -20,16 +20,17 @@ import java.util.Set;
 public class DataProcessingUtil {
 
     public static String[] getListMapValuesOfOneColumn(List<Map<String, Object>> listMaps) {
-        String[] values = new String[listMaps.size()];
-        int i = 0;
+        ArrayList valuesArray = new ArrayList();
         for (Map<String, Object> map : listMaps) {
             for (Map.Entry<String, Object> m : map.entrySet()) {
-                //System.out.print(m.getKey());
-                //System.out.println(m.getValue());
-                values[i] = new String();
-                values[i] = (String) m.getValue();
-                i++;
+                valuesArray.add (m.getValue());
             }
+        }
+        String[] values = new String[valuesArray.size()];
+        int i = 0;
+        for (Object value:valuesArray) {
+            values[i] = (String)value;
+            i++;
         }
         return values;
     }
@@ -131,7 +132,7 @@ public class DataProcessingUtil {
     }
     public static List<String> getMonthBetween(String minDate, String maxDate) throws ParseException {
         ArrayList<String> result = new ArrayList<String>();
-        SimpleDateFormat sdf = new SimpleDateFormat(QueryCondition.PRODUCT_DATE_FORMAT_4);//格式化为年月
+        SimpleDateFormat sdf = new SimpleDateFormat(QueryCondition.PRODUCT_DATE_FORMAT_1);//格式化为年月
 
         Calendar min = Calendar.getInstance();
         Calendar max = Calendar.getInstance();

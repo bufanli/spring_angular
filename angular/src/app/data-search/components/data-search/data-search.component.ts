@@ -335,7 +335,7 @@ ngOnInit() {
       data: function (params): any {
         const currentPage = params.page || 1;
         const query = {
-          category: listQueryCondition.getKey(),
+          queryCondtion: listQueryCondition.getKey(),
           term: params.term || '',
           offset: (currentPage - 1) * that.LIST_VALUE_QUERY_NUMBER_PER_PAGE,
           limit: that.LIST_VALUE_QUERY_NUMBER_PER_PAGE,
