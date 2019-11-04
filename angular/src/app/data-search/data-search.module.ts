@@ -16,6 +16,7 @@ import { DataStatisticsOriginalDataComponent } from './components/data-statistic
 import { DataExcelReportSelectionComponent } from './components/data-excel-report-selection/data-excel-report-selection.component';
 import { DataSelectHeadersComponent } from './components/data-select-headers/data-select-headers.component';
 import { DataHeaderDisplayService } from './services/data-header-display.service';
+import { ExcelReportService } from './services/excel-report.service';
 
 const dataSearchRoutes: Routes = [
   {
@@ -50,10 +51,13 @@ const dataSearchRoutes: Routes = [
     DataStatisticsGraphComponent,
     DataStatisticsOriginalDataComponent,
     DataSelectHeadersComponent,
+    DataExcelReportSelectionComponent,
   ],
   providers: [
     DataStatisticsService,
     DataHeaderDisplayService,
+    DataStatisticsService,
+    ExcelReportService,
   ]
 })
 export class DataSearchModule { }

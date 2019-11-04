@@ -1,11 +1,15 @@
 package com.example.eurasia.service.User;
 
+import com.example.eurasia.dao.DataDao;
 import com.example.eurasia.dao.UserDao;
 import com.example.eurasia.entity.Data.Data;
 import com.example.eurasia.entity.Data.DataXMLReader;
 import com.example.eurasia.entity.Data.QueryCondition;
 import com.example.eurasia.entity.User.UserCustom;
 import com.example.eurasia.entity.User.UserInfo;
+import com.example.eurasia.service.Data.DataService;
+import com.example.eurasia.service.Response.ResponseCodeEnum;
+import com.example.eurasia.service.Util.DataProcessingUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -534,58 +538,153 @@ public class UserService {
     }
 
     /**
-     * 获取数据库中最近的一个月。
+     * 取得数据中最近的月份
      * @param
      * @return
      * @exception
      * @author FuJia
-     * @Time 2018-11-15 00:00:00
+     * @Time 2018-11-22 00:00:00
      */
-    public String[] getUserTheLastMonth(String tableName, String userID) throws Exception {
-        if (StringUtils.isEmpty(tableName) || StringUtils.isEmpty(userID)) {
+    public String getUserTheLastMonth(String userID) throws Exception {
+
+        String[] dateArr = null;
+        try {
+            switch (userID) {
+                case UserService.USER_DEFAULT:
+                case UserService.USER_ADMINISTRATOR:
+                case UserService.USER_GUEST:
+                    //查询数据库中的最近一个月
+                    dateArr = getUserDao().queryListForTheLastMouth(DataService.TABLE_DATA,UserService.MUST_PRODUCT_DATE);
+                    break;
+                default:
+                    //获取用户可访问的最近一个月日期范围
+                    dateArr = this.getUserAccessTheLastMonth(userID);
+                    break;
+            }
+
+            if (dateArr == null) {
+                throw new Exception(ResponseCodeEnum.QUERY_CONDITION_DATE_DEFAULT_VALUE_NULL.getMessage());
+            }
+            if (dateArr.length != 2) {
+                throw new Exception(ResponseCodeEnum.QUERY_CONDITION_DATE_DEFAULT_VALUE_WRONG.getMessage());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception(ResponseCodeEnum.QUERY_CONDITION_DATE_DEFAULT_VALUE_FAILED.getMessage());
+        }
+
+        String defaultValue = dateArr[0] + QueryCondition.QUERY_CONDITION_SPLIT + dateArr[1] ;
+        return defaultValue;
+    }
+
+    /**
+     * 获取用户可访问的最近一个月日期范围
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2019-10-25 00:00:00
+     */
+    public String[] getUserAccessTheLastMonth(String userID) throws Exception {
+        if (StringUtils.isEmpty(userID)) {
             return null;
         }
 
-        switch (userID) {
-            case UserService.USER_DEFAULT:
-            case UserService.USER_ADMINISTRATOR:
-            case UserService.USER_GUEST:
-                //查询数据库中的最近一个月
-                return getUserDao().queryListForTheLastMouth(tableName,UserService.MUST_PRODUCT_DATE);
-            default:
-                //获取用户可访问的日期范围
-                String productDate = this.getOneUserCustom(UserService.TABLE_USER_ACCESS_AUTHORITY,
-                        UserService.MUST_PRODUCT_DATE,
-                        userID);
-                if (productDate == null || !productDate.contains(QueryCondition.QUERY_CONDITION_SPLIT)) {
-                    return null;
-                } else {
-                    String[] productDateArr = productDate.split(QueryCondition.QUERY_CONDITION_SPLIT,-1);
-                    if (productDateArr.length != 2) {
-                        return null;
-                    }
+        //获取用户可访问的日期范围
+        String[] productDateArr = this.getUserAccessDate(userID);
 
-                    //查询用户可见的最近一个月
-                    SimpleDateFormat sdf = new SimpleDateFormat(QueryCondition.PRODUCT_DATE_FORMAT_1);
-                    Date dateStart = sdf.parse(productDateArr[0]);
-                    Date dateEnd = sdf.parse(productDateArr[1]);
-                    Calendar cld = Calendar.getInstance();
-                    cld.setTime(dateEnd);
-                    cld.add(Calendar.MONTH, -1);
-                    Date beforeDateEnd = cld.getTime();
-                    if (dateStart.before(beforeDateEnd)) {
-                        //System.out.println(date1 + "在" + date2 + "前面");
-                        productDateArr[0] = sdf.format(beforeDateEnd);
-                    } else if (dateStart.after(beforeDateEnd)) {
-                        //System.out.println(date1 + "在" + date2 + "后面");
-                    } else {
-                        //System.out.println("是同一天的同一时间");
-                    }
-
-                    return productDateArr;
-                }
+        //查询用户可见的最近一个月
+        SimpleDateFormat sdf = DataDao.SIMPLE_DATE_FORMAT_1;
+        Date dateStart = sdf.parse(productDateArr[0]);
+        Date dateEnd = sdf.parse(productDateArr[1]);
+        Calendar cld = Calendar.getInstance();
+        cld.setTime(dateEnd);
+        cld.add(Calendar.MONTH, -1);
+        Date beforeDateEnd = cld.getTime();
+        if (dateStart.before(beforeDateEnd)) {
+            //System.out.println(date1 + "在" + date2 + "前面");
+            productDateArr[0] = sdf.format(beforeDateEnd);
+        } else if (dateStart.after(beforeDateEnd)) {
+            //System.out.println(date1 + "在" + date2 + "后面");
+        } else {
+            //System.out.println("是同一天的同一时间");
         }
 
+        return productDateArr;
+
+    }
+
+    /**
+     * 获取用户可访问的日期范围
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2019-10-25 00:00:00
+     */
+    public String[] getUserAccessDate(String userID) throws Exception {
+        if (StringUtils.isEmpty(userID)) {
+            return null;
+        }
+
+        //获取用户可访问的日期范围
+        String productDate = this.getOneUserCustom(UserService.TABLE_USER_ACCESS_AUTHORITY,
+                UserService.MUST_PRODUCT_DATE,
+                userID);
+        if (productDate == null || !productDate.contains(QueryCondition.QUERY_CONDITION_SPLIT)) {
+            return null;
+        } else {
+            String[] productDateArr = productDate.split(QueryCondition.QUERY_CONDITION_SPLIT,-1);
+            if (productDateArr.length != 2) {
+                return null;
+            }
+
+            return productDateArr;
+        }
+    }
+
+    public String getQueryConditionDisplayValue(String userID, String key, String type) throws Exception {
+
+        String queryConditionValue = null;
+        switch (type) {
+            case QueryCondition.QUERY_CONDITION_TYPE_DATE:
+                if (key.equals(UserService.MUST_PRODUCT_DATE)) {
+                    queryConditionValue = this.getUserTheLastMonth(userID);
+                } else {
+                    queryConditionValue = QueryCondition.QUERY_CONDITION_SPLIT;
+                }
+                break;
+            case QueryCondition.QUERY_CONDITION_TYPE_MONEY:
+            case QueryCondition.QUERY_CONDITION_TYPE_AMOUNT:
+                queryConditionValue = QueryCondition.QUERY_CONDITION_SPLIT;
+                break;
+            case QueryCondition.QUERY_CONDITION_TYPE_LIST:
+                if (key.equals(UserService.MUST_PRODUCT_NUMBER)) {
+                    queryConditionValue = this.getOneUserCustom(UserService.TABLE_USER_ACCESS_AUTHORITY,
+                            UserService.MUST_PRODUCT_NUMBER,
+                            userID);
+                } else if (key.equals(QueryCondition.QUERY_CONDITION_YEAR_MONTH)) {
+                    queryConditionValue = this.getUserAccessMouth(userID);
+                } else {
+                    queryConditionValue = "";
+                }
+                /* List改为翻页形式。2019-06-26。
+                    queryConditionValue = QueryCondition.QUERY_CONDITION_SPLIT;
+                }
+
+                // 如果是 QueryCondition.QUERY_CONDITION_SPLIT 的话，返回该列所有的元素
+                if (queryConditionValue.equals(QueryCondition.QUERY_CONDITION_SPLIT)) {
+                    List<Map<String, Object>> colValuesListMap = dataService.getColumnAllValuesByGroup(DataService.TABLE_DATA,new String[]{key});
+                    queryConditionValue = DataProcessingUtil.getListMapValuesOfOneColumnWithQueryConditionSplit(colValuesListMap);
+                }
+                */
+                break;
+            case QueryCondition.QUERY_CONDITION_TYPE_STRING:
+            default:
+                queryConditionValue = "";
+                break;
+        }
+        return queryConditionValue;
     }
 
     /**
@@ -905,6 +1004,57 @@ public class UserService {
         }
 
         return dataList.get(0).getKeyValue().get(columnName);
+    }
+
+    /**
+     * 取得用户可访问的月份
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2019-10-20 00:00:00
+     */
+    public String getUserAccessMouth(String userID) throws Exception {
+
+            // 获取用户可访问的日期范围
+            String[] productDateArr = this.getUserAccessDate(userID);
+            if (productDateArr == null) {
+                return null;
+            }
+            // 数据库中日期的最大值和最小值
+            List<Map<String, Object>> dateMinMaxValuesListMap = getUserDao().queryListForColumnMinMaxValues(DataService.TABLE_DATA, UserService.MUST_PRODUCT_DATE);
+            if (dateMinMaxValuesListMap == null || dateMinMaxValuesListMap.size() == 0) {
+                return null;
+            }
+            String[] dateMinMaxValues  = DataProcessingUtil.getListMapValuesOfOneColumn(dateMinMaxValuesListMap);
+            if (productDateArr[0].equals("")) {//可访问的开始日期为空的话，使用数据库中日期的最小值
+                productDateArr[0] = dateMinMaxValues[0];
+            }
+            if (productDateArr[1].equals("")) {//可访问的结束日期为空的话，使用数据库中日期的最大值
+                productDateArr[1] = dateMinMaxValues[1];
+            }
+
+            // 获取用户可访问的月份
+            List<String> mouthList = DataProcessingUtil.getMonthBetween(productDateArr[0], productDateArr[1]);
+            StringBuffer mouths = new StringBuffer();
+            for (int i=0; i<mouthList.size(); i++) {
+                mouths.append(mouthList.get(i) + QueryCondition.QUERY_CONDITION_SPLIT);
+            }
+            mouths.deleteCharAt(mouths.length() - QueryCondition.QUERY_CONDITION_SPLIT.length());
+
+            return mouths.toString();
+    }
+
+    /**
+     * 查询表的记录数
+     *
+     * @param
+     * @return
+     * @throws
+     * @author FuJia
+     * @Time 2018-09-20 00:00:00
+     */
+    public long queryTableRows(String tableName) throws Exception {
+        return getUserDao().queryTableRows(tableName).longValue();
     }
 }
 

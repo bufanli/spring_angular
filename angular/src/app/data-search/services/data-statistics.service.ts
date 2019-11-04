@@ -11,7 +11,6 @@ import { StatisticsFields } from '../entities/statistics-fields';
 import { StatisticsReportEntry } from '../entities/statistics-report-entry';
 import { ComputeValue } from '../entities/compute-value';
 import { CurrentUserContainerService } from 'src/app/common/services/current-user-container.service';
-import { NEXT } from '@angular/core/src/render3/interfaces/view';
 
 // json header for post
 const httpOptions = {
@@ -58,6 +57,7 @@ export class DataStatisticsService implements ProcessingDialogCallback {
       null,
       this.GET_STATISTICS_FIELDS_SOURCE_ID);
   }
+
   // callback on processing
   public callbackOnProcessing(sourceID: string, data: any): void {
     if (sourceID === this.GET_STATISTICS_FIELDS_SOURCE_ID) {

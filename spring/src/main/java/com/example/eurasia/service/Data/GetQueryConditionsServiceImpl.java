@@ -59,7 +59,7 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
             while (it.hasNext()) {
                 Map.Entry<String,String> entry = it.next();
                 queryConditions[i].setKey(entry.getKey());
-                queryConditions[i].setValue(getQueryConditionDisplayValue(UserService.USER_DEFAULT,entry.getKey(),entry.getValue()));
+                queryConditions[i].setValue(userService.getQueryConditionDisplayValue(UserService.USER_DEFAULT,entry.getKey(),entry.getValue()));
                 queryConditions[i].setType(entry.getValue());
                 i++;
             }
@@ -119,12 +119,12 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
             while (it.hasNext()) {
                 Map.Entry<String,String> entry = it.next();
 
-                for (String userQueryConditionDisplay:userQueryConditionDisplayList) {
+                for (String userQueryConditionDisplay : userQueryConditionDisplayList) {
                     if (entry.getKey().equals(userQueryConditionDisplay)) {
                         queryConditions[i] = new QueryCondition();
-                        queryConditions[i].setKey(entry.getKey());
-                        queryConditions[i].setValue(getQueryConditionDisplayValue(userID,entry.getKey(),entry.getValue()));
-                        queryConditions[i].setType(entry.getValue());
+                        queryConditions[i].setKey(entry.getKey());//key,条件名
+                        queryConditions[i].setValue(userService.getQueryConditionDisplayValue(userID,entry.getKey(),entry.getValue()));//value，条件默认值
+                        queryConditions[i].setType(entry.getValue());//type，条件类型
                         i++;
                         break;
                     }
@@ -139,48 +139,6 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
         return new ResponseResultUtil().success(ResponseCodeEnum.QUERY_CONDITION_DISPLAY_FROM_SQL_SUCCESS, queryConditions);
     }
 
-    private String getQueryConditionDisplayValue(String userID, String key, String type) throws Exception {
-
-        String queryConditionValue = null;
-        switch (type) {
-            case QueryCondition.QUERY_CONDITION_TYPE_DATE:
-                if (key.equals(UserService.MUST_PRODUCT_DATE)) {
-                    queryConditionValue = this.getUserTheLastMonth(userID);
-                } else {
-                    queryConditionValue = QueryCondition.QUERY_CONDITION_SPLIT;
-                }
-                break;
-            case QueryCondition.QUERY_CONDITION_TYPE_MONEY:
-            case QueryCondition.QUERY_CONDITION_TYPE_AMOUNT:
-                queryConditionValue = QueryCondition.QUERY_CONDITION_SPLIT;
-                break;
-            case QueryCondition.QUERY_CONDITION_TYPE_LIST:
-                if (key.equals(UserService.MUST_PRODUCT_NUMBER)) {
-                    queryConditionValue = userService.getOneUserCustom(UserService.TABLE_USER_ACCESS_AUTHORITY,
-                            UserService.MUST_PRODUCT_NUMBER,
-                            userID);
-                } else {
-                    queryConditionValue = "";
-                }
-                /* List改为翻页形式。2019-06-26。
-                    queryConditionValue = QueryCondition.QUERY_CONDITION_SPLIT;
-                }
-
-                // 如果是 QueryCondition.QUERY_CONDITION_SPLIT 的话，返回该列所有的元素
-                if (queryConditionValue.equals(QueryCondition.QUERY_CONDITION_SPLIT)) {
-                    List<Map<String, Object>> colValuesListMap = dataService.getColumnAllValuesByGroup(DataService.TABLE_DATA,new String[]{key});
-                    queryConditionValue = DataProcessingUtil.getListMapValuesOfOneColumnWithQueryConditionSplit(colValuesListMap);
-                }
-                */
-                break;
-            case QueryCondition.QUERY_CONDITION_TYPE_STRING:
-            default:
-                queryConditionValue = "";
-                break;
-        }
-        return queryConditionValue;
-    }
-
     /**
      * 取得List类型的查询条件的值
      * @exception
@@ -190,29 +148,27 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
     public ResponseResult getListValueWithPagination(String userID, GetListValueParam getListValueParam) throws Exception {
 
         CategorySelectionsWithTotalCount categorySelectionsWithTotalCount = new CategorySelectionsWithTotalCount();
-        int totalCount = 0;
-
-        String category = getListValueParam.getCategory();  // List类型的查询条件(字段名)
+        String queryCondition = getListValueParam.getQueryCondition();  // List类型的查询条件(字段名)
         String term = getListValueParam.getTerm().trim();   // 查询的关键词
         int offset = getListValueParam.getOffset();         // 从(offset+1)行开始
         int limit = getListValueParam.getLimit();           // 查询多少个
         Map<String, String> order = new LinkedHashMap<>();
-
+        int totalCount = 0;
         try {
 
-            switch (category) {
+            switch (queryCondition) {
                 case UserService.MUST_PRODUCT_NUMBER:
-                    order.put(category,"asc");//T.B.D
+                    order.put(queryCondition,"asc");//T.B.D
 
                     String queryConditionValue = userService.getOneUserCustom(UserService.TABLE_USER_ACCESS_AUTHORITY,
                             UserService.MUST_PRODUCT_NUMBER,
                             userID);
                     if (queryConditionValue.equals(QueryCondition.QUERY_CONDITION_SPLIT)) {// 海关编码没有权限限制
-                        List<Long> countsList = dataService.getColumnValueCounts(DataService.TABLE_DATA, category);
+                        List<Long> countsList = dataService.getColumnValueCounts(DataService.TABLE_DATA, queryCondition);
                         totalCount = countsList.size();
 
                         List<Map<String, Object>> colValuesListMap = dataService.getColumnValuesWithPagination(DataService.TABLE_DATA,
-                                category,
+                                queryCondition,
                                 term,
                                 offset,
                                 limit,
@@ -244,13 +200,19 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
                     }
                     break;
                 default:
-                    order.put(category,"asc");//T.B.D
+                    if (queryCondition.equals(QueryCondition.QUERY_CONDITION_YEAR_MONTH)) {
+                        StringBuffer dateFormatSql = new StringBuffer();
+                        dateFormatSql.append("DATE_FORMAT('" + userService.MUST_PRODUCT_DATE + "',");
+                        dateFormatSql.append("'%Y-%m')");
+                        queryCondition = dateFormatSql.toString();
+                    }
+                    order.put(queryCondition,"asc");//T.B.D
 
-                    List<Long> countsList = dataService.getColumnValueCounts(DataService.TABLE_DATA, category);
+                    List<Long> countsList = dataService.getColumnValueCounts(DataService.TABLE_DATA, queryCondition);
                     totalCount = countsList.size();
 
                     List<Map<String, Object>> colValuesListMap = dataService.getColumnValuesWithPagination(DataService.TABLE_DATA,
-                            category,
+                            queryCondition,
                             term,
                             offset,
                             limit,
@@ -281,33 +243,6 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
 
         return new ResponseResultUtil().success(ResponseCodeEnum.QUERY_CONDITION_LIST_VALUE_FROM_SQL_SUCCESS,
                                                 categorySelectionsWithTotalCount);
-    }
-    /**
-     * 取得数据中最近的月份
-     * @param
-     * @return
-     * @exception
-     * @author FuJia
-     * @Time 2018-11-22 00:00:00
-     */
-    private String getUserTheLastMonth(String userID) throws Exception {
-
-        String[] dateArr = null;
-        try {
-            dateArr = userService.getUserTheLastMonth(DataService.TABLE_DATA,userID);
-            if (dateArr == null) {
-                throw new Exception(ResponseCodeEnum.QUERY_CONDITION_DATE_DEFAULT_VALUE_NULL.getMessage());
-            }
-            if (dateArr.length != 2) {
-                throw new Exception(ResponseCodeEnum.QUERY_CONDITION_DATE_DEFAULT_VALUE_WRONG.getMessage());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new Exception(ResponseCodeEnum.QUERY_CONDITION_DATE_DEFAULT_VALUE_FAILED.getMessage());
-        }
-
-        String defaultValue = dateArr[0] + QueryCondition.QUERY_CONDITION_SPLIT + dateArr[1] ;
-        return defaultValue;
     }
 
 }

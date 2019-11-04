@@ -6,6 +6,7 @@ import com.example.eurasia.entity.Data.QueryCondition;
 import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;
+import com.example.eurasia.service.Util.ImportExcelUtils;
 import com.example.eurasia.service.Util.Slf4jLogUtil;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.streaming.SXSSFRow;
@@ -154,7 +155,7 @@ public class UpDownloadFileServiceImpl implements IUpDownloadFileService {
                 Slf4jLogUtil.get().info("第{}/{}个文件开始导入,文件名:{}",(i+1),fileNumber,fileName);
 
                 try {
-                    if (ImportExcelUtils.isExcelFileValidate(files[i]) == true) {
+                    if (ImportExcelUtils.isExcelFileValidata(files[i]) == true) {
                         //responseRead = importExcelByUserMode.readExcelFile(files[i]);//T.B.D UserMode，没有check列名的同义词
                         responseRead = importExcelByEventMode.readExcelFile(files[i]);
                         if (responseRead.indexOf(DataService.IMPORT_EXCEL_SUCCESS_MESSAGE) != -1) {
@@ -365,7 +366,7 @@ public class UpDownloadFileServiceImpl implements IUpDownloadFileService {
 
         StringBuffer responseMsg = new StringBuffer();
         SXSSFWorkbook wb = new SXSSFWorkbook(ROW_ACCESS_WINDOW_SIZE);
-        SXSSFSheet sheet = wb.createSheet(DataService.EXPORT_EXCEL_SHEET_NAME);
+        SXSSFSheet sheet = wb.createSheet(DataService.DOWNLOAD_EXCEL_SHEET_NAME);
         try {
 
             Set<String> colsNameSet = this.getTitles(DataService.TABLE_DATA);

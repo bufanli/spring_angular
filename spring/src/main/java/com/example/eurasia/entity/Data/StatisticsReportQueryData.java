@@ -1,11 +1,11 @@
 package com.example.eurasia.entity.Data;
 
 public class StatisticsReportQueryData implements Cloneable {
-    // group by field
+    // group by field 统计列(...汇总列表)
     private String groupByField;
-    // compute fields
+    // compute fields 计算列(法定重量，申报数量，件数)
     private ComputeField[] computeFields;
-    // query conditions
+    // query conditions 检索页面的查询条件
     private QueryCondition[] queryConditions;
 
     public StatisticsReportQueryData () {

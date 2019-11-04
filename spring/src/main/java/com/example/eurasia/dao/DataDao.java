@@ -20,6 +20,7 @@ public class DataDao extends CommonDao {
     public static final SimpleDateFormat SIMPLE_DATE_FORMAT_1 = new SimpleDateFormat(QueryCondition.PRODUCT_DATE_FORMAT_1);
     public static final SimpleDateFormat SIMPLE_DATE_FORMAT_2 = new SimpleDateFormat(QueryCondition.PRODUCT_DATE_FORMAT_2);
     public static final SimpleDateFormat SIMPLE_DATE_FORMAT_3 = new SimpleDateFormat(QueryCondition.PRODUCT_DATE_FORMAT_3);
+    public static final SimpleDateFormat SIMPLE_DATE_FORMAT_4 = new SimpleDateFormat(QueryCondition.PRODUCT_DATE_FORMAT_4);
 
     /**
      * 添加数据
@@ -697,7 +698,7 @@ Mysql limit offset示例
                                             ComputeField[] computeFields,
                                             QueryCondition[] queryConditionsArr) throws Exception {
 
-        StringBuffer sql = convertStatisticsReportQueryDataToSQL(tableName, selectFieldSql, groupByFieldSql, computeFields, queryConditionsArr);
+        StringBuffer sql = convertReportQueryDataToSQL(tableName, selectFieldSql, groupByFieldSql, computeFields, queryConditionsArr);
         sql.append(orderSql);
 
         List<Data> dataList = getJdbcTemplate().query(sql.toString(), new DataMapper());
@@ -969,15 +970,15 @@ group by 与order by 一起使用是要遵守一定原则的：
     private String formatDate(String dateStr) {
         Date date = null;
         try {
-            date = SIMPLE_DATE_FORMAT_1.parse(dateStr);
+            date = DataDao.SIMPLE_DATE_FORMAT_1.parse(dateStr);
             return DataDao.SIMPLE_DATE_FORMAT_1.format(date);
         } catch (ParseException e) {
             try {
-                date = SIMPLE_DATE_FORMAT_2.parse(dateStr);
+                date = DataDao.SIMPLE_DATE_FORMAT_2.parse(dateStr);
                 return DataDao.SIMPLE_DATE_FORMAT_1.format(date);
             } catch (ParseException e1) {
                 try {
-                    date = SIMPLE_DATE_FORMAT_3.parse(dateStr);
+                    date = DataDao.SIMPLE_DATE_FORMAT_3.parse(dateStr);
                     return DataDao.SIMPLE_DATE_FORMAT_1.format(date);
                 } catch (ParseException e2) {
                     int daysFrom1900 = Integer.parseInt(dateStr);

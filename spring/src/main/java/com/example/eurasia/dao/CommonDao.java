@@ -460,6 +460,24 @@ CREATE TABLE SPRING_SESSION_ATTRIBUTES (
     }
 
     /**
+     * 查询并返回List集合
+     *
+     * @param
+     * @return
+     * @throws
+     * @author FuJia
+     * @Time 2019-10-29 00:00:00
+     */
+    public List<Map<String, Object>> queryListForColumnMinMaxValues(String tableName, String category) throws Exception {
+        StringBuffer sql = new StringBuffer();
+        sql.append("select min(" + category + "),max(" + category + ") from " + tableName);
+
+        List<Map<String, Object>> selectionColsList = getJdbcTemplate().queryForList(sql.toString());
+
+        return selectionColsList;
+    }
+
+    /**
      * 查询数据库中的最近一个月
      *
      * @param tableName
@@ -590,11 +608,11 @@ select PERIOD_DIFF(DATE_FORMAT(CURDATE(),'%Y%m'),DATE_FORMAT(日期,'%Y%m')) fro
     /**
      * convert query conditions to sql
      */
-    protected StringBuffer convertStatisticsReportQueryDataToSQL(String tableName,
-                                                                 StringBuffer selectField,
-                                                                 StringBuffer groupByField,
-                                                                 ComputeField[] computeFields,
-                                                                 QueryCondition[] queryConditionsArr) {
+    protected StringBuffer convertReportQueryDataToSQL(String tableName,
+                                                       StringBuffer selectField,
+                                                       StringBuffer groupByField,
+                                                       ComputeField[] computeFields,
+                                                       QueryCondition[] queryConditionsArr) {
 
         StringBuffer sql = new StringBuffer();
         sql.append("select " + selectField + CommonDao.COMMA);

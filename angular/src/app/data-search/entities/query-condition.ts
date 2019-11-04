@@ -20,6 +20,9 @@ export class QueryCondition {
   // set value
   public setValue(value: String): void {
     this.value = [];
+    if (value === null) {
+      return;
+    }
     const valuesTemp = value.split('~~');
     valuesTemp.forEach(element => {
       if (this.type === 'List') {
