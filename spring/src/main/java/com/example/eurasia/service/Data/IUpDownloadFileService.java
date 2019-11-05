@@ -17,5 +17,5 @@ public interface IUpDownloadFileService {
     ResponseResult deleteColumn(String columnName) throws Exception;
     ResponseResult deleteSameData() throws Exception;
     // download excel
-    ResponseResult downloadExcel(HttpServletResponse response, QueryCondition[] queryConditionsArr) throws Exception;
+    ResponseResult downloadExcel(String userID, HttpServletResponse response, QueryCondition[] queryConditionsArr) throws Exception;
 }

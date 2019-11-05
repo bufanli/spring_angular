@@ -1169,6 +1169,7 @@ as不是给表里的字段取别名，而是给查询的结果字段取别名。
 
         return getDataDao().queryListStringForAllObjectToCSVWithoutHeaders(tableName, filePath);
     }
+
     public Set<String> getTitles(String tableName) throws Exception {
         Set<String> colsNameSet = null;
         try {

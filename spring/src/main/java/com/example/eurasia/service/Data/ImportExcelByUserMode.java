@@ -248,25 +248,17 @@ public class ImportExcelByUserMode {
     }
 
     private boolean checkTitles(String cellValue) throws Exception {
-        List<Map<String,String>> colsNameList = this.getTitles();
-        if (colsNameList.size() == 0) {
+        Set<String> colsNameSet = dataService.getTitles(DataService.TABLE_DATA);
+        if (colsNameSet == null || colsNameSet.size() == 0) {
             Slf4jLogUtil.get().info(ResponseCodeEnum.UPLOAD_GET_HEADER_INFO_FROM_SQL_ZERO.getMessage());
             return false;
         }
 
-        for(Map<String,String> colsName: colsNameList) {
-            Set<Map.Entry<String, String>> set = colsName.entrySet();
-            Iterator<Map.Entry<String, String>> it = set.iterator();
-            while (it.hasNext()) {
-                Map.Entry<String,String> entry = it.next();
-                //System.out.println("Key:" + entry.getKey() + " Value:" + entry.getValue());
-                if (entry.getValue().toString().equals(cellValue) == true) {
-                    return true;//excel这个表头，在数据库表头中找到了
-                }
-            }
+        if (colsNameSet.contains(cellValue)) {
+            return true;//excel这个表头，在数据库表头中找到了
+        } else {
+            return false;//没找到
         }
-
-        return false;//没找到
     }
 
     private boolean checkSameTitle(String cellValue, List<Map<Integer,String>> titleList) throws Exception {
@@ -283,25 +275,6 @@ public class ImportExcelByUserMode {
         }
 
         return false;//没找到
-    }
-
-    private List<Map<String,String>> getTitles() throws Exception {
-        List<Map<String,String>> colsNameList;
-        try {
-            Slf4jLogUtil.get().info("文件上传，取得表头开始");
-
-            colsNameList = dataService.getAllColumns();
-            if (colsNameList == null) {
-                throw new Exception(ResponseCodeEnum.UPLOAD_GET_HEADER_INFO_FROM_SQL_NULL.getMessage());
-            }
-
-            Slf4jLogUtil.get().info("文件上传，取得表头结束");
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new Exception(ResponseCodeEnum.UPLOAD_GET_HEADER_INFO_FROM_SQL_FAILED.getMessage());
-        }
-
-        return colsNameList;
     }
 
     private String getValue(Cell cell) {

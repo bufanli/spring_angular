@@ -11,12 +11,10 @@ import com.example.eurasia.service.Util.ImportExcelUtils;
 import com.example.eurasia.service.Util.Slf4jLogUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.streaming.SXSSFRow;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFColor;
-import org.apache.poi.xssf.usermodel.extensions.XSSFCellBorder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -30,8 +28,6 @@ import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.*;
-
-import static org.apache.poi.ss.usermodel.CellType.STRING;
 
 //@Slf4j
 /*@Transactional(readOnly = true)事物注解*/
@@ -314,7 +310,7 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
 
         int titleRowIndex = writeTitlesToExcel(wb, sheet, colsNameSet);
         int dataRowIndex = writeRowsToExcel(wb, sheet, rowList, titleRowIndex);
-        this.setSizeColumn(sheet, (colsNameSet.size() + 1));
+        ImportExcelUtils.setSizeColumn(sheet, (colsNameSet.size() + 1));
         return (titleRowIndex + dataRowIndex);
     }
 
@@ -335,7 +331,7 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
         titleStyle.setFillForegroundColor(new XSSFColor(new java.awt.Color(0, 0, 128)));// 海军蓝
         titleStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         titleStyle.setFont(titleFont);
-        this.setBorder(titleStyle, BorderStyle.THIN, new XSSFColor(new java.awt.Color(0, 0, 0)));
+        ImportExcelUtils.setBorder(titleStyle, BorderStyle.THIN, new XSSFColor(new java.awt.Color(0, 0, 0)));
 
         Row titleRow = sheet.createRow(rowIndex);
         // titleRow.setHeightInPoints(25);
@@ -365,7 +361,7 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
         dataStyle.setAlignment(HorizontalAlignment.CENTER);// 指定单元格居中对齐
         dataStyle.setVerticalAlignment(VerticalAlignment.CENTER);// 指定单元格垂直居中对齐
         dataStyle.setFont(dataFont);
-        this.setBorder(dataStyle, BorderStyle.THIN, new XSSFColor(new java.awt.Color(0, 0, 0)));
+        ImportExcelUtils.setBorder(dataStyle, BorderStyle.THIN, new XSSFColor(new java.awt.Color(0, 0, 0)));
 
         for (String[] rowData : rowList) {
             Row dataRow = sheet.createRow(rowIndex);
@@ -397,7 +393,7 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
         dataStyle.setAlignment(HorizontalAlignment.CENTER);// 指定单元格居中对齐
         dataStyle.setVerticalAlignment(VerticalAlignment.CENTER);// 指定单元格垂直居中对齐
         dataStyle.setFont(dataFont);
-        this.setBorder(dataStyle, BorderStyle.THIN, new XSSFColor(new java.awt.Color(0, 0, 0)));
+        ImportExcelUtils.setBorder(dataStyle, BorderStyle.THIN, new XSSFColor(new java.awt.Color(0, 0, 0)));
 
 
         Row dataRow = sheet.createRow(rowIndex);
@@ -411,51 +407,4 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
         return 1;
     }
 
-    // 自适应宽度(中文支持)
-    private void setSizeColumn(SXSSFSheet sheet, int columnNumber) {
-        // start row
-        int startRowNum = sheet.getLastRowNum() - DataService.ROW_ACCESS_WINDOW_SIZE;
-        if(startRowNum < 0 ) {
-            startRowNum = 0;
-        }else{
-            startRowNum = startRowNum + 1;
-        }
-        for (int columnNum = 0; columnNum < columnNumber; columnNum++) {
-            int columnWidth = sheet.getColumnWidth(columnNum) / 256;
-            for (int rowNum = startRowNum; rowNum < sheet.getLastRowNum(); rowNum++) {
-                SXSSFRow currentRow;
-                //当前行未被使用过
-                if (sheet.getRow(rowNum) == null) {
-                    currentRow = sheet.createRow(rowNum);
-                } else {
-                    currentRow = sheet.getRow(rowNum);
-                }
-
-                if (currentRow.getCell(columnNum) != null) {
-                    Cell currentCell = currentRow.getCell(columnNum);
-                    if (currentCell.getCellTypeEnum() == STRING) {
-                        int length = currentCell.getStringCellValue().getBytes().length;
-                        if (columnWidth < length) {
-                            columnWidth = length;
-                        }
-                    }
-                }
-            }
-            if (columnWidth > 30) {
-                columnWidth = 30;
-            }
-            sheet.setColumnWidth(columnNum, columnWidth * 256);
-        }
-    }
-
-    private void setBorder(XSSFCellStyle style, BorderStyle border, XSSFColor color) {
-        style.setBorderTop(border);
-        style.setBorderLeft(border);
-        style.setBorderRight(border);
-        style.setBorderBottom(border);
-        style.setBorderColor(XSSFCellBorder.BorderSide.TOP, color);
-        style.setBorderColor(XSSFCellBorder.BorderSide.LEFT, color);
-        style.setBorderColor(XSSFCellBorder.BorderSide.RIGHT, color);
-        style.setBorderColor(XSSFCellBorder.BorderSide.BOTTOM, color);
-    }
 }

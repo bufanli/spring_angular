@@ -1,7 +1,15 @@
 package com.example.eurasia.service.Util;
 
+import com.example.eurasia.service.Data.DataService;
+import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.xssf.streaming.SXSSFRow;
+import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.usermodel.extensions.XSSFCellBorder;
 import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletResponse;
@@ -10,6 +18,8 @@ import java.net.URLEncoder;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+
+import static org.apache.poi.ss.usermodel.CellType.STRING;
 
 public class ImportExcelUtils {
 
@@ -82,7 +92,7 @@ public class ImportExcelUtils {
      * @Time 2018-09-20 00:00:00
      */
     public static Set<String> getSameTitle(List<String> elementsList) throws Exception {
-        System.out.println("Elements : " + elementsList);
+        //System.out.println("Elements : " + elementsList);
         Set<String> set = new LinkedHashSet<>();
         Set<String> duplicateElements = new LinkedHashSet<>();
         for (String element : elementsList) {
@@ -149,6 +159,54 @@ public class ImportExcelUtils {
                 file.delete();
             }
         }
+    }
+    
+    // 自适应宽度(中文支持)
+    public static void setSizeColumn(SXSSFSheet sheet, int columnNumber) {
+        // start row
+        int startRowNum = sheet.getLastRowNum() - DataService.ROW_ACCESS_WINDOW_SIZE;
+        if(startRowNum < 0 ) {
+            startRowNum = 0;
+        }else{
+            startRowNum = startRowNum + 1;
+        }
+        for (int columnNum = 0; columnNum < columnNumber; columnNum++) {
+            int columnWidth = sheet.getColumnWidth(columnNum) / 256;
+            for (int rowNum = startRowNum; rowNum < sheet.getLastRowNum(); rowNum++) {
+                SXSSFRow currentRow;
+                //当前行未被使用过
+                if (sheet.getRow(rowNum) == null) {
+                    currentRow = sheet.createRow(rowNum);
+                } else {
+                    currentRow = sheet.getRow(rowNum);
+                }
+
+                if (currentRow.getCell(columnNum) != null) {
+                    Cell currentCell = currentRow.getCell(columnNum);
+                    if (currentCell.getCellTypeEnum() == STRING) {
+                        int length = currentCell.getStringCellValue().getBytes().length;
+                        if (columnWidth < length) {
+                            columnWidth = length;
+                        }
+                    }
+                }
+            }
+            if (columnWidth > 30) {
+                columnWidth = 30;
+            }
+            sheet.setColumnWidth(columnNum, columnWidth * 256);
+        }
+    }
+
+    public static void setBorder(XSSFCellStyle style, BorderStyle border, XSSFColor color) {
+        style.setBorderTop(border);
+        style.setBorderLeft(border);
+        style.setBorderRight(border);
+        style.setBorderBottom(border);
+        style.setBorderColor(XSSFCellBorder.BorderSide.TOP, color);
+        style.setBorderColor(XSSFCellBorder.BorderSide.LEFT, color);
+        style.setBorderColor(XSSFCellBorder.BorderSide.RIGHT, color);
+        style.setBorderColor(XSSFCellBorder.BorderSide.BOTTOM, color);
     }
 
     //生成excel文件

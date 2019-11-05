@@ -210,7 +210,7 @@ public class UpDownloadExcelFileController {
                  *  填充一列数据; row.createCell(0).setCellValue("数据")
                  *  设置一个单元格样式；cell.setCellStyle(style)
                  */
-                responseResult = upDownloadFileService.downloadExcel(response,queryConditionsArr);
+                responseResult = upDownloadFileService.downloadExcel(userID,response,queryConditionsArr);
             }
             Slf4jLogUtil.get().info("进行excel文件导出结束");
         } catch (Exception e) {
