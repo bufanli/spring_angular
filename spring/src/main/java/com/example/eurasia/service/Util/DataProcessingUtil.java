@@ -42,7 +42,6 @@ public class DataProcessingUtil {
             for (Map.Entry<String, String> m : map.entrySet()) {
                 //System.out.print(m.getKey());
                 //System.out.println(m.getValue());
-                values[i] = new String();
                 values[i] = m.getValue();
                 i++;
             }
@@ -57,10 +56,19 @@ public class DataProcessingUtil {
             for (Map.Entry<String, String> m : map.entrySet()) {
                 //System.out.print(m.getKey());
                 //System.out.println(m.getValue());
-                values[i] = new String();
                 values[i] = m.getValue() + strExtend;
                 i++;
             }
+        }
+        return values;
+    }
+
+    public static String[] getSetValuesOfOneColumnForString(Set<String> valueSet, String strExtend) {
+        String[] values = new String[valueSet.size()];
+        int i = 0;
+        for (String value : valueSet) {
+            values[i] = value + strExtend;
+            i++;
         }
         return values;
     }

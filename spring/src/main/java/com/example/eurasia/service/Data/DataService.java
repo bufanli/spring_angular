@@ -66,6 +66,7 @@ public class DataService {
     public static String[] EXCEL_EXPORT_SHEET_COVER_FIXED_ITEM_VALUE = {"","大连伟亚信息","0411-39337158"};
     public static final String EXCEL_EXPORT_SHEET_CONTENTS = "目录";
     public static final String EXCEL_EXPORT_SHEET_CONTENTS_EXTEND = "汇总";
+    public static final String EXCEL_EXPORT_SHEET_STATISTICS_TEMPLATE = "汇总模版";
     public static final String EXCEL_EXPORT_TYPE_DETAIL = "明细表";
 
     public static final String DOWNLOAD_EXCEL_SHEET_NAME = "统计表";
@@ -904,6 +905,34 @@ as不是给表里的字段取别名，而是给查询的结果字段取别名。
                 continue;
             } else {
                 colsSet.add(colName);
+            }
+        }
+
+        return colsSet;
+    }
+
+    /**
+     * 取得指定表的所有表头[名字],不包括id
+     * @param
+     * @return
+     * @exception
+     * @author FuJia
+     * @Time 2019-06-03 00:00:00
+     */
+    public Set<String> getAllColumnNamesWithoutID(String tableName, String colNameExtend) throws Exception {
+        if (StringUtils.isEmpty(tableName) || !this.isExistTableName(tableName)) {
+            return null;
+        }
+
+        Set<String> colsSet = new LinkedHashSet<>();
+
+        List<Map<String, Object>> colsNameList = getDataDao().queryListForColumnName(tableName);
+        for (Map<String,Object> colsName: colsNameList) {
+            String colName = colsName.get("COLUMN_NAME").toString();
+            if (colName.equals("id")) {
+                continue;
+            } else {
+                colsSet.add(colName + colNameExtend);
             }
         }
 

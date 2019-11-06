@@ -89,16 +89,17 @@ public class ExcelReportConditionsServiceImpl extends CommonService implements I
     public ResponseResult getExcelReportTypes() throws Exception {
         String[] excelReportTypes = null;
         try {
-            List<Map<String,String>> allHeadersList = dataService.getAllColumns();
+            // 取得数据表的所有列名
+            Set<String> colsNameSet = dataService.getAllColumnNamesWithoutID(DataService.TABLE_DATA, DataService.EXCEL_EXPORT_SHEET_CONTENTS_EXTEND);
+            // 取得用户可显示的列名
             //List<String> headerDisplayList = userService.getUserHeaderDisplayByTrue(userID);
-
-            // ListMap -> String[],并在后面添加"报告"
-            String[] excelReportTypesTemp = DataProcessingUtil.getListMapValuesOfOneColumnForString(allHeadersList, DataService.EXCEL_EXPORT_SHEET_CONTENTS_EXTEND);
+            if (colsNameSet.isEmpty()) {
+                Slf4jLogUtil.get().info(ResponseCodeEnum.EXPORT_DATA_DICTIONARY_GET_HEADER_INFO_FROM_SQL_NULL.getMessage());
+                return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_DATA_DICTIONARY_GET_HEADER_INFO_FROM_SQL_NULL);
+            }
 
             // 添加"明细表"
-            excelReportTypes = new String[excelReportTypesTemp.length + 1];
-            System.arraycopy(excelReportTypesTemp, 0, excelReportTypes, 0, excelReportTypesTemp.length);//将数组内容复制新数组
-            excelReportTypes[excelReportTypesTemp.length] = DataService.EXCEL_EXPORT_TYPE_DETAIL;
+            colsNameSet.add(DataService.EXCEL_EXPORT_TYPE_DETAIL);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -204,7 +205,7 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
             SXSSFWorkbook wb = new SXSSFWorkbook(DataService.ROW_ACCESS_WINDOW_SIZE);
 
             // 做成封面Sheet
-            SXSSFSheet coverSheet = wb.createSheet(DataService.EXCEL_EXPORT_SHEET_COVER);
+            SXSSFSheet coverSheet = wb.getSheet(DataService.EXCEL_EXPORT_SHEET_COVER);
             this.writeCellToExcel(wb, coverSheet, excelReportOutputData.getCoverTitle(), 6, 1);
             for (int i=0; i<coverItemNum; i++) {
                 this.writeCellToExcel(wb, coverSheet, excelReportOutputData.getCoverKeys()[i], (11+3*i), 1);
@@ -212,7 +213,7 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
             }
 
             // 做成目录Sheet
-            SXSSFSheet contentSheet = wb.createSheet(DataService.EXCEL_EXPORT_SHEET_CONTENTS);
+            SXSSFSheet contentSheet = wb.getSheet(DataService.EXCEL_EXPORT_SHEET_CONTENTS);
             this.writeCellToExcel(wb, contentSheet, excelReportOutputData.getContentTitle(), 6, 1);
             for (int i=0; i<coverItemNum; i++) {
                 this.writeCellToExcel(wb, contentSheet, excelReportOutputData.getContentValues()[i], (11+2*i), 1);
@@ -275,9 +276,14 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
                         "=SUM(F21:F" + String.valueOf(20 + dataList.size()) + ")",
                         "=SUM(G21:G" + String.valueOf(20 + dataList.size()) + ")"
                 });
-                SXSSFSheet reportSheet = wb.createSheet(excelReportOutputData.getReportTypes()[i]);
-                int rowIndex = this.writeExcel(wb, reportSheet, colsNameSet, dataArrList);
+                int index = wb.getSheetIndex(DataService.EXCEL_EXPORT_SHEET_STATISTICS_TEMPLATE);
+                Sheet reportSheet = wb.cloneSheet(index);
+                wb.setSheetName(wb.getSheetIndex(reportSheet.getSheetName()),excelReportOutputData.getReportTypes()[i]);
+                int rowIndex = this.writeExcel(wb, (SXSSFSheet)reportSheet, colsNameSet, dataArrList);
             }
+            // 删除汇总模版表
+            int index = wb.getSheetIndex(DataService.EXCEL_EXPORT_SHEET_STATISTICS_TEMPLATE);
+            wb.removeSheetAt(index);
 
             // "明细表"Sheet：汇总条件下的所有数据
             String groupByField = excelReportOutputData.getReportTypes()[excelReportOutputData.getReportTypes().length-1];

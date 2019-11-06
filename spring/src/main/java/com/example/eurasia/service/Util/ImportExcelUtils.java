@@ -1,20 +1,21 @@
 package com.example.eurasia.service.Util;
 
 import com.example.eurasia.service.Data.DataService;
+import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.streaming.SXSSFRow;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.apache.poi.xssf.usermodel.XSSFCellStyle;
-import org.apache.poi.xssf.usermodel.XSSFColor;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.usermodel.*;
 import org.apache.poi.xssf.usermodel.extensions.XSSFCellBorder;
 import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URLEncoder;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -160,7 +161,7 @@ public class ImportExcelUtils {
             }
         }
     }
-    
+
     // 自适应宽度(中文支持)
     public static void setSizeColumn(SXSSFSheet sheet, int columnNumber) {
         // start row
@@ -230,4 +231,100 @@ public class ImportExcelUtils {
         outputStream.flush();
         outputStream.close();
     }
+
+    public static void copyCellStyle(XSSFCellStyle fromStyle, XSSFCellStyle toStyle) {
+        toStyle.cloneStyleFrom(fromStyle);//此一行代码搞定
+    }
+
+    public static void mergeSheetAllRegion(XSSFSheet fromSheet, XSSFSheet toSheet) {//合并单元格
+        int num = fromSheet.getNumMergedRegions();
+        CellRangeAddress cellR = null;
+        for (int i = 0; i < num; i++) {
+            cellR = fromSheet.getMergedRegion(i);
+            toSheet.addMergedRegion(cellR);
+        }
+    }
+
+    public static void copyCell(XSSFWorkbook wb, XSSFCell fromCell, XSSFCell toCell) {
+        XSSFCellStyle newstyle=wb.createCellStyle();
+        copyCellStyle(fromCell.getCellStyle(), newstyle);
+        //toCell.setEncoding(fromCell.getEncoding());
+        //样式
+        toCell.setCellStyle(newstyle);
+        if (fromCell.getCellComment() != null) {
+            toCell.setCellComment(fromCell.getCellComment());
+        }
+        // 不同数据类型处理
+        switch (fromCell.getCellTypeEnum()) {
+            case NUMERIC: // 数字
+                if (HSSFDateUtil.isCellDateFormatted(fromCell)) {
+                    toCell.setCellValue(fromCell.getDateCellValue());
+                } else {
+                    toCell.setCellValue(fromCell.getNumericCellValue());
+                }
+                break;
+            case STRING: // 字符串
+                toCell.setCellValue(fromCell.getRichStringCellValue());
+                break;
+            case BOOLEAN: // Boolean
+                toCell.setCellValue(fromCell.getBooleanCellValue());
+                break;
+            case FORMULA: // 公式
+                toCell.setCellFormula(fromCell.getCellFormula());
+                break;
+            case BLANK: // 空值
+                // nothing21
+                break;
+            case ERROR: // 故障
+                toCell.setCellErrorValue(fromCell.getErrorCellValue());
+                break;
+            default:
+                // nothing29
+                break;
+        }
+        /*
+        int fromCellType = fromCell.getCellType();
+        toCell.setCellType(fromCellType);
+        if (fromCellType == XSSFCell.CELL_TYPE_NUMERIC) {
+            if (HSSFDateUtil.isCellDateFormatted(fromCell)) {
+                toCell.setCellValue(fromCell.getDateCellValue());
+            } else {
+                toCell.setCellValue(fromCell.getNumericCellValue());
+            }
+        } else if (fromCellType == XSSFCell.CELL_TYPE_STRING) {
+            toCell.setCellValue(fromCell.getRichStringCellValue());
+        } else if (fromCellType == XSSFCell.CELL_TYPE_BLANK) {
+            // nothing21
+        } else if (fromCellType == XSSFCell.CELL_TYPE_BOOLEAN) {
+            toCell.setCellValue(fromCell.getBooleanCellValue());
+        } else if (fromCellType == XSSFCell.CELL_TYPE_ERROR) {
+            toCell.setCellErrorValue(fromCell.getErrorCellValue());
+        } else if (fromCellType == XSSFCell.CELL_TYPE_FORMULA) {
+            toCell.setCellFormula(fromCell.getCellFormula());
+        } else { // nothing29
+        }*/
+
+    }
+
+    public static void copyRow(XSSFWorkbook wb,XSSFRow oldRow,XSSFRow toRow){
+        toRow.setHeight(oldRow.getHeight());
+        for (Iterator cellIt = oldRow.cellIterator(); cellIt.hasNext();) {
+            XSSFCell tmpCell = (XSSFCell) cellIt.next();
+            XSSFCell newCell = toRow.createCell(tmpCell.getColumnIndex());
+            copyCell(wb,tmpCell, newCell);
+        }
+    }
+    public static void copySheet(XSSFWorkbook wb,XSSFSheet fromSheet, XSSFSheet toSheet) {
+        mergeSheetAllRegion(fromSheet, toSheet);
+        //设置列宽
+        for(int i=0;i<=fromSheet.getRow(fromSheet.getFirstRowNum()).getLastCellNum();i++){
+            toSheet.setColumnWidth(i,fromSheet.getColumnWidth(i));
+        }
+        for (Iterator rowIt = fromSheet.rowIterator(); rowIt.hasNext();) {
+            XSSFRow oldRow = (XSSFRow) rowIt.next();
+            XSSFRow newRow = toSheet.createRow(oldRow.getRowNum());
+            copyRow(wb,oldRow,newRow);
+        }
+    }
+
 }
