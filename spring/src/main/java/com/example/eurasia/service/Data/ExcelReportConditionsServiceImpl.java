@@ -100,6 +100,8 @@ public class ExcelReportConditionsServiceImpl extends CommonService implements I
 
             // 添加"明细表"
             colsNameSet.add(DataService.EXCEL_EXPORT_TYPE_DETAIL);
+            excelReportTypes = new String[colsNameSet.size()];
+            colsNameSet.toArray(excelReportTypes);
 
         } catch (Exception e) {
             e.printStackTrace();

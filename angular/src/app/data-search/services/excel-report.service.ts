@@ -32,6 +32,8 @@ export class ExcelReportService implements ProcessingDialogCallback {
   private excelReportTypesUrl = 'api/getExcelReportTypes';  // URL to web api
   // export excel report
   private exportExcelReportUrl = 'api/exportExcelReport';
+  // fixed excel report query condtions
+  private FIXED_EXCEL_REPORT_QUERY_CONDITIONS: Set<String> = new Set(['月份', '海关编码', '进出口']);
 
   // excel report query conditions
   private excelReportQueryConditions = null;
@@ -78,6 +80,9 @@ export class ExcelReportService implements ProcessingDialogCallback {
   private convertQueryConditions(queryConditions: any): QueryCondition[] {
     const queryConditionsRet = [];
     for (let index = 0; index < queryConditions.length; index++) {
+      if (this.FIXED_EXCEL_REPORT_QUERY_CONDITIONS.has(queryConditions[index].key) === false) {
+        continue;
+      }
       const tempQueryCondition = queryConditions[index];
       const uuid = UUID.UUID();
       const tempQueryConditionRet = new QueryCondition(
