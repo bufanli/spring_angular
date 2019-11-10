@@ -148,7 +148,7 @@ export class ExcelReportService implements ProcessingDialogCallback {
           const fileNameIndex = attachmentAndFileName.indexOf('filename=');
           if (fileNameIndex >= 0) {
             const fileName = attachmentAndFileName.substring(fileNameIndex + 'filename='.length);
-            importedSaveAs(res.blob(), fileName);
+            importedSaveAs(res.blob(), decodeURI(fileName));
           } else {
             importedSaveAs(res.blob());
           }
