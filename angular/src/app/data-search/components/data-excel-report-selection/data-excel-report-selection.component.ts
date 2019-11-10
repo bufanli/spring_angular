@@ -278,9 +278,9 @@ export class DataExcelReportSelectionComponent implements OnInit, AfterViewInit,
       return;
     } else {
       // prepare excel report data -- query conditions
-      const queryConditions: QueryCondition[] = [];
+      const queryConditionsRet: QueryCondition[] = [];
       this.queryConditions.forEach(element => {
-        this.abstractInputQueryConditionWithListType(queryConditions, element);
+        this.abstractInputQueryConditionWithListType(queryConditionsRet, element);
       });
       // prepare excel report data -- excel report types
       const excelReportTypes: string[] = [];
@@ -291,7 +291,7 @@ export class DataExcelReportSelectionComponent implements OnInit, AfterViewInit,
       });
       // excel report setting data
       const excelReportSettingData: ExcelReportSettingData = new ExcelReportSettingData();
-      excelReportSettingData.setQueryConditions(queryConditions);
+      excelReportSettingData.setQueryConditions(queryConditionsRet);
       excelReportSettingData.setExcxelReportTypes(excelReportTypes);
       this.excelReportService.excelReport(excelReportSettingData);
     }
