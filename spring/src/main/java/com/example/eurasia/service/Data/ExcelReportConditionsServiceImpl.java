@@ -135,26 +135,13 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
             String[] excelReportTypesArr = excelReportSettingData.getExcelReportTypes();
             ExcelReportOutputData excelReportOutputData = new ExcelReportOutputData();
 
-            String path = System.getProperty("user.dir") + "\\src\\main\\resource\\";
-            String templateFileName = "33061010_201907_进口_报告_10HS.xlsx";//文件模板
+            String path = System.getProperty("user.dir") + "\\src\\main\\resources\\";
+            String templateFileName = path + "excel_report_template.xlsx";//文件模板
             StringBuffer newFileName = new StringBuffer();
             for (QueryCondition queryCondition : queryConditionsArr) {
                 newFileName.append(queryCondition.getValue() + "_");
             }
             newFileName.append("报告_10HS.xlsx");
-            FileInputStream stream = new FileInputStream(templateFileName);
-            response.setContentType("application/vnd.ms-excel");
-            response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(
-                    new File(newFileName.toString()).getName(), "gbk"));
-            OutputStream outputStream = response.getOutputStream();
-            byte[] buffer = new byte[1024];
-            int len = 0;
-            while( (len=stream.read(buffer)) != -1){
-                outputStream.write(buffer,0,len);
-            }
-            outputStream.flush();
-            outputStream.close();
-
 
             // 封面Cover（Query Conditions[商品编号，月份，进出口]，报告日期，Copyright，电话）
             String coverTitle = queryConditionsArr[queryConditionsArr.length-1].getKey();
