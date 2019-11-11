@@ -15,6 +15,7 @@ import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFColor;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -189,9 +190,10 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
             //该用户可查询的条数
             long userMax = getUserMax(userID);
 
-
             // 创建EXCEL
-            SXSSFWorkbook wb = new SXSSFWorkbook(DataService.ROW_ACCESS_WINDOW_SIZE);
+            new FileInputStream(templateFileName);
+            XSSFWorkbook templateWorkbook = new XSSFWorkbook(new FileInputStream(templateFileName));// 创建workbook，
+            SXSSFWorkbook wb = new SXSSFWorkbook(templateWorkbook,DataService.ROW_ACCESS_WINDOW_SIZE);
 
             // 做成封面Sheet
             SXSSFSheet coverSheet = wb.getSheet(DataService.EXCEL_EXPORT_SHEET_COVER);
