@@ -11,10 +11,9 @@ import com.example.eurasia.service.Util.ImportExcelUtils;
 import com.example.eurasia.service.Util.Slf4jLogUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.streaming.SXSSFSheet;
-import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFColor;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -22,11 +21,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -131,18 +127,11 @@ spring-boot默认读取的资源资源文件根路径有4个：
 如果是用Intellij IDEA开发，项目默认生成的Resources目录，不是上面说的“classpath:/resources/”，这个Resources目录是直接指向“classpath:/”的。
 Resources目录下新建一个“resources”文件夹，此时“resources”文件夹的路径才是“classpath:/resources/”。
 */
+        XSSFWorkbook wb = null;
         try {
             QueryCondition[] queryConditionsArr = excelReportSettingData.getQueryConditions();
             String[] excelReportTypesArr = excelReportSettingData.getExcelReportTypes();
             ExcelReportOutputData excelReportOutputData = new ExcelReportOutputData();
-
-            String path = System.getProperty("user.dir") + "\\src\\main\\resources\\";
-            String templateFileName = path + "excel_report_template.xlsx";//文件模板
-            StringBuffer newFileName = new StringBuffer();
-            for (QueryCondition queryCondition : queryConditionsArr) {
-                newFileName.append(queryCondition.getValue() + "_");
-            }
-            newFileName.append("报告_10HS.xlsx");
 
             // 封面Cover（Query Conditions[商品编号，月份，进出口]，报告日期，Copyright，电话）
             String coverTitle = queryConditionsArr[queryConditionsArr.length-1].getKey();
@@ -191,12 +180,12 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
             long userMax = getUserMax(userID);
 
             // 创建EXCEL
-            new FileInputStream(templateFileName);
-            XSSFWorkbook templateWorkbook = new XSSFWorkbook(new FileInputStream(templateFileName));// 创建workbook，
-            SXSSFWorkbook wb = new SXSSFWorkbook(templateWorkbook,DataService.ROW_ACCESS_WINDOW_SIZE);
+            String path = System.getProperty("user.dir") + "\\src\\main\\resources\\";
+            String templateFileName = path + "excel_report_template.xlsx";//文件模板
+            wb = new XSSFWorkbook(new FileInputStream(templateFileName));// 创建workbook，
 
             // 做成封面Sheet
-            SXSSFSheet coverSheet = wb.getSheet(DataService.EXCEL_EXPORT_SHEET_COVER);
+            XSSFSheet coverSheet = wb.getSheet(DataService.EXCEL_EXPORT_SHEET_COVER);
             this.writeCellToExcel(wb, coverSheet, excelReportOutputData.getCoverTitle(), 6, 1);
             for (int i=0; i<coverItemNum; i++) {
                 this.writeCellToExcel(wb, coverSheet, excelReportOutputData.getCoverKeys()[i], (11+3*i), 1);
@@ -204,7 +193,7 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
             }
 
             // 做成目录Sheet
-            SXSSFSheet contentSheet = wb.getSheet(DataService.EXCEL_EXPORT_SHEET_CONTENTS);
+            XSSFSheet contentSheet = wb.getSheet(DataService.EXCEL_EXPORT_SHEET_CONTENTS);
             this.writeCellToExcel(wb, contentSheet, excelReportOutputData.getContentTitle(), 6, 1);
             for (int i=0; i<coverItemNum; i++) {
                 this.writeCellToExcel(wb, contentSheet, excelReportOutputData.getContentValues()[i], (11+2*i), 1);
@@ -270,15 +259,16 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
                 int index = wb.getSheetIndex(DataService.EXCEL_EXPORT_SHEET_STATISTICS_TEMPLATE);
                 Sheet reportSheet = wb.cloneSheet(index);
                 wb.setSheetName(wb.getSheetIndex(reportSheet.getSheetName()),excelReportOutputData.getReportTypes()[i]);
-                int rowIndex = this.writeExcel(wb, (SXSSFSheet)reportSheet, colsNameSet, dataArrList);
+                int rowIndex = this.writeExcel(wb, (XSSFSheet)reportSheet, colsNameSet, dataArrList);
             }
             // 删除汇总模版表
             int index = wb.getSheetIndex(DataService.EXCEL_EXPORT_SHEET_STATISTICS_TEMPLATE);
             wb.removeSheetAt(index);
 
             // "明细表"Sheet：汇总条件下的所有数据
+            //SXSSFWorkbook wb = new SXSSFWorkbook(templateWorkbook,DataService.ROW_ACCESS_WINDOW_SIZE);
             String groupByField = excelReportOutputData.getReportTypes()[excelReportOutputData.getReportTypes().length-1];
-            SXSSFSheet detailSheet = wb.createSheet(groupByField);
+            XSSFSheet detailSheet = wb.createSheet(groupByField);
 
             Set<String> colsNameSet = dataService.getTitles(DataService.TABLE_DATA);
             if (colsNameSet == null || colsNameSet.size() == 0) {
@@ -292,26 +282,33 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
             }
             int rowIndex = this.writeExcel(wb, detailSheet, colsNameSet, dataArrList);
 
+            StringBuffer newFileName = new StringBuffer();
+            for (QueryCondition queryCondition : queryConditionsArr) {
+                newFileName.append(queryCondition.getValue() + "_");
+            }
+            newFileName.append("报告_10HS.xlsx");
             ImportExcelUtils.buildExcelDocument(newFileName.toString(), wb, response);
-            wb.dispose();
+
         } catch (IOException exception){
             exception.printStackTrace();
             return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_EXCEL_REPORT_FAILED);
         } finally {
-
+            if (wb != null) {
+                wb.close();
+            }
         }
         return new ResponseResultUtil().success(ResponseCodeEnum.EXPORT_EXCEL_REPORT_SUCCESS);
     }
 
-    private int writeExcel(SXSSFWorkbook wb, SXSSFSheet sheet, Set<String> colsNameSet, List<String[]> rowList) {
+    private int writeExcel(XSSFWorkbook wb, XSSFSheet sheet, Set<String> colsNameSet, List<String[]> rowList) {
 
-        int titleRowIndex = writeTitlesToExcel(wb, sheet, colsNameSet);
-        int dataRowIndex = writeRowsToExcel(wb, sheet, rowList, titleRowIndex);
+        int titleRowIndex = this.writeTitlesToExcel(wb, sheet, colsNameSet);
+        int dataRowIndex = this.writeRowsToExcel(wb, sheet, rowList, titleRowIndex);
         ImportExcelUtils.setSizeColumn(sheet, (colsNameSet.size() + 1));
         return (titleRowIndex + dataRowIndex);
     }
 
-    private int writeTitlesToExcel(SXSSFWorkbook wb, SXSSFSheet sheet, Set<String> colsNameSet) {
+    private int writeTitlesToExcel(XSSFWorkbook wb, XSSFSheet sheet, Set<String> colsNameSet) {
         int rowIndex = 20;
         int colIndex = 0;
 
@@ -345,7 +342,7 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
         return rowIndex;
     }
 
-    private int writeRowsToExcel(SXSSFWorkbook wb, SXSSFSheet sheet, List<String[]> rowList, int rowStartIndex) {
+    private int writeRowsToExcel(XSSFWorkbook wb, XSSFSheet sheet, List<String[]> rowList, int rowStartIndex) {
         int rowIndex = rowStartIndex;
 
         // 设置字体
@@ -378,7 +375,7 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
         return rowList.size();
     }
 
-    private int writeCellToExcel(SXSSFWorkbook wb, SXSSFSheet sheet, String cellValue, int rowIndex, int colIndex) {
+    private int writeCellToExcel(XSSFWorkbook wb, XSSFSheet sheet, String cellValue, int rowIndex, int colIndex) {
 
         // 设置字体
         Font dataFont = wb.createFont();

@@ -163,6 +163,43 @@ public class ImportExcelUtils {
     }
 
     // 自适应宽度(中文支持)
+    public static void setSizeColumn(XSSFSheet sheet, int columnNumber) {
+        // start row
+        int startRowNum = sheet.getLastRowNum() - DataService.ROW_ACCESS_WINDOW_SIZE;
+        if(startRowNum < 0 ) {
+            startRowNum = 0;
+        }else{
+            startRowNum = startRowNum + 1;
+        }
+        for (int columnNum = 0; columnNum < columnNumber; columnNum++) {
+            int columnWidth = sheet.getColumnWidth(columnNum) / 256;
+            for (int rowNum = startRowNum; rowNum < sheet.getLastRowNum(); rowNum++) {
+                XSSFRow currentRow;
+                //当前行未被使用过
+                if (sheet.getRow(rowNum) == null) {
+                    currentRow = sheet.createRow(rowNum);
+                } else {
+                    currentRow = sheet.getRow(rowNum);
+                }
+
+                if (currentRow.getCell(columnNum) != null) {
+                    Cell currentCell = currentRow.getCell(columnNum);
+                    if (currentCell.getCellTypeEnum() == STRING) {
+                        int length = currentCell.getStringCellValue().getBytes().length;
+                        if (columnWidth < length) {
+                            columnWidth = length;
+                        }
+                    }
+                }
+            }
+            if (columnWidth > 30) {
+                columnWidth = 30;
+            }
+            sheet.setColumnWidth(columnNum, columnWidth * 256);
+        }
+    }
+
+    // 自适应宽度(中文支持)
     public static void setSizeColumn(SXSSFSheet sheet, int columnNumber) {
         // start row
         int startRowNum = sheet.getLastRowNum() - DataService.ROW_ACCESS_WINDOW_SIZE;
@@ -223,6 +260,17 @@ public class ImportExcelUtils {
 
     //浏览器下载excel
     public static void buildExcelDocument(String filename, SXSSFWorkbook wb , HttpServletResponse response) throws Exception{
+        //String filename = StringUtils.encodeFilename(StringUtils.trim(filename), request);//处理中文文件名
+        response.setContentType("application/vnd.ms-excel");
+        response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(filename, "gbk"));
+        OutputStream outputStream = response.getOutputStream();
+        wb.write(outputStream);
+        outputStream.flush();
+        outputStream.close();
+    }
+
+    //浏览器下载excel
+    public static void buildExcelDocument(String filename, XSSFWorkbook wb , HttpServletResponse response) throws Exception{
         //String filename = StringUtils.encodeFilename(StringUtils.trim(filename), request);//处理中文文件名
         response.setContentType("application/vnd.ms-excel");
         response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(filename, "gbk"));
