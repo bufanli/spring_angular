@@ -479,13 +479,13 @@ GROUP BY 列1,列2,列3 having count(*) > 1;
      * @author FuJia
      * @Time 2019-06-08 00:00:00
      */
-    public List<Long> getColumnValueCounts(String tableName, String columnName) throws Exception {
+    public Long getColumnValueCounts(String tableName, String columnName) throws Exception {
 
         StringBuffer sql = new StringBuffer();
         //sql.append("select count(*) from " + tableName + " where " + columnName + "<>\"\" group by " + columnName);
         sql.append("select count(distinct(" + columnName + ")) from " + tableName);
 
-        List<Long> numList = getJdbcTemplate().queryForList(sql.toString(), Long.class);
+        Long numList = getJdbcTemplate().queryForObject(sql.toString(), Long.class);
         return numList;//如果>0说明存在有值行数据
     }
 

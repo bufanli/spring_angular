@@ -146,9 +146,9 @@ public class DataService {
             Map<String, String> columnsForSameData = new LinkedHashMap<String, String>();
             columnsForSameData.put(DataService.COLUMNS_FOR_SAME_DATA_COLUMN_NAME,"VARCHAR(255)");
             if (this.createTable(DataService.TABLE_COLUMNS_FOR_SAME_DATA,columnsForSameData) == true) {
-                String[] columnsForSameDataArr = {"日期","进出口","申报单位名称","货主单位名称","经营单位名称", "海关编码",
-                        "附加码","商品名称","申报要素","成交方式","申报单价","申报总价","美元总价","申报数量", "申报数量单位",
-                        "法定重量","毛重","净重","件数","监管方式","运输方式","目的地","主管关区","装货港","贸易国"};
+                String[] columnsForSameDataArr = {"日期","进出口","申报单位名称","货主单位名称","经营单位名称","经营单位代码","海关编码",
+                        "附加码","商品名称","申报要素","成交方式","申报单价","申报总价","申报币制","美元总价","申报数量","申报数量单位",
+                        "法定重量","毛重","净重","监管方式","运输方式","目的地","包装种类","主管关区","报关口岸","装货港","贸易国"};
 
                 for (int i=0; i<columnsForSameDataArr.length; i++) {
                     getDataDao().addData(DataService.TABLE_COLUMNS_FOR_SAME_DATA,DataService.COLUMNS_FOR_SAME_DATA_COLUMN_NAME,columnsForSameDataArr[i]);
@@ -459,8 +459,8 @@ public class DataService {
      */
     public boolean deleteColumnFromSQL(String columnName) throws Exception {
 
-        List<Long> countsList = this.getColumnValueCounts(DataService.TABLE_DATA, columnName);
-        if (countsList.size() != 0) {
+        Long counts = this.getColumnValueCounts(DataService.TABLE_DATA, columnName);
+        if (counts.longValue() > 0) {
             return false;
         } else {
             int delDataNum = getDataDao().deleteColumn(DataService.TABLE_DATA, columnName);
@@ -1151,7 +1151,7 @@ as不是给表里的字段取别名，而是给查询的结果字段取别名。
      * @author FuJia
      * @Time 2019-06-08 00:00:00
      */
-    public List<Long> getColumnValueCounts(String tableName, String columnName) throws Exception {
+    public Long getColumnValueCounts(String tableName, String columnName) throws Exception {
 
         return getDataDao().getColumnValueCounts(tableName, columnName);
     }

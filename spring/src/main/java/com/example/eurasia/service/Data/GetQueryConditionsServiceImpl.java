@@ -153,7 +153,7 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
         int offset = getListValueParam.getOffset();         // 从(offset+1)行开始
         int limit = getListValueParam.getLimit();           // 查询多少个
         Map<String, String> order = new LinkedHashMap<>();
-        int totalCount = 0;
+        long totalCount = 0;
         try {
 
             switch (queryCondition) {
@@ -164,8 +164,8 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
                             UserService.MUST_PRODUCT_NUMBER,
                             userID);
                     if (queryConditionValue.equals(QueryCondition.QUERY_CONDITION_SPLIT)) {// 海关编码没有权限限制
-                        List<Long> countsList = dataService.getColumnValueCounts(DataService.TABLE_DATA, queryCondition);
-                        totalCount = countsList.size();
+                        Long counts = dataService.getColumnValueCounts(DataService.TABLE_DATA, queryCondition);
+                        totalCount = counts.longValue();
 
                         List<Map<String, Object>> colValuesListMap = dataService.getColumnValuesWithPagination(DataService.TABLE_DATA,
                                 queryCondition,
@@ -185,7 +185,7 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
                         String productNumberArr[] = queryConditionValue.split(QueryCondition.QUERY_CONDITION_SPLIT);
                         totalCount = productNumberArr.length;
 
-                        int offsetMax = (offset+limit) < totalCount ? (offset+limit) : totalCount;
+                        long offsetMax = (offset+limit) < totalCount ? (offset+limit) : totalCount;
                         if (term.equals("")) {
                             for (int i=offset; i<offsetMax; i++) {
                                 categorySelectionsWithTotalCount.pushSelection(new CategorySelectionsWithTotalCount.Selection(i+1,productNumberArr[i]));
@@ -208,8 +208,8 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
                     }
                     order.put(queryCondition,"asc");//T.B.D
 
-                    List<Long> countsList = dataService.getColumnValueCounts(DataService.TABLE_DATA, queryCondition);
-                    totalCount = countsList.size();
+                    Long counts = dataService.getColumnValueCounts(DataService.TABLE_DATA, queryCondition);
+                    totalCount = counts.longValue();
 
                     List<Map<String, Object>> colValuesListMap = dataService.getColumnValuesWithPagination(DataService.TABLE_DATA,
                             queryCondition,

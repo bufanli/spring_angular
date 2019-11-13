@@ -76,6 +76,7 @@ public class UserService {
     public static final String MUST_USER_VALID = "有效期";
     public static final String MUST_PRODUCT_DATE = "日期";
     public static final String MUST_PRODUCT_NUMBER = "海关编码";//海关/商品编码
+    public static final String MUST_EXPORT_AND_IMPORT = "进出口";
     public static final String MUST_SEARCH_COUNT = "看的条数";
     public static final String MUST_CONDITION_DISPLAY_COUNT = "显示查询条件最大数";
 
