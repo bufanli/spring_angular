@@ -262,7 +262,7 @@ public class DataService {
             strColsName.append(CommonDao.COMMA);
         }
 
-        strColsName.deleteCharAt(strColsName.length() - CommonDao.COMMA.length());
+        strColsName.deleteCharAt(strColsName.length() - 1);//","的长度为1，所以删除最后一个","即删除下标为strColsName.length()-1字符
         strColsName.replace(strColsName.indexOf(CommonDao.ID_COMMA), CommonDao.ID_COMMA.length(), "");//indexOf从0开始计算,没有查到指定的字符则该方法返回-1
 
         // For debug

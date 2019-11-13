@@ -134,7 +134,7 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
             ExcelReportOutputData excelReportOutputData = new ExcelReportOutputData();
 
             // 封面Cover（Query Conditions[商品编号，月份，进出口]，报告日期，Copyright，电话）
-            String coverTitle = queryConditionsArr[queryConditionsArr.length-1].getKey();
+            String coverTitle = queryConditionsArr[0].getKey();
             int coverItemNum = queryConditionsArr.length + DataService.EXCEL_EXPORT_SHEET_COVER_FIXED_ITEM_NUM;
             String[] coverKeys = new String[coverItemNum];
             String[] coverValues = new String[coverItemNum];
@@ -180,7 +180,7 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
             long userMax = getUserMax(userID);
 
             // 创建EXCEL
-            String path = System.getProperty("user.dir") + "\\src\\main\\resources\\";
+            String path = System.getProperty("user.dir") + "/src/main/resources/";
             String templateFileName = path + "excel_report_template.xlsx";//文件模板
             wb = new XSSFWorkbook(new FileInputStream(templateFileName));// 创建workbook，
 
@@ -195,7 +195,7 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
             // 做成目录Sheet
             XSSFSheet contentSheet = wb.getSheet(DataService.EXCEL_EXPORT_SHEET_CONTENTS);
             this.writeCellToExcel(wb, contentSheet, excelReportOutputData.getContentTitle(), 6, 1);
-            for (int i=0; i<coverItemNum; i++) {
+            for (int i=0; i<excelReportOutputData.getContentValues().length; i++) {
                 this.writeCellToExcel(wb, contentSheet, excelReportOutputData.getContentValues()[i], (11+2*i), 1);
             }
 
@@ -213,7 +213,7 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
                     Slf4jLogUtil.get().info(ResponseCodeEnum.EXPORT_EXCEL_REPORT_FROM_SQL_NULL.getMessage());
                     return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_EXCEL_REPORT_FROM_SQL_NULL);
                 }
-                if (dataList.size() <= 0) {
+                if (dataList.size() < 0) {
                     Slf4jLogUtil.get().info(ResponseCodeEnum.EXPORT_EXCEL_REPORT_FROM_SQL_ZERO.getMessage());
                     return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_EXCEL_REPORT_FROM_SQL_ZERO);
                 }

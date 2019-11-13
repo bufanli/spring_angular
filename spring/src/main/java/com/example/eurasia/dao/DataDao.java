@@ -42,9 +42,10 @@ public class DataDao extends CommonDao {
 
         sql.append("insert into " + tableName + "(" + columnsNames + ") values (");
         for (int i = 0; i < size; i++) {
-            sql.append("?,");
+            sql.append("?");
+            sql.append(CommonDao.COMMA);
         }
-        sql.deleteCharAt(sql.length() - CommonDao.COMMA.length());
+        sql.deleteCharAt(sql.length() - 1);//","的长度为1，所以删除最后一个","即删除下标为sql.length()-1字符
         sql.append(")");
         int num = getJdbcTemplate().update(sql.toString(), (Object[]) columnsValuesArr);
         return num;//大于0，插入成功。返回影响的行数。
@@ -91,9 +92,10 @@ sbf = new StringBuffer("");//重新new
 
         sql.append("(");
         for (int i = 0; i < size; i++) {
-            sql.append("?,");
+            sql.append("?");
+            sql.append(CommonDao.COMMA);
         }
-        sql.deleteCharAt(sql.length() - CommonDao.COMMA.length());
+        sql.deleteCharAt(sql.length() - 1);//","的长度为1，所以删除最后一个","即删除下标为sql.length()-1字符
         sql.append(")");
 /*
         List<Object[]> columnsValuesArrList = new ArrayList<>();
@@ -463,7 +465,7 @@ GROUP BY 列1,列2,列3 having count(*) > 1;
         for (String columnName : columnNames) {
             sql.append(columnName + CommonDao.COMMA);
         }
-        sql.deleteCharAt(sql.length() - CommonDao.COMMA.length());
+        sql.deleteCharAt(sql.length() - 1);//","的长度为1，所以删除最后一个","即删除下标为sql.length()-1字符
         sql.append(")");
 
         int num = getJdbcTemplate().update(sql.toString());
@@ -831,12 +833,12 @@ group by 与order by 一起使用是要遵守一定原则的：
             for (String key : set) {
                 sql.append(key + CommonDao.COMMA);
             }
-            sql.deleteCharAt(sql.length() - CommonDao.COMMA.length());
+            sql.deleteCharAt(sql.length() - 1);//","的长度为1，所以删除最后一个","即删除下标为sql.length()-1字符
             sql.append(" ) values ( ");
             for (String key : set) {
-                sql.append("'" + map.get(key) + "',");
+                sql.append("'" + map.get(key) + "'" + CommonDao.COMMA);
             }
-            sql.deleteCharAt(sql.length() - CommonDao.COMMA.length());
+            sql.deleteCharAt(sql.length() - 1);//","的长度为1，所以删除最后一个","即删除下标为sql.length()-1字符
             sql.append(" ) ");
             re = getJdbcTemplate().update(sql.toString());
         } catch (Exception e) {
@@ -960,7 +962,7 @@ group by 与order by 一起使用是要遵守一定原则的：
             sql.append("a." + dataDicColNamesArr[i] + "=b." + dataDicColNamesArr[i]);
             sql.append(CommonDao.COMMA);
         }
-        sql.deleteCharAt(sql.length() - CommonDao.COMMA.length());
+        sql.deleteCharAt(sql.length() - 1);//","的长度为1，所以删除最后一个","即删除下标为sql.length()-1字符
         sql.append(" where a." + dataDicColNamesArr[0] + "=b." + dataDicColNamesArr[0]);
 
         int num = getJdbcTemplate().update(sql.toString());

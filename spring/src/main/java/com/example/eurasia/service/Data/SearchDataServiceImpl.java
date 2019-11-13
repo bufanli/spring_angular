@@ -93,11 +93,10 @@ public class SearchDataServiceImpl extends CommonService implements ISearchDataS
             order.put("id","asc");//T.B.D
 
             dataList = dataService.searchDataForStatisticReport(DataService.TABLE_DATA,groupByField,computeFields,queryConditionsArr);
-
             if (dataList == null) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.STATISTICS_REPORT_FROM_SQL_NULL);
             }
-            if (dataList.size() <= 0) {
+            if (dataList.size() < 0) {
                 return new ResponseResultUtil().error(ResponseCodeEnum.STATISTICS_REPORT_FROM_SQL_ZERO);
             }
 

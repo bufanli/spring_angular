@@ -25,9 +25,10 @@ public class UserDao extends CommonDao {
 
         sql.append("insert into " + tableName + " (" + columnsNames + ") values (");
         for (int i=0; i<size; i++) {
-            sql.append("?,");
+            sql.append("?");
+            sql.append(CommonDao.COMMA);
         }
-        sql.deleteCharAt(sql.length() - CommonDao.COMMA.length());
+        sql.deleteCharAt(sql.length() - 1);//","的长度为1，所以删除最后一个","即删除下标为sb.length()-1字符
         sql.append(")");
         int num = getJdbcTemplate().update(sql.toString(),(Object[])columnsValuesArr);
         return num;//大于0，插入成功。
@@ -157,12 +158,13 @@ REPLACE INTO `table` (`unique_column`,`num`) VALUES ('$unique_value',$num);
             sqlKey.append(CommonDao.COMMA);
 
             valueArray[i] = userCustoms[i].getValue();
-            sqlValue.append("?,");
+            sqlValue.append("?");
+            sqlValue.append(CommonDao.COMMA);
         }
 
-        sqlKey.deleteCharAt(sqlKey.length() - CommonDao.COMMA.length());
+        sqlKey.deleteCharAt(sqlKey.length() - 1);//","的长度为1，所以删除最后一个","即删除下标为sb.length()-1字符
         sql.append("replace into " + tableName + "(" + sqlKey + ") values (");
-        sqlValue.deleteCharAt(sqlValue.length() - CommonDao.COMMA.length());
+        sqlValue.deleteCharAt(sqlValue.length() - 1);//","的长度为1，所以删除最后一个","即删除下标为sb.length()-1字符
         sql.append(sqlValue + ")");
 
         int num = getJdbcTemplate().update(sql.toString(),(Object[])valueArray);
@@ -187,7 +189,7 @@ REPLACE INTO `table` (`unique_column`,`num`) VALUES ('$unique_value',$num);
             sql.append(userCustoms[i].getKey() + " = " + "'" + userCustoms[i].getValue() + "'");
             sql.append(CommonDao.COMMA);
         }
-        sql.deleteCharAt(sql.length() - CommonDao.COMMA.length());
+        sql.deleteCharAt(sql.length() - 1);//","的长度为1，所以删除最后一个","即删除下标为sb.length()-1字符
         sql.append(" where userID = '" + userID + "'");
 
         int num = getJdbcTemplate().update(sql.toString());

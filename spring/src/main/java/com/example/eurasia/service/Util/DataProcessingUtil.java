@@ -118,7 +118,7 @@ public class DataProcessingUtil {
             sb.append(",");
         }
 
-        sb.deleteCharAt(sb.length() - ",".length());
+        sb.deleteCharAt(sb.length() - 1);//","的长度为1，所以删除最后一个","即删除下标为sb.length()-1字符
         return sb.toString();
     }
 
@@ -135,9 +135,10 @@ public class DataProcessingUtil {
             sb.append(",");
         }
 
-        sb.deleteCharAt(sb.length() - ",".length());
+        sb.deleteCharAt(sb.length() - 1);//","的长度为1，所以删除最后一个","即删除下标为sb.length()-1字符
         return sb.toString();
     }
+
     public static List<String> getMonthBetween(String minDate, String maxDate) throws ParseException {
         ArrayList<String> result = new ArrayList<String>();
         SimpleDateFormat sdf = new SimpleDateFormat(QueryCondition.PRODUCT_DATE_FORMAT_1);//格式化为年月
@@ -168,8 +169,8 @@ public class DataProcessingUtil {
         calendar.setTime(sdf.parse(mouth));
         int days = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
 
-        dateArr[0] = "1";
-        dateArr[1] = String.valueOf(days);
+        dateArr[0] = mouth + "-" + "1";
+        dateArr[1] = mouth + "-" + String.valueOf(days);
 
         return dateArr;
     }

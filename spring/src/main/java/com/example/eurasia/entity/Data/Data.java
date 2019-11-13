@@ -76,7 +76,7 @@ LinkedHashMap保证了元素迭代的顺序。该迭代顺序可以是插入顺�
             sb.append(entry.getKey());
             sb.append(",");
         }
-        sb.deleteCharAt(sb.length() - ",".length());
+        sb.deleteCharAt(sb.length() - 1);//","的长度为1，所以删除最后一个","即删除下标为sb.length()-1字符
 
         return sb.toString();
     }
@@ -100,7 +100,7 @@ LinkedHashMap保证了元素迭代的顺序。该迭代顺序可以是插入顺�
             sb.append(entry.getValue());
             sb.append(",");
         }
-        sb.deleteCharAt(sb.length() - ",".length());
+        sb.deleteCharAt(sb.length() - 1);//","的长度为1，所以删除最后一个","即删除下标为sb.length()-1字符
 
         return sb.toString();
     }
@@ -123,7 +123,7 @@ LinkedHashMap保证了元素迭代的顺序。该迭代顺序可以是插入顺�
             Map.Entry<String,String> entry = it.next();
             sb.append("'" + entry.getValue() + "',");
         }
-        sb.deleteCharAt(sb.length() - ",".length());
+        sb.deleteCharAt(sb.length() - 1);//","的长度为1，所以删除最后一个","即删除下标为sb.length()-1字符
 
         return sb.toString();
     }
@@ -146,7 +146,7 @@ LinkedHashMap保证了元素迭代的顺序。该迭代顺序可以是插入顺�
             Map.Entry<String,String> entry = it.next();
             sb.append("\"" + entry.getValue() + "\",");
         }
-        sb.deleteCharAt(sb.length() - ",".length());
+        sb.deleteCharAt(sb.length() - 1);//","的长度为1，所以删除最后一个","即删除下标为sb.length()-1字符
 
         return sb.toString();
     }

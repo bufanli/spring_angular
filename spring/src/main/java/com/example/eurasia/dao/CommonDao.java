@@ -619,7 +619,7 @@ select PERIOD_DIFF(DATE_FORMAT(CURDATE(),'%Y%m'),DATE_FORMAT(日期,'%Y%m')) fro
         for (ComputeField computeField : computeFields) {
             sql.append(computeField.toSql() + CommonDao.COMMA);
         }
-        sql.deleteCharAt(sql.length() - CommonDao.COMMA.length());
+        sql.deleteCharAt(sql.length() - 1);//","的长度为1，所以删除最后一个","即删除下标为sql.length()-1字符
         sql.append(" from " + tableName);
         sql.append(convertWhereToSQL(queryConditionsArr));
         sql.append(" group by " + groupByField);
@@ -769,7 +769,7 @@ select PERIOD_DIFF(DATE_FORMAT(CURDATE(),'%Y%m'),DATE_FORMAT(日期,'%Y%m')) fro
             Map.Entry<String, String> entry = it.next();
             sql.append(entry.getKey() + " " + entry.getValue() + CommonDao.COMMA);
         }
-        sql.deleteCharAt(sql.length() - CommonDao.COMMA.length());
+        sql.deleteCharAt(sql.length() - 1);//","的长度为1，所以删除最后一个","即删除下标为sql.length()-1字符
         return sql;
     }
 
@@ -801,7 +801,7 @@ select PERIOD_DIFF(DATE_FORMAT(CURDATE(),'%Y%m'),DATE_FORMAT(日期,'%Y%m')) fro
         for (String selectionCol : selectionCols) {
             sql.append(selectionCol + CommonDao.COMMA);
         }
-        sql.deleteCharAt(sql.length() - CommonDao.COMMA.length());
+        sql.deleteCharAt(sql.length() - 1);//","的长度为1，所以删除最后一个","即删除下标为sql.length()-1字符
         sql.append(" from " + tableName);
 
         return sql;
@@ -817,7 +817,7 @@ select PERIOD_DIFF(DATE_FORMAT(CURDATE(),'%Y%m'),DATE_FORMAT(日期,'%Y%m')) fro
         for (String groupBy : groupBys) {
             sql.append(groupBy + CommonDao.COMMA);
         }
-        sql.deleteCharAt(sql.length() - CommonDao.COMMA.length());
+        sql.deleteCharAt(sql.length() - 1);//","的长度为1，所以删除最后一个","即删除下标为sql.length()-1字符
 
         return sql;
     }

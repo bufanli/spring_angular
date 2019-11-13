@@ -1040,7 +1040,7 @@ public class UserService {
             for (int i=0; i<mouthList.size(); i++) {
                 mouths.append(mouthList.get(i) + QueryCondition.QUERY_CONDITION_SPLIT);
             }
-            mouths.deleteCharAt(mouths.length() - QueryCondition.QUERY_CONDITION_SPLIT.length());
+            mouths.delete((mouths.length() - QueryCondition.QUERY_CONDITION_SPLIT.length()),mouths.length());
 
             return mouths.toString();
     }
