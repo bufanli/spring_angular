@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpServletResponse;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -295,9 +296,11 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
             newFileName.append("报告_10HS.xlsx");
             ImportExcelUtils.buildExcelDocument(newFileName.toString(), wb, response);
 
-        } catch (IOException exception){
+        } catch (IOException exception) {
             exception.printStackTrace();
             return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_EXCEL_REPORT_FAILED);
+        } catch (ParseException exception) {
+            exception.printStackTrace();
         } finally {
             if (wb != null) {
                 wb.close();
