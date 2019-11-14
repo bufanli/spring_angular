@@ -243,6 +243,7 @@ public enum ResponseCodeEnum {
     EXPORT_EXCEL_REPORT_GET_DATA_INFO_FROM_SQL_ZERO(ResponseCode.RESPONSE_CODE_OK, "导出报表,从数据库取得数据信息为0"),
     EXPORT_EXCEL_REPORT_FROM_SQL_NULL(ResponseCode.RESPONSE_CODE_NULL, "从数据库取得数据统计信息为NULL"),
     EXPORT_EXCEL_REPORT_FROM_SQL_ZERO(ResponseCode.RESPONSE_CODE_OK, "从数据库取得数据统计信息为0"),
+    EXPORT_EXCEL_REPORT_TEMPLATE_SHEET_NOT_EXIST(ResponseCode.RESPONSE_CODE_NG, "导出报表用的模版Sheet不存在"),
 
     /* 数据字段的词典 */
     GET_COLUMNS_DICTIONARY_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "取得数据字段的词典成功"),

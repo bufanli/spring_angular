@@ -142,12 +142,13 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
 
             for (int i = 0; i< queryConditionsArr.length; i++) {
                 coverKeys[i] = queryConditionsArr[i].getKey();
-                coverValues[i] = queryConditionsArr[i].getValue();
+                String value = queryConditionsArr[i].getValue();
+                coverValues[i] = value.substring(0,value.length()-QueryCondition.QUERY_CONDITION_SPLIT.length());//去掉后面的"～～"
 
                 // 月份转日期
-                if (queryConditionsArr[i].getKey().equals(QueryCondition.QUERY_CONDITION_YEAR_MONTH)) {
+                if (coverKeys[i].equals(QueryCondition.QUERY_CONDITION_YEAR_MONTH)) {
                     queryConditionsArr[i].setKey(userService.MUST_PRODUCT_DATE);
-                    String[] dateArr = DataProcessingUtil.getDateBetween(queryConditionsArr[i].getValue());
+                    String[] dateArr = DataProcessingUtil.getDateBetween(coverValues[i]);
                     queryConditionsArr[i].setValue(dateArr[0] + QueryCondition.QUERY_CONDITION_SPLIT + dateArr[1]);
                     queryConditionsArr[i].setType(QueryCondition.QUERY_CONDITION_TYPE_DATE);
                 }
@@ -184,8 +185,15 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
             String templateFileName = path + "excel_report_template.xlsx";//文件模板
             wb = new XSSFWorkbook(new FileInputStream(templateFileName));// 创建workbook，
 
-            // 做成封面Sheet
+            // check Sheet是否存在
             XSSFSheet coverSheet = wb.getSheet(DataService.EXCEL_EXPORT_SHEET_COVER);
+            XSSFSheet contentSheet = wb.getSheet(DataService.EXCEL_EXPORT_SHEET_CONTENTS);
+            int statisticsTemplateIndex = wb.getSheetIndex(DataService.EXCEL_EXPORT_SHEET_STATISTICS_TEMPLATE);
+            if (coverSheet == null || contentSheet == null || statisticsTemplateIndex == -1) {
+                return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_EXCEL_REPORT_TEMPLATE_SHEET_NOT_EXIST);
+            }
+
+            // 做成封面Sheet
             this.writeCellToExcel(wb, coverSheet, excelReportOutputData.getCoverTitle(), 6, 1);
             for (int i=0; i<coverItemNum; i++) {
                 this.writeCellToExcel(wb, coverSheet, excelReportOutputData.getCoverKeys()[i], (11+3*i), 1);
@@ -193,7 +201,6 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
             }
 
             // 做成目录Sheet
-            XSSFSheet contentSheet = wb.getSheet(DataService.EXCEL_EXPORT_SHEET_CONTENTS);
             this.writeCellToExcel(wb, contentSheet, excelReportOutputData.getContentTitle(), 6, 1);
             for (int i=0; i<excelReportOutputData.getContentValues().length; i++) {
                 this.writeCellToExcel(wb, contentSheet, excelReportOutputData.getContentValues()[i], (11+2*i), 1);
@@ -256,14 +263,13 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
                         "=SUM(F21:F" + String.valueOf(20 + dataList.size()) + ")",
                         "=SUM(G21:G" + String.valueOf(20 + dataList.size()) + ")"
                 });
-                int index = wb.getSheetIndex(DataService.EXCEL_EXPORT_SHEET_STATISTICS_TEMPLATE);
-                Sheet reportSheet = wb.cloneSheet(index);
+                // 克隆汇总模版表
+                Sheet reportSheet = wb.cloneSheet(statisticsTemplateIndex);
                 wb.setSheetName(wb.getSheetIndex(reportSheet.getSheetName()),excelReportOutputData.getReportTypes()[i]);
                 int rowIndex = this.writeExcel(wb, (XSSFSheet)reportSheet, colsNameSet, dataArrList);
             }
             // 删除汇总模版表
-            int index = wb.getSheetIndex(DataService.EXCEL_EXPORT_SHEET_STATISTICS_TEMPLATE);
-            wb.removeSheetAt(index);
+            wb.removeSheetAt(statisticsTemplateIndex);
 
             // "明细表"Sheet：汇总条件下的所有数据
             //SXSSFWorkbook wb = new SXSSFWorkbook(templateWorkbook,DataService.ROW_ACCESS_WINDOW_SIZE);
