@@ -169,8 +169,8 @@ public class DataProcessingUtil {
         calendar.setTime(sdf.parse(mouth));
         int days = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
 
-        dateArr[0] = mouth + "-" + "01";
-        dateArr[1] = mouth + "-" + String.valueOf(days);
+        dateArr[0] = mouth + "/" + "01";
+        dateArr[1] = mouth + "/" + String.valueOf(days);
 
         return dateArr;
     }

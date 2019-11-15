@@ -203,7 +203,7 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
                     if (queryCondition.equals(QueryCondition.QUERY_CONDITION_YEAR_MONTH)) {
                         StringBuffer dateFormatSql = new StringBuffer();
                         dateFormatSql.append("DATE_FORMAT(" + userService.MUST_PRODUCT_DATE + ",");
-                        dateFormatSql.append("'%Y-%m')");
+                        dateFormatSql.append("'%Y/%m')");
                         queryCondition = dateFormatSql.toString();
                     }
                     order.put(queryCondition,"asc");//T.B.D
