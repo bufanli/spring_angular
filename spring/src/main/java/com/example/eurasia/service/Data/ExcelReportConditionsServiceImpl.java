@@ -21,10 +21,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ResourceUtils;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -193,9 +197,8 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
             long userMax = getUserMax(userID);
 
             // 创建EXCEL
-            String path = System.getProperty("user.dir") + "/src/main/resources/";
-            String templateFileName = path + "excel_report_template.xlsx";//文件模板
-            wb = new XSSFWorkbook(new FileInputStream(templateFileName));// 创建workbook，
+            InputStream inputStreamTemplate = this.getClass().getResourceAsStream("resources/excel_report_template.xlsx");
+            wb = new XSSFWorkbook(inputStreamTemplate);// 创建workbook，
 
             // check Sheet是否存在
             XSSFSheet coverSheet = wb.getSheet(DataService.EXCEL_EXPORT_SHEET_COVER);
@@ -291,7 +294,19 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
             wb.removeSheetAt(statisticsTemplateIndex);
 
             // 保存到临时文件
-            String tempFileName = path + "excel_report_template_temp.xlsx";
+            //获取跟目录
+            File path = new File(ResourceUtils.getURL("classpath:").getPath());
+            if(!path.exists()) {
+                  path = new File("");
+            }
+                //上传目录地址
+                //在开发测试模式时，得到的地址为：{项目跟目录}/target/static/uploadFile/
+                //在打包成jar正式发布时，得到的地址为：{发布jar包目录}/static/uploadFile/
+                File tempDir = new File(path.getAbsolutePath(),"static/temp/");
+                if (!tempDir.exists()) {
+                    tempDir.mkdirs();
+                }
+            String tempFileName = tempDir.getAbsolutePath()+ "excel_report_template_temp.xlsx";
             ImportExcelUtils.buildTempExcelDocument(tempFileName, wb);
 
             // "明细表"Sheet：汇总条件下的所有数据
