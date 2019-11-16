@@ -174,7 +174,7 @@ public class GetQueryConditionsServiceImpl implements IGetQueryConditionsService
                                 limit,
                                 order);
 
-                        int i= offset+1;
+                        int i = offset+1;
                         for (Map<String, Object> map : colValuesListMap) {
                             for (Map.Entry<String, Object> m : map.entrySet()) {
                                 categorySelectionsWithTotalCount.pushSelection(new CategorySelectionsWithTotalCount.Selection(i+1,(String) m.getValue()));

@@ -234,7 +234,7 @@ public class UserInfoServiceImpl {
                             String[] queryConditionValues = null;
                             switch (entry.getValue()) {
                                 case QueryCondition.QUERY_CONDITION_TYPE_LIST:
-                                    //  以后List改为翻页形式。2019-06-30。
+                                    // 以后List改为翻页形式。2019-06-30。
                                     // 如果是 QueryCondition.QUERY_CONDITION_SPLIT 的话，返回该列所有的元素
                                     List<Map<String, Object>> colValuesListMap = dataService.getColumnAllValuesByGroup(DataService.TABLE_DATA,new String[]{category});
                                     queryConditionValues = DataProcessingUtil.getListMapValuesOfOneColumn(colValuesListMap);

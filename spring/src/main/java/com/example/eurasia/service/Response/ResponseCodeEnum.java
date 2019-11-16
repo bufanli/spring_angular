@@ -154,6 +154,7 @@ public enum ResponseCodeEnum {
     SEARCH_DATA_QUERY_CONDITION_ERROR(ResponseCode.RESPONSE_CODE_NG, "查询数据的查询条件错误"),
     SEARCH_DATA_QUERY_CONDITION_FORMAT_ERROR(ResponseCode.RESPONSE_CODE_NG, "查询数据的查询条件的格式错误。"),
     SEARCH_DATA_QUERY_CONDITION_ACCESS_ERROR(ResponseCode.RESPONSE_CODE_NG, "查询数据的查询条件不在许可范围内。"),
+    SEARCH_DATA_QUERY_CONDITION_IS_NOT_EXIST(ResponseCode.RESPONSE_CODE_NG, "查询数据的查询条件不存在。"),
 
     /* 数据统计 */
     STATISTICS_SETTING_FROM_SQL_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "从数据库取得数据统计设置信息成功"),

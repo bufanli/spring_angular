@@ -381,25 +381,23 @@ public class UpDownloadFileServiceImpl extends CommonService implements IUpDownl
             }
             int titleRowIndex = this.writeTitlesToExcel(wb, sheet, colsNameSet);
 
-            long offset = 0;
-            Map<String, String> order = new LinkedHashMap<>();
-            order.put("id","asc");//T.B.D
+            List<String[]> dataArrList = dataService.getRows(DataService.TABLE_DATA, queryConditionsArr);
+            if (dataArrList == null) {
+                Slf4jLogUtil.get().info(ResponseCodeEnum.EXPORT_GET_DATA_INFO_FROM_SQL_NULL.getMessage());
+                return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_GET_DATA_INFO_FROM_SQL_NULL);
+            }
+            if (dataArrList.size() < 0) {
+                Slf4jLogUtil.get().info(ResponseCodeEnum.EXPORT_GET_DATA_INFO_FROM_SQL_ZERO.getMessage());
+                return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_GET_DATA_INFO_FROM_SQL_ZERO);
+            }
 
-            long count = dataService.queryTableRows(DataService.TABLE_DATA,queryConditionsArr);
-            long steps = count / DataService.DOWNLOAD_RECODE_STEPS + 1;
-            int dataRowIndex = 0;
+            int offset = 0;
+            int steps = dataArrList.size() / DataService.DOWNLOAD_RECODE_STEPS + 1;
+            int dataRowIndex = titleRowIndex;
             for (int i = 0; i < steps; i++) {
-                List<String[]> dataArrList = dataService.getRows(DataService.TABLE_DATA, queryConditionsArr);
-                if (dataArrList == null) {
-                    Slf4jLogUtil.get().info(ResponseCodeEnum.EXPORT_GET_DATA_INFO_FROM_SQL_NULL.getMessage());
-                    return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_GET_DATA_INFO_FROM_SQL_NULL);
-                }
-                if (dataArrList.size() == 0) {
-                    Slf4jLogUtil.get().info(ResponseCodeEnum.EXPORT_GET_DATA_INFO_FROM_SQL_ZERO.getMessage());
-                    return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_GET_DATA_INFO_FROM_SQL_ZERO);
-                }
-                int rowStartIndex = dataRowIndex + titleRowIndex;
-                dataRowIndex += this.writeRowsToExcel(wb, sheet, dataArrList, rowStartIndex);
+                dataRowIndex = this.writeRowsToExcel(wb, sheet,
+                        dataArrList.subList(offset,DataService.DOWNLOAD_RECODE_STEPS),
+                        dataRowIndex);
 
                 offset += DataService.DOWNLOAD_RECODE_STEPS;
             }
@@ -460,7 +458,6 @@ public class UpDownloadFileServiceImpl extends CommonService implements IUpDownl
     }
 
     private int writeRowsToExcel(SXSSFWorkbook wb, SXSSFSheet sheet, List<String[]> rowList, int rowStartIndex) {
-        int colIndex = 0;
         int rowIndex = rowStartIndex;
 
         // 设置字体
@@ -478,17 +475,15 @@ public class UpDownloadFileServiceImpl extends CommonService implements IUpDownl
         for (String[] rowData : rowList) {
             Row dataRow = sheet.createRow(rowIndex);
             // dataRow.setHeightInPoints(25);
-            colIndex = 0;
 
-            for (String data : rowData) {
+            for (int colIndex=0; colIndex<rowData.length; colIndex++) {
                 Cell cell = dataRow.createCell(colIndex);
-                cell.setCellValue(data);
+                cell.setCellValue(rowData[colIndex]);
                 cell.setCellStyle(dataStyle);
-                colIndex++;
             }
             rowIndex++;
         }
-        return rowList.size();
+        return rowIndex;
     }
 
 }

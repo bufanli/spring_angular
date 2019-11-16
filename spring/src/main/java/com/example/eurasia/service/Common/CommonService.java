@@ -5,6 +5,7 @@ import com.example.eurasia.entity.Data.QueryCondition;
 import com.example.eurasia.service.Data.DataService;
 import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.User.UserService;
+import com.example.eurasia.service.Util.Slf4jLogUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.util.StringUtils;
@@ -49,24 +50,58 @@ public abstract class CommonService {
             }
 
             // 检查内容
-            String queryConditionValueFromSql = null;
+            String userProductNumbers = null;
             switch (queryCondition.getKey()) {
                 case UserService.MUST_PRODUCT_NUMBER:
-                    //检查海关/商品编码是否在该用户都权限内
-                    queryConditionValueFromSql = userService.getOneUserCustom(UserService.TABLE_USER_ACCESS_AUTHORITY,
-                            UserService.MUST_PRODUCT_NUMBER,
-                            userID);
-                    if (!queryConditionValueFromSql.equals(QueryCondition.QUERY_CONDITION_SPLIT)) {
-                        String productNameArr[] = queryCondition.getValue().split(QueryCondition.QUERY_CONDITION_SPLIT);
-                        for (String productName:productNameArr) {
-                            if (queryConditionValueFromSql.contains(productName) == false) {
-                                ret.append(productName + ResponseCodeEnum.SEARCH_DATA_QUERY_CONDITION_ACCESS_ERROR.getMessage());
-                                ret.append(UserService.BR);
+                        if (queryCondition.getValue().equals(QueryCondition.QUERY_CONDITION_SPLIT)) {// "～～"的场合，没有输入
+
+                        } else {
+                            String productNameArr[] = queryCondition.getValue().split(QueryCondition.QUERY_CONDITION_SPLIT);
+
+                            // 该用户的海关/商品编码范围
+                            userProductNumbers = userService.getOneUserCustom(UserService.TABLE_USER_ACCESS_AUTHORITY,
+                                    UserService.MUST_PRODUCT_NUMBER,
+                                    userID);
+
+                            if (!userProductNumbers.equals(QueryCondition.QUERY_CONDITION_SPLIT)) {
+
+                                for (String productName:productNameArr) {
+
+                                    // 检查海关/商品编码是否在该用户都权限内
+                                    if (userProductNumbers.contains(productName) == false) {
+                                        Slf4jLogUtil.get().info(ResponseCodeEnum.SEARCH_DATA_QUERY_CONDITION_ACCESS_ERROR.getMessage());
+                                        ret.append(productName + ResponseCodeEnum.SEARCH_DATA_QUERY_CONDITION_ACCESS_ERROR.getMessage());
+                                        ret.append(UserService.BR);
+                                    }
+
+                                    // 在DataService.TABLE_DATA中是否存在
+                                    long numInTableData = dataService.getColumnValueNumber(DataService.TABLE_DATA,
+                                            UserService.MUST_PRODUCT_NUMBER,
+                                            productName);
+                                    if (numInTableData != 1 ) {
+                                        Slf4jLogUtil.get().info(ResponseCodeEnum.SEARCH_DATA_QUERY_CONDITION_IS_NOT_EXIST.getMessage());
+                                        ret.append(productName + ResponseCodeEnum.SEARCH_DATA_QUERY_CONDITION_IS_NOT_EXIST.getMessage());
+                                        ret.append(UserService.BR);
+                                    }
+                                }
+
+                            } else {// "～～"的场合，没有限制
+
+                                for (String productName:productNameArr) {
+
+                                    // 在DataService.TABLE_DATA中是否存在
+                                    long numInTableData = dataService.getColumnValueNumber(DataService.TABLE_DATA,
+                                            UserService.MUST_PRODUCT_NUMBER,
+                                            productName);
+                                    if (numInTableData != 1 ) {
+                                        Slf4jLogUtil.get().info(ResponseCodeEnum.SEARCH_DATA_QUERY_CONDITION_IS_NOT_EXIST.getMessage());
+                                        ret.append(productName + ResponseCodeEnum.SEARCH_DATA_QUERY_CONDITION_IS_NOT_EXIST.getMessage());
+                                        ret.append(UserService.BR);
+                                    }
+                                }
+
                             }
                         }
-                    } else {//"～～"的场合，1.没有限制 2.没有输入
-
-                    }
                     break;
                 default:
                     break;
