@@ -1218,17 +1218,13 @@ as不是给表里的字段取别名，而是给查询的结果字段取别名。
         return colsNameSet;
     }
 
-    public List<String[]>  getRows(String tableName, QueryCondition[] queryConditionsArr) throws Exception {
+    public List<String[]>  getRows(String tableName, QueryCondition[] queryConditionsArr, int offset, int limit) throws Exception {
         List<String[]> dataArrList = null;
         try {
             Slf4jLogUtil.get().info("取得数据开始");
 
-            long offset = 0;
-            long limit = DataService.DOWNLOAD_RECODE_STEPS;
             Map<String, String> order = new LinkedHashMap<>();
             order.put("id","asc");//T.B.D
-
-            long count = this.queryTableRows(tableName,queryConditionsArr);
 
             dataArrList = this.searchDataForDownload(tableName, queryConditionsArr, offset, limit, order);
 
