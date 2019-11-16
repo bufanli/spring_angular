@@ -78,7 +78,7 @@ public abstract class CommonService {
                                     long numInTableData = dataService.getColumnValueNumber(DataService.TABLE_DATA,
                                             UserService.MUST_PRODUCT_NUMBER,
                                             productName);
-                                    if (numInTableData != 1 ) {
+                                    if (numInTableData == 0 ) {
                                         Slf4jLogUtil.get().info(ResponseCodeEnum.SEARCH_DATA_QUERY_CONDITION_IS_NOT_EXIST.getMessage());
                                         ret.append(productName + ResponseCodeEnum.SEARCH_DATA_QUERY_CONDITION_IS_NOT_EXIST.getMessage());
                                         ret.append(UserService.BR);
@@ -93,7 +93,7 @@ public abstract class CommonService {
                                     long numInTableData = dataService.getColumnValueNumber(DataService.TABLE_DATA,
                                             UserService.MUST_PRODUCT_NUMBER,
                                             productName);
-                                    if (numInTableData != 1 ) {
+                                    if (numInTableData == 0 ) {
                                         Slf4jLogUtil.get().info(ResponseCodeEnum.SEARCH_DATA_QUERY_CONDITION_IS_NOT_EXIST.getMessage());
                                         ret.append(productName + ResponseCodeEnum.SEARCH_DATA_QUERY_CONDITION_IS_NOT_EXIST.getMessage());
                                         ret.append(UserService.BR);

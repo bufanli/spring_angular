@@ -11,10 +11,7 @@ import com.example.eurasia.service.Util.ImportExcelUtils;
 import com.example.eurasia.service.Util.Slf4jLogUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFCellStyle;
-import org.apache.poi.xssf.usermodel.XSSFColor;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -258,9 +255,9 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
                                 String.valueOf(i + 1),  // A列，序号
                                 groupByValue,           // B列，Report Types[汇总类型]
                                 dollarPriceTotal,       // C列，美元总价合计
-                                "(C21" + i + "/C" + String.valueOf(20 + dataList.size() + 1) + ").NumberFormat = \"0.00%\"",     // D列，美元总价占比
+                                "C" + (21 + i) + "/C" + String.valueOf(20 + dataList.size() + 1),    // D列，美元总价占比
                                 legalWeightTotal,       // E列，法定重量合计
-                                "(E21" + i + "/E" + String.valueOf(20 + dataList.size() + 1) + ").NumberFormat = \"0.00%\"",    // F列，法定重量合计
+                                "E" + (21 + i) + "/E" + String.valueOf(20 + dataList.size() + 1),    // F列，法定重量合计
                                 averageUnitPrice        // G列，平均单价
                         });
                     }
@@ -350,7 +347,7 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
         // titleFont.setFontHeightInPoints((short) 14);
         titleFont.setColor(IndexedColors.BLACK.index);
 
-        XSSFCellStyle titleStyle = (XSSFCellStyle) wb.createCellStyle();
+        XSSFCellStyle titleStyle = wb.createCellStyle();
         titleStyle.setAlignment(HorizontalAlignment.CENTER);// 指定单元格居中对齐
         titleStyle.setVerticalAlignment(VerticalAlignment.CENTER);// 指定单元格垂直居中对齐
         titleStyle.setFillForegroundColor(new XSSFColor(new java.awt.Color(0, 0, 128)));// 海军蓝
@@ -382,11 +379,18 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
         // dataFont.setFontHeightInPoints((short) 14);
         dataFont.setColor(IndexedColors.BLACK.index);
 
-        XSSFCellStyle dataStyle = (XSSFCellStyle) wb.createCellStyle();
+        XSSFCellStyle dataStyle = wb.createCellStyle();
         dataStyle.setAlignment(HorizontalAlignment.CENTER);// 指定单元格居中对齐
         dataStyle.setVerticalAlignment(VerticalAlignment.CENTER);// 指定单元格垂直居中对齐
         dataStyle.setFont(dataFont);
         ImportExcelUtils.setBorder(dataStyle, BorderStyle.THIN, new XSSFColor(new java.awt.Color(0, 0, 0)));
+
+        XSSFCellStyle dataPercentStyle = wb.createCellStyle();
+        dataPercentStyle.setAlignment(HorizontalAlignment.CENTER);// 指定单元格居中对齐
+        dataPercentStyle.setVerticalAlignment(VerticalAlignment.CENTER);// 指定单元格垂直居中对齐
+        dataPercentStyle.setFont(dataFont);
+        dataPercentStyle.setDataFormat(wb.createDataFormat().getFormat("0.00"));
+        ImportExcelUtils.setBorder(dataPercentStyle, BorderStyle.THIN, new XSSFColor(new java.awt.Color(0, 0, 0)));
 
         // 明细行
         for (int i=0; i<rowList.size(); i++) {
@@ -397,10 +401,11 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
                 Cell cell = dataRow.createCell(colIndex);
                 if (colIndex == 3 || colIndex == 5) {
                     cell.setCellFormula(rowData[colIndex]);
+                    cell.setCellStyle(dataPercentStyle);
                 } else {
                     cell.setCellValue(rowData[colIndex]);
+                    cell.setCellStyle(dataStyle);
                 }
-                cell.setCellStyle(dataStyle);
             }
             rowIndex++;
         }
@@ -431,7 +436,7 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
         // dataFont.setFontHeightInPoints((short) 14);
         dataFont.setColor(IndexedColors.BLACK.index);
 
-        XSSFCellStyle dataStyle = (XSSFCellStyle) wb.createCellStyle();
+        XSSFCellStyle dataStyle = wb.createCellStyle();
         dataStyle.setAlignment(HorizontalAlignment.CENTER);// 指定单元格居中对齐
         dataStyle.setVerticalAlignment(VerticalAlignment.CENTER);// 指定单元格垂直居中对齐
         dataStyle.setFont(dataFont);
@@ -459,7 +464,7 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
         // dataFont.setFontHeightInPoints((short) 14);
         dataFont.setColor(IndexedColors.BLACK.index);
 
-        XSSFCellStyle dataStyle = (XSSFCellStyle) wb.createCellStyle();
+        XSSFCellStyle dataStyle = wb.createCellStyle();
         dataStyle.setAlignment(HorizontalAlignment.CENTER);// 指定单元格居中对齐
         dataStyle.setVerticalAlignment(VerticalAlignment.CENTER);// 指定单元格垂直居中对齐
         dataStyle.setFont(dataFont);
