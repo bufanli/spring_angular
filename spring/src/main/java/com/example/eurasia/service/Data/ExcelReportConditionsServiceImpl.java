@@ -182,7 +182,7 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
             //检查查询条件的格式和内容
             String retCheck = checkQueryConditions(userID,queryConditionsArr);
             if (!StringUtils.isEmpty(retCheck)) {
-                //return new ResponseResultUtil().error(ResponseCodeEnum.STATISTICS_REPORT_QUERY_CONDITION_ERROR.getCode(),retCheck);
+                return new ResponseResultUtil().error(ResponseCodeEnum.STATISTICS_REPORT_QUERY_CONDITION_ERROR.getCode(),retCheck);
             }
             //为未输入的查询条件进行默认值设定
             setUserQueryConditionDefaultValue(userID,queryConditionsArr);
@@ -253,7 +253,7 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
                         String groupByValue = keyValue.get(groupByField);
                         String dollarPriceTotal = keyValue.get(computeFields[0].toSql().toString());
                         String legalWeightTotal = keyValue.get(computeFields[1].toSql().toString());
-                        String averageUnitPrice = String.valueOf(Long.parseLong(dollarPriceTotal)/Long.parseLong(legalWeightTotal));
+                        String averageUnitPrice = String.valueOf(Double.parseDouble(dollarPriceTotal)/Double.parseDouble(legalWeightTotal));
                         dataArrList.add(new String[]{
                                 String.valueOf(i + 1),  // A列，序号
                                 groupByValue,           // B列，Report Types[汇总类型]
