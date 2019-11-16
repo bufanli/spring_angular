@@ -39,6 +39,10 @@ export class DataExcelReportSelectionComponent implements OnInit, AfterViewInit,
   private excelReportService: any = null;
   // check parameter error msg
   private checkParametersErrorMsg = null;
+  // error exist
+  public errorExist = false;
+  // error message
+  public errorMsg: string = null;
   constructor(private activeModal: NgbActiveModal,
     private commonUtilitiesService: CommonUtilitiesService) { }
 
