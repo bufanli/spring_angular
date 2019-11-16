@@ -381,23 +381,22 @@ public class UpDownloadFileServiceImpl extends CommonService implements IUpDownl
             }
             int titleRowIndex = this.writeTitlesToExcel(wb, sheet, colsNameSet);
 
-            List<String[]> dataArrList = dataService.getRows(DataService.TABLE_DATA, queryConditionsArr);
-            if (dataArrList == null) {
-                Slf4jLogUtil.get().info(ResponseCodeEnum.EXPORT_GET_DATA_INFO_FROM_SQL_NULL.getMessage());
-                return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_GET_DATA_INFO_FROM_SQL_NULL);
-            }
-            if (dataArrList.size() < 0) {
-                Slf4jLogUtil.get().info(ResponseCodeEnum.EXPORT_GET_DATA_INFO_FROM_SQL_ZERO.getMessage());
-                return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_GET_DATA_INFO_FROM_SQL_ZERO);
-            }
-
+            long count = dataService.queryTableRows(DataService.TABLE_DATA,queryConditionsArr);
             int offset = 0;
-            int steps = dataArrList.size() / DataService.DOWNLOAD_RECODE_STEPS + 1;
+            int steps = (int)(count / DataService.DOWNLOAD_RECODE_STEPS + 1);
             int dataRowIndex = titleRowIndex;
             for (int i = 0; i < steps; i++) {
-                dataRowIndex = this.writeRowsToExcel(wb, sheet,
-                        dataArrList.subList(offset,DataService.DOWNLOAD_RECODE_STEPS),
-                        dataRowIndex);
+                List<String[]> dataArrList = dataService.getRows(DataService.TABLE_DATA, queryConditionsArr, offset, DataService.DOWNLOAD_RECODE_STEPS);
+                if (dataArrList == null) {
+                    Slf4jLogUtil.get().info(ResponseCodeEnum.EXPORT_GET_DATA_INFO_FROM_SQL_NULL.getMessage());
+                    return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_GET_DATA_INFO_FROM_SQL_NULL);
+                }
+                if (dataArrList.size() < 0) {
+                    Slf4jLogUtil.get().info(ResponseCodeEnum.EXPORT_GET_DATA_INFO_FROM_SQL_ZERO.getMessage());
+                    return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_GET_DATA_INFO_FROM_SQL_ZERO);
+                }
+
+                dataRowIndex = this.writeRowsToExcel(wb, sheet, dataArrList, dataRowIndex);
 
                 offset += DataService.DOWNLOAD_RECODE_STEPS;
             }

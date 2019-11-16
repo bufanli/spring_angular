@@ -217,9 +217,9 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
 
             // 按照汇总类型做成相应的Sheet
             // "明细表"以外的Sheet里的汇总数据格式：序号，Report Types[汇总类型]，美元总价合计，美元总价占比，法定重量合计，法定重量占比，平均单价
-            for (int i=0; i<excelReportOutputData.getReportTypes().length; i++) {
-                if (!excelReportOutputData.getReportTypes()[i].equals(DataService.EXCEL_EXPORT_TYPE_DETAIL)) {
-                    String groupByField = StringUtils.substringBefore(excelReportOutputData.getReportTypes()[i],
+            for (int reportTypeIndex=0; reportTypeIndex<excelReportOutputData.getReportTypes().length; reportTypeIndex++) {
+                if (!excelReportOutputData.getReportTypes()[reportTypeIndex].equals(DataService.EXCEL_EXPORT_TYPE_DETAIL)) {
+                    String groupByField = StringUtils.substringBefore(excelReportOutputData.getReportTypes()[reportTypeIndex],
                             DataService.EXCEL_EXPORT_SHEET_CONTENTS_EXTEND);
                     ComputeField[] computeFields = new ComputeField[2];
                     computeFields[0] = new ComputeField("美元总价", ComputeField.SUM);
@@ -246,21 +246,21 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
 
                     //sql结果List，ExcelReportValue
                     List<String[]> dataArrList = new ArrayList<>();
-                    for (int j=0; i<dataList.size(); i++) {
-                        Data data = dataList.get(j);
+                    for (int i=0; i<dataList.size(); i++) {
+                        Data data = dataList.get(i);
                         Map<String, String> keyValue = data.getKeyValue();
 
                         String groupByValue = keyValue.get(groupByField);
-                        String dollarPriceTotal = keyValue.get(computeFields[0].getFieldName());
-                        String legalWeightTotal = keyValue.get(computeFields[1].getFieldName());
+                        String dollarPriceTotal = keyValue.get(computeFields[0].toSql().toString());
+                        String legalWeightTotal = keyValue.get(computeFields[1].toSql().toString());
                         String averageUnitPrice = String.valueOf(Long.parseLong(dollarPriceTotal)/Long.parseLong(legalWeightTotal));
                         dataArrList.add(new String[]{
-                                String.valueOf(j + 1),  // A列，序号
+                                String.valueOf(i + 1),  // A列，序号
                                 groupByValue,           // B列，Report Types[汇总类型]
                                 dollarPriceTotal,       // C列，美元总价合计
-                                "(C21" + j + "/C" + String.valueOf(20 + dataList.size() + 1) + ").NumberFormat = \"0.00%\"",     // D列，美元总价占比
+                                "(C21" + i + "/C" + String.valueOf(20 + dataList.size() + 1) + ").NumberFormat = \"0.00%\"",     // D列，美元总价占比
                                 legalWeightTotal,       // E列，法定重量合计
-                                "(E21" + j + "/E" + String.valueOf(20 + dataList.size() + 1) + ").NumberFormat = \"0.00%\"",    // F列，法定重量合计
+                                "(E21" + i + "/E" + String.valueOf(20 + dataList.size() + 1) + ").NumberFormat = \"0.00%\"",    // F列，法定重量合计
                                 averageUnitPrice        // G列，平均单价
                         });
                     }
@@ -275,7 +275,7 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
                     });
                     // 克隆汇总模版表
                     Sheet reportSheet = wb.cloneSheet(statisticsTemplateIndex);
-                    wb.setSheetName(wb.getSheetIndex(reportSheet.getSheetName()),excelReportOutputData.getReportTypes()[i]);
+                    wb.setSheetName(wb.getSheetIndex(reportSheet.getSheetName()),excelReportOutputData.getReportTypes()[reportTypeIndex]);
                     int rowIndex = this.writeReportSheet(wb, (XSSFSheet)reportSheet, colsNameSet, dataArrList, 20);
                 } else {
                     // "明细表"Sheet：汇总条件下的所有数据
@@ -287,12 +287,29 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
                         Slf4jLogUtil.get().info(ResponseCodeEnum.EXPORT_EXCEL_REPORT_FROM_SQL_NULL.getMessage());
                         return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_EXCEL_REPORT_FROM_SQL_NULL);
                     }
-                    List<String[]> dataArrList = dataService.getRows(DataService.TABLE_DATA, queryConditionsArr);
-                    if (dataArrList.size() < 0) {
-                        Slf4jLogUtil.get().info(ResponseCodeEnum.EXPORT_EXCEL_REPORT_FROM_SQL_ZERO.getMessage());
-                        return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_EXCEL_REPORT_FROM_SQL_ZERO);
+                    int titleRowIndex = this.writeTitlesToExcel(wb, detailSheet, colsNameSet, 0);
+
+                    long count = dataService.queryTableRows(DataService.TABLE_DATA,queryConditionsArr);
+                    int offset = 0;
+                    int steps = (int)(count / DataService.DOWNLOAD_RECODE_STEPS + 1);
+                    int dataRowIndex = titleRowIndex;
+                    for (int i = 0; i < steps; i++) {
+                        List<String[]> dataArrList = dataService.getRows(DataService.TABLE_DATA, queryConditionsArr, offset, DataService.DOWNLOAD_RECODE_STEPS);
+                        if (dataArrList == null) {
+                            Slf4jLogUtil.get().info(ResponseCodeEnum.EXPORT_EXCEL_REPORT_FROM_SQL_NULL.getMessage());
+                            return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_EXCEL_REPORT_FROM_SQL_NULL);
+                        }
+                        if (dataArrList.size() < 0) {
+                            Slf4jLogUtil.get().info(ResponseCodeEnum.EXPORT_EXCEL_REPORT_FROM_SQL_ZERO.getMessage());
+                            return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_EXCEL_REPORT_FROM_SQL_ZERO);
+                        }
+
+                        dataRowIndex = this.writeRowsToDetailSheet(wb, detailSheet, dataArrList, dataRowIndex);
+
+                        offset += DataService.DOWNLOAD_RECODE_STEPS;
                     }
-                    int rowIndex = this.writeDetailSheet(wb, detailSheet, colsNameSet, dataArrList, 0);
+                    // adjust column size
+                    ImportExcelUtils.setSizeColumn(detailSheet, (colsNameSet.size() + 1));
                 }
 
             }
@@ -318,23 +335,6 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
 
         int titleRowIndex = this.writeTitlesToExcel(wb, sheet, colsNameSet, rowStartIndex);
         int dataRowIndex = this.writeRowsToReportSheet(wb, sheet, rowList, titleRowIndex);
-        ImportExcelUtils.setSizeColumn(sheet, (colsNameSet.size() + 1));
-        return dataRowIndex;
-    }
-
-    private int writeDetailSheet(XSSFWorkbook wb, XSSFSheet sheet, Set<String> colsNameSet, List<String[]> rowList, int rowStartIndex) {
-
-        int titleRowIndex = this.writeTitlesToExcel(wb, sheet, colsNameSet, rowStartIndex);
-        int offset = 0;
-        int steps = rowList.size() / DataService.DOWNLOAD_RECODE_STEPS + 1;
-        int dataRowIndex = titleRowIndex;
-        for (int i = 0; i < steps; i++) {
-            dataRowIndex = this.writeRowsToDetailSheet(wb, sheet,
-                    rowList.subList(offset,DataService.DOWNLOAD_RECODE_STEPS),
-                    dataRowIndex);
-
-            offset += DataService.DOWNLOAD_RECODE_STEPS;
-        }
         ImportExcelUtils.setSizeColumn(sheet, (colsNameSet.size() + 1));
         return dataRowIndex;
     }
