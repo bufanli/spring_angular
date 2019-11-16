@@ -352,13 +352,13 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
 
     private int writeReportSheet(XSSFWorkbook wb, XSSFSheet sheet, Set<String> colsNameSet, List<String[]> rowList, int rowStartIndex) {
 
-        int titleRowIndex = this.writeTitlesToDetailSheet(wb, sheet, colsNameSet, rowStartIndex);
+        int titleRowIndex = this.writeTitlesToReportSheet(wb, sheet, colsNameSet, rowStartIndex);
         int dataRowIndex = this.writeRowsToReportSheet(wb, sheet, rowList, titleRowIndex);
         ImportExcelUtils.setSizeColumn(sheet, (colsNameSet.size() + 1));
         return dataRowIndex;
     }
 
-    private int writeTitlesToDetailSheet(XSSFWorkbook wb, XSSFSheet sheet, Set<String> colsNameSet, int rowStartIndex) {
+    private int writeTitlesToReportSheet(XSSFWorkbook wb, XSSFSheet sheet, Set<String> colsNameSet, int rowStartIndex) {
         int rowIndex = rowStartIndex;
         int colIndex = 0;
 
