@@ -103,7 +103,7 @@ public class ExcelReportConditionsController {
      * @description 点击导出汇总报告按钮，导出汇总报告
      */
     @RequestMapping(value="/exportExcelReport", method = RequestMethod.POST)
-    public @ResponseBody ResponseResult exportExcelReport(@RequestBody ExcelReportSettingData data,
+    public ResponseResult exportExcelReport(@RequestBody ExcelReportSettingData data,
                                                           HttpServletRequest request,
                                                           HttpServletResponse response) {
         ResponseResult responseResult;
