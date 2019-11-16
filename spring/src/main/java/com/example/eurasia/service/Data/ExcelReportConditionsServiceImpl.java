@@ -11,7 +11,12 @@ import com.example.eurasia.service.Util.ImportExcelUtils;
 import com.example.eurasia.service.Util.Slf4jLogUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.*;
+import org.apache.poi.xssf.streaming.SXSSFSheet;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFColor;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -126,6 +131,7 @@ spring-boot默认读取的资源资源文件根路径有4个：
 Resources目录下新建一个“resources”文件夹，此时“resources”文件夹的路径才是“classpath:/resources/”。
 */
         XSSFWorkbook wb = null;
+        SXSSFWorkbook swb = null;
         try {
             QueryCondition[] queryConditionsArr = excelReportSettingData.getQueryConditions();
             String[] excelReportTypesArr = excelReportSettingData.getExcelReportTypes();
@@ -216,6 +222,8 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
             // "明细表"以外的Sheet里的汇总数据格式：序号，Report Types[汇总类型]，美元总价合计，美元总价占比，法定重量合计，法定重量占比，平均单价
             for (int reportTypeIndex=0; reportTypeIndex<excelReportOutputData.getReportTypes().length; reportTypeIndex++) {
                 if (!excelReportOutputData.getReportTypes()[reportTypeIndex].equals(DataService.EXCEL_EXPORT_TYPE_DETAIL)) {
+                    // 汇总
+
                     String groupByField = StringUtils.substringBefore(excelReportOutputData.getReportTypes()[reportTypeIndex],
                             DataService.EXCEL_EXPORT_SHEET_CONTENTS_EXTEND);
                     ComputeField[] computeFields = new ComputeField[2];
@@ -275,45 +283,56 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
                     wb.setSheetName(wb.getSheetIndex(reportSheet.getSheetName()),excelReportOutputData.getReportTypes()[reportTypeIndex]);
                     int rowIndex = this.writeReportSheet(wb, (XSSFSheet)reportSheet, colsNameSet, dataArrList, 20);
                 } else {
-                    // "明细表"Sheet：汇总条件下的所有数据
-                    //SXSSFWorkbook wb = new SXSSFWorkbook(templateWorkbook,DataService.ROW_ACCESS_WINDOW_SIZE);
-                    XSSFSheet detailSheet = wb.createSheet(DataService.EXCEL_EXPORT_TYPE_DETAIL);
-
-                    Set<String> colsNameSet = dataService.getTitles(DataService.TABLE_DATA);
-                    if (colsNameSet == null || colsNameSet.size() == 0) {
-                        Slf4jLogUtil.get().info(ResponseCodeEnum.EXPORT_EXCEL_REPORT_FROM_SQL_NULL.getMessage());
-                        return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_EXCEL_REPORT_FROM_SQL_NULL);
-                    }
-                    int titleRowIndex = this.writeTitlesToExcel(wb, detailSheet, colsNameSet, 0);
-
-                    long count = dataService.queryTableRows(DataService.TABLE_DATA,queryConditionsArr);
-                    int offset = 0;
-                    int steps = (int)(count / DataService.DOWNLOAD_RECODE_STEPS + 1);
-                    int dataRowIndex = titleRowIndex;
-                    for (int i = 0; i < steps; i++) {
-                        List<String[]> dataArrList = dataService.getRows(DataService.TABLE_DATA, queryConditionsArr, offset, DataService.DOWNLOAD_RECODE_STEPS);
-                        if (dataArrList == null) {
-                            Slf4jLogUtil.get().info(ResponseCodeEnum.EXPORT_EXCEL_REPORT_FROM_SQL_NULL.getMessage());
-                            return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_EXCEL_REPORT_FROM_SQL_NULL);
-                        }
-                        if (dataArrList.size() < 0) {
-                            Slf4jLogUtil.get().info(ResponseCodeEnum.EXPORT_EXCEL_REPORT_FROM_SQL_ZERO.getMessage());
-                            return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_EXCEL_REPORT_FROM_SQL_ZERO);
-                        }
-
-                        dataRowIndex = this.writeRowsToDetailSheet(wb, detailSheet, dataArrList, dataRowIndex);
-
-                        offset += DataService.DOWNLOAD_RECODE_STEPS;
-                    }
-                    // adjust column size
-                    ImportExcelUtils.setSizeColumn(detailSheet, (colsNameSet.size() + 1));
+                    // 明细表
                 }
 
             }
             // 删除汇总模版表
             wb.removeSheetAt(statisticsTemplateIndex);
 
-            ImportExcelUtils.buildExcelDocument(newFileName.toString(), wb, response);
+            // 保存到临时文件
+            String tempFileName = path + "excel_report_template_temp.xlsx";
+            ImportExcelUtils.buildTempExcelDocument(tempFileName, wb);
+
+            // "明细表"Sheet：汇总条件下的所有数据
+            wb = new XSSFWorkbook(new FileInputStream(tempFileName));
+            swb = new SXSSFWorkbook(wb, DataService.ROW_ACCESS_WINDOW_SIZE);
+            SXSSFSheet detailSheet = swb.createSheet(DataService.EXCEL_EXPORT_TYPE_DETAIL);
+
+            Set<String> colsNameSet = dataService.getTitles(DataService.TABLE_DATA);
+            if (colsNameSet == null || colsNameSet.size() == 0) {
+                Slf4jLogUtil.get().info(ResponseCodeEnum.EXPORT_EXCEL_REPORT_FROM_SQL_NULL.getMessage());
+                return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_EXCEL_REPORT_FROM_SQL_NULL);
+            }
+            int titleRowIndex = this.writeTitlesToDetailSheet(swb, detailSheet, colsNameSet, 0);
+
+            long count = dataService.queryTableRows(DataService.TABLE_DATA,queryConditionsArr);
+            int offset = 0;
+            int steps = (int)(count / DataService.DOWNLOAD_RECODE_STEPS + 1);
+            int dataRowIndex = titleRowIndex;
+            for (int i = 0; i < steps; i++) {
+                List<String[]> dataArrList = dataService.getRows(DataService.TABLE_DATA, queryConditionsArr, offset, DataService.DOWNLOAD_RECODE_STEPS);
+                if (dataArrList == null) {
+                    Slf4jLogUtil.get().info(ResponseCodeEnum.EXPORT_EXCEL_REPORT_FROM_SQL_NULL.getMessage());
+                    return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_EXCEL_REPORT_FROM_SQL_NULL);
+                }
+                if (dataArrList.size() < 0) {
+                    Slf4jLogUtil.get().info(ResponseCodeEnum.EXPORT_EXCEL_REPORT_FROM_SQL_ZERO.getMessage());
+                    return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_EXCEL_REPORT_FROM_SQL_ZERO);
+                }
+
+                dataRowIndex = this.writeRowsToDetailSheet(swb, detailSheet, dataArrList, dataRowIndex);
+
+                offset += DataService.DOWNLOAD_RECODE_STEPS;
+            }
+            // adjust column size
+            ImportExcelUtils.setSizeColumn(detailSheet, (colsNameSet.size() + 1));
+
+            // 写入Response
+            ImportExcelUtils.buildExcelDocument(newFileName.toString(), swb, response);
+
+            // 删除临时文件
+            ImportExcelUtils.delete(tempFileName);
 
         } catch (IOException exception) {
             exception.printStackTrace();
@@ -324,19 +343,22 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
             if (wb != null) {
                 wb.close();
             }
+            if (swb != null) {
+                swb.close();
+            }
         }
         return new ResponseResultUtil().success(ResponseCodeEnum.EXPORT_EXCEL_REPORT_SUCCESS);
     }
 
     private int writeReportSheet(XSSFWorkbook wb, XSSFSheet sheet, Set<String> colsNameSet, List<String[]> rowList, int rowStartIndex) {
 
-        int titleRowIndex = this.writeTitlesToExcel(wb, sheet, colsNameSet, rowStartIndex);
+        int titleRowIndex = this.writeTitlesToDetailSheet(wb, sheet, colsNameSet, rowStartIndex);
         int dataRowIndex = this.writeRowsToReportSheet(wb, sheet, rowList, titleRowIndex);
         ImportExcelUtils.setSizeColumn(sheet, (colsNameSet.size() + 1));
         return dataRowIndex;
     }
 
-    private int writeTitlesToExcel(XSSFWorkbook wb, XSSFSheet sheet, Set<String> colsNameSet, int rowStartIndex) {
+    private int writeTitlesToDetailSheet(XSSFWorkbook wb, XSSFSheet sheet, Set<String> colsNameSet, int rowStartIndex) {
         int rowIndex = rowStartIndex;
         int colIndex = 0;
 
@@ -348,6 +370,40 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
         titleFont.setColor(IndexedColors.BLACK.index);
 
         XSSFCellStyle titleStyle = wb.createCellStyle();
+        titleStyle.setAlignment(HorizontalAlignment.CENTER);// 指定单元格居中对齐
+        titleStyle.setVerticalAlignment(VerticalAlignment.CENTER);// 指定单元格垂直居中对齐
+        titleStyle.setFillForegroundColor(new XSSFColor(new java.awt.Color(0, 0, 128)));// 海军蓝
+        titleStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        titleStyle.setFont(titleFont);
+        ImportExcelUtils.setBorder(titleStyle, BorderStyle.THIN, new XSSFColor(new java.awt.Color(0, 0, 0)));
+
+        Row titleRow = sheet.createRow(rowIndex);
+        // titleRow.setHeightInPoints(25);
+        colIndex = 0;
+
+        for(String colsName: colsNameSet) {
+            Cell cell = titleRow.createCell(colIndex);
+            cell.setCellValue(colsName);
+            cell.setCellStyle(titleStyle);
+            colIndex++;
+        }
+
+        rowIndex++;
+        return rowIndex;
+    }
+
+    private int writeTitlesToDetailSheet(SXSSFWorkbook wb, SXSSFSheet sheet, Set<String> colsNameSet, int rowStartIndex) {
+        int rowIndex = rowStartIndex;
+        int colIndex = 0;
+
+        // 设置字体
+        Font titleFont = wb.createFont();
+        titleFont.setFontName("simsun");
+        titleFont.setBold(true);
+        // titleFont.setFontHeightInPoints((short) 14);
+        titleFont.setColor(IndexedColors.BLACK.index);
+
+        XSSFCellStyle titleStyle = (XSSFCellStyle)wb.createCellStyle();
         titleStyle.setAlignment(HorizontalAlignment.CENTER);// 指定单元格居中对齐
         titleStyle.setVerticalAlignment(VerticalAlignment.CENTER);// 指定单元格垂直居中对齐
         titleStyle.setFillForegroundColor(new XSSFColor(new java.awt.Color(0, 0, 128)));// 海军蓝
@@ -427,7 +483,7 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
         return rowIndex;
     }
 
-    private int writeRowsToDetailSheet(XSSFWorkbook wb, XSSFSheet sheet, List<String[]> rowList, int rowStartIndex) {
+    private int writeRowsToDetailSheet(SXSSFWorkbook wb, SXSSFSheet sheet, List<String[]> rowList, int rowStartIndex) {
         int rowIndex = rowStartIndex;
 
         // 设置字体
@@ -436,7 +492,7 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
         // dataFont.setFontHeightInPoints((short) 14);
         dataFont.setColor(IndexedColors.BLACK.index);
 
-        XSSFCellStyle dataStyle = wb.createCellStyle();
+        XSSFCellStyle dataStyle = (XSSFCellStyle)wb.createCellStyle();
         dataStyle.setAlignment(HorizontalAlignment.CENTER);// 指定单元格居中对齐
         dataStyle.setVerticalAlignment(VerticalAlignment.CENTER);// 指定单元格垂直居中对齐
         dataStyle.setFont(dataFont);
