@@ -2,24 +2,25 @@ package com.example.eurasia.service.Util;
 
 import com.example.eurasia.service.Data.DataService;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
-import org.apache.poi.ss.usermodel.BorderStyle;
-import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
-import org.apache.poi.xssf.streaming.SXSSFRow;
-import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.*;
 import org.apache.poi.xssf.usermodel.extensions.XSSFCellBorder;
+import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URLEncoder;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import static java.lang.Thread.sleep;
 import static org.apache.poi.ss.usermodel.CellType.STRING;
 
 public class ImportExcelUtils {
@@ -82,6 +83,27 @@ public class ImportExcelUtils {
 
         //"文件检查ok";
         return true;
+    }
+
+    /**
+     * 获取classpath下面的子目录
+     * @param childFolder
+     * @return
+     */
+    public static File getClassChildFolder(String childFolder) throws FileNotFoundException {
+        //获取跟目录
+        File path = new File(ResourceUtils.getURL("classpath:").getPath());
+        if(!path.exists()) {
+            path = new File("");
+        }
+        //上传目录地址
+        //在开发测试模式时，得到的地址为：{项目跟目录}/target/static/uploadFile/
+        //在打包成jar正式发布时，得到的地址为：{发布jar包目录}/static/uploadFile/
+        File dir = new File(path.getAbsolutePath(),childFolder);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+        return dir;
     }
 
     /**
@@ -148,22 +170,97 @@ public class ImportExcelUtils {
         }
     }
 
-    /**
-     * 下载成功后删除
-     * @param files
-     * @author FuJia
-     * @Time 2019-10-23 00:00:00
-     */
-    public static void deleteFile(File... files) {
-        for (File file : files) {
-            if (file.exists()) {
-                file.delete();
-            }
+    public static int writeCellToExcel(Workbook wb, Sheet sheet, String cellValue, int rowIndex, int colIndex, short fontSize, boolean isBold) {
+
+        // 设置字体
+        Font dataFont = wb.createFont();
+        dataFont.setFontName("simsun");
+        dataFont.setBold(isBold);
+        dataFont.setFontHeightInPoints(fontSize);
+        dataFont.setColor(IndexedColors.BLACK.index);
+
+        XSSFCellStyle dataStyle = (XSSFCellStyle)wb.createCellStyle();
+        dataStyle.setAlignment(HorizontalAlignment.CENTER);// 指定单元格居中对齐
+        dataStyle.setVerticalAlignment(VerticalAlignment.CENTER);// 指定单元格垂直居中对齐
+        dataStyle.setFont(dataFont);
+        //ImportExcelUtils.setBorder(dataStyle, BorderStyle.THIN, new XSSFColor(new java.awt.Color(0, 0, 0)));
+
+
+        Row dataRow = sheet.createRow(rowIndex);
+        // dataRow.setHeightInPoints(25);
+
+        Cell cell = dataRow.createCell(colIndex);
+        cell.setCellValue(cellValue);
+        cell.setCellStyle(dataStyle);
+
+        return 1;
+    }
+
+    public static int writeTitlesToExcel(Workbook wb, Sheet sheet, Set<String> colsNameSet, int rowStartIndex) {
+        int rowIndex = rowStartIndex;
+        int colIndex = 0;
+
+        // 设置字体
+        Font titleFont = wb.createFont();
+        titleFont.setFontName("simsun");
+        titleFont.setBold(true);
+        titleFont.setFontHeightInPoints((short) 14);
+        titleFont.setColor(IndexedColors.WHITE.index);
+
+        XSSFCellStyle titleStyle = (XSSFCellStyle)wb.createCellStyle();
+        titleStyle.setAlignment(HorizontalAlignment.CENTER);// 指定单元格居中对齐
+        titleStyle.setVerticalAlignment(VerticalAlignment.CENTER);// 指定单元格垂直居中对齐
+        titleStyle.setFillForegroundColor(new XSSFColor(new java.awt.Color(135, 206, 250)));// LightSkyBlue
+        titleStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        titleStyle.setFont(titleFont);
+        ImportExcelUtils.setBorder(titleStyle, BorderStyle.THIN, new XSSFColor(new java.awt.Color(0, 0, 0)));
+
+        Row titleRow = sheet.createRow(rowIndex);
+        // titleRow.setHeightInPoints(25);
+        colIndex = 0;
+
+        for(String colsName: colsNameSet) {
+            Cell cell = titleRow.createCell(colIndex);
+            cell.setCellValue(colsName);
+            cell.setCellStyle(titleStyle);
+            colIndex++;
         }
+
+        rowIndex++;
+        return rowIndex;
+    }
+
+    public static int writeRowsToExcel(Workbook wb, Sheet sheet, List<String[]> rowList, int rowStartIndex) {
+        int rowIndex = rowStartIndex;
+
+        // 设置字体
+        Font dataFont = wb.createFont();
+        dataFont.setFontName("simsun");
+        // dataFont.setFontHeightInPoints((short) 14);
+        dataFont.setColor(IndexedColors.BLACK.index);
+
+        XSSFCellStyle dataStyle = (XSSFCellStyle) wb.createCellStyle();
+        dataStyle.setAlignment(HorizontalAlignment.CENTER);// 指定单元格居中对齐
+        dataStyle.setVerticalAlignment(VerticalAlignment.CENTER);// 指定单元格垂直居中对齐
+        dataStyle.setFont(dataFont);
+        ImportExcelUtils.setBorder(dataStyle, BorderStyle.THIN, new XSSFColor(new java.awt.Color(0, 0, 0)));
+
+        for (String[] rowData : rowList) {
+            Row dataRow = sheet.createRow(rowIndex);
+            // dataRow.setHeightInPoints(25);
+
+            for (int colIndex=0; colIndex<rowData.length; colIndex++) {
+                Cell cell = dataRow.createCell(colIndex);
+                cell.setCellValue(rowData[colIndex]);
+                cell.setCellStyle(dataStyle);
+            }
+            rowIndex++;
+        }
+        return rowIndex;
     }
 
     // 自适应宽度(中文支持)
-    public static void setSizeColumn(XSSFSheet sheet, int columnNumber) {
+    public static void setSizeColumn(Sheet sheet, int columnNumber) {
         // start row
         int startRowNum = sheet.getLastRowNum() - DataService.ROW_ACCESS_WINDOW_SIZE;
         if(startRowNum < 0 ) {
@@ -174,44 +271,7 @@ public class ImportExcelUtils {
         for (int columnNum = 0; columnNum < columnNumber; columnNum++) {
             int columnWidth = sheet.getColumnWidth(columnNum) / 256;
             for (int rowNum = startRowNum; rowNum < sheet.getLastRowNum(); rowNum++) {
-                XSSFRow currentRow;
-                //当前行未被使用过
-                if (sheet.getRow(rowNum) == null) {
-                    currentRow = sheet.createRow(rowNum);
-                } else {
-                    currentRow = sheet.getRow(rowNum);
-                }
-
-                if (currentRow.getCell(columnNum) != null) {
-                    Cell currentCell = currentRow.getCell(columnNum);
-                    if (currentCell.getCellTypeEnum() == STRING) {
-                        int length = currentCell.getStringCellValue().getBytes().length;
-                        if (columnWidth < length) {
-                            columnWidth = length;
-                        }
-                    }
-                }
-            }
-            if (columnWidth > 30) {
-                columnWidth = 30;
-            }
-            sheet.setColumnWidth(columnNum, columnWidth * 256);
-        }
-    }
-
-    // 自适应宽度(中文支持)
-    public static void setSizeColumn(SXSSFSheet sheet, int columnNumber) {
-        // start row
-        int startRowNum = sheet.getLastRowNum() - DataService.ROW_ACCESS_WINDOW_SIZE;
-        if(startRowNum < 0 ) {
-            startRowNum = 0;
-        }else{
-            startRowNum = startRowNum + 1;
-        }
-        for (int columnNum = 0; columnNum < columnNumber; columnNum++) {
-            int columnWidth = sheet.getColumnWidth(columnNum) / 256;
-            for (int rowNum = startRowNum; rowNum < sheet.getLastRowNum(); rowNum++) {
-                SXSSFRow currentRow;
+                Row currentRow;
                 //当前行未被使用过
                 if (sheet.getRow(rowNum) == null) {
                     currentRow = sheet.createRow(rowNum);
@@ -283,7 +343,21 @@ public class ImportExcelUtils {
     //写入临时文件
     public static void buildTempExcelDocument(String filename, XSSFWorkbook wb) throws Exception{
         FileOutputStream outputStream = new FileOutputStream(filename);
+        FileChannel fileChannel = outputStream.getChannel();
+        FileLock fileLock = null;
+        while(true) {
+            try {
+                fileLock = fileChannel.tryLock();
+                break;
+            } catch (Exception e) {
+                Slf4jLogUtil.get().info("有其他线程正在操作该文件，当前线程休眠1000毫秒");
+                sleep(1000);
+            }
+        }
         wb.write(outputStream);
+        if (fileChannel.isOpen()) {
+            fileLock.release();
+        }
         outputStream.flush();
         outputStream.close();
     }
@@ -380,6 +454,20 @@ public class ImportExcelUtils {
             XSSFRow oldRow = (XSSFRow) rowIt.next();
             XSSFRow newRow = toSheet.createRow(oldRow.getRowNum());
             copyRow(wb,oldRow,newRow);
+        }
+    }
+
+    /**
+     * 下载成功后删除
+     * @param files
+     * @author FuJia
+     * @Time 2019-10-23 00:00:00
+     */
+    public static void deleteFile(File... files) {
+        for (File file : files) {
+            if (file.exists()) {
+                file.delete();
+            }
         }
     }
 

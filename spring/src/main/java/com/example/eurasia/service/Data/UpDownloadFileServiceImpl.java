@@ -10,11 +10,8 @@ import com.example.eurasia.service.Response.ResponseResultUtil;
 import com.example.eurasia.service.Util.ImportExcelUtils;
 import com.example.eurasia.service.Util.Slf4jLogUtil;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.apache.poi.xssf.usermodel.XSSFCellStyle;
-import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -379,7 +376,7 @@ public class UpDownloadFileServiceImpl extends CommonService implements IUpDownl
                 Slf4jLogUtil.get().info(ResponseCodeEnum.EXPORT_GET_HEADER_INFO_FROM_SQL_ZERO.getMessage());
                 return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_GET_HEADER_INFO_FROM_SQL_ZERO);
             }
-            int titleRowIndex = this.writeTitlesToExcel(wb, sheet, colsNameSet);
+            int titleRowIndex = ImportExcelUtils.writeTitlesToExcel(wb, sheet, colsNameSet, 0);
 
             long count = dataService.queryTableRows(DataService.TABLE_DATA,queryConditionsArr);
             int offset = 0;
@@ -396,7 +393,7 @@ public class UpDownloadFileServiceImpl extends CommonService implements IUpDownl
                     return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_GET_DATA_INFO_FROM_SQL_ZERO);
                 }
 
-                dataRowIndex = this.writeRowsToExcel(wb, sheet, dataArrList, dataRowIndex);
+                dataRowIndex = ImportExcelUtils.writeRowsToExcel(wb, sheet, dataArrList, dataRowIndex);
 
                 offset += DataService.DOWNLOAD_RECODE_STEPS;
             }
@@ -420,69 +417,6 @@ public class UpDownloadFileServiceImpl extends CommonService implements IUpDownl
         }
 
         return new ResponseResultUtil().success(ResponseCodeEnum.EXPORT_DATA_INFO_SUCCESS,responseMsg);
-    }
-
-    private int writeTitlesToExcel(SXSSFWorkbook wb, SXSSFSheet sheet, Set<String> colsNameSet) {
-        int rowIndex = 0;
-        int colIndex = 0;
-
-        // 设置字体
-        Font titleFont = wb.createFont();
-        titleFont.setFontName("simsun");
-        titleFont.setBold(true);
-        // titleFont.setFontHeightInPoints((short) 14);
-        titleFont.setColor(IndexedColors.BLACK.index);
-
-        XSSFCellStyle titleStyle = (XSSFCellStyle) wb.createCellStyle();
-        titleStyle.setAlignment(HorizontalAlignment.CENTER);// 指定单元格居中对齐
-        titleStyle.setVerticalAlignment(VerticalAlignment.CENTER);// 指定单元格垂直居中对齐
-        titleStyle.setFillForegroundColor(new XSSFColor(new java.awt.Color(182, 184, 192)));
-        titleStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        titleStyle.setFont(titleFont);
-        ImportExcelUtils.setBorder(titleStyle, BorderStyle.THIN, new XSSFColor(new java.awt.Color(0, 0, 0)));
-
-        Row titleRow = sheet.createRow(rowIndex);
-        // titleRow.setHeightInPoints(25);
-        colIndex = 0;
-
-        for(String colsName: colsNameSet) {
-            Cell cell = titleRow.createCell(colIndex);
-            cell.setCellValue(colsName);
-            cell.setCellStyle(titleStyle);
-            colIndex++;
-        }
-
-        rowIndex++;
-        return rowIndex;
-    }
-
-    private int writeRowsToExcel(SXSSFWorkbook wb, SXSSFSheet sheet, List<String[]> rowList, int rowStartIndex) {
-        int rowIndex = rowStartIndex;
-
-        // 设置字体
-        Font dataFont = wb.createFont();
-        dataFont.setFontName("simsun");
-        // dataFont.setFontHeightInPoints((short) 14);
-        dataFont.setColor(IndexedColors.BLACK.index);
-
-        XSSFCellStyle dataStyle = (XSSFCellStyle) wb.createCellStyle();
-        dataStyle.setAlignment(HorizontalAlignment.CENTER);// 指定单元格居中对齐
-        dataStyle.setVerticalAlignment(VerticalAlignment.CENTER);// 指定单元格垂直居中对齐
-        dataStyle.setFont(dataFont);
-        ImportExcelUtils.setBorder(dataStyle, BorderStyle.THIN, new XSSFColor(new java.awt.Color(0, 0, 0)));
-
-        for (String[] rowData : rowList) {
-            Row dataRow = sheet.createRow(rowIndex);
-            // dataRow.setHeightInPoints(25);
-
-            for (int colIndex=0; colIndex<rowData.length; colIndex++) {
-                Cell cell = dataRow.createCell(colIndex);
-                cell.setCellValue(rowData[colIndex]);
-                cell.setCellStyle(dataStyle);
-            }
-            rowIndex++;
-        }
-        return rowIndex;
     }
 
 }

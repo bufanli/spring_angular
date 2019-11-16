@@ -21,14 +21,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ResourceUtils;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -147,7 +144,6 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
             ExcelReportOutputData excelReportOutputData = new ExcelReportOutputData();
 
             // 封面Cover（Query Conditions[商品编号，月份，进出口]，报告日期，Copyright，电话）
-            String coverTitle = queryConditionsArr[0].getKey();
             int coverItemNum = queryConditionsArr.length + DataService.EXCEL_EXPORT_SHEET_COVER_FIXED_ITEM_NUM;
             String[] coverKeys = new String[coverItemNum];
             String[] coverValues = new String[coverItemNum];
@@ -173,7 +169,7 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
                 coverKeys[i] = DataService.EXCEL_EXPORT_SHEET_COVER_FIXED_ITEM_NAME[i- queryConditionsArr.length];
                 coverValues[i] = DataService.EXCEL_EXPORT_SHEET_COVER_FIXED_ITEM_VALUE[i- queryConditionsArr.length];
             }
-            excelReportOutputData.setCoverTitle(coverTitle);
+            excelReportOutputData.setCoverTitle(coverValues[0]);
             excelReportOutputData.setCoverKeys(coverKeys);
             excelReportOutputData.setCoverValues(coverValues);
 
@@ -189,7 +185,7 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
             //检查查询条件的格式和内容
             String retCheck = checkQueryConditions(userID,queryConditionsArr);
             if (!StringUtils.isEmpty(retCheck)) {
-                return new ResponseResultUtil().error(ResponseCodeEnum.STATISTICS_REPORT_QUERY_CONDITION_ERROR.getCode(),retCheck);
+                //return new ResponseResultUtil().error(ResponseCodeEnum.STATISTICS_REPORT_QUERY_CONDITION_ERROR.getCode(),retCheck);
             }
             //为未输入的查询条件进行默认值设定
             setUserQueryConditionDefaultValue(userID,queryConditionsArr);
@@ -197,8 +193,10 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
             long userMax = getUserMax(userID);
 
             // 创建EXCEL
-            InputStream inputStreamTemplate = this.getClass().getResourceAsStream("resources/excel_report_template.xlsx");
-            wb = new XSSFWorkbook(inputStreamTemplate);// 创建workbook，
+            //InputStream inputStreamTemplate = this.getClass().getClassLoader().getResourceAsStream("resources/excel_report_template.xlsx");//null
+            //wb = new XSSFWorkbook(inputStreamTemplate);// 创建workbook
+            String templateFilePath = this.getClass().getResource("/excel_report_template.xlsx").getPath();
+            wb = new XSSFWorkbook(new FileInputStream(templateFilePath));// 创建workbook
 
             // check Sheet是否存在
             XSSFSheet coverSheet = wb.getSheet(DataService.EXCEL_EXPORT_SHEET_COVER);
@@ -209,20 +207,22 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
             }
 
             // 做成封面Sheet
-            this.writeCellToExcel(wb, coverSheet, excelReportOutputData.getCoverTitle(), 6, 1);
+            ImportExcelUtils.writeCellToExcel(wb, coverSheet, excelReportOutputData.getCoverTitle(), 6, 1, (short)22, true);
             for (int i=0; i<coverItemNum; i++) {
-                this.writeCellToExcel(wb, coverSheet, excelReportOutputData.getCoverKeys()[i], (11+3*i), 1);
-                this.writeCellToExcel(wb, coverSheet, excelReportOutputData.getCoverValues()[i], (12+3*i), 1);
+                ImportExcelUtils.writeCellToExcel(wb, coverSheet, excelReportOutputData.getCoverKeys()[i], (10+4*i), 1, (short)11, false);
+                ImportExcelUtils.writeCellToExcel(wb, coverSheet, excelReportOutputData.getCoverValues()[i], (11+4*i), 1, (short)11, false);
             }
 
             // 做成目录Sheet
-            this.writeCellToExcel(wb, contentSheet, excelReportOutputData.getContentTitle(), 6, 1);
+            ImportExcelUtils.writeCellToExcel(wb, contentSheet, excelReportOutputData.getContentTitle(), 6, 1, (short)22, true);
             for (int i=0; i<excelReportOutputData.getContentValues().length; i++) {
-                this.writeCellToExcel(wb, contentSheet, excelReportOutputData.getContentValues()[i], (11+2*i), 1);
+                ImportExcelUtils.writeCellToExcel(wb, contentSheet, excelReportOutputData.getContentValues()[i], (10+2*i), 1, (short)11, false);
             }
 
             // 按照汇总类型做成相应的Sheet
             // "明细表"以外的Sheet里的汇总数据格式：序号，Report Types[汇总类型]，美元总价合计，美元总价占比，法定重量合计，法定重量占比，平均单价
+            Set<String> colsNameSet = new LinkedHashSet<>();
+            List<String[]> dataArrList = new ArrayList<>();
             for (int reportTypeIndex=0; reportTypeIndex<excelReportOutputData.getReportTypes().length; reportTypeIndex++) {
                 if (!excelReportOutputData.getReportTypes()[reportTypeIndex].equals(DataService.EXCEL_EXPORT_TYPE_DETAIL)) {
                     // 汇总
@@ -243,7 +243,6 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
                         return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_EXCEL_REPORT_FROM_SQL_ZERO);
                     }
 
-                    Set<String> colsNameSet = new HashSet<>();
                     colsNameSet.add("序号");
                     colsNameSet.add(groupByField);
                     colsNameSet.add("美元总价合计");
@@ -253,7 +252,6 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
                     colsNameSet.add("平均单价");
 
                     //sql结果List，ExcelReportValue
-                    List<String[]> dataArrList = new ArrayList<>();
                     for (int i=0; i<dataList.size(); i++) {
                         Data data = dataList.get(i);
                         Map<String, String> keyValue = data.getKeyValue();
@@ -284,28 +282,24 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
                     // 克隆汇总模版表
                     Sheet reportSheet = wb.cloneSheet(statisticsTemplateIndex);
                     wb.setSheetName(wb.getSheetIndex(reportSheet.getSheetName()),excelReportOutputData.getReportTypes()[reportTypeIndex]);
-                    int rowIndex = this.writeReportSheet(wb, (XSSFSheet)reportSheet, colsNameSet, dataArrList, 20);
+
+                    ImportExcelUtils.writeCellToExcel(wb, reportSheet, excelReportOutputData.getCoverTitle(), 0, 0, (short)11, false);
+                    int titleRowIndex = ImportExcelUtils.writeTitlesToExcel(wb, reportSheet, colsNameSet, 19);
+                    int dataRowIndex = this.writeRowsToReportSheet(wb, reportSheet, dataArrList, titleRowIndex);
+                    ImportExcelUtils.setSizeColumn(reportSheet, (colsNameSet.size() + 1));
+
                 } else {
                     // 明细表
                 }
 
+                colsNameSet.clear();
+                dataArrList.clear();
             }
             // 删除汇总模版表
             wb.removeSheetAt(statisticsTemplateIndex);
 
             // 保存到临时文件
-            //获取跟目录
-            File path = new File(ResourceUtils.getURL("classpath:").getPath());
-            if(!path.exists()) {
-                  path = new File("");
-            }
-                //上传目录地址
-                //在开发测试模式时，得到的地址为：{项目跟目录}/target/static/uploadFile/
-                //在打包成jar正式发布时，得到的地址为：{发布jar包目录}/static/uploadFile/
-                File tempDir = new File(path.getAbsolutePath(),"static/temp/");
-                if (!tempDir.exists()) {
-                    tempDir.mkdirs();
-                }
+            File tempDir = ImportExcelUtils.getClassChildFolder("static/temp");
             String tempFileName = tempDir.getAbsolutePath()+ "excel_report_template_temp.xlsx";
             ImportExcelUtils.buildTempExcelDocument(tempFileName, wb);
 
@@ -314,19 +308,20 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
             swb = new SXSSFWorkbook(wb, DataService.ROW_ACCESS_WINDOW_SIZE);
             SXSSFSheet detailSheet = swb.createSheet(DataService.EXCEL_EXPORT_TYPE_DETAIL);
 
-            Set<String> colsNameSet = dataService.getTitles(DataService.TABLE_DATA);
+            colsNameSet = dataService.getTitles(DataService.TABLE_DATA);
             if (colsNameSet == null || colsNameSet.size() == 0) {
                 Slf4jLogUtil.get().info(ResponseCodeEnum.EXPORT_EXCEL_REPORT_FROM_SQL_NULL.getMessage());
                 return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_EXCEL_REPORT_FROM_SQL_NULL);
             }
-            int titleRowIndex = this.writeTitlesToDetailSheet(swb, detailSheet, colsNameSet, 0);
+            int titleRowIndex = ImportExcelUtils.writeTitlesToExcel(swb, detailSheet, colsNameSet, 0);
+            colsNameSet.clear();
 
             long count = dataService.queryTableRows(DataService.TABLE_DATA,queryConditionsArr);
             int offset = 0;
             int steps = (int)(count / DataService.DOWNLOAD_RECODE_STEPS + 1);
             int dataRowIndex = titleRowIndex;
             for (int i = 0; i < steps; i++) {
-                List<String[]> dataArrList = dataService.getRows(DataService.TABLE_DATA, queryConditionsArr, offset, DataService.DOWNLOAD_RECODE_STEPS);
+                dataArrList = dataService.getRows(DataService.TABLE_DATA, queryConditionsArr, offset, DataService.DOWNLOAD_RECODE_STEPS);
                 if (dataArrList == null) {
                     Slf4jLogUtil.get().info(ResponseCodeEnum.EXPORT_EXCEL_REPORT_FROM_SQL_NULL.getMessage());
                     return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_EXCEL_REPORT_FROM_SQL_NULL);
@@ -336,9 +331,11 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
                     return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_EXCEL_REPORT_FROM_SQL_ZERO);
                 }
 
-                dataRowIndex = this.writeRowsToDetailSheet(swb, detailSheet, dataArrList, dataRowIndex);
+                dataRowIndex = ImportExcelUtils.writeRowsToExcel(swb, detailSheet, dataArrList, dataRowIndex);
 
                 offset += DataService.DOWNLOAD_RECODE_STEPS;
+
+                dataArrList.clear();
             }
             // adjust column size
             ImportExcelUtils.setSizeColumn(detailSheet, (colsNameSet.size() + 1));
@@ -365,83 +362,7 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
         return new ResponseResultUtil().success(ResponseCodeEnum.EXPORT_EXCEL_REPORT_SUCCESS);
     }
 
-    private int writeReportSheet(XSSFWorkbook wb, XSSFSheet sheet, Set<String> colsNameSet, List<String[]> rowList, int rowStartIndex) {
-
-        int titleRowIndex = this.writeTitlesToReportSheet(wb, sheet, colsNameSet, rowStartIndex);
-        int dataRowIndex = this.writeRowsToReportSheet(wb, sheet, rowList, titleRowIndex);
-        ImportExcelUtils.setSizeColumn(sheet, (colsNameSet.size() + 1));
-        return dataRowIndex;
-    }
-
-    private int writeTitlesToReportSheet(XSSFWorkbook wb, XSSFSheet sheet, Set<String> colsNameSet, int rowStartIndex) {
-        int rowIndex = rowStartIndex;
-        int colIndex = 0;
-
-        // 设置字体
-        Font titleFont = wb.createFont();
-        titleFont.setFontName("simsun");
-        titleFont.setBold(true);
-        // titleFont.setFontHeightInPoints((short) 14);
-        titleFont.setColor(IndexedColors.BLACK.index);
-
-        XSSFCellStyle titleStyle = wb.createCellStyle();
-        titleStyle.setAlignment(HorizontalAlignment.CENTER);// 指定单元格居中对齐
-        titleStyle.setVerticalAlignment(VerticalAlignment.CENTER);// 指定单元格垂直居中对齐
-        titleStyle.setFillForegroundColor(new XSSFColor(new java.awt.Color(0, 0, 128)));// 海军蓝
-        titleStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        titleStyle.setFont(titleFont);
-        ImportExcelUtils.setBorder(titleStyle, BorderStyle.THIN, new XSSFColor(new java.awt.Color(0, 0, 0)));
-
-        Row titleRow = sheet.createRow(rowIndex);
-        // titleRow.setHeightInPoints(25);
-        colIndex = 0;
-
-        for(String colsName: colsNameSet) {
-            Cell cell = titleRow.createCell(colIndex);
-            cell.setCellValue(colsName);
-            cell.setCellStyle(titleStyle);
-            colIndex++;
-        }
-
-        rowIndex++;
-        return rowIndex;
-    }
-
-    private int writeTitlesToDetailSheet(SXSSFWorkbook wb, SXSSFSheet sheet, Set<String> colsNameSet, int rowStartIndex) {
-        int rowIndex = rowStartIndex;
-        int colIndex = 0;
-
-        // 设置字体
-        Font titleFont = wb.createFont();
-        titleFont.setFontName("simsun");
-        titleFont.setBold(true);
-        // titleFont.setFontHeightInPoints((short) 14);
-        titleFont.setColor(IndexedColors.BLACK.index);
-
-        XSSFCellStyle titleStyle = (XSSFCellStyle)wb.createCellStyle();
-        titleStyle.setAlignment(HorizontalAlignment.CENTER);// 指定单元格居中对齐
-        titleStyle.setVerticalAlignment(VerticalAlignment.CENTER);// 指定单元格垂直居中对齐
-        titleStyle.setFillForegroundColor(new XSSFColor(new java.awt.Color(0, 0, 128)));// 海军蓝
-        titleStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        titleStyle.setFont(titleFont);
-        ImportExcelUtils.setBorder(titleStyle, BorderStyle.THIN, new XSSFColor(new java.awt.Color(0, 0, 0)));
-
-        Row titleRow = sheet.createRow(rowIndex);
-        // titleRow.setHeightInPoints(25);
-        colIndex = 0;
-
-        for(String colsName: colsNameSet) {
-            Cell cell = titleRow.createCell(colIndex);
-            cell.setCellValue(colsName);
-            cell.setCellStyle(titleStyle);
-            colIndex++;
-        }
-
-        rowIndex++;
-        return rowIndex;
-    }
-
-    private int writeRowsToReportSheet(XSSFWorkbook wb, XSSFSheet sheet, List<String[]> rowList, int rowStartIndex) {
+    private int writeRowsToReportSheet(Workbook wb, Sheet sheet, List<String[]> rowList, int rowStartIndex) {
         int rowIndex = rowStartIndex;
 
         // 设置字体
@@ -450,13 +371,13 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
         // dataFont.setFontHeightInPoints((short) 14);
         dataFont.setColor(IndexedColors.BLACK.index);
 
-        XSSFCellStyle dataStyle = wb.createCellStyle();
+        XSSFCellStyle dataStyle = (XSSFCellStyle) wb.createCellStyle();
         dataStyle.setAlignment(HorizontalAlignment.CENTER);// 指定单元格居中对齐
         dataStyle.setVerticalAlignment(VerticalAlignment.CENTER);// 指定单元格垂直居中对齐
         dataStyle.setFont(dataFont);
         ImportExcelUtils.setBorder(dataStyle, BorderStyle.THIN, new XSSFColor(new java.awt.Color(0, 0, 0)));
 
-        XSSFCellStyle dataPercentStyle = wb.createCellStyle();
+        XSSFCellStyle dataPercentStyle = (XSSFCellStyle)wb.createCellStyle();
         dataPercentStyle.setAlignment(HorizontalAlignment.CENTER);// 指定单元格居中对齐
         dataPercentStyle.setVerticalAlignment(VerticalAlignment.CENTER);// 指定单元格垂直居中对齐
         dataPercentStyle.setFont(dataFont);
@@ -464,7 +385,7 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
         ImportExcelUtils.setBorder(dataPercentStyle, BorderStyle.THIN, new XSSFColor(new java.awt.Color(0, 0, 0)));
 
         // 明细行
-        for (int i=0; i<rowList.size(); i++) {
+        for (int i=0; i<rowList.size()-1; i++) {
             Row dataRow = sheet.createRow(rowIndex);
             // dataRow.setHeightInPoints(25);
             String[] rowData = rowList.get(i);
@@ -495,62 +416,10 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
         }
         rowIndex++;
 
+        //如果这行没有了，整个公式都不会有自动计算的效果的
+        //sheet.setForceFormulaRecalculation(true);
+
         return rowIndex;
-    }
-
-    private int writeRowsToDetailSheet(SXSSFWorkbook wb, SXSSFSheet sheet, List<String[]> rowList, int rowStartIndex) {
-        int rowIndex = rowStartIndex;
-
-        // 设置字体
-        Font dataFont = wb.createFont();
-        dataFont.setFontName("simsun");
-        // dataFont.setFontHeightInPoints((short) 14);
-        dataFont.setColor(IndexedColors.BLACK.index);
-
-        XSSFCellStyle dataStyle = (XSSFCellStyle)wb.createCellStyle();
-        dataStyle.setAlignment(HorizontalAlignment.CENTER);// 指定单元格居中对齐
-        dataStyle.setVerticalAlignment(VerticalAlignment.CENTER);// 指定单元格垂直居中对齐
-        dataStyle.setFont(dataFont);
-        ImportExcelUtils.setBorder(dataStyle, BorderStyle.THIN, new XSSFColor(new java.awt.Color(0, 0, 0)));
-
-        for (String[] rowData : rowList) {
-            Row dataRow = sheet.createRow(rowIndex);
-            // dataRow.setHeightInPoints(25);
-
-            for (int colIndex=0; colIndex<rowData.length; colIndex++) {
-                Cell cell = dataRow.createCell(colIndex);
-                cell.setCellValue(rowData[colIndex]);
-                cell.setCellStyle(dataStyle);
-            }
-            rowIndex++;
-        }
-        return rowIndex;
-    }
-
-    private int writeCellToExcel(XSSFWorkbook wb, XSSFSheet sheet, String cellValue, int rowIndex, int colIndex) {
-
-        // 设置字体
-        Font dataFont = wb.createFont();
-        dataFont.setFontName("simsun");
-        // dataFont.setFontHeightInPoints((short) 14);
-        dataFont.setColor(IndexedColors.BLACK.index);
-
-        XSSFCellStyle dataStyle = wb.createCellStyle();
-        dataStyle.setAlignment(HorizontalAlignment.CENTER);// 指定单元格居中对齐
-        dataStyle.setVerticalAlignment(VerticalAlignment.CENTER);// 指定单元格垂直居中对齐
-        dataStyle.setFont(dataFont);
-        ImportExcelUtils.setBorder(dataStyle, BorderStyle.THIN, new XSSFColor(new java.awt.Color(0, 0, 0)));
-
-
-        Row dataRow = sheet.createRow(rowIndex);
-        // dataRow.setHeightInPoints(25);
-
-        Cell cell = dataRow.createCell(colIndex);
-        cell.setCellValue(cellValue);
-        cell.setCellStyle(dataStyle);
-
-
-        return 1;
     }
 
 }

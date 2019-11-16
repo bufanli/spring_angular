@@ -7,12 +7,12 @@ import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;
 import com.example.eurasia.service.User.UserInfoServiceImpl;
+import com.example.eurasia.service.Util.ImportExcelUtils;
 import com.example.eurasia.service.Util.Slf4jLogUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -80,18 +80,8 @@ public class UpDownloadExcelFileController {
 
         以jar包发布springboot项目时，默认会先使用jar包跟目录下的application.properties来作为项目配置文件。
 */
-                //获取跟目录
-                File path = new File(ResourceUtils.getURL("classpath:").getPath());
-                if(!path.exists()) {
-                    path = new File("");
-                }
-                //上传目录地址
-                //在开发测试模式时，得到的地址为：{项目跟目录}/target/static/uploadFile/
-                //在打包成jar正式发布时，得到的地址为：{发布jar包目录}/static/uploadFile/
-                File uploadDir = new File(path.getAbsolutePath(),"static/uploadFile/" + strFormat);
-                if (!uploadDir.exists()) {
-                    uploadDir.mkdirs();
-                }
+
+                File uploadDir = ImportExcelUtils.getClassChildFolder("static/uploadFile/" + userID + "_" + strFormat);
 
                 Slf4jLogUtil.get().info("IP:{},进行文件上传开始",request.getRemoteAddr());
                 //responseResult = uploadFileService.batchUploadExcel(filePath, files);
