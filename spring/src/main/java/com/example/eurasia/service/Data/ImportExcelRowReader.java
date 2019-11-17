@@ -149,8 +149,8 @@ public class ImportExcelRowReader {
     }
 
     private int saveDataToSQLCommon(String tableName, List<Data> dataList) throws Exception {
-        // 取得数据表的所有列名
-        Set<String> colsNameSet = dataService.getAllColumnNames(DataService.TABLE_DATA);
+        // 取得数据表的所有列名[名字],不包括id
+        Set<String> colsNameSet = dataService.getAllColumnNamesWithoutID(DataService.TABLE_DATA);
 
         // 取得数据对应关系的词典名，并取得其列名
         Map<String, Set<String>> dataDicColNamesMap = dataService.getDataDictionariesColumnNamesMap();

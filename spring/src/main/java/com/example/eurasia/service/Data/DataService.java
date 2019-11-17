@@ -512,8 +512,8 @@ public class DataService {
 
         List<String> titleIsNotExistList = new ArrayList<>();
 
-        // 取得数据表的所有列名
-        Set<String> colsNameSet = this.getAllColumnNames(DataService.TABLE_DATA);
+        // 取得数据表的所有列名[名字],不包括id
+        Set<String> colsNameSet = this.getAllColumnNamesWithoutID(DataService.TABLE_DATA);
 
         // 取得数据字典表指定列的所有值
         List<Map<String, Object>> colValuesListMap = this.getColumnAllValuesByGroup(DataService.TABLE_COLUMNS_DICTIONARY,
@@ -582,8 +582,8 @@ public class DataService {
 
         List<String> titleIsNotExistList = new ArrayList<>();
 
-        // 取得数据表的所有列名
-        Set<String> colsNameSet = this.getAllColumnNames(DataService.TABLE_DATA);
+        // 取得数据表的所有列名[名字],不包括id
+        Set<String> colsNameSet = this.getAllColumnNamesWithoutID(DataService.TABLE_DATA);
 
         // 取得数据字典表指定列的所有值
         List<Map<String, Object>> colValuesListMap = this.getColumnAllValuesByGroup(DataService.TABLE_COLUMNS_DICTIONARY,
@@ -1199,40 +1199,4 @@ as不是给表里的字段取别名，而是给查询的结果字段取别名。
         return getDataDao().queryListStringForAllObjectToCSVWithoutHeaders(tableName, filePath);
     }
 
-    public Set<String> getTitles(String tableName) throws Exception {
-        Set<String> colsNameSet = null;
-        try {
-            Slf4jLogUtil.get().info("取得表头开始");
-
-            colsNameSet = this.getAllColumnNames(tableName);
-            if (colsNameSet == null) {
-                //throw new Exception(ResponseCodeEnum.EXPORT_GET_HEADER_INFO_FROM_SQL_NULL.getMessage());
-            }
-
-            Slf4jLogUtil.get().info("取得表头结束");
-        } catch (Exception e) {
-            e.printStackTrace();
-            //throw new Exception(ResponseCodeEnum.EXPORT_GET_HEADER_INFO_FROM_SQL_FAILED.getMessage());
-        }
-
-        return colsNameSet;
-    }
-
-    public List<String[]>  getRows(String tableName, QueryCondition[] queryConditionsArr, int offset, int limit) throws Exception {
-        List<String[]> dataArrList = null;
-        try {
-            Slf4jLogUtil.get().info("取得数据开始");
-
-            Map<String, String> order = new LinkedHashMap<>();
-            order.put("id","asc");//T.B.D
-
-            dataArrList = this.searchDataForDownload(tableName, queryConditionsArr, offset, limit, order);
-
-            Slf4jLogUtil.get().info("取得数据结束");
-        } catch (Exception e) {
-            e.printStackTrace();
-            //throw new Exception(ResponseCodeEnum.EXPORT_GET_DATA_INFO_FROM_SQL_FAILED.getMessage());
-        }
-        return dataArrList;
-    }
 }

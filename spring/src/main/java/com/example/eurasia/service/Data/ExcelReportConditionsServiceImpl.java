@@ -308,7 +308,7 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
             swb = new SXSSFWorkbook(wb, DataService.ROW_ACCESS_WINDOW_SIZE);
             SXSSFSheet detailSheet = swb.createSheet(DataService.EXCEL_EXPORT_TYPE_DETAIL);
 
-            colsNameSet = dataService.getTitles(DataService.TABLE_DATA);
+            colsNameSet = dataService.getAllColumnNamesWithoutID(DataService.TABLE_DATA);// 得指定表的所有表头[名字],不包括id
             if (colsNameSet == null || colsNameSet.size() == 0) {
                 Slf4jLogUtil.get().info(ResponseCodeEnum.EXPORT_EXCEL_REPORT_FROM_SQL_NULL.getMessage());
                 return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_EXCEL_REPORT_FROM_SQL_NULL);
@@ -320,8 +320,10 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
             int offset = 0;
             int steps = (int)(count / DataService.DOWNLOAD_RECODE_STEPS + 1);
             int dataRowIndex = titleRowIndex;
+            Map<String, String> order = new LinkedHashMap<>();
+            order.put("id","asc");//T.B.D
             for (int i = 0; i < steps; i++) {
-                dataArrList = dataService.getRows(DataService.TABLE_DATA, queryConditionsArr, offset, DataService.DOWNLOAD_RECODE_STEPS);
+                dataArrList = dataService.searchDataForDownload(DataService.TABLE_DATA, queryConditionsArr, offset, DataService.DOWNLOAD_RECODE_STEPS, order);
                 if (dataArrList == null) {
                     Slf4jLogUtil.get().info(ResponseCodeEnum.EXPORT_EXCEL_REPORT_FROM_SQL_NULL.getMessage());
                     return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_EXCEL_REPORT_FROM_SQL_NULL);

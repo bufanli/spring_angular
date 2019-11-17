@@ -21,11 +21,10 @@ public class DownloadDataMapper implements RowMapper<String[]> {
         Boolean isAutoIncrement = md.isAutoIncrement(1); //如果此列自动递增，则返回 true。这类列通常为键，而且始终是只读的。
         int columnType = md.getColumnType(1); //返回此列的 SQL 数据类型。这些数据类型包括
         */
-        int index = 0;
-        String[] dataArr = new String[columnCount];
-        for (int i = 1; i <= columnCount; i++) {
-            dataArr[index] = resultSet.getString(i);
-            index++;
+
+        String[] dataArr = new String[columnCount-1];// 不包括id列
+        for (int i = 2; i <= columnCount; i++) {
+            dataArr[i-2] = resultSet.getString(i);//resultSet的index从1开始
         }
 
         return dataArr;

@@ -248,7 +248,8 @@ public class ImportExcelByUserMode {
     }
 
     private boolean checkTitles(String cellValue) throws Exception {
-        Set<String> colsNameSet = dataService.getTitles(DataService.TABLE_DATA);
+        // 取得指定表的所有表头[名字],不包括id
+        Set<String> colsNameSet = dataService.getAllColumnNamesWithoutID(DataService.TABLE_DATA);
         if (colsNameSet == null || colsNameSet.size() == 0) {
             Slf4jLogUtil.get().info(ResponseCodeEnum.UPLOAD_GET_HEADER_INFO_FROM_SQL_ZERO.getMessage());
             return false;

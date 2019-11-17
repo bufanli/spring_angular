@@ -371,19 +371,22 @@ public class UpDownloadFileServiceImpl extends CommonService implements IUpDownl
             long userMax = getUserMax(userID);
 
 
-            Set<String> colsNameSet = dataService.getTitles(DataService.TABLE_DATA);
+            Set<String> colsNameSet = dataService.getAllColumnNamesWithoutID(DataService.TABLE_DATA);// 得指定表的所有表头[名字],不包括id
             if (colsNameSet == null || colsNameSet.size() == 0) {
                 Slf4jLogUtil.get().info(ResponseCodeEnum.EXPORT_GET_HEADER_INFO_FROM_SQL_ZERO.getMessage());
                 return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_GET_HEADER_INFO_FROM_SQL_ZERO);
             }
             int titleRowIndex = ImportExcelUtils.writeTitlesToExcel(wb, sheet, colsNameSet, 0);
+            colsNameSet.clear();
 
             long count = dataService.queryTableRows(DataService.TABLE_DATA,queryConditionsArr);
             int offset = 0;
             int steps = (int)(count / DataService.DOWNLOAD_RECODE_STEPS + 1);
             int dataRowIndex = titleRowIndex;
+            Map<String, String> order = new LinkedHashMap<>();
+            order.put("id","asc");//T.B.D
             for (int i = 0; i < steps; i++) {
-                List<String[]> dataArrList = dataService.getRows(DataService.TABLE_DATA, queryConditionsArr, offset, DataService.DOWNLOAD_RECODE_STEPS);
+                List<String[]> dataArrList = dataService.searchDataForDownload(DataService.TABLE_DATA, queryConditionsArr, offset, DataService.DOWNLOAD_RECODE_STEPS, order);
                 if (dataArrList == null) {
                     Slf4jLogUtil.get().info(ResponseCodeEnum.EXPORT_GET_DATA_INFO_FROM_SQL_NULL.getMessage());
                     return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_GET_DATA_INFO_FROM_SQL_NULL);
@@ -396,6 +399,8 @@ public class UpDownloadFileServiceImpl extends CommonService implements IUpDownl
                 dataRowIndex = ImportExcelUtils.writeRowsToExcel(wb, sheet, dataArrList, dataRowIndex);
 
                 offset += DataService.DOWNLOAD_RECODE_STEPS;
+
+                dataArrList.clear();
             }
             // adjust column size
             ImportExcelUtils.setSizeColumn(sheet, (colsNameSet.size() + 1));
