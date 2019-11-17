@@ -76,6 +76,9 @@ export class CurrentUserContainerService {
   }
   // when session timeout, navigate /web/login/external
   public sessionTimeout(): void {
+    // close processing dialog
+    this.commonUtilitiesService.closeProcessingDialog();
+    // redirect to login url
     if (this.openID === this.ADMIN_USER ||
       this.openID === this.DEFAULT_USER) {
       this.router.navigate([this.SESSEION_TIME_URL_INTERNAL]);

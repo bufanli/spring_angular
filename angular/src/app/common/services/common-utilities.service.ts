@@ -210,8 +210,10 @@ export class CommonUtilitiesService {
   // close processing dialog
   // it should be called on process finishing
   closeProcessingDialog() {
-    this.processingDialog.close();
-    this.processingDialog = null;
+    if (this.processingDialog !== null) {
+      this.processingDialog.close();
+      this.processingDialog = null;
+    }
   }
 
   // callback of modal dialog

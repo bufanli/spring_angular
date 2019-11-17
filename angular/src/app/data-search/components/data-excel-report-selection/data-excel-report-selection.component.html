@@ -13,7 +13,7 @@
       <div *ngFor="let queryCondition of queryConditionRow.getQueryConditions()" class="col-md-4">
         <div class="form-group required" *ngIf="queryCondition.getType() === 'List'">
           <select style="width: 100%" class="form-control" id="{{queryCondition.getUUID()}}"
-            name="{{queryCondition.getUUID()}}" onchange="this.selectionChanged()">
+            name="{{queryCondition.getUUID()}}">
           </select>
         </div>
       </div>

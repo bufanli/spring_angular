@@ -38,7 +38,7 @@ export class DataExcelReportSelectionComponent implements OnInit, AfterViewInit,
   // data statistics service
   private excelReportService: any = null;
   // check parameter error msg
-  private checkParametersErrorMsg = null;
+  private checkParametersErrorMsg: string = null;
   // error exist
   public errorExist = false;
   // error message
@@ -234,6 +234,9 @@ export class DataExcelReportSelectionComponent implements OnInit, AfterViewInit,
         },
       }
     });
+    $('#' + listQueryCondition.getUUID()).on('select2:open', function (e) {
+      that.selectionChanged(e);
+    });
   }
   // check excel report parameters
   private checkExcleReportParameters(): boolean {
@@ -247,7 +250,7 @@ export class DataExcelReportSelectionComponent implements OnInit, AfterViewInit,
         this.checkParametersErrorMsg =
           this.checkParametersErrorMsg +
           this.PLEASE_SELECT +
-          element.getKey() + '<br/>';
+          element.getKey() + ',';
       }
     });
     // check excel report types
@@ -260,9 +263,15 @@ export class DataExcelReportSelectionComponent implements OnInit, AfterViewInit,
     if (checkedCount === 0) {
       this.checkParametersErrorMsg =
         this.checkParametersErrorMsg +
-        this.NO_EXCEL_REPORT_TYPES_SELECTED + '<br/>';
+        this.NO_EXCEL_REPORT_TYPES_SELECTED + ',';
     }
     if (this.checkParametersErrorMsg !== '') {
+      if (this.checkParametersErrorMsg.endsWith(',')) {
+        this.checkParametersErrorMsg = this.checkParametersErrorMsg.substring
+          (0,
+            this.checkParametersErrorMsg.length - ','.length
+          );
+      }
       return false;
     } else {
       return true;
@@ -272,13 +281,8 @@ export class DataExcelReportSelectionComponent implements OnInit, AfterViewInit,
   public excelReport(): void {
     // check excel report parameters
     if (this.checkExcleReportParameters() === false) {
-      this.commonUtilitiesService.showCommonDialog(
-        this.EXPORT_EXCEL_SEETING_ERROR_TITLE,
-        this.checkParametersErrorMsg,
-        'warning',
-        this,
-        this.NO_EXCEL_REPORT_TYPE_SOURCE_ID
-      );
+      this.errorExist = true;
+      this.errorMsg = this.checkParametersErrorMsg;
       return;
     } else {
       // prepare excel report data -- query conditions
@@ -321,5 +325,14 @@ export class DataExcelReportSelectionComponent implements OnInit, AfterViewInit,
     if (sourceID === this.NO_EXCEL_REPORT_TYPE_SOURCE_ID) {
       // nothing to do
     }
+  }
+  // selection changed
+  public selectionChanged(param: any): void {
+    this.clearErrorMsg();
+  }
+  // clear error message
+  private clearErrorMsg(): void {
+    this.errorExist = false;
+    this.errorMsg = null;
   }
 }
