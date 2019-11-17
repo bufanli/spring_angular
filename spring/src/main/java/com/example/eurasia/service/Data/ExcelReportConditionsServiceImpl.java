@@ -13,10 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.apache.poi.xssf.usermodel.XSSFCellStyle;
-import org.apache.poi.xssf.usermodel.XSSFColor;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -264,20 +261,20 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
                                 String.valueOf(i + 1),  // A列，序号
                                 groupByValue,           // B列，Report Types[汇总类型]
                                 dollarPriceTotal,       // C列，美元总价合计
-                                "C" + (21 + i) + "/C" + String.valueOf(20 + dataList.size() + 1),    // D列，美元总价占比
+                                "C" + (21 + i) + "/C" + String.valueOf(21 + dataList.size()),    // D列，美元总价占比
                                 legalWeightTotal,       // E列，法定重量合计
-                                "E" + (21 + i) + "/E" + String.valueOf(20 + dataList.size() + 1),    // F列，法定重量合计
+                                "E" + (21 + i) + "/E" + String.valueOf(21 + dataList.size()),    // F列，法定重量合计
                                 averageUnitPrice        // G列，平均单价
                         });
                     }
                     dataArrList.add(new String[]{
                             "",
                             "合计",
-                            "SUM(C21:C" + String.valueOf(20 + dataList.size()) + ")",
-                            "SUM(D21:D" + String.valueOf(20 + dataList.size()) + ")",
-                            "SUM(E21:E" + String.valueOf(20 + dataList.size()) + ")",
-                            "SUM(F21:F" + String.valueOf(20 + dataList.size()) + ")",
-                            "SUM(G21:G" + String.valueOf(20 + dataList.size()) + ")"
+                            "SUM(C21:C" + String.valueOf(21 + dataList.size()) + ")",
+                            "SUM(D21:D" + String.valueOf(21 + dataList.size()) + ")",
+                            "SUM(E21:E" + String.valueOf(21 + dataList.size()) + ")",
+                            "SUM(F21:F" + String.valueOf(21 + dataList.size()) + ")",
+                            "SUM(G21:G" + String.valueOf(21 + dataList.size()) + ")"
                     });
                     // 克隆汇总模版表
                     Sheet reportSheet = wb.cloneSheet(statisticsTemplateIndex);
@@ -383,8 +380,15 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
         dataPercentStyle.setAlignment(HorizontalAlignment.CENTER);// 指定单元格居中对齐
         dataPercentStyle.setVerticalAlignment(VerticalAlignment.CENTER);// 指定单元格垂直居中对齐
         dataPercentStyle.setFont(dataFont);
-        dataPercentStyle.setDataFormat(wb.createDataFormat().getFormat("0.00"));
+        dataPercentStyle.setDataFormat(wb.createDataFormat().getFormat("0.00%"));
         ImportExcelUtils.setBorder(dataPercentStyle, BorderStyle.THIN, new XSSFColor(new java.awt.Color(0, 0, 0)));
+
+        XSSFCellStyle dataTwoPointStyle = (XSSFCellStyle)wb.createCellStyle();
+        dataTwoPointStyle.setAlignment(HorizontalAlignment.CENTER);// 指定单元格居中对齐
+        dataTwoPointStyle.setVerticalAlignment(VerticalAlignment.CENTER);// 指定单元格垂直居中对齐
+        dataTwoPointStyle.setFont(dataFont);
+        dataTwoPointStyle.setDataFormat(wb.createDataFormat().getFormat("0.00"));
+        ImportExcelUtils.setBorder(dataTwoPointStyle, BorderStyle.THIN, new XSSFColor(new java.awt.Color(0, 0, 0)));
 
         // 明细行
         for (int i=0; i<rowList.size()-1; i++) {
@@ -396,6 +400,9 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
                 if (colIndex == 3 || colIndex == 5) {
                     cell.setCellFormula(rowData[colIndex]);
                     cell.setCellStyle(dataPercentStyle);
+                } else if (colIndex == 2 || colIndex == 4 || colIndex == 6) {
+                    cell.setCellValue(rowData[colIndex]);
+                    cell.setCellStyle(dataTwoPointStyle);
                 } else {
                     cell.setCellValue(rowData[colIndex]);
                     cell.setCellStyle(dataStyle);
