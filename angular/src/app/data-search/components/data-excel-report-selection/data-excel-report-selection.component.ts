@@ -8,6 +8,7 @@ import { OptionData } from 'select2';
 import { CommonUtilitiesService } from 'src/app/common/services/common-utilities.service';
 import { CommonDialogCallback } from 'src/app/common/interfaces/common-dialog-callback';
 import { ExcelReportSettingData } from '../../entities/excel-report-setting-data';
+import { CurrentUserContainerService } from 'src/app/common/services/current-user-container.service';
 
 @Component({
   selector: 'app-data-excel-report-selection',
@@ -44,7 +45,8 @@ export class DataExcelReportSelectionComponent implements OnInit, AfterViewInit,
   // error message
   public errorMsg: string = null;
   constructor(private activeModal: NgbActiveModal,
-    private commonUtilitiesService: CommonUtilitiesService) { }
+    private commonUtilitiesService: CommonUtilitiesService,
+    private currentUserContainer: CurrentUserContainerService) { }
 
   ngOnInit() {
   }
@@ -224,6 +226,16 @@ export class DataExcelReportSelectionComponent implements OnInit, AfterViewInit,
           return JSON.stringify(query);
         },
         processResults: function (data, params) {
+          // session timeout check
+          if (data.code === 201) {
+            // destroy select2 control
+            $('#' + listQueryCondition.getUUID()).select2('destroy');
+            // close modal dialog
+            that.close();
+            // session timeout
+            that.currentUserContainer.sessionTimeout();
+            return;
+          }
           params.page = params.page || 1;
           return {
             results: data.data.results,

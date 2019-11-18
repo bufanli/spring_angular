@@ -343,6 +343,10 @@ export class DataSearchComponent implements OnInit, AfterViewChecked, SaveHeader
           return JSON.stringify(query);
         },
         processResults: function (data, params) {
+          if (data.code === 201) {
+            that.currentUserContainer.sessionTimeout();
+            return;
+          }
           params.page = params.page || 1;
           return {
             results: data.data.results,
