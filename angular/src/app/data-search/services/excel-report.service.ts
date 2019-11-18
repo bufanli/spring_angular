@@ -35,6 +35,7 @@ export class ExcelReportService implements ProcessingDialogCallback {
   // fixed excel report query condtions
   private FIXED_EXCEL_REPORT_QUERY_CONDITIONS: Set<String> = new Set(['月份', '海关编码', '进出口']);
   private EXCLUDE_EXCEL_REPORT_TYPES: Set<String> = new Set([
+    '进出口',
     '日期',
     '申报单价',
     '申报总价',
