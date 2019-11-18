@@ -34,6 +34,30 @@ export class ExcelReportService implements ProcessingDialogCallback {
   private exportExcelReportUrl = 'api/exportExcelReport';
   // fixed excel report query condtions
   private FIXED_EXCEL_REPORT_QUERY_CONDITIONS: Set<String> = new Set(['月份', '海关编码', '进出口']);
+  private EXCLUDE_EXCEL_REPORT_TYPES: Set<String> = new Set([
+    '日期',
+    '申报单价',
+    '申报总价',
+    '申报币制',
+    '美元单价',
+    '美元总价',
+    '美元币制',
+    '人民币总价',
+    '申报数量',
+    '申报数量单位',
+    '法定重量',
+    '法定单位',
+    '毛重',
+    '净重',
+    '重量单位',
+    '件数',
+    '运费／率',
+    '运费币制',
+    '保险费／率',
+    '保险费币制',
+    '杂费／率',
+    '杂费币制',
+    '']);
 
   // excel report query conditions
   private excelReportQueryConditions = null;
@@ -107,6 +131,18 @@ export class ExcelReportService implements ProcessingDialogCallback {
   // get excel report types notification
   private getExcelReportTypesNotification(httpResponse: any): void {
     this.excelReportTypes = httpResponse.data;
+    // exclude abundant excel report types
+    const excludedExcelReportTypes = [];
+    this.excelReportTypes.forEach(element => {
+      // get rid of huizong
+      let temp: string = null;
+      if (element.endsWith('汇总')) {
+        temp = element.substring(0, element.length - '汇总'.length);
+      }
+      if (this.EXCLUDE_EXCEL_REPORT_TYPES.has(temp) === false) {
+        excludedExcelReportTypes.push(element);
+      }
+    });
     // close processing dialog
     this.commonUtilitiesService.closeProcessingDialog();
     const service: NgbModal = this.modalService;
@@ -114,7 +150,7 @@ export class ExcelReportService implements ProcessingDialogCallback {
     // because showUserSettingModal called in html context
     const modalRef = service.open(DataExcelReportSelectionComponent, this.adjustModalOptions());
     // set excel report types to component
-    modalRef.componentInstance.setExcelReportTypes(this.excelReportTypes);
+    modalRef.componentInstance.setExcelReportTypes(excludedExcelReportTypes);
     // set excel report query conditions to component
     modalRef.componentInstance.setExcelReportQueryConditions(this.excelReportQueryConditions);
     // set data statistics service
