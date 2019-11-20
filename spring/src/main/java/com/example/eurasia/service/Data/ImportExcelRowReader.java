@@ -2,9 +2,10 @@ package com.example.eurasia.service.Data;
 
 import com.example.eurasia.entity.Data.Data;
 import com.example.eurasia.service.Response.ResponseCodeEnum;
+import com.example.eurasia.service.User.UserService;
 import com.example.eurasia.service.Util.DataProcessingUtil;
-import com.example.eurasia.service.Util.Slf4jLogUtil;
 import com.example.eurasia.service.Util.ImportExcelUtils;
+import com.example.eurasia.service.Util.Slf4jLogUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -18,14 +19,21 @@ public class ImportExcelRowReader {
     @Qualifier("dataService")
     @Autowired
     private DataService dataService;
+    @Qualifier("userService")
+    @Autowired
+    private UserService userService;
 
     private List<String> titleList;
     private List<Data> dataList;
     private List<String> titleIsNotExistList;
     private Set<String> sameTitleSet;
+    private Map<String, List<Integer>> invalidDataMap;
+    private List<Integer> exAndImRowList;
 
     ImportExcelRowReader () {
-        dataList = new ArrayList<Data>();
+        this.dataList = new ArrayList<Data>();
+        this.invalidDataMap = new HashMap<String, List<Integer>>();
+        this.exAndImRowList = new ArrayList<Integer>();
     }
 
     /** poi事件模式下的业务逻辑实现方法
@@ -57,7 +65,7 @@ public class ImportExcelRowReader {
                 e.printStackTrace();
             }
 
-            if (getTitleIsNotExistList().size() == 0 && getSameTitleSet().size() == 0) {
+            if (this.getTitleIsNotExistList().size() == 0 && this.getSameTitleSet().size() == 0) {
                 this.titleList = new ArrayList<>(Arrays.asList(new String[rowList.size()]));
                 Collections.copy(this.titleList, rowList);
                 //this.titleList.addAll(rowList);//addAll实现的是浅拷贝
@@ -96,18 +104,36 @@ public class ImportExcelRowReader {
             然而进行copy()时候，首先做的是将desc的size和src的size大小进行比较，
             只有当desc的 size 大于或者等于src的size时才进行拷贝，否则抛出IndexOutOfBoundsException异常；
              */
-        } else if (row > 0 && getTitleIsNotExistList().size() == 0 && getSameTitleSet().size() == 0) {
+        } else if (row > 0 && this.getTitleIsNotExistList().size() == 0 && this.getSameTitleSet().size() == 0) {
             Map<String, String> keyValue = new LinkedHashMap<>();
-            for (int i=0; i<this.titleList.size(); i++) {
-                keyValue.put(this.titleList.get(i), rowList.get(i));//首行(表头)值，单元格值
+            for (int i=0; i<this.getTitleList().size(); i++) {
+
+                String title = this.getTitleList().get(i);
+                String value = rowList.get(i);
+
+                // 过滤不符合要求的Data(e.g. "进出口"不可为空)
+                if (!this.checkData(row, title, value)) {
+                    keyValue.clear();
+                    return;
+                }
+
+                keyValue.put(title, value);//首行(表头)值，单元格值
             }
             Data data = new Data(keyValue);
-            this.dataList.add(data);
+            this.addDataToDataList(data);
         }
+    }
+
+    public List<String> getTitleList() {
+        return this.titleList;
     }
 
     public List<Data> getDataList() {
         return this.dataList;
+    }
+
+    public void addDataToDataList(Data data) {
+        this.dataList.add(data);
     }
 
     public void setDataList(List<Data> dataList) {
@@ -132,6 +158,22 @@ public class ImportExcelRowReader {
 
     public void clearSameTitleSet() {
         this.sameTitleSet.clear();
+    }
+
+    public Map<String, List<Integer>> getInvalidDataMap() {
+        return this.invalidDataMap;
+    }
+
+    public void addInvalidDataToMap(String key, List<Integer> rows) {
+        this.invalidDataMap.put(key, rows);
+        rows.clear();
+    }
+
+    public void clearInvalidDataMap() {
+        for(Map.Entry<String , List<Integer>> maps : this.invalidDataMap.entrySet()) {
+            maps.getValue().clear();//T.B.D addInvalidDataToMap()时，已经对List清空过了，这里还需要吗？
+        }
+        this.invalidDataMap.clear();
     }
 
     /*
@@ -196,5 +238,56 @@ public class ImportExcelRowReader {
      */
     public String sameTitleSetToString() {
         return DataProcessingUtil.setToStringWithComma(this.getSameTitleSet());
+    }
+
+    /**
+     * 过滤不符合要求的Data(e.g. "进出口"不可为空)
+     * @param
+     * @return
+     */
+    public List<Data> checkData(List<Data> dataList) {
+        List<Data> invalidDataList = new ArrayList<>();
+
+        for (int i=0; i<dataList.size(); i++) {
+            Set<Map.Entry<String, String>> set = dataList.get(i).getKeyValue().entrySet();
+            Iterator<Map.Entry<String, String>> it = set.iterator();
+            while (it.hasNext()) {
+                Map.Entry<String,String> entry = it.next();
+                switch (entry.getKey()) {
+                    case UserService.MUST_EXPORT_AND_IMPORT://进出口
+                        if (entry.getValue().trim().equals("")) {
+                            invalidDataList.add(dataList.get(i));
+                            dataList.remove(dataList.get(i));
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        return invalidDataList;
+    }
+
+    /**
+     * 过滤不符合要求的Data(e.g. "进出口"不可为空)
+     * @param
+     * @return
+     */
+    public boolean checkData(int row, String title, String value) {
+
+        boolean ret = true;
+        switch (title) {
+            case UserService.MUST_EXPORT_AND_IMPORT://进出口
+                if (value.trim().equals("")) {
+                    this.exAndImRowList.add(row+1);
+                    ret = false;
+                }
+                break;
+            default:
+                break;
+        }
+
+        return ret;
     }
 }

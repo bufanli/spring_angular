@@ -107,6 +107,7 @@ public class Excel2007Reader implements IExcelReaderByEventMode {
     private void rowReaderClearErrorMessage() {
         this.rowReader.clearSameTitleSet();
         this.rowReader.clearTitleIsNotExistList();
+        this.rowReader.clearInvalidDataMap();
     }
 
     /**
