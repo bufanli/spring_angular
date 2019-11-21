@@ -219,7 +219,7 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
             // 按照汇总类型做成相应的Sheet
             // "明细表"以外的Sheet里的汇总数据格式：序号，Report Types[汇总类型]，美元总价合计，美元总价占比，法定重量合计，法定重量占比，平均单价
             Set<String> colsNameSet = new LinkedHashSet<>();
-            List<String[]> dataArrList = new ArrayList<>();
+            List<Object[]> dataArrList = new ArrayList<>();
             for (int reportTypeIndex=0; reportTypeIndex<excelReportOutputData.getReportTypes().length; reportTypeIndex++) {
                 if (!excelReportOutputData.getReportTypes()[reportTypeIndex].equals(DataService.EXCEL_EXPORT_TYPE_DETAIL)) {
                     // 汇总
@@ -257,24 +257,24 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
                         String dollarPriceTotal = keyValue.get(computeFields[0].toSql().toString());
                         String legalWeightTotal = keyValue.get(computeFields[1].toSql().toString());
                         String averageUnitPrice = String.valueOf(Double.parseDouble(dollarPriceTotal)/Double.parseDouble(legalWeightTotal));
-                        dataArrList.add(new String[]{
-                                String.valueOf(i + 1),  // A列，序号
-                                groupByValue,           // B列，Report Types[汇总类型]
-                                dollarPriceTotal,       // C列，美元总价合计
-                                "C" + (21 + i) + "/C" + String.valueOf(21 + dataList.size()),    // D列，美元总价占比
-                                legalWeightTotal,       // E列，法定重量合计
-                                "E" + (21 + i) + "/E" + String.valueOf(21 + dataList.size()),    // F列，法定重量合计
-                                averageUnitPrice        // G列，平均单价
-                        });
+                        ArrayList row = new ArrayList();
+                        row.add(String.valueOf(i + 1));
+                        row.add(groupByValue);
+                        row.add(Double.parseDouble(dollarPriceTotal));
+                        row.add("C" + (21 + i) + "/C" + String.valueOf(21 + dataList.size()));
+                        row.add(Double.parseDouble(legalWeightTotal));
+                        row.add("E" + (21 + i) + "/E" + String.valueOf(21 + dataList.size()));
+                        row.add(Double.parseDouble(averageUnitPrice));
+                        dataArrList.add(row.toArray());
                     }
                     dataArrList.add(new String[]{
                             "",
                             "合计",
-                            "SUM(C21:C" + String.valueOf(21 + dataList.size()) + ")",
-                            "SUM(D21:D" + String.valueOf(21 + dataList.size()) + ")",
-                            "SUM(E21:E" + String.valueOf(21 + dataList.size()) + ")",
-                            "SUM(F21:F" + String.valueOf(21 + dataList.size()) + ")",
-                            "SUM(G21:G" + String.valueOf(21 + dataList.size()) + ")"
+                            "SUM(C21:C" + String.valueOf(21 + dataList.size() - 1) + ")",
+                            "SUM(D21:D" + String.valueOf(21 + dataList.size() - 1) + ")",
+                            "SUM(E21:E" + String.valueOf(21 + dataList.size() - 1) + ")",
+                            "SUM(F21:F" + String.valueOf(21 + dataList.size() - 1) + ")",
+                            "SUM(G21:G" + String.valueOf(21 + dataList.size() - 1) + ")"
                     });
                     // 克隆汇总模版表
                     Sheet reportSheet = wb.cloneSheet(statisticsTemplateIndex);
@@ -319,18 +319,19 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
             int dataRowIndex = titleRowIndex;
             Map<String, String> order = new LinkedHashMap<>();
             order.put("id","asc");//T.B.D
+            List<String[]> dataArrListDetail = null;
             for (int i = 0; i < steps; i++) {
-                dataArrList = dataService.searchDataForDownload(DataService.TABLE_DATA, queryConditionsArr, offset, DataService.DOWNLOAD_RECODE_STEPS, order);
-                if (dataArrList == null) {
+                dataArrListDetail = dataService.searchDataForDownload(DataService.TABLE_DATA, queryConditionsArr, offset, DataService.DOWNLOAD_RECODE_STEPS, order);
+                if (dataArrListDetail == null) {
                     Slf4jLogUtil.get().info(ResponseCodeEnum.EXPORT_EXCEL_REPORT_FROM_SQL_NULL.getMessage());
                     return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_EXCEL_REPORT_FROM_SQL_NULL);
                 }
-                if (dataArrList.size() < 0) {
+                if (dataArrListDetail.size() < 0) {
                     Slf4jLogUtil.get().info(ResponseCodeEnum.EXPORT_EXCEL_REPORT_FROM_SQL_ZERO.getMessage());
                     return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_EXCEL_REPORT_FROM_SQL_ZERO);
                 }
 
-                dataRowIndex = ImportExcelUtils.writeRowsToExcel(swb, detailSheet, dataArrList, dataRowIndex);
+                dataRowIndex = ImportExcelUtils.writeRowsToExcel(swb, detailSheet, dataArrListDetail, dataRowIndex);
 
                 offset += DataService.DOWNLOAD_RECODE_STEPS;
 
@@ -361,7 +362,7 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
         return new ResponseResultUtil().success(ResponseCodeEnum.EXPORT_EXCEL_REPORT_SUCCESS);
     }
 
-    private int writeRowsToReportSheet(Workbook wb, Sheet sheet, List<String[]> rowList, int rowStartIndex) {
+    private int writeRowsToReportSheet(Workbook wb, Sheet sheet, List<Object[]> rowList, int rowStartIndex) {
         int rowIndex = rowStartIndex;
 
         // 设置字体
@@ -394,17 +395,21 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
         for (int i=0; i<rowList.size()-1; i++) {
             Row dataRow = sheet.createRow(rowIndex);
             // dataRow.setHeightInPoints(25);
-            String[] rowData = rowList.get(i);
+            Object[] rowData = rowList.get(i);
             for (int colIndex=0; colIndex<rowData.length; colIndex++) {
                 Cell cell = dataRow.createCell(colIndex);
                 if (colIndex == 3 || colIndex == 5) {
-                    cell.setCellFormula(rowData[colIndex]);
+                    cell.setCellFormula((String)rowData[colIndex]);
                     cell.setCellStyle(dataPercentStyle);
                 } else if (colIndex == 2 || colIndex == 4 || colIndex == 6) {
-                    cell.setCellValue(rowData[colIndex]);
+                    if(rowData[colIndex] instanceof Double) {
+                        cell.setCellValue((Double) rowData[colIndex]);
+                    }else{
+                        cell.setCellValue((String) rowData[colIndex]);
+                    }
                     cell.setCellStyle(dataTwoPointStyle);
                 } else {
-                    cell.setCellValue(rowData[colIndex]);
+                    cell.setCellValue((String)rowData[colIndex]);
                     cell.setCellStyle(dataStyle);
                 }
             }
@@ -413,13 +418,13 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
 
         // 合计行
         Row dataRow = sheet.createRow(rowIndex);
-        String[] rowData = rowList.get(rowList.size()-1);
+        Object[] rowData = rowList.get(rowList.size()-1);
         for (int colIndex=0; colIndex<rowData.length; colIndex++) {
             Cell cell = dataRow.createCell(colIndex);
             if (colIndex > 1) {
-                cell.setCellFormula(rowData[colIndex]);
+                cell.setCellFormula((String)rowData[colIndex]);
             } else {
-                cell.setCellValue(rowData[colIndex]);
+                cell.setCellValue((String)rowData[colIndex]);
             }
             cell.setCellStyle(dataStyle);
         }
