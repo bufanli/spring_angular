@@ -249,33 +249,46 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
                     colsNameSet.add("平均单价");
 
                     //sql结果List，ExcelReportValue
-                    for (int i=0; i<dataList.size(); i++) {
-                        Data data = dataList.get(i);
-                        Map<String, String> keyValue = data.getKeyValue();
+                    if (dataList.size() > 0) {
+                        for (int i=0; i<dataList.size(); i++) {
+                            Data data = dataList.get(i);
+                            Map<String, String> keyValue = data.getKeyValue();
 
-                        String groupByValue = keyValue.get(groupByField);
-                        String dollarPriceTotal = keyValue.get(computeFields[0].toSql().toString());
-                        String legalWeightTotal = keyValue.get(computeFields[1].toSql().toString());
-                        String averageUnitPrice = String.valueOf(Double.parseDouble(dollarPriceTotal)/Double.parseDouble(legalWeightTotal));
-                        ArrayList row = new ArrayList();
-                        row.add(String.valueOf(i + 1));
-                        row.add(groupByValue);
-                        row.add(Double.parseDouble(dollarPriceTotal));
-                        row.add("C" + (21 + i) + "/C" + String.valueOf(21 + dataList.size()));
-                        row.add(Double.parseDouble(legalWeightTotal));
-                        row.add("E" + (21 + i) + "/E" + String.valueOf(21 + dataList.size()));
-                        row.add(Double.parseDouble(averageUnitPrice));
-                        dataArrList.add(row.toArray());
+                            String groupByValue = keyValue.get(groupByField);
+                            String dollarPriceTotal = keyValue.get(computeFields[0].toSql().toString());
+                            String legalWeightTotal = keyValue.get(computeFields[1].toSql().toString());
+                            String averageUnitPrice = String.valueOf(Double.parseDouble(dollarPriceTotal)/Double.parseDouble(legalWeightTotal));
+                            ArrayList row = new ArrayList();
+                            row.add(String.valueOf(i + 1));
+                            row.add(groupByValue);
+                            row.add(Double.parseDouble(dollarPriceTotal));
+                            row.add("C" + (21 + i) + "/C" + String.valueOf(20 + dataList.size() + 1));
+                            row.add(Double.parseDouble(legalWeightTotal));
+                            row.add("E" + (21 + i) + "/E" + String.valueOf(20 + dataList.size() + 1));
+                            row.add(Double.parseDouble(averageUnitPrice));
+                            dataArrList.add(row.toArray());
+                        }
+                        dataArrList.add(new String[]{
+                                "",
+                                "合计",
+                                "SUM(C21:C" + String.valueOf(20 + dataList.size()) + ")",
+                                "SUM(D21:D" + String.valueOf(20 + dataList.size()) + ")",
+                                "SUM(E21:E" + String.valueOf(20 + dataList.size()) + ")",
+                                "SUM(F21:F" + String.valueOf(20 + dataList.size()) + ")",
+                                "SUM(G21:G" + String.valueOf(20 + dataList.size()) + ")"
+                        });
+                    } else {
+                        dataArrList.add(new String[]{
+                                "",
+                                "合计",
+                                "",
+                                "",
+                                "",
+                                "",
+                                ""
+                        });
                     }
-                    dataArrList.add(new String[]{
-                            "",
-                            "合计",
-                            "SUM(C21:C" + String.valueOf(21 + dataList.size() - 1) + ")",
-                            "SUM(D21:D" + String.valueOf(21 + dataList.size() - 1) + ")",
-                            "SUM(E21:E" + String.valueOf(21 + dataList.size() - 1) + ")",
-                            "SUM(F21:F" + String.valueOf(21 + dataList.size() - 1) + ")",
-                            "SUM(G21:G" + String.valueOf(21 + dataList.size() - 1) + ")"
-                    });
+
                     // 克隆汇总模版表
                     Sheet reportSheet = wb.cloneSheet(statisticsTemplateIndex);
                     wb.setSheetName(wb.getSheetIndex(reportSheet.getSheetName()),excelReportOutputData.getReportTypes()[reportTypeIndex]);
@@ -335,7 +348,7 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
 
                 offset += DataService.DOWNLOAD_RECODE_STEPS;
 
-                dataArrList.clear();
+                dataArrListDetail.clear();
             }
             // adjust column size
             ImportExcelUtils.setSizeColumn(detailSheet, (colsNameSet.size() + 1));
