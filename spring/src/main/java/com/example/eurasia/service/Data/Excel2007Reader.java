@@ -3,6 +3,7 @@ package com.example.eurasia.service.Data;
 
 import com.example.eurasia.dao.DataDao;
 import com.example.eurasia.entity.Data.QueryCondition;
+import com.example.eurasia.service.User.UserService;
 import com.example.eurasia.service.Util.Slf4jLogUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.openxml4j.opc.OPCPackage;
@@ -356,11 +357,20 @@ public class Excel2007Reader implements IExcelReaderByEventMode {
             // show error message in error case
             if (rowReader.getTitleIsNotExistList().size() == 0 && rowReader.getSameTitleSet().size() == 0) {
                 if (addDataNumber >= 0) {
-                    Slf4jLogUtil.get().info("Sheet[{}]{}，共{}条数据！", DataService.IMPORT_EXCEL_SUCCESS_MESSAGE, sheets.getSheetName(), addDataNumber);
+                    Slf4jLogUtil.get().info("Sheet[{}]{}，共{}条数据！", sheets.getSheetName(), DataService.IMPORT_EXCEL_SUCCESS_MESSAGE, addDataNumber);
                     message.append("Sheet[" + sheets.getSheetName() + "]" + DataService.IMPORT_EXCEL_SUCCESS_MESSAGE + "，共" + addDataNumber + "条数据！");
                     message.append(System.getProperty("line.separator"));//java中依赖于系统的换行符
+
+                    rowReader.addInvalidDataToMap(UserService.MUST_EXPORT_AND_IMPORT);//添加"进出口"的错误数据
+                    String msg = rowReader.invalidDataMapToString();
+                    if (!StringUtils.isEmpty(msg)) {//有错误数据的话，提示。
+                        Slf4jLogUtil.get().info("Sheet[{}]{}，{}", sheets.getSheetName(), DataService.IMPORT_EXCEL_DATA_WRONG_MESSAGE, msg);
+                        message.append("Sheet[" + sheets.getSheetName() + "]" + DataService.IMPORT_EXCEL_DATA_WRONG_MESSAGE + ", " + msg);
+                        message.append(System.getProperty("line.separator"));//java中依赖于系统的换行符
+                    }
+
                 } else {
-                    Slf4jLogUtil.get().info("Sheet[{}]{}，数据库操作问题！", DataService.IMPORT_EXCEL_FAILED_MESSAGE, sheets.getSheetName());
+                    Slf4jLogUtil.get().info("Sheet[{}]{}，数据库操作问题！", sheets.getSheetName(), DataService.IMPORT_EXCEL_FAILED_MESSAGE);
                     message.append("Sheet[" + sheets.getSheetName() + "]" + DataService.IMPORT_EXCEL_FAILED_MESSAGE + "，数据库操作问题！");
                     message.append(System.getProperty("line.separator"));//java中依赖于系统的换行符
                 }

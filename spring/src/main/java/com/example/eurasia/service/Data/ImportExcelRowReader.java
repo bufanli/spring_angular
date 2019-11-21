@@ -164,16 +164,42 @@ public class ImportExcelRowReader {
         return this.invalidDataMap;
     }
 
-    public void addInvalidDataToMap(String key, List<Integer> rows) {
-        this.invalidDataMap.put(key, rows);
-        rows.clear();
+    public void addInvalidDataToMap(String invalidDataKey) {
+        switch (invalidDataKey) {
+            case UserService.MUST_EXPORT_AND_IMPORT:
+                this.invalidDataMap.put(invalidDataKey, this.exAndImRowList);
+                break;
+            default:
+                break;
+        }
     }
 
     public void clearInvalidDataMap() {
         for(Map.Entry<String , List<Integer>> maps : this.invalidDataMap.entrySet()) {
-            maps.getValue().clear();//T.B.D addInvalidDataToMap()时，已经对List清空过了，这里还需要吗？
+            maps.getValue().clear();
         }
         this.invalidDataMap.clear();
+    }
+
+    public String invalidDataMapToString() {
+        StringBuffer str = new StringBuffer();
+        for(Map.Entry<String , List<Integer>> maps : this.invalidDataMap.entrySet()) {
+
+            List<Integer> rows = maps.getValue();
+            if (rows.size() > 0) {
+                String key = maps.getKey();
+                str.append("\"" + key + ":");
+
+                for (Integer row : rows) {
+                    str.append(row);
+                    str.append(",");
+                }
+                str.deleteCharAt(str.length() - 1);//","的长度为1，所以删除最后一个","即删除下标为sb.length()-1字符
+                str.append("\"");
+            }
+
+        }
+        return str.toString();
     }
 
     /*

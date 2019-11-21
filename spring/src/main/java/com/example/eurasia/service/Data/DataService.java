@@ -78,6 +78,7 @@ public class DataService {
 
     public static final String IMPORT_EXCEL_SUCCESS_MESSAGE = "导入成功";
     public static final String IMPORT_EXCEL_FAILED_MESSAGE = "导入失败";
+    public static final String IMPORT_EXCEL_DATA_WRONG_MESSAGE = "导入数据问题";
 
     /**
      * 初始化数据表
