@@ -148,14 +148,15 @@ public class UpDownloadFileServiceImpl extends CommonService implements IUpDownl
                     if (ImportExcelUtils.isExcelFileValidata(files[i]) == true) {
                         //responseRead = importExcelByUserMode.readExcelFile(files[i]);//T.B.D UserMode，没有check列名的同义词
                         responseRead = importExcelByEventMode.readExcelFile(files[i]);
-                        if (responseRead.indexOf(DataService.IMPORT_EXCEL_SUCCESS_MESSAGE) != -1) {
+                        if (responseRead.indexOf(DataService.IMPORT_EXCEL_FAILED_MESSAGE) != -1
+                                || responseRead.indexOf(DataService.IMPORT_EXCEL_DATA_WRONG_MESSAGE) != -1) {
+                            fileNGNum++;
+                            responseNG.append(fileName + ":" + responseRead + DataService.BR);
+                            Slf4jLogUtil.get().error("第{}/{}个文件 1.表头在数据库中不存在或者重复 2.有错误数据。文件名:{}",(i+1),fileNumber,fileName);
+                        } else {
                             fileOKNum++;
                             responseOK.append(fileName + ":" + responseRead + DataService.BR);
                             Slf4jLogUtil.get().info("第{}/{}个文件导入OK结束,文件名:{}",(i+1),fileNumber,fileName);
-                        } else if (responseRead.indexOf(DataService.IMPORT_EXCEL_FAILED_MESSAGE) != -1) {
-                            fileNGNum++;
-                            responseNG.append(fileName + ":" + responseRead + DataService.BR);
-                            Slf4jLogUtil.get().error("第{}/{}个文件表头在数据库中不存在或者重复,文件名:{}",(i+1),fileNumber,fileName);
                         }
                     } else {
                         fileNGNum++;
