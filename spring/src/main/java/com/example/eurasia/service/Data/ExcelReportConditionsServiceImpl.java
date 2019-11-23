@@ -278,7 +278,8 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
                                 "SUM(G21:G" + String.valueOf(20 + dataList.size()) + ")"
                         });
                     } else {
-                        dataArrList.add(new String[]{
+                        // T.B.D. 没有汇总数据时，不显示合计行
+                        /*dataArrList.add(new String[]{
                                 "",
                                 "合计",
                                 "",
@@ -286,7 +287,7 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
                                 "",
                                 "",
                                 ""
-                        });
+                        });*/
                     }
 
                     // 克隆汇总模版表
