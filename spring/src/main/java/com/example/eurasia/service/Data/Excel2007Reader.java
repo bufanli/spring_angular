@@ -390,9 +390,9 @@ public class Excel2007Reader implements IExcelReaderByEventMode {
                     message.append("Sheet[" + sheets.getSheetName() + "]" + DataService.IMPORT_EXCEL_FAILED_MESSAGE + "，" + sameTitle + " 重复！");
                     message.append(System.getProperty("line.separator"));//java中依赖于系统的换行符
                 }
-                // clear error message for each sheet
-                rowReaderClearErrorMessage();
             }
+            // clear error message for each sheet
+            rowReaderClearErrorMessage();
 
         }
 
