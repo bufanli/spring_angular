@@ -27,7 +27,7 @@ LinkedHashMap保证了元素迭代的顺序。该迭代顺序可以是插入顺�
         super();
         //this.keyValue = new LinkedHashMap<String, String>();
         //this.keyValue.putAll(keyValue);
-        this.keyValue = (LinkedHashMap)keyValue;
+        this.keyValue = (LinkedHashMap<String,String>)keyValue;
     }
 
     public LinkedHashMap<String, String> getKeyValue() {
@@ -37,7 +37,7 @@ LinkedHashMap保证了元素迭代的顺序。该迭代顺序可以是插入顺�
     public void setKeyValue(Map<String, String> keyValue) {
         //this.keyValue.clear();
         //this.keyValue.putAll(keyValue);
-        this.keyValue = (LinkedHashMap)keyValue;
+        this.keyValue = (LinkedHashMap<String,String>)keyValue;
     }
 
     @Override
