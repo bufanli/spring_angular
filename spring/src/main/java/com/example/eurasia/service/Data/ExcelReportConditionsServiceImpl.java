@@ -258,7 +258,7 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
                             String dollarPriceTotal = keyValue.get(computeFields[0].toSql().toString());
                             String legalWeightTotal = keyValue.get(computeFields[1].toSql().toString());
                             String averageUnitPrice = String.valueOf(Double.parseDouble(dollarPriceTotal)/Double.parseDouble(legalWeightTotal));
-                            ArrayList row = new ArrayList();
+                            ArrayList<Object> row = new ArrayList<Object>();
                             row.add(String.valueOf(i + 1));
                             row.add(groupByValue);
                             row.add(Double.parseDouble(dollarPriceTotal));
