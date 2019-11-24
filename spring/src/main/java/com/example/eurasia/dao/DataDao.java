@@ -323,20 +323,51 @@ GROUP BY 列1,列2,列3 having count(*) > 1;
      * @author FuJia
      * @Time 2019-09-09 00:00:00
      */
-    public void deleteSameDataByDistinct(String tableName, String columnsName) throws Exception {
+    public void deleteSameDataByDistinct(
+            String tableName,
+            String allColumnsName,
+            String distinctColumnsName,
+            boolean isCustomize) throws Exception {
 
+        StringBuffer sql0 = new StringBuffer();
         StringBuffer sql1 = new StringBuffer();
         StringBuffer sql2 = new StringBuffer();
         StringBuffer sql3 = new StringBuffer();
-        sql1.append("Create table tmp (Select distinct " + columnsName + " from " + tableName + ")");
-        sql2.append("drop table " + tableName);
-        sql3.append("RENAME TABLE tmp TO " + tableName);
-        getJdbcTemplate().execute(sql1.toString());
-        getJdbcTemplate().execute(sql2.toString());
-        getJdbcTemplate().execute(sql3.toString());
-
+        StringBuffer sql4 = new StringBuffer();
+        StringBuffer sql5 = new StringBuffer();
+        StringBuffer sql6 = new StringBuffer();
+        if(isCustomize == false) {
+            sql0.append("drop table if exists tmp");
+            sql1.append("drop table if exists tmp_0");
+            sql2.append("Create table tmp (Select distinct " + allColumnsName + " from " + tableName + ")");
+            sql3.append("drop table " + tableName);
+            sql4.append("RENAME TABLE tmp TO " + tableName);
+            getJdbcTemplate().execute(sql0.toString());
+            getJdbcTemplate().execute(sql1.toString());
+            getJdbcTemplate().execute(sql2.toString());
+            getJdbcTemplate().execute(sql3.toString());
+            getJdbcTemplate().execute(sql4.toString());
+        }else{
+            sql0.append("drop table if exists tmp");
+            sql1.append("drop table if exists tmp_0");
+            sql2.append("Create table tmp_0(Select min(id) as id from " +
+                     tableName +
+                    " group by " + distinctColumnsName + " )");
+            sql3.append("Create table tmp(select " + allColumnsName +
+                    " from " + tableName + ",tmp_0 where " +
+                    tableName + ".id = tmp_0.id )");
+            sql4.append("drop table " + tableName);
+            sql5.append("drop table tmp_0");
+            sql6.append("RENAME TABLE tmp TO " + tableName);
+            getJdbcTemplate().execute(sql0.toString());
+            getJdbcTemplate().execute(sql1.toString());
+            getJdbcTemplate().execute(sql2.toString());
+            getJdbcTemplate().execute(sql3.toString());
+            getJdbcTemplate().execute(sql4.toString());
+            getJdbcTemplate().execute(sql5.toString());
+            getJdbcTemplate().execute(sql6.toString());
+        }
         this.addIDColumn(tableName);
-
     }
     /**
      * 删除全部的数据

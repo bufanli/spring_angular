@@ -38,6 +38,7 @@ public class DataService {
     public static final String TABLE_STATISTICS_SETTING_COMPUTE_BY = "statisticsSettingComputeByTable";
     public static final String TABLE_COLUMNS_DICTIONARY = "columnsDictionaryTable";
     public static final String TABLE_COLUMNS_FOR_SAME_DATA = "columnsForSameDataTable";
+    public static final String COLUMN_NAME_FOR_SAME_DATA= "columnName";
     public static final String TABLE_DATA_DICTIONARY_SUMMARY = "dataDictionarySummaryTable";
 
     public static final String BEAN_NAME_COLUMNS_DEFAULT_NAME = "columnDefaultName";
@@ -208,24 +209,6 @@ public class DataService {
      * @return
      * @exception
      * @author FuJia
-     * @Time 2018-09-20 00:00:00
-     */
-    public int deleteSameData(String tableName) throws Exception {
-        if (StringUtils.isEmpty(tableName)) {
-            return -1;
-        }
-
-        int deleteNum = getDataDao().deleteSameData(tableName, this.getColumnsForSameData(false));//失败时，返回-1
-
-        return deleteNum;
-    }
-
-    /**
-     * 删除表里的相同数据
-     * @param
-     * @return
-     * @exception
-     * @author FuJia
      * @Time 2019-09-09 00:00:00
      */
     public int deleteSameDataByDistinct(String tableName) throws Exception {
@@ -233,8 +216,11 @@ public class DataService {
             return -1;
         }
 
-        getDataDao().deleteSameDataByDistinct(tableName, this.getColumnsForSameData(false));
-
+        getDataDao().deleteSameDataByDistinct(
+                tableName,
+                this.getColumnsForSameData(false),
+                this.getColumnsForSameData(true),
+                true);
         return 0;
     }
 
@@ -251,24 +237,29 @@ public class DataService {
         List<Map<String, Object>> colsNameList = null;
         if (isCustomize) {
             //自定义判断数据表相同数据的列名
-            colsNameList = getDataDao().queryListForColumnName(DataService.TABLE_COLUMNS_FOR_SAME_DATA);
+            colsNameList = getDataDao().queryListForColumnAllValues(
+                    DataService.TABLE_COLUMNS_FOR_SAME_DATA,
+                    new String[]{DataService.COLUMN_NAME_FOR_SAME_DATA});
         } else {
             //全部列名
             colsNameList = getDataDao().queryListForColumnName(DataService.TABLE_DATA);
         }
-
+        String key = null;
+        if(isCustomize){
+           key = "columnName";
+        }else{
+            key = "COLUMN_NAME";
+        }
         StringBuffer strColsName = new StringBuffer();
         for (Map<String, Object> colsName : colsNameList) {
-            strColsName.append(colsName.get("COLUMN_NAME").toString());
+            strColsName.append(colsName.get(key).toString());
             strColsName.append(CommonDao.COMMA);
         }
 
         strColsName.deleteCharAt(strColsName.length() - 1);//","的长度为1，所以删除最后一个","即删除下标为strColsName.length()-1字符
-        strColsName.replace(strColsName.indexOf(CommonDao.ID_COMMA), CommonDao.ID_COMMA.length(), "");//indexOf从0开始计算,没有查到指定的字符则该方法返回-1
-
-        // For debug
-        //String[] name = strColsName.toString().split(CommonDao.COMMA, -1);
-
+        if(isCustomize == false) {
+            strColsName.replace(strColsName.indexOf(CommonDao.ID_COMMA), CommonDao.ID_COMMA.length(), "");//indexOf从0开始计算,没有查到指定的字符则该方法返回-1
+        }
         return strColsName.toString();
     }
 
