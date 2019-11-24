@@ -251,7 +251,7 @@ public class DataService {
         List<Map<String, Object>> colsNameList = null;
         if (isCustomize) {
             //自定义判断数据表相同数据的列名
-            colsNameList = getDataDao().queryListForColumnName(TABLE_COLUMNS_FOR_SAME_DATA);
+            colsNameList = getDataDao().queryListForColumnName(DataService.TABLE_COLUMNS_FOR_SAME_DATA);
         } else {
             //全部列名
             colsNameList = getDataDao().queryListForColumnName(DataService.TABLE_DATA);
