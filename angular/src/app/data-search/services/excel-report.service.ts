@@ -32,6 +32,7 @@ export class ExcelReportService implements ProcessingDialogCallback {
   private excelReportTypesUrl = 'api/getExcelReportTypes';  // URL to web api
   // export excel report
   private exportExcelReportUrl = 'api/exportExcelReport';
+  private EXCEL_REPORT_ERROR_TITLE = '汇总报告执行失败';
   // fixed excel report query condtions
   private FIXED_EXCEL_REPORT_QUERY_CONDITIONS: Set<String> = new Set(['月份', '海关编码', '进出口']);
   private EXCLUDE_EXCEL_REPORT_TYPES: Set<String> = new Set([
@@ -93,13 +94,21 @@ export class ExcelReportService implements ProcessingDialogCallback {
   }
   // callback when getting statistics fields
   private getExcelReportQueryConditionsNotification(httpResponse: HttpResponse) {
+    this.commonUtilitiesService.closeProcessingDialog();
     if (httpResponse.code === 201) {
       this.currentUserContainer.sessionTimeout();
       return;
+    } else if (httpResponse.code !== 200) {
+      this.commonUtilitiesService.showSimpleDialog(
+        this.EXCEL_REPORT_ERROR_TITLE,
+        httpResponse.message,
+        'info'
+      );
+    } else {
+      this.excelReportQueryConditions = this.convertQueryConditions(httpResponse.data);
+      // get excel report types
+      this.getExcelReportTypes();
     }
-    this.excelReportQueryConditions = this.convertQueryConditions(httpResponse.data);
-    // get excel report types
-    this.getExcelReportTypes();
   }
   // convert query conditions from http response to QueryCondition
   private convertQueryConditions(queryConditions: any): QueryCondition[] {
