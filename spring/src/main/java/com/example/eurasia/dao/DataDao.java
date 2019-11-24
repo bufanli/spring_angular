@@ -488,7 +488,19 @@ GROUP BY 列1,列2,列3 having count(*) > 1;
         sql.append("select count(distinct(" + columnName + ")) from " + tableName);
 
         Long numList = getJdbcTemplate().queryForObject(sql.toString(), Long.class);
-        return numList;//如果>0说明存在有值行数据
+        if(numList == 1 ) {
+            // if num is 1, then select distinct column to tell
+            // whether has data in this column in next step or not
+            String sqlForDistinct  = "select distinct(" + columnName + ") from " + tableName;
+            Object distinctValue = getJdbcTemplate().queryForObject(sqlForDistinct, Object.class);
+            if(distinctValue == null || "".equals(distinctValue)) {
+                return Long.valueOf(0);
+            }else{
+                return Long.valueOf(1);
+            }
+        }else{
+            return numList;
+        }
     }
 
     /**
