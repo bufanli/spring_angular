@@ -355,7 +355,10 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
             ImportExcelUtils.setSizeColumn(detailSheet, (colsNameSet.size() + 1));
 
             // 写入Response
-            ImportExcelUtils.buildExcelDocument(newFileName.toString(), swb, response);
+            ImportExcelUtils.buildExcelDocument(
+                    newFileName.toString().replace('/','_'),
+                    swb,
+                    response);
 
             // 删除临时文件
             ImportExcelUtils.delete(tempFileName);
