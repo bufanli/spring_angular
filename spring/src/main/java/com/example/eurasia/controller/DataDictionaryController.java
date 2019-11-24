@@ -107,7 +107,7 @@ public class DataDictionaryController {
      * @description 导出数据对应关系的字典到csv文件
      */
     @RequestMapping(value="/exportDataDictionary", method = RequestMethod.POST)
-    public @ResponseBody ResponseResult exportDataDictionary(HttpServletRequest request, HttpServletResponse response,
+    public ResponseResult exportDataDictionary(HttpServletRequest request, HttpServletResponse response,
                                                @RequestParam("dictionaryName") String dictionaryName) throws IOException {
         ResponseResult responseResult;
         try {

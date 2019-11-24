@@ -125,15 +125,8 @@ public class CSVUtils {
                 for (String[] dataArr : dataList) {
                     dataBuffer = new StringBuffer();
                     // for one data entry
-                    int index = 0;// skip first column(id)
                     for (String data : dataArr) {
-                        if(index == 0){
-                            index++;
-                            continue;
-                        }else {
-                            dataBuffer.append(data).append(CSV_SEPERATOR);
-                            index++;
-                        }
+                        dataBuffer.append(data).append(CSV_SEPERATOR);
                     }
                     // get rid of last CSV_SEPERATOR
                     String dataStr = dataBuffer.toString();
