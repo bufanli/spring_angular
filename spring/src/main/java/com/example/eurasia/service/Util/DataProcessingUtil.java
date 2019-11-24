@@ -20,7 +20,7 @@ import java.util.Set;
 public class DataProcessingUtil {
 
     public static String[] getListMapValuesOfOneColumn(List<Map<String, Object>> listMaps) {
-        ArrayList valuesArray = new ArrayList();
+        ArrayList<Object> valuesArray = new ArrayList<Object>();
         for (Map<String, Object> map : listMaps) {
             for (Map.Entry<String, Object> m : map.entrySet()) {
                 valuesArray.add (m.getValue());
