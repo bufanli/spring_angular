@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -64,6 +65,12 @@ public class UpDownloadFileServiceImpl extends CommonService implements IUpDownl
             Slf4jLogUtil.get().info("第{}/{}个文件开始保存,文件名:{}",(i+1),fileNumber,fileName);
 
             try {
+                // 上传文件大小限制
+                Long len = files[i].getSize();
+                if (len > (DataService.UPLOAD_FILE_MAX_SIZE*1048576)) { //1M=1024k=1048576字节
+                    throw new MultipartException(ResponseCodeEnum.UPLOAD_FILE_FAILED_FILE_OVERSIZE.getMessage());
+                }
+
                 //需要自定义文件名的情况
                 //String suffix = files.getOriginalFilename().substring(files.getOriginalFilename().lastIndexOf("."));
                 //String fileName = UUID.randomUUID() + suffix;
@@ -78,10 +85,16 @@ public class UpDownloadFileServiceImpl extends CommonService implements IUpDownl
                 fileOKNum++;
                 responseOK.append(fileName + DataService.BR);
                 Slf4jLogUtil.get().info("第{}/{}个文件保存OK结束,文件名:{}",(i+1),fileNumber,fileName);
+            } catch (MultipartException e) {
+                e.printStackTrace();
+                fileNGNum++;
+                responseNG.append(fileName + ":文件大小超过" + DataService.UPLOAD_FILE_MAX_SIZE + "M" + DataService.BR);
+                Slf4jLogUtil.get().error("第{}/{}个文件大小超过{}M,文件名:{}",(i+1),fileNumber,DataService.UPLOAD_FILE_MAX_SIZE,fileName);
+                continue;
             } catch (IOException e) {
                 e.printStackTrace();
                 fileNGNum++;
-                responseNG.append(fileName +":文件保存IO异常" + DataService.BR);
+                responseNG.append(fileName + ":文件保存IO异常" + DataService.BR);
                 Slf4jLogUtil.get().error("第{}/{}个文件保存IO异常,文件名:{}",(i+1),fileNumber,fileName);
                 continue;
             } catch (IllegalStateException e) {

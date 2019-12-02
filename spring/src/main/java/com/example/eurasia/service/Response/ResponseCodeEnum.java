@@ -199,6 +199,7 @@ public enum ResponseCodeEnum {
     /* 文件上传 */
     UPLOAD_FILE_SUCCESS(ResponseCode.RESPONSE_CODE_OK, "上传文件成功"),
     UPLOAD_FILE_FAILED(ResponseCode.RESPONSE_CODE_NG, "上传文件失败"),
+    UPLOAD_FILE_FAILED_FILE_OVERSIZE(ResponseCode.RESPONSE_CODE_NG, "上传文件失败,请不要大于20M。"),
     UPLOAD_GET_HEADER_INFO_FROM_SQL_FAILED(ResponseCode.RESPONSE_CODE_NG, "上传文件时,从数据库取得表头信息失败"),
     UPLOAD_GET_HEADER_INFO_FROM_SQL_NULL(ResponseCode.RESPONSE_CODE_NULL, "上传文件时,从数据库取得表头信息为NULL"),
     UPLOAD_GET_HEADER_INFO_FROM_SQL_ZERO(ResponseCode.RESPONSE_CODE_OK, "上传文件时,从数据库取得表头信息为0"),

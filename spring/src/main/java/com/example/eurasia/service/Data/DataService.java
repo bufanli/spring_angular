@@ -81,6 +81,8 @@ public class DataService {
     public static final String IMPORT_EXCEL_FAILED_MESSAGE = "导入失败";
     public static final String IMPORT_EXCEL_DATA_WRONG_MESSAGE = "导入数据问题";
 
+    public static final int UPLOAD_FILE_MAX_SIZE = 20;
+
     /**
      * 初始化数据表
      * @param
