@@ -57,6 +57,8 @@ export class AddCustomColumnComponent extends EditSynonymBase implements OnInit 
   }
   // save synonym dictionaries
   public saveColumnDictionaries(): void {
+    this.clearInfoMsg();
+    this.clearErrorMsg();
     // check whether input column is empty or not
     if (this.column === '') {
       this.errorExist = true;
@@ -102,6 +104,9 @@ export class AddCustomColumnComponent extends EditSynonymBase implements OnInit 
   public callbackOnSaveEnd(httpResponse: HttpResponse): void {
     if (httpResponse.code === 200) {
       this.addedColumn = this.addingColumn;
+    } else if (httpResponse.code === 201) {
+      // session timeout
+      this.activeModal.close();
     }
     super.callbackOnSaveEnd(httpResponse);
   }
