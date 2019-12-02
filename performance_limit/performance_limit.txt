@@ -1,0 +1,4 @@
+﻿1. Excel2007Reader.processAllSheets
+   OPCPackage pkg = OPCPackage.open(inputStream);这里面需要占用内存
+    java xmx1024m  处理最大为40M，记录数为20万
+    java xmx4096m  处理最大为100M，记录数为60万
