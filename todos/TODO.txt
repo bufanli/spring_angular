@@ -17,3 +17,5 @@
      虽然如果用户不随便更改原始表eurasiatable的表结构，就不会报错，但是还是最好在根据数据字典更新之前判断原始表eurasiatable
      中有没有数据字典需要的表，如果没有，那么忽略数据字典更新。
 14. 目前excel report的时候，默认的report type是全部在界面上选中的，应该按照用户给的模板设置默认选中。
+15. batch update 的时候 exception出力错误时候，没有slfLogUtil，而是printStack了，要改善.
+16. add column的时候，第一次很容易报错。
