@@ -36,6 +36,7 @@
     "classlist.js": "^1.1.20150312",
     "cnpm": "^6.0.0",
     "core-js": "^2.5.4",
+    "date-fns": "^2.8.1",
     "echarts": "^4.2.0-rc.2",
     "file-saver": "^2.0.0-rc.4",
     "font-awesome": "^4.7.0",

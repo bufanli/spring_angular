@@ -7,6 +7,7 @@ import { NgbModal, NgbModalOptions, NgbModalConfig, NgbModalRef } from '@ng-boot
 import { CommonDialogCallback } from '../interfaces/common-dialog-callback';
 import { ModalDialogComponent } from '../components/modal-dialog/modal-dialog.component';
 import { ProcessingDialogCallback } from '../interfaces/processing-dialog-callback';
+import format from 'date-fns/format';
 
 @Injectable({
   providedIn: 'root'
@@ -152,11 +153,7 @@ export class CommonUtilitiesService {
     if (date == null) {
       return '';
     } else {
-      let timeStr: string = date.toLocaleString();
-      // get rid of all chars until last space
-      const lastSpacePosition = timeStr.indexOf(' ');
-      timeStr = timeStr.substring(0, lastSpacePosition);
-      return timeStr.slice(0, 10).trim();
+      return format(date, 'yyyy/MM/dd');
     }
   }
   // show common dialog
