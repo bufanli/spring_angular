@@ -230,7 +230,11 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
                     computeFields[0] = new ComputeField("美元总价", ComputeField.SUM);
                     computeFields[1] = new ComputeField("法定重量", ComputeField.SUM);
 
-                    List<Data> dataList = dataService.searchDataForExcelReport(DataService.TABLE_DATA,groupByField,computeFields,queryConditionsArr);
+                    List<Data> dataList = dataService.searchDataForExcelReport(DataService.TABLE_DATA,
+                            groupByField,
+                            computeFields,
+                            queryConditionsArr,
+                            computeFields[0].toSql().toString());
                     if (dataList == null) {
                         Slf4jLogUtil.get().info(ResponseCodeEnum.EXPORT_EXCEL_REPORT_FROM_SQL_NULL.getMessage());
                         return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_EXCEL_REPORT_FROM_SQL_NULL);

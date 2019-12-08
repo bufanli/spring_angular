@@ -816,8 +816,16 @@ as不是给表里的字段取别名，而是给查询的结果字段取别名。
      * @author FuJia
      * @Time 2019-11-02 00:00:00
      */
-    public List<Data> searchDataForExcelReport(String tableName, String groupByField, ComputeField[] computeFields, QueryCondition[] queryConditionsArr) throws Exception {
-        if (StringUtils.isEmpty(tableName) || StringUtils.isEmpty(groupByField) || computeFields == null || queryConditionsArr == null) {
+    public List<Data> searchDataForExcelReport(String tableName,
+                                               String groupByField,
+                                               ComputeField[] computeFields,
+                                               QueryCondition[] queryConditionsArr,
+                                               String orderBy) throws Exception {
+        if (StringUtils.isEmpty(tableName)
+                || StringUtils.isEmpty(groupByField)
+                || computeFields == null
+                || queryConditionsArr == null
+                || StringUtils.isEmpty(orderBy)) {
             return null;
         }
         StringBuffer selectFieldSql = new StringBuffer();
@@ -827,7 +835,7 @@ as不是给表里的字段取别名，而是给查询的结果字段取别名。
 
         selectFieldSql.append(groupByField);
         groupByFieldSql.append(groupByField);
-        order.put(groupByField,"asc");
+        order.put(orderBy,"desc");
         orderSql.append(getDataDao().convertOrderToSQL(order));
 
         return getDataDao().queryListForAllObject(tableName,selectFieldSql,groupByFieldSql,orderSql,computeFields,queryConditionsArr);
