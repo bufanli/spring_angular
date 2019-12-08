@@ -113,7 +113,7 @@ public class ExcelReportConditionsController {
             if (StringUtils.isEmpty(userID)) {
                 responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
             } else {
-                responseResult = excelReportConditions.exportExcelReport(userID, data, response);
+                responseResult = excelReportConditions.exportExcelReportByTemplate(userID, data, response);
             }
         } catch (Exception e) {
             e.printStackTrace();
