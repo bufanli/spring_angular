@@ -244,6 +244,12 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
                         return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_EXCEL_REPORT_FROM_SQL_ZERO);
                     }
 
+                    // 克隆汇总模版表
+                    Sheet reportSheet = wb.cloneSheet(statisticsTemplateIndex);
+                    wb.setSheetName(wb.getSheetIndex(reportSheet.getSheetName()),excelReportOutputData.getReportTypes()[reportTypeIndex]);
+
+                    ImportExcelUtils.writeCellToExcel(wb, reportSheet, excelReportOutputData.getCoverTitle(), 0, 0, (short)11, false);
+
                     colsNameSet.add("序号");
                     colsNameSet.add(groupByField);
                     colsNameSet.add("美元总价合计");
@@ -251,6 +257,7 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
                     colsNameSet.add("法定重量合计");
                     colsNameSet.add("法定重量占比");
                     colsNameSet.add("平均单价");
+                    int titleRowIndex = ImportExcelUtils.writeTitlesToExcel(wb, reportSheet, colsNameSet, 19);
 
                     //sql结果List，ExcelReportValue
                     if (dataList.size() > 0) {
@@ -281,6 +288,20 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
                                 "SUM(F21:F" + String.valueOf(20 + dataList.size()) + ")",
                                 "SUM(G21:G" + String.valueOf(20 + dataList.size()) + ")"
                         });
+
+                        int dataRowIndex = this.writeRowsToReportSheet(wb, reportSheet, dataArrList, titleRowIndex);
+                        ImportExcelUtils.setSizeColumn(reportSheet, (colsNameSet.size() + 1));
+
+                        List<int[]> params = new ArrayList<int[]>();
+                        // anchor
+                        params.add(new int[]{1,2,5,17});
+                        // data range
+                        int y = dataList.size()<10 ? dataList.size() : 10;
+                        params.add(new int[]{20,(20+y),1,1});
+                        params.add(new int[]{20,(20+y),2,2,19,2});
+                        params.add(new int[]{20,(20+y),3,3,19,3});
+                        params.add(new int[]{20,(20+y),4,4,19,4});
+                        ImportExcelUtils.drawLineChart((XSSFSheet)reportSheet, params);
                     } else {
                         // T.B.D. 没有汇总数据时，不显示合计行
                         /*dataArrList.add(new String[]{
@@ -293,15 +314,6 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
                                 ""
                         });*/
                     }
-
-                    // 克隆汇总模版表
-                    Sheet reportSheet = wb.cloneSheet(statisticsTemplateIndex);
-                    wb.setSheetName(wb.getSheetIndex(reportSheet.getSheetName()),excelReportOutputData.getReportTypes()[reportTypeIndex]);
-
-                    ImportExcelUtils.writeCellToExcel(wb, reportSheet, excelReportOutputData.getCoverTitle(), 0, 0, (short)11, false);
-                    int titleRowIndex = ImportExcelUtils.writeTitlesToExcel(wb, reportSheet, colsNameSet, 19);
-                    int dataRowIndex = this.writeRowsToReportSheet(wb, reportSheet, dataArrList, titleRowIndex);
-                    ImportExcelUtils.setSizeColumn(reportSheet, (colsNameSet.size() + 1));
 
                 } else {
                     // 明细表
@@ -509,6 +521,11 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
                         return new ResponseResultUtil().error(ResponseCodeEnum.EXPORT_EXCEL_REPORT_FROM_SQL_ZERO);
                     }
 
+                    // 汇总模版表
+                    Sheet reportSheet = wb.createSheet(excelReportOutputData.getReportTypes()[reportTypeIndex]);
+
+                    ImportExcelUtils.writeCellToExcel(wb, reportSheet, excelReportOutputData.getCoverTitle(), 0, 0, (short)11, false);
+
                     colsNameSet.add("序号");
                     colsNameSet.add(groupByField);
                     colsNameSet.add("美元总价合计");
@@ -516,6 +533,7 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
                     colsNameSet.add("法定重量合计");
                     colsNameSet.add("法定重量占比");
                     colsNameSet.add("平均单价");
+                    int titleRowIndex = ImportExcelUtils.writeTitlesToExcel(wb, reportSheet, colsNameSet, 19);
 
                     //sql结果List，ExcelReportValue
                     if (dataList.size() > 0) {
@@ -546,6 +564,9 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
                                 "SUM(F21:F" + String.valueOf(20 + dataList.size()) + ")",
                                 "SUM(G21:G" + String.valueOf(20 + dataList.size()) + ")"
                         });
+
+                        int dataRowIndex = this.writeRowsToReportSheet(wb, reportSheet, dataArrList, titleRowIndex);
+                        ImportExcelUtils.setSizeColumn(reportSheet, (colsNameSet.size() + 1));
                     } else {
                         // T.B.D. 没有汇总数据时，不显示合计行
                         /*dataArrList.add(new String[]{
@@ -558,14 +579,6 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
                                 ""
                         });*/
                     }
-
-                    // 克隆汇总模版表
-                    Sheet reportSheet = wb.createSheet(excelReportOutputData.getReportTypes()[reportTypeIndex]);
-
-                    ImportExcelUtils.writeCellToExcel(wb, reportSheet, excelReportOutputData.getCoverTitle(), 0, 0, (short)11, false);
-                    int titleRowIndex = ImportExcelUtils.writeTitlesToExcel(wb, reportSheet, colsNameSet, 19);
-                    int dataRowIndex = this.writeRowsToReportSheet(wb, reportSheet, dataArrList, titleRowIndex);
-                    ImportExcelUtils.setSizeColumn(reportSheet, (colsNameSet.size() + 1));
 
                 } else {
                     // 明细表

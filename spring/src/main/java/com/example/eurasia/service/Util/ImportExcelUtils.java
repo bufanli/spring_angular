@@ -566,32 +566,28 @@ public class ImportExcelUtils {
     }
 
     /*
-     * @param params params.get(0) 为图表位置 0123为起始横坐标，起始纵坐标，终点横，终点纵
+     * 绘制折线图
+     * @param params params.get(0) 为图表位置 0123为起始横坐标，起始纵坐标，终点横坐标，终点纵坐标
      *
-     * @param params params.get(1) 为x轴取值范围，其他为折线取值范围。起始行号，终止行号， 起始列号，终止列号（折线名称坐标
-     * ）。
+     * @param params params.get(1) 为x轴取值范围，其他为折线取值范围。起始行号，终止行号，起始列号，终止列号（折线名称坐标）。
      */
-    private static void drawLineChart(XSSFSheet sheet, List<int[]> params) {
+    public static void drawLineChart(XSSFSheet sheet, List<int[]> params) {
 
         Drawing drawing = sheet.createDrawingPatriarch();
-        // 设置位置 起始横坐标，起始纵坐标，终点横，终点纵
-        ClientAnchor anchor = drawing.createAnchor(0, 0, 0, 0, params.get(0)[0], params.get(0)[1], params.get(0)[2],
-                params.get(0)[3]);
+        // 设置位置 起始横坐标，起始纵坐标，终点横坐标，终点纵坐标
+        ClientAnchor anchor = drawing.createAnchor(0, 0, 0, 0,
+                params.get(0)[0], params.get(0)[1], params.get(0)[2], params.get(0)[3]);
         Chart chart = drawing.createChart(anchor);
-
-        // 创建标题
-
         // 创建图形注释的位置
         ChartLegend legend = chart.getOrCreateLegend();
         legend.setPosition(LegendPosition.BOTTOM);
-        // 创建绘图的类型 LineCahrtData 折线图
+        // 创建绘图的类型 LineChartData 折线图
         LineChartData chartData = chart.getChartDataFactory().createLineChartData();
         // 设置横坐标
         ChartAxis bottomAxis = chart.getChartAxisFactory().createCategoryAxis(AxisPosition.BOTTOM);
         bottomAxis.setCrosses(AxisCrosses.AUTO_ZERO);
         // 设置纵坐标
         ValueAxis leftAxis = chart.getChartAxisFactory().createValueAxis(AxisPosition.LEFT);
-
         leftAxis.setCrosses(AxisCrosses.AUTO_ZERO);
         // 从Excel中获取数据.CellRangeAddress-->params: 起始行号，终止行号， 起始列号，终止列号
         // 数据类别（x轴）
@@ -601,48 +597,51 @@ public class ImportExcelUtils {
             // 数据源
             ChartDataSource dataAxis = DataSources.fromNumericCellRange(sheet,
                     new CellRangeAddress(params.get(i)[0], params.get(i)[1], params.get(i)[2], params.get(i)[3]));
-
             LineChartSeries chartSeries = chartData.addSeries(xAxis, dataAxis);
             // 给每条折线创建名字
             chartSeries.setTitle(sheet.getRow(params.get(i)[4]).getCell(params.get(i)[5]).getStringCellValue());
         }
-
+        // 图标标题
         setChartTitle((XSSFChart) chart, sheet.getSheetName());
         // 开始绘制折线图
         chart.plot(chartData, bottomAxis, leftAxis);
     }
 
-    private static void drawCTLineChart(XSSFSheet sheet, int[] position, List<String> xString, Set<String> serTxName,
-                                        List<String> dataRef) {
+    /*
+     * 绘制折线图
+     */
+    public static void drawCTLineChart(XSSFSheet sheet, int[] position, List<String> xString, Set<String> serTxName,
+                                    List<String> dataRef) {
 
-        Drawing drawing = sheet.createDrawingPatriarch();
-        ClientAnchor anchor = drawing.createAnchor(0, 0, 0, 0, position[0], position[1], position[2], position[3]);
+    Drawing drawing = sheet.createDrawingPatriarch();
+    ClientAnchor anchor = drawing.createAnchor(0, 0, 0, 0, position[0], position[1], position[2], position[3]);
 
-        Chart chart = drawing.createChart(anchor);
+    Chart chart = drawing.createChart(anchor);
 
-        CTChart ctChart = ((XSSFChart) chart).getCTChart();
-        CTPlotArea ctPlotArea = ctChart.getPlotArea();
-        CTLineChart ctLineChart = ctPlotArea.addNewLineChart();
+    CTChart ctChart = ((XSSFChart) chart).getCTChart();
+    CTPlotArea ctPlotArea = ctChart.getPlotArea();
+    CTLineChart ctLineChart = ctPlotArea.addNewLineChart();
 
-        ctLineChart.addNewVaryColors().setVal(true);
+    ctLineChart.addNewVaryColors().setVal(true);
 
-        // telling the Chart that it has axis and giving them Ids
-        setAxIds(ctLineChart);
-        // set cat axis
-        setCatAx(ctPlotArea);
-        // set val axis
-        setValAx(ctPlotArea);
-        // legend
-        setLegend(ctChart);
-        // set data lable
-        setDataLabel(ctLineChart);
-        // set chart title
-        setChartTitle((XSSFChart) chart, sheet.getSheetName());
+    // telling the Chart that it has axis and giving them Ids
+    setAxIds(ctLineChart);
+    // set cat axis
+    setCatAx(ctPlotArea);
+    // set val axis
+    setValAx(ctPlotArea);
+    // legend
+    setLegend(ctChart);
+    // set data lable
+    setDataLabel(ctLineChart);
+    // set chart title
+    setChartTitle((XSSFChart) chart, sheet.getSheetName());
 
-        paddingData(ctLineChart, xString, serTxName, dataRef);
-    }
+    paddingData(ctLineChart, xString, serTxName, dataRef);
+}
 
     /*
+     * 绘制柱状图
      * @param position 图表坐标 起始行，起始列，终点行，重点列
      *
      * @param xString 横坐标
@@ -651,7 +650,7 @@ public class ImportExcelUtils {
      *
      * @param dataRef 柱状图数据范围 ： sheetName!$A$1:$A$12
      */
-    private static void drawBarChart(XSSFSheet sheet, int[] position, List<String> xString, Set<String> serTxName,
+    public static void drawBarChart(XSSFSheet sheet, int[] position, List<String> xString, Set<String> serTxName,
                                      List<String> dataRef) {
 
         Drawing drawing = sheet.createDrawingPatriarch();
