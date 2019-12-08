@@ -610,8 +610,8 @@ public class ImportExcelUtils {
     /*
      * 绘制折线图
      */
-    public static void drawCTLineChart(XSSFSheet sheet, int[] position, List<String> xString, Set<String> serTxName,
-                                    List<String> dataRef) {
+    public static void drawCTLineChart(XSSFSheet sheet, int[] position,
+                                       List<String> xString, Set<String> serTxName, List<String> dataRef) {
 
     Drawing drawing = sheet.createDrawingPatriarch();
     ClientAnchor anchor = drawing.createAnchor(0, 0, 0, 0, position[0], position[1], position[2], position[3]);
@@ -620,19 +620,19 @@ public class ImportExcelUtils {
 
     CTChart ctChart = ((XSSFChart) chart).getCTChart();
     CTPlotArea ctPlotArea = ctChart.getPlotArea();
-    CTLineChart ctLineChart = ctPlotArea.addNewLineChart();
 
+    CTLineChart ctLineChart = ctPlotArea.addNewLineChart();
     ctLineChart.addNewVaryColors().setVal(true);
 
     // telling the Chart that it has axis and giving them Ids
     setAxIds(ctLineChart);
     // set cat axis
-    setCatAx(ctPlotArea);
+    setCatAx(ctPlotArea, STAxPos.B);
     // set val axis
-    setValAx(ctPlotArea);
+    setValAx(ctPlotArea, STAxPos.L);
     // legend
     setLegend(ctChart);
-    // set data lable
+    // set data label
     setDataLabel(ctLineChart);
     // set chart title
     setChartTitle((XSSFChart) chart, sheet.getSheetName());
@@ -650,8 +650,8 @@ public class ImportExcelUtils {
      *
      * @param dataRef 柱状图数据范围 ： sheetName!$A$1:$A$12
      */
-    public static void drawBarChart(XSSFSheet sheet, int[] position, List<String> xString, Set<String> serTxName,
-                                     List<String> dataRef) {
+    public static void drawBarChart(XSSFSheet sheet, int[] position,
+                                    List<String> xString, Set<String> serTxName, List<String> dataRef) {
 
         Drawing drawing = sheet.createDrawingPatriarch();
         ClientAnchor anchor = drawing.createAnchor(0, 0, 0, 0, position[0], position[1], position[2], position[3]);
@@ -662,23 +662,78 @@ public class ImportExcelUtils {
         CTPlotArea ctPlotArea = ctChart.getPlotArea();
         CTBarChart ctBarChart = ctPlotArea.addNewBarChart();
 
-        ctBarChart.addNewVaryColors().setVal(false);
+        ctBarChart.addNewVaryColors().setVal(true);
         ctBarChart.addNewBarDir().setVal(STBarDir.COL);
 
         // telling the Chart that it has axis and giving them Ids
         setAxIds(ctBarChart);
         // set cat axis
-        setCatAx(ctPlotArea);
+        setCatAx(ctPlotArea, STAxPos.B);
         // set val axis
-        setValAx(ctPlotArea);
+        setValAx(ctPlotArea, STAxPos.L);
         // add legend and set legend position
         setLegend(ctChart);
-        // set data lable
+        // set data label
         setDataLabel(ctBarChart);
         // set chart title
         setChartTitle((XSSFChart) chart, sheet.getSheetName());
         // padding data to chart
         paddingData(ctBarChart, xString, serTxName, dataRef);
+    }
+
+    /*
+     * 绘制柱状折线图
+     */
+    public static void drawBarAndCTLineChart(XSSFSheet sheet, int[] position,
+                                             List<String> xBarString, Set<String> serBarTxName, List<String> dataBarRef,
+                                             List<String> xLineString, Set<String> serLineTxName, List<String> dataLineRef) {
+
+        Drawing drawing = sheet.createDrawingPatriarch();
+        ClientAnchor anchor = drawing.createAnchor(0, 0, 0, 0, position[0], position[1], position[2], position[3]);
+
+        Chart chart = drawing.createChart(anchor);
+
+        CTChart ctChart = ((XSSFChart) chart).getCTChart();
+        CTPlotArea ctPlotArea = ctChart.getPlotArea();
+
+        // Bar----------
+        CTBarChart ctBarChart = ctPlotArea.addNewBarChart();
+        ctBarChart.addNewVaryColors().setVal(true);
+        ctBarChart.addNewBarDir().setVal(STBarDir.COL);
+
+        // telling the Chart that it has axis and giving them Ids
+        setAxIds(ctBarChart);
+        // set cat axis
+        setCatAx(ctPlotArea, STAxPos.B);
+        // set val axis
+        setValAx(ctPlotArea, STAxPos.L);
+        // add legend and set legend position
+        setLegend(ctChart);
+        // set data label
+        setDataLabel(ctBarChart);
+        // set chart title
+        setChartTitle((XSSFChart) chart, sheet.getSheetName());
+        // padding data to chart
+        paddingData(ctBarChart, xBarString, serBarTxName, dataBarRef);
+
+        // CTLine----------
+        CTLineChart ctLineChart = ctPlotArea.addNewLineChart();
+        ctLineChart.addNewVaryColors().setVal(true);
+
+        // telling the Chart that it has axis and giving them Ids
+        setAxIds(ctLineChart);
+        // set cat axis
+        setCatAx(ctPlotArea, STAxPos.B);
+        // set val axis
+        setValAx(ctPlotArea, STAxPos.R);
+        // legend
+        setLegend(ctChart);
+        // set data label
+        setDataLabel(ctLineChart);
+        // set chart title
+        setChartTitle((XSSFChart) chart, sheet.getSheetName());
+
+        paddingData(ctLineChart, xLineString, serLineTxName, dataLineRef);
     }
 
     private static void paddingData(CTBarChart ctBarChart, List<String> xString, Set<String> serTxName,
@@ -726,7 +781,7 @@ public class ImportExcelUtils {
             cttAxDataSource.addNewStrRef().setF(xString.get(0));
         } else {
             CTStrData ctStrData = cttAxDataSource.addNewStrLit();
-            for (int m = 0, xlen = xString.size(); m < xlen; m++) {
+            for (int m = 0, xLen = xString.size(); m < xLen; m++) {
                 CTStrVal ctStrVal = ctStrData.addNewPt();
                 ctStrVal.setIdx((long) m);
                 ctStrVal.setV(xString.get(m));
@@ -778,34 +833,34 @@ public class ImportExcelUtils {
         ctLegend.addNewOverlay().setVal(false);
     }
 
-    private static void setCatAx(CTPlotArea ctPlotArea) {
+    private static void setCatAx(CTPlotArea ctPlotArea, STAxPos.Enum anEnum) {
         CTCatAx ctCatAx = ctPlotArea.addNewCatAx();
         ctCatAx.addNewAxId().setVal(123456); // id of the cat axis
         CTScaling ctScaling = ctCatAx.addNewScaling();
         ctScaling.addNewOrientation().setVal(STOrientation.MIN_MAX);
         ctCatAx.addNewDelete().setVal(false);
-        ctCatAx.addNewAxPos().setVal(STAxPos.B);
+        ctCatAx.addNewAxPos().setVal(anEnum);
         ctCatAx.addNewCrossAx().setVal(123457); // id of the val axis
         ctCatAx.addNewTickLblPos().setVal(STTickLblPos.NEXT_TO);
 
     }
 
     // 不要y轴的标签，或者y轴尽可能的窄一些
-    private static void setValAx(CTPlotArea ctPlotArea) {
+    private static void setValAx(CTPlotArea ctPlotArea, STAxPos.Enum anEnum) {
         CTValAx ctValAx = ctPlotArea.addNewValAx();
         ctValAx.addNewAxId().setVal(123457); // id of the val axis
         CTScaling ctScaling = ctValAx.addNewScaling();
         ctScaling.addNewOrientation().setVal(STOrientation.MIN_MAX);
         // 不现实y轴
         ctValAx.addNewDelete().setVal(true);
-        ctValAx.addNewAxPos().setVal(STAxPos.L);
+        ctValAx.addNewAxPos().setVal(anEnum);
         ctValAx.addNewCrossAx().setVal(123456); // id of the cat axis
         ctValAx.addNewTickLblPos().setVal(STTickLblPos.NEXT_TO);
     }
 
     // 图标标题
-    private static void setChartTitle(XSSFChart xchart, String titleStr) {
-        CTChart ctChart = xchart.getCTChart();
+    private static void setChartTitle(XSSFChart xChart, String titleStr) {
+        CTChart ctChart = xChart.getCTChart();
 
         CTTitle title = CTTitle.Factory.newInstance();
         CTTx cttx = title.addNewTx();
