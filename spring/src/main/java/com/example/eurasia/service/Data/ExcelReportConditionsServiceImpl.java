@@ -245,7 +245,7 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
                     }
 
                     // 克隆汇总模版表
-                    Sheet reportSheet = wb.cloneSheet(statisticsTemplateIndex);
+                    XSSFSheet  reportSheet = wb.cloneSheet(statisticsTemplateIndex);
                     wb.setSheetName(wb.getSheetIndex(reportSheet.getSheetName()),excelReportOutputData.getReportTypes()[reportTypeIndex]);
 
                     ImportExcelUtils.writeCellToExcel(wb, reportSheet, excelReportOutputData.getCoverTitle(), 0, 0, (short)11, false);
@@ -292,16 +292,35 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
                         int dataRowIndex = this.writeRowsToReportSheet(wb, reportSheet, dataArrList, titleRowIndex);
                         ImportExcelUtils.setSizeColumn(reportSheet, (colsNameSet.size() + 1));
 
-                        List<int[]> params = new ArrayList<int[]>();
                         // anchor
-                        params.add(new int[]{1,2,5,17});
-                        // data range
-                        int y = dataList.size()<10 ? dataList.size() : 10;
-                        params.add(new int[]{20,(20+y),1,1});
-                        params.add(new int[]{20,(20+y),2,2,19,2});
-                        params.add(new int[]{20,(20+y),3,3,19,3});
-                        params.add(new int[]{20,(20+y),4,4,19,4});
-                        ImportExcelUtils.drawLineChart((XSSFSheet)reportSheet, params);
+                        int[] params =new int[]{1,2,5,17};
+                        // line charts
+                        List<String> lineChartCategories = new ArrayList<String>();
+                        lineChartCategories.add(reportSheet.getSheetName() +"!$B21:$B30");
+                        Set<String> lineChartLegends = new HashSet<String>();
+                        lineChartLegends.add(reportSheet.getSheetName() + "!$B20");
+                        List<String> lineChartValues = new ArrayList<String>();
+                        lineChartValues.add(reportSheet.getSheetName() + "!$C$21:$C$30");
+                        // bar charts
+                         List<String> barChartCategories = new ArrayList<String>();
+                        barChartCategories.add(reportSheet.getSheetName() +"!$B21:$B30");
+                        Set<String> barChartLegends = new HashSet<String>();
+                        barChartLegends.add(reportSheet.getSheetName() + "!$D20");
+                        List<String> barChartValues = new ArrayList<String>();
+                        barChartValues.add(reportSheet.getSheetName() + "!$D$21:$D$30");
+                        ImportExcelUtils.drawBarChart(
+                                // sheet
+                                reportSheet,
+                                // position of chart
+                                params,
+                                // line chart
+//                                lineChartCategories,
+//                                lineChartLegends,
+//                                lineChartValues,
+                                // bar chart
+                                barChartCategories,
+                                barChartLegends,
+                                barChartValues);
                     } else {
                         // T.B.D. 没有汇总数据时，不显示合计行
                         /*dataArrList.add(new String[]{
