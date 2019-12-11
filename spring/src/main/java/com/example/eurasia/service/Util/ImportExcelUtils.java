@@ -602,16 +602,20 @@ public class ImportExcelUtils {
             chartSeries.setTitle(sheet.getRow(params.get(i)[4]).getCell(params.get(i)[5]).getStringCellValue());
         }
         // 图标标题
-        setChartTitle((XSSFChart) chart, sheet.getSheetName());
+        setChartTitle((XSSFChart) chart, sheet.getSheetName(),123450);
         // 开始绘制折线图
         chart.plot(chartData, bottomAxis, leftAxis);
     }
 
     /*
      * 绘制折线图
+     * ids -- category axis id, value axix id titleid
      */
     public static void drawCTLineChart(XSSFSheet sheet, int[] position,
-                                       List<String> xString, Set<String> serTxName, List<String> dataRef) {
+                                       List<String> xString,
+                                       Set<String> serTxName,
+                                       List<String> dataRef,
+                                        List<Integer>ids) {
 
     Drawing drawing = sheet.createDrawingPatriarch();
     ClientAnchor anchor = drawing.createAnchor(0, 0, 0, 0, position[0], position[1], position[2], position[3]);
@@ -625,17 +629,17 @@ public class ImportExcelUtils {
     ctLineChart.addNewVaryColors().setVal(true);
 
     // telling the Chart that it has axis and giving them Ids
-    setAxIds(ctLineChart);
+    setAxIds(ctLineChart,ids);
     // set cat axis
-    setCatAx(ctPlotArea, STAxPos.B);
+    setCatAx(ctPlotArea, STAxPos.B,ids);
     // set val axis
-    setValAx(ctPlotArea, STAxPos.L);
+    setValAx(ctPlotArea, STAxPos.L,ids);
     // legend
     setLegend(ctChart);
     // set data label
-    setDataLabel(ctLineChart);
+//    setDataLabel(ctLineChart);
     // set chart title
-    setChartTitle((XSSFChart) chart, sheet.getSheetName());
+    setChartTitle((XSSFChart) chart, sheet.getSheetName(),ids.get(2));
 
     paddingData(ctLineChart, xString, serTxName, dataRef);
 }
@@ -649,9 +653,14 @@ public class ImportExcelUtils {
      * @param serTxName 图形示例
      *
      * @param dataRef 柱状图数据范围 ： sheetName!$A$1:$A$12
+     *
+     * @param ids -- category axis id , value axis id, titleid
      */
     public static void drawBarChart(XSSFSheet sheet, int[] position,
-                                    List<String> xString, Set<String> serTxName, List<String> dataRef) {
+                                    List<String> xString,
+                                    Set<String> serTxName,
+                                    List<String> dataRef,
+                                    List<Integer> ids) {
 
         Drawing drawing = sheet.createDrawingPatriarch();
         ClientAnchor anchor = drawing.createAnchor(0, 0, 0, 0, position[0], position[1], position[2], position[3]);
@@ -666,17 +675,17 @@ public class ImportExcelUtils {
         ctBarChart.addNewBarDir().setVal(STBarDir.COL);
 
         // telling the Chart that it has axis and giving them Ids
-        setAxIds(ctBarChart);
+        setAxIds(ctBarChart,ids);
         // set cat axis
-        setCatAx(ctPlotArea, STAxPos.B);
+        setCatAx(ctPlotArea, STAxPos.B,ids);
         // set val axis
-        setValAx(ctPlotArea, STAxPos.L);
+        setValAx(ctPlotArea, STAxPos.L,ids);
         // add legend and set legend position
         setLegend(ctChart);
         // set data label
         setDataLabel(ctBarChart);
         // set chart title
-        setChartTitle((XSSFChart) chart, sheet.getSheetName());
+        setChartTitle((XSSFChart) chart, sheet.getSheetName(),ids.get(2));
         // padding data to chart
         paddingData(ctBarChart, xString, serTxName, dataRef);
     }
@@ -685,9 +694,18 @@ public class ImportExcelUtils {
      * 绘制柱状折线图
      */
     public static void drawBarAndCTLineChart(XSSFSheet sheet, int[] position,
-                                             List<String> xBarString, Set<String> serBarTxName, List<String> dataBarRef,
-                                             List<String> xLineString, Set<String> serLineTxName, List<String> dataLineRef) {
-
+                                             int titleId,
+                                             // line parameters
+                                             List<String> xLineString,
+                                             Set<String> serLineTxName,
+                                             List<String> dataLineRef,
+                                             List<Integer> lineAxisIds,
+                                             // bar parameters
+                                             List<String> xBarString,
+                                             Set<String> serBarTxName,
+                                             List<String> dataBarRef,
+                                             List<Integer> barAxisIds
+                                             ) {
         Drawing drawing = sheet.createDrawingPatriarch();
         ClientAnchor anchor = drawing.createAnchor(0, 0, 0, 0, position[0], position[1], position[2], position[3]);
 
@@ -700,40 +718,30 @@ public class ImportExcelUtils {
         CTBarChart ctBarChart = ctPlotArea.addNewBarChart();
         ctBarChart.addNewVaryColors().setVal(true);
         ctBarChart.addNewBarDir().setVal(STBarDir.COL);
-
-        // telling the Chart that it has axis and giving them Ids
-        setAxIds(ctBarChart);
-        // set cat axis
-        setCatAx(ctPlotArea, STAxPos.B);
-        // set val axis
-        setValAx(ctPlotArea, STAxPos.L);
-        // add legend and set legend position
-        setLegend(ctChart);
-        // set data label
-        setDataLabel(ctBarChart);
-        // set chart title
-        setChartTitle((XSSFChart) chart, sheet.getSheetName());
-        // padding data to chart
+        // padding data
         paddingData(ctBarChart, xBarString, serBarTxName, dataBarRef);
-
+        // telling the Chart that it has axis and giving them Ids
+        setAxIds(ctBarChart,barAxisIds);
         // CTLine----------
         CTLineChart ctLineChart = ctPlotArea.addNewLineChart();
         ctLineChart.addNewVaryColors().setVal(true);
-
+        // padding data
+        paddingData(ctLineChart, xLineString, serLineTxName, dataLineRef);
         // telling the Chart that it has axis and giving them Ids
-        setAxIds(ctLineChart);
-        // set cat axis
-        setCatAx(ctPlotArea, STAxPos.B);
+        setAxIds(ctLineChart,lineAxisIds);
+        // common of line and bar
+         // set cat axis
+        setCatAx(ctPlotArea, STAxPos.B,barAxisIds);
         // set val axis
-        setValAx(ctPlotArea, STAxPos.R);
+        setValAx(ctPlotArea, STAxPos.L,barAxisIds);
+        // set cat axis
+        setCatAx(ctPlotArea, STAxPos.B,lineAxisIds);
+        // set val axis
+        setValAx(ctPlotArea, STAxPos.R,lineAxisIds);
         // legend
         setLegend(ctChart);
-        // set data label
-        setDataLabel(ctLineChart);
-        // set chart title
-        setChartTitle((XSSFChart) chart, sheet.getSheetName());
-
-        paddingData(ctLineChart, xLineString, serLineTxName, dataLineRef);
+        // set title
+       setChartTitle((XSSFChart) chart, sheet.getSheetName(),titleId);
     }
 
     private static void paddingData(CTBarChart ctBarChart, List<String> xString, Set<String> serTxName,
@@ -817,14 +825,14 @@ public class ImportExcelUtils {
         // dlbls.addNewShowVal().setVal(false);
     }
 
-    private static void setAxIds(CTBarChart ctBarChart) {
-        ctBarChart.addNewAxId().setVal(123456);
-        ctBarChart.addNewAxId().setVal(123457);
+    private static void setAxIds(CTBarChart ctBarChart,List<Integer> ids) {
+        ctBarChart.addNewAxId().setVal(ids.get(0));
+        ctBarChart.addNewAxId().setVal(ids.get(1));
     }
 
-    private static void setAxIds(CTLineChart ctLineChart) {
-        ctLineChart.addNewAxId().setVal(123456);
-        ctLineChart.addNewAxId().setVal(123457);
+    private static void setAxIds(CTLineChart ctLineChart,List<Integer> ids) {
+        ctLineChart.addNewAxId().setVal(ids.get(0));
+        ctLineChart.addNewAxId().setVal(ids.get(1));
     }
 
     private static void setLegend(CTChart ctChart) {
@@ -833,40 +841,39 @@ public class ImportExcelUtils {
         ctLegend.addNewOverlay().setVal(false);
     }
 
-    private static void setCatAx(CTPlotArea ctPlotArea, STAxPos.Enum anEnum) {
+    private static void setCatAx(CTPlotArea ctPlotArea, STAxPos.Enum anEnum,List<Integer> ids) {
         CTCatAx ctCatAx = ctPlotArea.addNewCatAx();
-        ctCatAx.addNewAxId().setVal(123456); // id of the cat axis
+        ctCatAx.addNewAxId().setVal(ids.get(0)); // id of the cat axis
         CTScaling ctScaling = ctCatAx.addNewScaling();
         ctScaling.addNewOrientation().setVal(STOrientation.MIN_MAX);
         ctCatAx.addNewDelete().setVal(false);
         ctCatAx.addNewAxPos().setVal(anEnum);
-        ctCatAx.addNewCrossAx().setVal(123457); // id of the val axis
+        ctCatAx.addNewCrossAx().setVal(ids.get(1)); // id of the val axis
         ctCatAx.addNewTickLblPos().setVal(STTickLblPos.NEXT_TO);
-
     }
 
     // 不要y轴的标签，或者y轴尽可能的窄一些
-    private static void setValAx(CTPlotArea ctPlotArea, STAxPos.Enum anEnum) {
+    private static void setValAx(CTPlotArea ctPlotArea, STAxPos.Enum anEnum,List<Integer>ids) {
         CTValAx ctValAx = ctPlotArea.addNewValAx();
-        ctValAx.addNewAxId().setVal(123457); // id of the val axis
+        ctValAx.addNewAxId().setVal(ids.get(1)); // id of the val axis
         CTScaling ctScaling = ctValAx.addNewScaling();
         ctScaling.addNewOrientation().setVal(STOrientation.MIN_MAX);
         // 不现实y轴
-        ctValAx.addNewDelete().setVal(true);
+        ctValAx.addNewDelete().setVal(false);
         ctValAx.addNewAxPos().setVal(anEnum);
-        ctValAx.addNewCrossAx().setVal(123456); // id of the cat axis
+        ctValAx.addNewCrossAx().setVal(ids.get(0)); // id of the cat axis
         ctValAx.addNewTickLblPos().setVal(STTickLblPos.NEXT_TO);
     }
 
     // 图标标题
-    private static void setChartTitle(XSSFChart xChart, String titleStr) {
+    private static void setChartTitle(XSSFChart xChart, String titleStr,int titleId) {
         CTChart ctChart = xChart.getCTChart();
 
         CTTitle title = CTTitle.Factory.newInstance();
         CTTx cttx = title.addNewTx();
         CTStrData sd = CTStrData.Factory.newInstance();
         CTStrVal str = sd.addNewPt();
-        str.setIdx(123459);
+        str.setIdx(titleId);
         str.setV(titleStr);
         cttx.addNewStrRef().setStrCache(sd);
 

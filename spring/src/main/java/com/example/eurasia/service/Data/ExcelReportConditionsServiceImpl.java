@@ -296,31 +296,40 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
                         int[] params =new int[]{1,2,5,17};
                         // line charts
                         List<String> lineChartCategories = new ArrayList<String>();
-                        lineChartCategories.add(reportSheet.getSheetName() +"!$B21:$B30");
+                        lineChartCategories.add(reportSheet.getSheetName() +"!$B$21:$B$30");
                         Set<String> lineChartLegends = new HashSet<String>();
-                        lineChartLegends.add(reportSheet.getSheetName() + "!$B20");
+                        lineChartLegends.add(reportSheet.getSheetName() + "!$C$20");
                         List<String> lineChartValues = new ArrayList<String>();
                         lineChartValues.add(reportSheet.getSheetName() + "!$C$21:$C$30");
                         // bar charts
                          List<String> barChartCategories = new ArrayList<String>();
-                        barChartCategories.add(reportSheet.getSheetName() +"!$B21:$B30");
+                        barChartCategories.add(reportSheet.getSheetName() +"!$B$21:$B$30");
                         Set<String> barChartLegends = new HashSet<String>();
-                        barChartLegends.add(reportSheet.getSheetName() + "!$D20");
+                        barChartLegends.add(reportSheet.getSheetName() + "!$D$20");
                         List<String> barChartValues = new ArrayList<String>();
                         barChartValues.add(reportSheet.getSheetName() + "!$D$21:$D$30");
-                        ImportExcelUtils.drawBarChart(
+                        List<Integer> barAxisIds = new ArrayList<Integer>();
+                        barAxisIds.add(123456);// catetory axis of bar
+                        barAxisIds.add(123457);// value axix of bar
+                        List<Integer> lineAxisIds = new ArrayList<Integer>();
+                        lineAxisIds.add(123458);// catetory axis of line
+                        lineAxisIds.add(123459);// value axis of line
+                        ImportExcelUtils.drawBarAndCTLineChart(
                                 // sheet
                                 reportSheet,
                                 // position of chart
                                 params,
+                                123450,
                                 // line chart
-//                                lineChartCategories,
-//                                lineChartLegends,
-//                                lineChartValues,
+                                lineChartCategories,
+                                lineChartLegends,
+                                lineChartValues,
+                                lineAxisIds,
                                 // bar chart
                                 barChartCategories,
                                 barChartLegends,
-                                barChartValues);
+                                barChartValues,
+                                barAxisIds);
                     } else {
                         // T.B.D. 没有汇总数据时，不显示合计行
                         /*dataArrList.add(new String[]{
