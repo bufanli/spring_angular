@@ -7,6 +7,7 @@ import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;
 import com.example.eurasia.service.User.UserService;
 import com.example.eurasia.service.Util.DataProcessingUtil;
+import com.example.eurasia.service.Util.DateUtils;
 import com.example.eurasia.service.Util.ImportExcelUtils;
 import com.example.eurasia.service.Util.Slf4jLogUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -144,7 +145,7 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
             int coverItemNum = queryConditionsArr.length + DataService.EXCEL_EXPORT_SHEET_COVER_FIXED_ITEM_NUM;
             String[] coverKeys = new String[coverItemNum];
             String[] coverValues = new String[coverItemNum];
-            DataService.EXCEL_EXPORT_SHEET_COVER_FIXED_ITEM_VALUE[0] = new SimpleDateFormat("yyyy-MM-dd").format(new Date());//报告日期:今天
+            DataService.EXCEL_EXPORT_SHEET_COVER_FIXED_ITEM_VALUE[0] = DateUtils.SIMPLE_DATE_FORMAT_2.format(new Date());//报告日期:今天
 
             for (int i = 0; i< queryConditionsArr.length; i++) {
                 coverKeys[i] = queryConditionsArr[i].getKey();
@@ -459,7 +460,7 @@ Resources目录下新建一个“resources”文件夹，此时“resources”�
             int coverItemNum = queryConditionsArr.length + DataService.EXCEL_EXPORT_SHEET_COVER_FIXED_ITEM_NUM;
             String[] coverKeys = new String[coverItemNum];
             String[] coverValues = new String[coverItemNum];
-            DataService.EXCEL_EXPORT_SHEET_COVER_FIXED_ITEM_VALUE[0] = new SimpleDateFormat("yyyy-MM-dd").format(new Date());//报告日期:今天
+            DataService.EXCEL_EXPORT_SHEET_COVER_FIXED_ITEM_VALUE[0] = DateUtils.SIMPLE_DATE_FORMAT_2.format(new Date());//报告日期:今天
 
             for (int i = 0; i< queryConditionsArr.length; i++) {
                 coverKeys[i] = queryConditionsArr[i].getKey();

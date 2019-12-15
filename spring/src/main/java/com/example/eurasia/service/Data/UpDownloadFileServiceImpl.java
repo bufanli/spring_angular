@@ -7,6 +7,7 @@ import com.example.eurasia.service.Common.CommonService;
 import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;
+import com.example.eurasia.service.Util.DateUtils;
 import com.example.eurasia.service.Util.ImportExcelUtils;
 import com.example.eurasia.service.Util.Slf4jLogUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -23,7 +24,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 //@Slf4j
@@ -420,7 +420,7 @@ public class UpDownloadFileServiceImpl extends CommonService implements IUpDownl
             ImportExcelUtils.setSizeColumn(sheet, (colsNameSet.size() + 1));
             // response http file download
             Date date = new Date(System.currentTimeMillis());
-            DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd");
+            DateFormat dateFormat = DateUtils.SIMPLE_DATE_FORMAT_6;
             String fileName = dateFormat.format(date);//导出文件名是当天日期
             ImportExcelUtils.buildExcelDocument(fileName+".xlsx", wb, response);
 
