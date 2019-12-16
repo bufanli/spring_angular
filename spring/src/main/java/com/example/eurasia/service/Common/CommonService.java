@@ -120,7 +120,8 @@ public abstract class CommonService {
         for (QueryCondition queryCondition : queryConditionsArr) {
             if(queryCondition.getKey().equals(UserService.MUST_PRODUCT_DATE)) {
                 String dateArr[] = queryCondition.getQueryConditionToArr();
-                if (dateArr[0].equals("") || dateArr[1].equals("")) {//为了在起始日期和结束日期都存在都情况下，不查询该用户的日期范围
+                if (dateArr[0].equals("") || dateArr[1].equals("")) {
+                    //为了在起始日期和结束日期都存在都情况下，不查询该用户的日期范围
                     queryConditionValueFromSql = userService.getOneUserCustom(UserService.TABLE_USER_ACCESS_AUTHORITY,
                             UserService.MUST_PRODUCT_DATE,
                             userID);
@@ -155,9 +156,11 @@ public abstract class CommonService {
         String strCanSearchCount = userService.getOneUserCustom(UserService.TABLE_USER_ACCESS_AUTHORITY,
                 UserService.MUST_SEARCH_COUNT,
                 userID);
-        if (!StringUtils.isEmpty(strCanSearchCount)) {//可查询条数有限制
+        if (!StringUtils.isEmpty(strCanSearchCount)) {
+            //可查询条数有限制
             userMax = Long.parseLong(strCanSearchCount);
-        } else {//可查询条数没有限制
+        } else {
+            //可查询条数没有限制
             userMax = dataService.queryTableRows(DataService.TABLE_DATA);
         }
         return userMax;
