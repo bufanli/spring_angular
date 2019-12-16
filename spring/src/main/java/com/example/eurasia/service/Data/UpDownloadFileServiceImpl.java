@@ -438,4 +438,11 @@ public class UpDownloadFileServiceImpl extends CommonService implements IUpDownl
         return new ResponseResultUtil().success(ResponseCodeEnum.EXPORT_DATA_INFO_SUCCESS,responseMsg);
     }
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//下面是获取企业信息部分
+
+    public ResponseResult setCompanyInformation() throws Exception {
+        QichachaSearch.getTokenJson("");
+        return new ResponseResultUtil().success(ResponseCodeEnum.EXPORT_DATA_INFO_SUCCESS,null);
+    }
 }
