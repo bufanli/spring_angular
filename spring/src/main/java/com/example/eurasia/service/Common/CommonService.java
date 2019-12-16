@@ -53,55 +53,55 @@ public abstract class CommonService {
             String userProductNumbers = null;
             switch (queryCondition.getKey()) {
                 case UserService.MUST_PRODUCT_NUMBER:
-                        if (queryCondition.getValue().equals(QueryCondition.QUERY_CONDITION_SPLIT)) {// "～～"的场合，没有输入
+                    String[] productNameArr = queryCondition.getValue().split(QueryCondition.QUERY_CONDITION_SPLIT);
+                    if (productNameArr.length == 0) {
+                        // "～～"的场合，没有输入
+                    } else {
 
-                        } else {
-                            String productNameArr[] = queryCondition.getValue().split(QueryCondition.QUERY_CONDITION_SPLIT);
+                        // 该用户的海关/商品编码范围
+                        userProductNumbers = userService.getOneUserCustom(UserService.TABLE_USER_ACCESS_AUTHORITY,
+                                UserService.MUST_PRODUCT_NUMBER,
+                                userID);
 
-                            // 该用户的海关/商品编码范围
-                            userProductNumbers = userService.getOneUserCustom(UserService.TABLE_USER_ACCESS_AUTHORITY,
-                                    UserService.MUST_PRODUCT_NUMBER,
-                                    userID);
+                        if (!userProductNumbers.equals(QueryCondition.QUERY_CONDITION_SPLIT)) {
 
-                            if (!userProductNumbers.equals(QueryCondition.QUERY_CONDITION_SPLIT)) {
+                            for (String productName:productNameArr) {
 
-                                for (String productName:productNameArr) {
-
-                                    // 检查海关/商品编码是否在该用户都权限内
-                                    if (userProductNumbers.contains(productName) == false) {
-                                        Slf4jLogUtil.get().info(ResponseCodeEnum.SEARCH_DATA_QUERY_CONDITION_ACCESS_ERROR.getMessage());
-                                        ret.append(productName + ResponseCodeEnum.SEARCH_DATA_QUERY_CONDITION_ACCESS_ERROR.getMessage());
-                                        ret.append(UserService.BR);
-                                    }
-
-                                    // 在DataService.TABLE_DATA中是否存在
-                                    long numInTableData = dataService.getColumnValueNumber(DataService.TABLE_DATA,
-                                            UserService.MUST_PRODUCT_NUMBER,
-                                            productName);
-                                    if (numInTableData == 0 ) {
-                                        Slf4jLogUtil.get().info(ResponseCodeEnum.SEARCH_DATA_QUERY_CONDITION_IS_NOT_EXIST.getMessage());
-                                        ret.append(productName + ResponseCodeEnum.SEARCH_DATA_QUERY_CONDITION_IS_NOT_EXIST.getMessage());
-                                        ret.append(UserService.BR);
-                                    }
+                                // 检查海关/商品编码是否在该用户都权限内
+                                if (userProductNumbers.contains(productName) == false) {
+                                    Slf4jLogUtil.get().info(ResponseCodeEnum.SEARCH_DATA_QUERY_CONDITION_ACCESS_ERROR.getMessage());
+                                    ret.append(productName + ResponseCodeEnum.SEARCH_DATA_QUERY_CONDITION_ACCESS_ERROR.getMessage());
+                                    ret.append(UserService.BR);
                                 }
 
-                            } else {// "～～"的场合，没有限制
-
-                                for (String productName:productNameArr) {
-
-                                    // 在DataService.TABLE_DATA中是否存在
-                                    long numInTableData = dataService.getColumnValueNumber(DataService.TABLE_DATA,
-                                            UserService.MUST_PRODUCT_NUMBER,
-                                            productName);
-                                    if (numInTableData == 0 ) {
-                                        Slf4jLogUtil.get().info(ResponseCodeEnum.SEARCH_DATA_QUERY_CONDITION_IS_NOT_EXIST.getMessage());
-                                        ret.append(productName + ResponseCodeEnum.SEARCH_DATA_QUERY_CONDITION_IS_NOT_EXIST.getMessage());
-                                        ret.append(UserService.BR);
-                                    }
+                                // 在DataService.TABLE_DATA中是否存在
+                                long numInTableData = dataService.getColumnValueNumber(DataService.TABLE_DATA,
+                                        UserService.MUST_PRODUCT_NUMBER,
+                                        productName);
+                                if (numInTableData == 0 ) {
+                                    Slf4jLogUtil.get().info(ResponseCodeEnum.SEARCH_DATA_QUERY_CONDITION_IS_NOT_EXIST.getMessage());
+                                    ret.append(productName + ResponseCodeEnum.SEARCH_DATA_QUERY_CONDITION_IS_NOT_EXIST.getMessage());
+                                    ret.append(UserService.BR);
                                 }
-
                             }
+
+                        } else {// "～～"的场合，没有限制
+
+                            for (String productName:productNameArr) {
+
+                                // 在DataService.TABLE_DATA中是否存在
+                                long numInTableData = dataService.getColumnValueNumber(DataService.TABLE_DATA,
+                                        UserService.MUST_PRODUCT_NUMBER,
+                                        productName);
+                                if (numInTableData == 0 ) {
+                                    Slf4jLogUtil.get().info(ResponseCodeEnum.SEARCH_DATA_QUERY_CONDITION_IS_NOT_EXIST.getMessage());
+                                    ret.append(productName + ResponseCodeEnum.SEARCH_DATA_QUERY_CONDITION_IS_NOT_EXIST.getMessage());
+                                    ret.append(UserService.BR);
+                                }
+                            }
+
                         }
+                    }
                     break;
                 default:
                     break;
