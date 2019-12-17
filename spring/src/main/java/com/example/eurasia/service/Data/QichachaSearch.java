@@ -44,7 +44,7 @@ pageIndex Int 否 "页码，默认第一页"
 dtype String 否 "返回数据格式：json或xml，默认json"
 */
             final String reqUri = reqInterNme.concat("?key=").concat(appKey).concat("&").concat(paramStr);
-            String tokenJson = "";//HttpHelper.httpGet(reqUri, reqHeader.getAllHeaders());
+            String tokenJson = HttpHelper.httpGet(reqUri, reqHeader.getAllHeaders());
 
 /*
 返回参数(Return)
