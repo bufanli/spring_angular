@@ -200,17 +200,86 @@ SELECT information_schema.SCHEMATA.SCHEMA_NAME FROM information_schema.SCHEMATA 
     /**
      * 复制旧表数据到新表（俩表的字段名相同）
      *
-     * @param src 旧表名字
-     * @param des 新表名字
+     * @param srcTable 旧表名字
+     * @param desTable 新表名字
      * @return
      * @throws
      * @author FuJia
      * @Time 2019-10-31 00:00:00
      */
-    public int copyTableData(String src, String des) throws Exception {
+    public int copyTableData(String srcTable,
+                             String desTable,
+                             String allColumns,
+                             String allColumnsForDeleteSameData) throws Exception {
         StringBuffer sql = new StringBuffer();
-        sql.append("INSERT INTO " + des + " SELECT * FROM " + src);
-        int num = getJdbcTemplate().update(sql.toString());
+        // split all columns into hash set
+        String[] allColumnsArray = allColumns.split(this.COMMA);
+        List<String> allColumnsList = new ArrayList<String>();
+        for (String column: allColumnsArray) {
+            allColumnsList.add(column);
+        }
+        // split all columns for deleting same data into hash set
+        String[] allColumnsForDeletingSameData = allColumnsForDeleteSameData.split(this.COMMA);
+        Set<String> allColumnsSetForDeletingSameData = new HashSet<String>();
+        for (String column:allColumnsForDeletingSameData) {
+           allColumnsSetForDeletingSameData.add(column);
+        }
+        // get rid of columns which does not exist in all columns
+        Iterator<String> it = allColumnsSetForDeletingSameData.iterator();
+        while(it.hasNext()){
+            if(allColumnsList.contains(it.next()) == false){
+                it.remove();
+            }
+        }
+        // insert into select main.***,main.***
+        sql.append("INSERT INTO " + desTable);
+        // values(
+        sql.append(" (");
+        // column1,column2,...
+        it = allColumnsList.iterator();
+        while(it.hasNext()){
+            sql.append(it.next());
+            sql.append(this.COMMA);
+        }
+        if(String.valueOf(sql.charAt(sql.length() - 1)).equals(this.COMMA)){
+            sql.deleteCharAt(sql.length() - 1);
+        }
+        // )
+        sql.append(")");
+        sql.append(" select ");
+        it = allColumnsList.iterator();
+        while(it.hasNext()){
+            String tempColumn = it.next();
+            sql.append("main.");
+            sql.append(tempColumn);
+            sql.append(this.COMMA);
+        }
+        if(String.valueOf(sql.charAt(sql.length() - 1)).equals(this.COMMA)){
+            sql.deleteCharAt(sql.length() - 1);
+        }
+        // from eurasiatemptable as main
+        sql.append(" from " + srcTable +" as main");
+        // left join eurasiatable as ref
+        sql.append(" left join " + desTable + " as ref");
+        // on main.*** = ref.*** and main.*** = ref.***
+        sql.append(" on ");
+        it = allColumnsSetForDeletingSameData.iterator();
+        while(it.hasNext()){
+            String column = it.next();
+            sql.append("main.");
+            sql.append(column);
+            sql.append("=");
+            sql.append("ref.");
+            sql.append(column);
+            sql.append(" and ");
+        }
+        String sqlForInsert = sql.toString();
+        if(sqlForInsert.endsWith("and ")){
+            sqlForInsert = sqlForInsert.substring(0,sqlForInsert.length() - "and ".length());
+        }
+        // where ref.id is null
+        sqlForInsert = sqlForInsert + " where ref.id is null";
+        int num = getJdbcTemplate().update(sqlForInsert);
         return num;
     }
 

@@ -69,7 +69,9 @@ export class DataUploadComponent implements AfterViewChecked {
     };
     this.uploader.onCompleteAll = function () {
       // get query conditions caller
-      that.deleteSameData();
+      // delete same when uploading 10000 data records
+      // so it is not necessary to delete same data after all completed
+      // that.deleteSameData();
     };
   }
   private deleteSameData(): void {

@@ -222,29 +222,24 @@ public class ImportExcelRowReader {
 
         // 取得数据对应关系的词典名，并取得其列名
         Map<String, Set<String>> dataDicColNamesMap = dataService.getDataDictionariesColumnNamesMap();
-        if (dataDicColNamesMap.size() > 0) {//有数据对应关系的词典
-            // 创建临时表，保存数据到临时表
-            if (dataService.copyTableStructure(DataService.TABLE_DATA, DataService.TABLE_DATA_TEMP)) {
-                int saveNum = dataService.saveDataToSQL(DataService.TABLE_DATA_TEMP, dataList);
-
+        // 创建临时表，保存数据到临时表
+        if (dataService.copyTableStructure(DataService.TABLE_DATA, DataService.TABLE_DATA_TEMP)) {
+            int saveNum = dataService.saveDataToSQL(DataService.TABLE_DATA_TEMP, dataList);
+            if (dataDicColNamesMap.size() > 0) {//有数据对应关系的词典
                 // 利用数据关系对应的词典，扩张要保存的数据
                 Map<String, Integer> reMakeUpRet = dataService.reMakeUpDataByDataDictionaries(DataService.TABLE_DATA_TEMP, colsNameSet, dataDicColNamesMap);
-
-                // 将临时表的数据保存到数据表
-                int copyNum = dataService.copyTableData(DataService.TABLE_DATA_TEMP, DataService.TABLE_DATA);
-
-                // 删除临时表
-                boolean deleteRet = dataService.deleteTable(DataService.TABLE_DATA_TEMP);
-
-                return copyNum;
-
-            } else {
-                //T.B.D
-                Slf4jLogUtil.get().info("创建临时表失败");
-                throw new Exception(ResponseCodeEnum.CREATE_DATA_TEMP_TABLE_FAILED.getMessage());
             }
-        } else {//没数据对应关系的词典
-            return dataService.saveDataToSQL(tableName, dataList);
+            // 将临时表的数据保存到数据表
+            int copyNum = dataService.copyTableData(DataService.TABLE_DATA_TEMP,
+                DataService.TABLE_DATA,
+                true);
+            // 删除临时表
+            boolean deleteRet = dataService.deleteTable(DataService.TABLE_DATA_TEMP);
+            return copyNum;
+        } else {
+            //T.B.D
+            Slf4jLogUtil.get().info("创建临时表失败");
+            throw new Exception(ResponseCodeEnum.CREATE_DATA_TEMP_TABLE_FAILED.getMessage());
         }
     }
 

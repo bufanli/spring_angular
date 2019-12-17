@@ -350,8 +350,12 @@ public class DataService {
      * @author FuJia
      * @Time 2019-10-31 00:00:00
      */
-    public int copyTableData(String src, String des) throws Exception {
-        return getDataDao().copyTableData(src, des);
+    public int copyTableData(String src, String des,boolean isCutomizeDeleteSame) throws Exception {
+        // all columns
+       String allColumns = this.getColumnsForSameData(false);
+       // column for delete same data
+       String allColumnsForDeleteSameData = this.getColumnsForSameData(isCutomizeDeleteSame);
+       return getDataDao().copyTableData(src, des,allColumns,allColumnsForDeleteSameData);
     }
 
     /**
