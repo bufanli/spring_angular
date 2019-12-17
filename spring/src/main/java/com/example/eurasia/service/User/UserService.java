@@ -1,6 +1,5 @@
 package com.example.eurasia.service.User;
 
-import com.example.eurasia.dao.DataDao;
 import com.example.eurasia.dao.UserDao;
 import com.example.eurasia.entity.Data.Data;
 import com.example.eurasia.entity.Data.DataXMLReader;
@@ -10,6 +9,7 @@ import com.example.eurasia.entity.User.UserInfo;
 import com.example.eurasia.service.Data.DataService;
 import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Util.DataProcessingUtil;
+import com.example.eurasia.service.Util.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -595,7 +595,7 @@ public class UserService {
         String[] productDateArr = this.getUserAccessDate(userID);
 
         //查询用户可见的最近一个月
-        SimpleDateFormat sdf = DataDao.SIMPLE_DATE_FORMAT_1;
+        SimpleDateFormat sdf = DateUtils.SIMPLE_DATE_FORMAT_1;
         Date dateStart = sdf.parse(productDateArr[0]);
         Date dateEnd = sdf.parse(productDateArr[1]);
         Calendar cld = Calendar.getInstance();

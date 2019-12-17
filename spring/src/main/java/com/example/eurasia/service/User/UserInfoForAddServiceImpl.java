@@ -163,54 +163,80 @@ public class UserInfoForAddServiceImpl {
         for (UserCustom userCustom:userCustoms) {
             switch (userCustom.getKey()) {
                 case UserService.MUST_USER_VALID:
-                    String userValidArr[] = userCustom.getValue().split(QueryCondition.QUERY_CONDITION_SPLIT,-1);
+                    String[] userValidArr = userCustom.getValue().split(QueryCondition.QUERY_CONDITION_SPLIT,-1);
                     if (userValidArr.length != 2) {
                         ret.append(ResponseCodeEnum.USER_ADD_VALID_FORMAT_ERROR.getMessage());
                         ret.append(UserService.BR);
                         break;
                     }
-                    if (StringUtils.isEmpty(userValidArr[0])) {
-                        ret.append(ResponseCodeEnum.USER_ADD_VALID_FROM_DATE_IS_NULL.getMessage());
-                        ret.append(UserService.BR);
-                        break;
-                    }
-                    if (StringUtils.isEmpty(userValidArr[1])) {
-                        ret.append(ResponseCodeEnum.USER_ADD_VALID_TO_DATE_IS_NULL.getMessage());
-                        ret.append(UserService.BR);
-                        break;
+                    if (StringUtils.isEmpty(userValidArr[0]) && StringUtils.isEmpty(userValidArr[1])) {
+                        // "~~"的场合，没有限制
+                    } else {
+                        if (StringUtils.isEmpty(userValidArr[0])) {
+                            ret.append(ResponseCodeEnum.USER_ADD_VALID_FROM_DATE_IS_NULL.getMessage());
+                            ret.append(UserService.BR);
+                        }
+                        if (StringUtils.isEmpty(userValidArr[1])) {
+                            ret.append(ResponseCodeEnum.USER_ADD_VALID_TO_DATE_IS_NULL.getMessage());
+                            ret.append(UserService.BR);
+                        }
                     }
                     break;
                 case UserService.MUST_PRODUCT_DATE:
-                    String productDateArr[] = userCustom.getValue().split(QueryCondition.QUERY_CONDITION_SPLIT,-1);
+                    String[] productDateArr = userCustom.getValue().split(QueryCondition.QUERY_CONDITION_SPLIT,-1);
                     if (productDateArr.length != 2) {
                         ret.append(ResponseCodeEnum.USER_ADD_PRODUCT_DATE_FORMAT_ERROR.getMessage());
                         ret.append(UserService.BR);
                         break;
                     }
-                    if (StringUtils.isEmpty(productDateArr[0])) {
-                        ret.append(ResponseCodeEnum.USER_ADD_PRODUCT_DATE_FROM_DATE_IS_NULL.getMessage());
-                        ret.append(UserService.BR);
-                        break;
-                    }
-                    if (StringUtils.isEmpty(productDateArr[1])) {
-                        ret.append(ResponseCodeEnum.USER_ADD_PRODUCT_DATE_TO_DATE_IS_NULL.getMessage());
-                        ret.append(UserService.BR);
-                        break;
+                    if (StringUtils.isEmpty(productDateArr[0]) && StringUtils.isEmpty(productDateArr[1])) {
+                        // "~~"的场合，没有限制
+                    } else {
+                        if (StringUtils.isEmpty(productDateArr[0])) {
+                            ret.append(ResponseCodeEnum.USER_ADD_PRODUCT_DATE_FROM_DATE_IS_NULL.getMessage());
+                            ret.append(UserService.BR);
+                        }
+                        if (StringUtils.isEmpty(productDateArr[1])) {
+                            ret.append(ResponseCodeEnum.USER_ADD_PRODUCT_DATE_TO_DATE_IS_NULL.getMessage());
+                            ret.append(UserService.BR);
+                        }
                     }
                     break;
                 case UserService.MUST_PRODUCT_NUMBER:
-                    String productNumberArr[] = userCustom.getValue().split(QueryCondition.QUERY_CONDITION_SPLIT);
-                    boolean isNull = false;
-                    for (String productNumber : productNumberArr) {
-                        if (!StringUtils.isEmpty(productNumber)) {//只要有一个不为空
-                            isNull = true;
-                            break;
-                        }
-                    }
-                    if (isNull == false) {
-                        ret.append(ResponseCodeEnum.USER_ADD_PRODUCT_NUMBER_IS_NULL.getMessage());
+                    if (userCustom.getValue().contains(QueryCondition.QUERY_CONDITION_SPLIT) == false) {
+                        ret.append(ResponseCodeEnum.USER_ADD_PRODUCT_NUMBER_FORMAT_ERROR.getMessage());
                         ret.append(UserService.BR);
-                        break;
+                    } else {
+                        String[] productNumberArr = userCustom.getValue().split(QueryCondition.QUERY_CONDITION_SPLIT);
+                        if (productNumberArr.length == 0) {
+                            // "~~"的场合，没有限制
+                        } else {
+                            boolean isNotNull = false;
+                            for (String productNumber : productNumberArr) {
+                                if (!StringUtils.isEmpty(productNumber)) {
+                                    //只要有一个不为空
+                                    isNotNull = true;
+                                    break;
+                                }
+                            }
+                            if (isNotNull == false) {
+                                ret.append(ResponseCodeEnum.USER_ADD_PRODUCT_NUMBER_IS_NULL.getMessage());
+                                ret.append(UserService.BR);
+                            }
+
+                            boolean isNotNumeric = false;
+                            for (String productNumber : productNumberArr) {
+                                if (java.util.regex.Pattern.compile("[0-9]*").matcher(productNumber).matches() == false) {
+                                    //只要有一个不为数字
+                                    isNotNumeric = true;
+                                    break;
+                                }
+                            }
+                            if (isNotNumeric == true) {
+                                ret.append(ResponseCodeEnum.USER_ADD_PRODUCT_NUMBER_IS_NOT_NUMERIC.getMessage());
+                                ret.append(UserService.BR);
+                            }
+                        }
                     }
                     break;
                 default:

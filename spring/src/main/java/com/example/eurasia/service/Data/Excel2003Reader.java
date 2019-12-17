@@ -1,7 +1,7 @@
 package com.example.eurasia.service.Data;
 
-import com.example.eurasia.entity.Data.QueryCondition;
 import com.example.eurasia.service.Util.DataProcessingUtil;
+import com.example.eurasia.service.Util.DateUtils;
 import com.example.eurasia.service.Util.Slf4jLogUtil;
 import org.apache.poi.hssf.eventusermodel.*;
 import org.apache.poi.hssf.eventusermodel.EventWorkbookBuilder.SheetRecordCollectingListener;
@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -329,7 +328,7 @@ public class Excel2003Reader implements HSSFListener,IExcelReaderByEventMode {
 
                 //if(HSSFDateUtil.isInternalDateFormat(numberRecord.getXFIndex())){//判断是否为时间列
                 if(value.contains("/")) {//T.B.D
-                    value = (new SimpleDateFormat(QueryCondition.PRODUCT_DATE_FORMAT_1))
+                    value = DateUtils.SIMPLE_DATE_FORMAT_1
                             .format(HSSFDateUtil.getJavaDate(numberRecord.getValue()));
                     Slf4jLogUtil.get().debug("Date:" + value +
                             ", 行：" + numberRecord.getRow() + ", 列：" + numberRecord.getColumn());

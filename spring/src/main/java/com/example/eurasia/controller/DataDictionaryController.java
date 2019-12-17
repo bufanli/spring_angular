@@ -5,6 +5,7 @@ import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;
 import com.example.eurasia.service.User.UserInfoServiceImpl;
+import com.example.eurasia.service.Util.DateUtils;
 import com.example.eurasia.service.Util.Slf4jLogUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -22,7 +23,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 //@Slf4j
@@ -77,7 +77,7 @@ public class DataDictionaryController {
             Slf4jLogUtil.get().info("进行导入数据对应关系的字典开始");
             //获取跟目录
             Date date = new Date(System.currentTimeMillis());
-                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+                DateFormat dateFormat = DateUtils.SIMPLE_DATE_FORMAT_5;
                 String strFormat = dateFormat.format(date);
             File path = new File(ResourceUtils.getURL("classpath:").getPath());
             if(!path.exists()) {

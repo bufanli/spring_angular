@@ -3,6 +3,7 @@ package com.example.eurasia.dao;
 import com.example.eurasia.entity.Data.ComputeField;
 import com.example.eurasia.entity.Data.Data;
 import com.example.eurasia.entity.Data.QueryCondition;
+import com.example.eurasia.service.Util.DateUtils;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
@@ -10,17 +11,12 @@ import org.springframework.util.StringUtils;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Repository
 public class DataDao extends CommonDao {
 
     public static int INSERT_RECODE_STEPS = 10000;
-    public static final SimpleDateFormat SIMPLE_DATE_FORMAT_1 = new SimpleDateFormat(QueryCondition.PRODUCT_DATE_FORMAT_1);
-    public static final SimpleDateFormat SIMPLE_DATE_FORMAT_2 = new SimpleDateFormat(QueryCondition.PRODUCT_DATE_FORMAT_2);
-    public static final SimpleDateFormat SIMPLE_DATE_FORMAT_3 = new SimpleDateFormat(QueryCondition.PRODUCT_DATE_FORMAT_3);
-    public static final SimpleDateFormat SIMPLE_DATE_FORMAT_4 = new SimpleDateFormat(QueryCondition.PRODUCT_DATE_FORMAT_4);
 
     /**
      * 添加数据
@@ -1014,22 +1010,22 @@ group by 与order by 一起使用是要遵守一定原则的：
     private String formatDate(String dateStr) {
         Date date = null;
         try {
-            date = DataDao.SIMPLE_DATE_FORMAT_1.parse(dateStr);
-            return DataDao.SIMPLE_DATE_FORMAT_1.format(date);
+            date = DateUtils.SIMPLE_DATE_FORMAT_1.parse(dateStr);
+            return DateUtils.SIMPLE_DATE_FORMAT_1.format(date);
         } catch (ParseException e) {
             try {
-                date = DataDao.SIMPLE_DATE_FORMAT_2.parse(dateStr);
-                return DataDao.SIMPLE_DATE_FORMAT_1.format(date);
+                date = DateUtils.SIMPLE_DATE_FORMAT_2.parse(dateStr);
+                return DateUtils.SIMPLE_DATE_FORMAT_1.format(date);
             } catch (ParseException e1) {
                 try {
-                    date = DataDao.SIMPLE_DATE_FORMAT_3.parse(dateStr);
-                    return DataDao.SIMPLE_DATE_FORMAT_1.format(date);
+                    date = DateUtils.SIMPLE_DATE_FORMAT_3.parse(dateStr);
+                    return DateUtils.SIMPLE_DATE_FORMAT_1.format(date);
                 } catch (ParseException e2) {
                     int daysFrom1900 = Integer.parseInt(dateStr);
                     Calendar cal = Calendar.getInstance();
                     cal.set(1900, 0, 1);
                     cal.add(Calendar.DAY_OF_MONTH, daysFrom1900);
-                    return DataDao.SIMPLE_DATE_FORMAT_1.format(cal.getTime());
+                    return DateUtils.SIMPLE_DATE_FORMAT_1.format(cal.getTime());
                 } catch (NumberFormatException e4) {
                     return dateStr;
                 }

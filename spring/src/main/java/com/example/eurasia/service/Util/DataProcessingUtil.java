@@ -141,7 +141,7 @@ public class DataProcessingUtil {
 
     public static List<String> getMonthBetween(String minDate, String maxDate) throws ParseException {
         ArrayList<String> result = new ArrayList<String>();
-        SimpleDateFormat sdf = new SimpleDateFormat(QueryCondition.PRODUCT_DATE_FORMAT_1);//格式化为年月
+        SimpleDateFormat sdf = DateUtils.SIMPLE_DATE_FORMAT_1;//格式化为年月
 
         Calendar min = Calendar.getInstance();
         Calendar max = Calendar.getInstance();
@@ -163,7 +163,7 @@ public class DataProcessingUtil {
 
     public static String[] getDateBetween(String mouth) throws ParseException {
         String[] dateArr = new String[2];
-        SimpleDateFormat sdf = new SimpleDateFormat(QueryCondition.PRODUCT_DATE_FORMAT_4);
+        SimpleDateFormat sdf = DateUtils.SIMPLE_DATE_FORMAT_4;
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(sdf.parse(mouth));

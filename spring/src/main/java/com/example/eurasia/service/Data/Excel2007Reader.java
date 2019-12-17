@@ -2,8 +2,8 @@ package com.example.eurasia.service.Data;
 
 
 import com.example.eurasia.dao.DataDao;
-import com.example.eurasia.entity.Data.QueryCondition;
 import com.example.eurasia.service.User.UserService;
+import com.example.eurasia.service.Util.DateUtils;
 import com.example.eurasia.service.Util.Slf4jLogUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.openxml4j.opc.OPCPackage;
@@ -22,9 +22,7 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.InputStream;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /*
@@ -496,7 +494,7 @@ public class Excel2007Reader implements IExcelReaderByEventMode {
                         } else {
                             if (this.formatString.contains("m/d/yy")) {
                                 this.cellDataType = CellDataType.DATE;
-                                this.formatString = QueryCondition.PRODUCT_DATE_FORMAT_1;
+                                this.formatString = DateUtils.PRODUCT_DATE_FORMAT_1;
                             }
                         }
                     } else {
@@ -621,10 +619,5 @@ public class Excel2007Reader implements IExcelReaderByEventMode {
             return bl;
         }
 
-        private String formatDateToString(Date date) {
-            SimpleDateFormat sdf = new SimpleDateFormat(QueryCondition.PRODUCT_DATE_FORMAT_1);//格式化日期
-            return sdf.format(date);
-
-        }
     }
 }

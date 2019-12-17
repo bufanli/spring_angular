@@ -7,6 +7,7 @@ import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;
 import com.example.eurasia.service.User.UserInfoServiceImpl;
+import com.example.eurasia.service.Util.DateUtils;
 import com.example.eurasia.service.Util.ImportExcelUtils;
 import com.example.eurasia.service.Util.Slf4jLogUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 //@Slf4j
@@ -70,7 +70,7 @@ public class UpDownloadExcelFileController {
                 responseResult = new ResponseResultUtil().error(ResponseCodeEnum.SYSTEM_LOGIN_FAILED);
             } else {
                 Date date = new Date(System.currentTimeMillis());
-                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+                DateFormat dateFormat = DateUtils.SIMPLE_DATE_FORMAT_5;
                 String strFormat = dateFormat.format(date);
 /*
         另外使用以上代码需要注意，因为以jar包发布时，我们存储的路径是与jar包同级的static目录，

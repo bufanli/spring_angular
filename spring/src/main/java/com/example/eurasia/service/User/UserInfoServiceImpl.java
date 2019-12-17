@@ -9,6 +9,7 @@ import com.example.eurasia.service.Response.ResponseCodeEnum;
 import com.example.eurasia.service.Response.ResponseResult;
 import com.example.eurasia.service.Response.ResponseResultUtil;
 import com.example.eurasia.service.Util.DataProcessingUtil;
+import com.example.eurasia.service.Util.DateUtils;
 import com.example.eurasia.service.Util.HttpSessionEnum;
 import com.example.eurasia.service.Util.Slf4jLogUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -290,7 +291,7 @@ public class UserInfoServiceImpl {
             //因为数据库中，起始和结束时间都有，所有没有对起始和结束时间进行空检查。参照方法checkUserAccessAuthority
             String[] valid = userValid.split(QueryCondition.QUERY_CONDITION_SPLIT,-1);
 
-            SimpleDateFormat sdf = new SimpleDateFormat(QueryCondition.PRODUCT_DATE_FORMAT_1);
+            SimpleDateFormat sdf = DateUtils.SIMPLE_DATE_FORMAT_1;
             String nowDate = sdf.format(new Date());
 
             if (valid[1].compareTo(nowDate) >= 0) {//相等返回0，小于返回-1，大于返回1

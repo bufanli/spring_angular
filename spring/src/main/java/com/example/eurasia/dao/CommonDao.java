@@ -4,6 +4,7 @@ import com.example.eurasia.entity.Data.ComputeField;
 import com.example.eurasia.entity.Data.Data;
 import com.example.eurasia.entity.Data.DataXMLReader;
 import com.example.eurasia.entity.Data.QueryCondition;
+import com.example.eurasia.service.Util.DateUtils;
 import com.example.eurasia.service.Util.Slf4jLogUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -436,7 +437,7 @@ CREATE TABLE SPRING_SESSION_ATTRIBUTES (
     // angular得到的时间格式是 2018/9/11 和数据库2018/09/11里面不一致，所以转换一下
     public String convertDateToNewFormat(String dateFromAngular) {
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat(QueryCondition.PRODUCT_DATE_FORMAT_1);
+            SimpleDateFormat sdf = DateUtils.SIMPLE_DATE_FORMAT_1;
             Date tempDateEnd = sdf.parse(dateFromAngular);
             return sdf.format(tempDateEnd);
         } catch (ParseException e) {
@@ -610,7 +611,7 @@ select PERIOD_DIFF(DATE_FORMAT(CURDATE(),'%Y%m'),DATE_FORMAT(日期,'%Y%m')) fro
             return null;
         }
 
-        SimpleDateFormat sdf = new SimpleDateFormat(QueryCondition.PRODUCT_DATE_FORMAT_1);
+        SimpleDateFormat sdf = DateUtils.SIMPLE_DATE_FORMAT_1;
         Date date = null;
         String[] dateArr = new String[2];
         dateArr[1] = dataList.get(0).getKeyValue().get("max(" + dateColumnName + ")");
@@ -637,16 +638,16 @@ select PERIOD_DIFF(DATE_FORMAT(CURDATE(),'%Y%m'),DATE_FORMAT(日期,'%Y%m')) fro
     // try different date formats
     private Date formatStringToDate(String dateStr) throws ParseException {
         Date retDate = null;
-        SimpleDateFormat sdf = new SimpleDateFormat(QueryCondition.PRODUCT_DATE_FORMAT_1);
+        SimpleDateFormat sdf = DateUtils.SIMPLE_DATE_FORMAT_1;
         try {
             retDate = sdf.parse(dateStr);
         } catch (ParseException e) {
             try {
-                sdf = new SimpleDateFormat(QueryCondition.PRODUCT_DATE_FORMAT_2);
+                sdf = DateUtils.SIMPLE_DATE_FORMAT_2;
                 retDate = sdf.parse(dateStr);
             } catch (ParseException e1) {
                 try {
-                    sdf = new SimpleDateFormat(QueryCondition.PRODUCT_DATE_FORMAT_3);
+                    sdf = DateUtils.SIMPLE_DATE_FORMAT_3;
                     retDate = sdf.parse(dateStr);
                 } catch (ParseException e2) {
                     retDate = null;

@@ -1,8 +1,8 @@
 package com.example.eurasia.service.Data;
 
 import com.example.eurasia.entity.Data.Data;
-import com.example.eurasia.entity.Data.QueryCondition;
 import com.example.eurasia.service.Response.ResponseCodeEnum;
+import com.example.eurasia.service.Util.DateUtils;
 import com.example.eurasia.service.Util.ImportExcelUtils;
 import com.example.eurasia.service.Util.Slf4jLogUtil;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Component
@@ -339,7 +338,7 @@ public class ImportExcelByUserMode {
                             // 如果是Date类型则，取得该Cell的Date值
                             date = cell.getDateCellValue();
                         }
-                        DateFormat formater = new SimpleDateFormat(QueryCondition.PRODUCT_DATE_FORMAT_1);
+                        DateFormat formater = DateUtils.SIMPLE_DATE_FORMAT_1;
                         val = formater.format(date);
 
                     } else {
