@@ -4,6 +4,7 @@ import { CommonUtilitiesService } from 'src/app/common/services/common-utilities
 import { UUID } from 'angular2-uuid';
 import { CurrentUserContainerService } from 'src/app/common/services/current-user-container.service';
 import { UserInfoService } from '../../services/user-info.service';
+import 'bootstrap-switch';
 
 @Component({
   selector: 'app-user-access-authorities',
@@ -51,6 +52,7 @@ export class UserAccessAuthoritiesComponent implements OnInit, AfterViewInit, Af
     this.setDatePickerValue();
   }
   ngAfterViewInit() {
+    $('#all-hs-codes').bootstrapSwitch();
     this.setDatePickerValue();
     // initialize hs code selections
     this.commonUtilitiesService.setSelectOptions('#hs_code_' + this.componentID, true);

@@ -29,7 +29,10 @@
   </div>
 </div>
 <div class="row" *ngIf="currentUserAccessAuthorities">
-  <div class="col-md-12">
+  <div class="col-md-2">
+      <input type="checkbox" id="all-hs-codes" checked>
+  </div>
+  <div class="col-md-10">
     <div class="form-group" [ngClass]="{'required':!this.isSystemReservedUser()}">
       <select class="form-control selectpicker" multiple title="请选择海关编码" id="hs_code_{{this.componentID}}"
         [(ngModel)]="this.selectedHsCodes" name="hs_code_{{this.componentID}}">
