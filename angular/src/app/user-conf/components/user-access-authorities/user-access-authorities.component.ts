@@ -46,6 +46,8 @@ export class UserAccessAuthoritiesComponent implements OnInit, AfterViewInit, Af
     this.hsCodes = hsCodeSelections;
     // concatenate hs code selection with selected hs codes
     this.hsCodes = this.hsCodes.concat(this.selectedHsCodes);
+    // get rid of duplicated hs codes
+    this.hsCodes = Array.from(new Set(this.hsCodes));
     this.hsCodesChanged = true;
   }
 
