@@ -57,7 +57,6 @@ export class UserAccessAuthoritiesComponent implements OnInit, AfterViewInit, Af
   }
   public setCurrentUserAccessAuthorities(userAccessAuthorities: UserAccessAuthorities) {
     this.currentUserAccessAuthorities = userAccessAuthorities;
-    this.setUnlimits();
     this.setQueryProducts();
     this.setDatePickerValue();
   }
@@ -68,28 +67,38 @@ export class UserAccessAuthoritiesComponent implements OnInit, AfterViewInit, Af
       this.allUserTimeUnlimit = true;
       this.allUserStartTimeDisabled = true;
       this.allUserEndTimeDisabled = true;
+      $('#all-user-time').bootstrapSwitch('state', false);
     } else {
       this.allUserTimeUnlimit = false;
       this.allUserStartTimeDisabled = false;
       this.allUserEndTimeDisabled = false;
+      $('#all-user-time').bootstrapSwitch('state', true);
     }
     // product time
     if (this.currentUserAccessAuthorities['日期'] === '~~') {
       this.allProductTimeUnlimit = true;
       this.allProductStartTimeDisabled = true;
       this.allProductEndTimeDisabled = true;
+      $('#all-product-time').bootstrapSwitch('state', false);
     } else {
       this.allProductTimeUnlimit = false;
       this.allProductStartTimeDisabled = false;
       this.allProductEndTimeDisabled = false;
+      $('#all-product-time').bootstrapSwitch('state', true);
     }
     // hs codes
     if (this.currentUserAccessAuthorities['海关编码'] === '~~') {
       this.allHsCodesUnlimit = true;
       this.allHsCodesDisabled = true;
+      $('#hs_code_' + this.componentID).prop('disabled', true);
+      $('#hs_code_' + this.componentID).selectpicker('refresh');
+      $('#all-hs-codes').bootstrapSwitch('state', false);
     } else {
       this.allHsCodesUnlimit = false;
       this.allHsCodesDisabled = false;
+      $('#hs_code_' + this.componentID).prop('disabled', false);
+      $('#hs_code_' + this.componentID).selectpicker('refresh');
+      $('#all-hs-codes').bootstrapSwitch('state', true);
     }
   }
   ngAfterViewInit() {
@@ -137,6 +146,9 @@ export class UserAccessAuthoritiesComponent implements OnInit, AfterViewInit, Af
       '#hs_code_' + this.componentID,
       true,
       this.allHsCodesDisabled);
+    // set unlimited
+    this.setUnlimits();
+
   }
   private initBootstrapSwitch(id: string, handler: any): void {
     $(id).bootstrapSwitch(
