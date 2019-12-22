@@ -25,6 +25,15 @@ export class UserAccessAuthoritiesComponent implements OnInit, AfterViewInit, Af
   public hsCodes: string[] = null;
   public hsCodesChanged = false;
   public selectedHsCodes: string[] = null;
+  // disable control variables
+  public allProductStartTimeDisabled = true;
+  public allProductEndTimeDisabled = true;
+  public allUserStartTimeDisabled = true;
+  public allUserEndTimeDisabled = true;
+  public allHsCodesDisabled = true;
+  public allUserTimeUnlimit = true;
+  public allProductTimeUnlimit = true;
+  public allHsCodesUnlimit = true;
 
   constructor(private commonUtilitiesService: CommonUtilitiesService,
     private currentUserContainerService: CurrentUserContainerService,
@@ -48,14 +57,96 @@ export class UserAccessAuthoritiesComponent implements OnInit, AfterViewInit, Af
   }
   public setCurrentUserAccessAuthorities(userAccessAuthorities: UserAccessAuthorities) {
     this.currentUserAccessAuthorities = userAccessAuthorities;
+    this.setUnlimits();
     this.setQueryProducts();
     this.setDatePickerValue();
   }
+  // set unlimits and disables
+  private setUnlimits(): void {
+    // user time
+    if (this.currentUserAccessAuthorities['有效期'] === '~~') {
+      this.allUserTimeUnlimit = true;
+      this.allUserStartTimeDisabled = true;
+      this.allUserEndTimeDisabled = true;
+    } else {
+      this.allUserTimeUnlimit = false;
+      this.allUserStartTimeDisabled = false;
+      this.allUserEndTimeDisabled = false;
+    }
+    // product time
+    if (this.currentUserAccessAuthorities['日期'] === '~~') {
+      this.allProductTimeUnlimit = true;
+      this.allProductStartTimeDisabled = true;
+      this.allProductEndTimeDisabled = true;
+    } else {
+      this.allProductTimeUnlimit = false;
+      this.allProductStartTimeDisabled = false;
+      this.allProductEndTimeDisabled = false;
+    }
+    // hs codes
+    if (this.currentUserAccessAuthorities['海关编码'] === '~~') {
+      this.allHsCodesUnlimit = true;
+      this.allHsCodesDisabled = true;
+    } else {
+      this.allHsCodesUnlimit = false;
+      this.allHsCodesDisabled = false;
+    }
+  }
   ngAfterViewInit() {
-    $('#all-hs-codes').bootstrapSwitch();
+    const that = this;
+    // init product time switch
+    this.initBootstrapSwitch('#all-product-time', function (event, state) {
+      if (state === true) {
+        that.allProductTimeUnlimit = false;
+        that.allProductEndTimeDisabled = false;
+        that.allProductStartTimeDisabled = false;
+      } else {
+        that.allProductTimeUnlimit = true;
+        that.allProductEndTimeDisabled = true;
+        that.allProductStartTimeDisabled = true;
+      }
+    });
+    // init user time switch
+    this.initBootstrapSwitch('#all-user-time', function (event, state) {
+      if (state === true) {
+        that.allUserTimeUnlimit = false;
+        that.allUserEndTimeDisabled = false;
+        that.allUserStartTimeDisabled = false;
+      } else {
+        that.allUserTimeUnlimit = true;
+        that.allUserEndTimeDisabled = true;
+        that.allUserStartTimeDisabled = true;
+      }
+    });
+    // init hs codes switch
+    this.initBootstrapSwitch('#all-hs-codes', function (event, state) {
+      if (state === true) {
+        that.allHsCodesUnlimit = false;
+        that.allHsCodesDisabled = false;
+        $('#hs_code_' + that.componentID).prop('disabled', false);
+      } else {
+        that.allHsCodesUnlimit = true;
+        that.allHsCodesDisabled = true;
+        $('#hs_code_' + that.componentID).prop('disabled', true);
+      }
+      $('#hs_code_' + that.componentID).selectpicker('refresh');
+    });
     this.setDatePickerValue();
     // initialize hs code selections
-    this.commonUtilitiesService.setSelectOptions('#hs_code_' + this.componentID, true);
+    this.commonUtilitiesService.setSelectOptions(
+      '#hs_code_' + this.componentID,
+      true,
+      this.allHsCodesDisabled);
+  }
+  private initBootstrapSwitch(id: string, handler: any): void {
+    $(id).bootstrapSwitch(
+      {
+        onText: '限制',
+        offText: '不限',
+        onSwitchChange: function (event, state) {
+          handler(event, state);
+        }
+      });
   }
   // ngOnInit
   ngOnInit() {
@@ -146,13 +237,24 @@ export class UserAccessAuthoritiesComponent implements OnInit, AfterViewInit, Af
   }
   // get current user access authorities
   getCurrentUserAccessAuthorities(): UserAccessAuthorities {
-    if (this.selectedHsCodes === null || this.selectedHsCodes.length === 0) {
+    // hs codes
+    if (this.allHsCodesUnlimit) {
       // no product limit
       this.currentUserAccessAuthorities['海关编码'] = this.commonUtilitiesService.DATA_COMMON_SEPERATOR;
     } else {
       // convert product codes
       this.currentUserAccessAuthorities['海关编码'] =
         this.commonUtilitiesService.convertArrayCommaSeperatorToDash(this.selectedHsCodes);
+    }
+    // product time
+    if (this.allProductTimeUnlimit) {
+      // no product time limit
+      this.currentUserAccessAuthorities['日期'] = this.commonUtilitiesService.DATA_COMMON_SEPERATOR;
+    }
+    // user time
+    if (this.allUserTimeUnlimit) {
+      // no user time limit
+      this.currentUserAccessAuthorities['有效期'] = this.commonUtilitiesService.DATA_COMMON_SEPERATOR;
     }
     return this.currentUserAccessAuthorities;
   }

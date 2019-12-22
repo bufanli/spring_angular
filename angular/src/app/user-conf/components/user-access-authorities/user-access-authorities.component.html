@@ -1,36 +1,42 @@
 <div class="row" *ngIf="currentUserAccessAuthorities">
-  <div class="col-md-12">
+  <div class="col-md-2 auto-width">
+    <input type="checkbox" id="all-product-time" [defaultChecked]="!this.allProductTimeUnlimit">
+  </div>
+  <div class="col-md-10">
     <div class="form-group">
       <div class="input-group">
         <span class="input-group-addon" id="product-time">商品有效期间</span>
         <input type="text" class="form-control datepicker" aria-describedby="product-time"
           name="product-start-time{{this.componentID}}" id="product-start-time{{this.componentID}}" autocomplete="off"
-          [ngClass]="{'required':!this.isSystemReservedUser()}">
+          [ngClass]="{'required':!this.isSystemReservedUser()}" [disabled]="this.allProductStartTimeDisabled">
         <div class="input-group-addon">到</div>
         <input type="text" class="form-control datepicker" id="product-to-time{{this.componentID}}" autocomplete="off"
-          [ngClass]="{'required':!this.isSystemReservedUser()}">
+          [ngClass]="{'required':!this.isSystemReservedUser()}" [disabled]="this.allProductEndTimeDisabled">
       </div>
     </div>
   </div>
 </div>
 <div class="row">
-  <div class="col-md-12">
+  <div class="col-md-2 auto-width">
+    <input type="checkbox" id="all-user-time" [defaultChecked]="!this.allUserTimeUnlimit">
+  </div>
+  <div class="col-md-10">
     <div class="form-group">
       <div class="input-group">
         <span class="input-group-addon" id="user-time">用户有效期间</span>
         <input type="text" class="form-control datepicker" aria-describedby="user-time"
           name="user-start-time{{this.componentID}}" id="user-start-time{{this.componentID}}" autocomplete="off"
-          [ngClass]="{'required':!this.isSystemReservedUser()}">
+          [ngClass]="{'required':!this.isSystemReservedUser()}" [disabled]="this.allUserStartTimeDisabled">
         <div class="input-group-addon">到</div>
         <input type="text" class="form-control datepicker" id="user-to-time{{this.componentID}}" autocomplete="off"
-          [ngClass]="{'required':!this.isSystemReservedUser()}">
+          [ngClass]="{'required':!this.isSystemReservedUser()}" [disabled]="this.allUserEndTimeDisabled">
       </div>
     </div>
   </div>
 </div>
 <div class="row" *ngIf="currentUserAccessAuthorities">
-  <div class="col-md-2">
-      <input type="checkbox" id="all-hs-codes" checked>
+  <div class="col-md-2 auto-width">
+    <input type="checkbox" id="all-hs-codes" [defaultChecked]="!this.allHsCodesUnlimit">
   </div>
   <div class="col-md-10">
     <div class="form-group" [ngClass]="{'required':!this.isSystemReservedUser()}">

@@ -288,11 +288,12 @@ export class CommonUtilitiesService {
     return ret;
   }
   // init select picker
-  public setSelectOptions(id: string, liveSearch: boolean): void {
+  public setSelectOptions(id: string, liveSearch: boolean, disabled: boolean): void {
     $(id).selectpicker({
       'liveSearch': liveSearch,
     });
     $(id).selectpicker('val', '');
+    $(id).prop('disabled', disabled);
     $(id).selectpicker('refresh');
   }
   // tell whether it is system reserved user or not
