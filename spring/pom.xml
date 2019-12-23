@@ -161,12 +161,6 @@ spring.datasource.continueOnError＝true|false 有了错误是否继续运行
 		</dependency>
 
 		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httphelper</artifactId>
-			<version></version>
-		</dependency>
-
-		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
 			<version>20190722</version>

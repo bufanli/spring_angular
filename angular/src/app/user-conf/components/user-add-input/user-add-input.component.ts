@@ -125,12 +125,14 @@ export class UserAddInputComponent implements OnInit, OnDestroy, CommonDialogCal
       this.componentRefBasicInfo = this.container.createComponent(factory);
       this.currentUserBasicInfo.userID = this.openID;
       this.componentRefBasicInfo.instance.currentUser = this.currentUserBasicInfo;
+      this.currentType = 'basic-info';
     } else if (type === 'access-authorities') {
       const factory = this.resolver.resolveComponentFactory(UserAccessAuthoritiesComponent);
       this.componentRefAccessAuthorities = this.container.createComponent(factory);
       this.currentUserAccessAuthorities.userID = this.openID;
       this.componentRefAccessAuthorities.instance.setCurrentUserAccessAuthorities(
         this.currentUserAccessAuthorities);
+      this.currentType = 'access-authorities';
     } else if (type === 'query-condition-displays') {
       const factory = this.resolver.resolveComponentFactory(UserQueryConditionsComponent);
       this.componentRefQueryConditionDisplays = this.container.createComponent(factory);
@@ -138,6 +140,7 @@ export class UserAddInputComponent implements OnInit, OnDestroy, CommonDialogCal
       this.componentRefQueryConditionDisplays.instance.setQueryConditionDisplays(
         this.currentUserQueryConditionDisplays);
       this.componentRefQueryConditionDisplays.instance.setUserAccessAuthorities(this.currentUserAccessAuthorities);
+      this.currentType = 'query-condition-displays';
     }
   }
   // add user info to spring
