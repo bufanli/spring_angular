@@ -34,6 +34,8 @@ export class UserEditComponent implements OnInit, OnDestroy, CommonDialogCallbac
   public currentUserQueryConditionDisplay: UserQueryConditionHeader = null;
   // user basic info
   public currentUser: UserBasicInfo = null;
+  // current type
+  private currentType = null;
 
   @ViewChild('userEditContainer', { read: ViewContainerRef }) container: ViewContainerRef;
   componentRefBasicInfo: ComponentRef<UserBasicInfoComponent>;
@@ -50,22 +52,41 @@ export class UserEditComponent implements OnInit, OnDestroy, CommonDialogCallbac
   }
 
   createComponent(type: string) {
+    // update back to user edit component
+    if (this.currentType === 'basic-info') {
+      if (this.componentRefBasicInfo !== null) {
+        this.currentUser =
+          this.componentRefBasicInfo.instance.getCurrentUserBasicInfo();
+      }
+    } else if (this.currentType === 'access-authorities') {
+      if (this.componentRefAccessAuthorities !== null) {
+        this.currentUserAccessAuthorities =
+          this.componentRefAccessAuthorities.instance.getCurrentUserAccessAuthorities();
+      }
+    } else if (this.currentType === 'query-condition-displays') {
+      if (this.componentRefQueryConditionDisplays !== null) {
+        this.currentUserQueryConditionDisplay =
+          this.componentRefQueryConditionDisplays.instance.getQueryCondtionDisplays();
+      }
+    }
     this.container.clear();
     if (type === 'basic-info') {
       const factory = this.resolver.resolveComponentFactory(UserBasicInfoComponent);
       this.componentRefBasicInfo = this.container.createComponent(factory);
       this.componentRefBasicInfo.instance.currentUser = this.currentUser;
+      this.currentType = 'basic-info';
     } else if (type === 'access-authorities') {
       const factory = this.resolver.resolveComponentFactory(UserAccessAuthoritiesComponent);
       this.componentRefAccessAuthorities = this.container.createComponent(factory);
       this.componentRefAccessAuthorities.instance.setCurrentUserAccessAuthorities(this.currentUserAccessAuthorities);
+      this.currentType = 'access-authorities';
     } else if (type === 'query-condition-displays') {
       const factory = this.resolver.resolveComponentFactory(UserQueryConditionsComponent);
       this.componentRefQueryConditionDisplays = this.container.createComponent(factory);
       this.componentRefQueryConditionDisplays.instance.setQueryConditionDisplays(this.currentUserQueryConditionDisplay);
       this.componentRefQueryConditionDisplays.instance.setUserAccessAuthorities(this.currentUserAccessAuthorities);
+      this.currentType = 'query-condition-displays';
     }
-
   }
   ngOnInit() {
     this.userInfoService.getUserDetailedInfo(
