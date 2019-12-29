@@ -631,9 +631,9 @@ public class ImportExcelUtils {
     // telling the Chart that it has axis and giving them Ids
     setAxIds(ctLineChart,ids);
     // set cat axis
-    setCatAx(ctPlotArea, STAxPos.B,ids);
+    setCatAx(ctPlotArea, STAxPos.B,ids,false);
     // set val axis
-    setValAx(ctPlotArea, STAxPos.L,ids);
+    setValAx(ctPlotArea, STAxPos.L,ids,STCrosses.AUTO_ZERO);
     // legend
     setLegend(ctChart);
     // set data label
@@ -677,9 +677,9 @@ public class ImportExcelUtils {
         // telling the Chart that it has axis and giving them Ids
         setAxIds(ctBarChart,ids);
         // set cat axis
-        setCatAx(ctPlotArea, STAxPos.B,ids);
+        setCatAx(ctPlotArea, STAxPos.B,ids,false);
         // set val axis
-        setValAx(ctPlotArea, STAxPos.L,ids);
+        setValAx(ctPlotArea, STAxPos.L,ids,STCrosses.AUTO_ZERO);
         // add legend and set legend position
         setLegend(ctChart);
         // set data label
@@ -731,13 +731,13 @@ public class ImportExcelUtils {
         setAxIds(ctLineChart,lineAxisIds);
         // common of line and bar
          // set cat axis
-        setCatAx(ctPlotArea, STAxPos.B,barAxisIds);
+        setCatAx(ctPlotArea, STAxPos.B,barAxisIds,false);
         // set val axis
-        setValAx(ctPlotArea, STAxPos.L,barAxisIds);
+        setValAx(ctPlotArea, STAxPos.L,barAxisIds,STCrosses.AUTO_ZERO);
         // set cat axis
-        setCatAx(ctPlotArea, STAxPos.B,lineAxisIds);
+        setCatAx(ctPlotArea, STAxPos.B,lineAxisIds,true);
         // set val axis
-        setValAx(ctPlotArea, STAxPos.R,lineAxisIds);
+        setValAx(ctPlotArea, STAxPos.R,lineAxisIds,STCrosses.MAX);
         // legend
         setLegend(ctChart);
         // set title
@@ -841,27 +841,27 @@ public class ImportExcelUtils {
         ctLegend.addNewOverlay().setVal(false);
     }
 
-    private static void setCatAx(CTPlotArea ctPlotArea, STAxPos.Enum anEnum,List<Integer> ids) {
+    private static void setCatAx(CTPlotArea ctPlotArea, STAxPos.Enum anEnum,List<Integer> ids,boolean isDeleted) {
         CTCatAx ctCatAx = ctPlotArea.addNewCatAx();
         ctCatAx.addNewAxId().setVal(ids.get(0)); // id of the cat axis
         CTScaling ctScaling = ctCatAx.addNewScaling();
         ctScaling.addNewOrientation().setVal(STOrientation.MIN_MAX);
-        ctCatAx.addNewDelete().setVal(false);
+        ctCatAx.addNewDelete().setVal(isDeleted);
         ctCatAx.addNewAxPos().setVal(anEnum);
         ctCatAx.addNewCrossAx().setVal(ids.get(1)); // id of the val axis
         ctCatAx.addNewTickLblPos().setVal(STTickLblPos.NEXT_TO);
     }
 
     // 不要y轴的标签，或者y轴尽可能的窄一些
-    private static void setValAx(CTPlotArea ctPlotArea, STAxPos.Enum anEnum,List<Integer>ids) {
+    private static void setValAx(CTPlotArea ctPlotArea, STAxPos.Enum anEnum,List<Integer>ids,STCrosses.Enum stCrosses) {
         CTValAx ctValAx = ctPlotArea.addNewValAx();
         ctValAx.addNewAxId().setVal(ids.get(1)); // id of the val axis
         CTScaling ctScaling = ctValAx.addNewScaling();
         ctScaling.addNewOrientation().setVal(STOrientation.MIN_MAX);
-        // 不现实y轴
         ctValAx.addNewDelete().setVal(false);
         ctValAx.addNewAxPos().setVal(anEnum);
         ctValAx.addNewCrossAx().setVal(ids.get(0)); // id of the cat axis
+        ctValAx.addNewCrosses().setVal(stCrosses);
         ctValAx.addNewTickLblPos().setVal(STTickLblPos.NEXT_TO);
     }
 
