@@ -21,9 +21,8 @@
     <div class="form-group">
       <div class="input-group">
         <span class="input-group-addon" id="realname{{this.componentID}}">名字</span>
-        <input type="text" [(ngModel)]="currentUser['名字']" name="realname{{this.componentID}}"
-          class="form-control" placeholder="请输入名字" aria-describedby="realname"
-          [ngClass]="{'required':!this.isSystemReservedUser()}">
+        <input type="text" [(ngModel)]="currentUser['名字']" name="realname{{this.componentID}}" class="form-control"
+          placeholder="请输入名字" aria-describedby="realname" [ngClass]="{'required':!this.isSystemReservedUser()}">
       </div>
     </div>
   </div>
@@ -34,7 +33,7 @@
       <div class="input-group">
         <span class="input-group-addon" id="password{{this.componentID}}">密码</span>
         <input type="password" [(ngModel)]="currentUser['密码']" name="password{{this.componentID}}" class="form-control"
-          placeholder="请输入密码" aria-describedby="password">
+          placeholder="请输入密码" aria-describedby="password" [ngClass]="{'required':!this.isSystemReservedUser()}">
       </div>
     </div>
   </div>

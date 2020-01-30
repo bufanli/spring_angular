@@ -58,7 +58,8 @@ export class UserAddInputComponent implements OnInit, OnDestroy, CommonDialogCal
     this.currentUserBasicInfo['国家'] = userBasicInfo['国家'];
     this.currentUserBasicInfo['地址'] = userBasicInfo['地址'];
     this.currentUserBasicInfo['城市'] = userBasicInfo['城市'];
-    this.currentUserBasicInfo['密码'] = userBasicInfo['密码'];
+    // this.currentUserBasicInfo['密码'] = userBasicInfo['密码'];
+    this.currentUserBasicInfo['密码'] = '';
     this.currentUserBasicInfo['年龄'] = userBasicInfo['年龄'];
     this.currentUserBasicInfo['性别'] = userBasicInfo['性别'];
     this.currentUserBasicInfo['昵称'] = userBasicInfo['昵称'];
