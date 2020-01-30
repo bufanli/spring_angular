@@ -68,7 +68,7 @@ export class UserListComponent implements OnInit, AfterViewChecked, CommonDialog
   ngOnInit() {
     // set headers for user list
     $('#table').bootstrapTable('destroy');
-    this.commonUtilitiesService.addTooltipFormatter(this.userListHeaders, 100, 150);
+    this.commonUtilitiesService.addTooltipFormatter(this.userListHeaders, 100, 150, new Set<String>(['userID']));
     // add operation formatter to header
     this.addOperationFormatter(this.userListHeaders[OPERATION_HEADER_INDEX]);
     $('#table').bootstrapTable({

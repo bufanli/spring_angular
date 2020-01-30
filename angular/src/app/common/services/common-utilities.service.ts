@@ -83,7 +83,7 @@ export class CommonUtilitiesService {
   }
 
   // add tooltip formatter to table
-  addTooltipFormatter(headers: Header[], smallWidth, bigWidth) {
+  addTooltipFormatter(headers: Header[], smallWidth, bigWidth, exceptionColumns: Set<String> = new Set([])) {
     for (const header of headers) {
       header.class = 'colStyle';
       if (header.title.length > 4) {
@@ -91,17 +91,19 @@ export class CommonUtilitiesService {
       } else {
         header.width = smallWidth;
       }
-      header.formatter = function (value, row, index) {
-        value = value ? value : '';
-        let length = value.length;
-        if (length && length > 12) {
-          length = 12;
-          return '<span class = "text-primary" data-toggle = "tooltip" \
+      if (!exceptionColumns.has(header.field)) {
+        header.formatter = function (value, row, index) {
+          value = value ? value : '';
+          let length = value.length;
+          if (length && length > 12) {
+            length = 12;
+            return '<span class = "text-primary" data-toggle = "tooltip" \
                   title = ' + '"' + value + '"' + '>' + value.substring(0, length) + '...' + '</span>';
-        } else {
-          return value;
-        }
-      };
+          } else {
+            return value;
+          }
+        };
+      }
     }
   }
   // deserialize data from httpResponse
