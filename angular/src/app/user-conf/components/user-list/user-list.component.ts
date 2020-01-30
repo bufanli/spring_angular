@@ -125,7 +125,7 @@ export class UserListComponent implements OnInit, AfterViewChecked, CommonDialog
         const editButtonId = '#' + this.EDIT_USER_PREFIX + currentPageData[i]['userID'];
         const deleteButtonId = '#' + this.DELETE_USER_PREFIX + currentPageData[i]['userID'];
         $(editButtonId).on('click', this, this.showUserSettingModal);
-        $(deleteButtonId).on('click', this, this.showUserSettingModal);
+        $(deleteButtonId).on('click', this, this.showDeleteUserModal);
       }
     } else {
       // call from html context
@@ -237,6 +237,7 @@ export class UserListComponent implements OnInit, AfterViewChecked, CommonDialog
       // delete ok
       $('#table').bootstrapTable('remove',
         { field: 'userID', values: [this.deletingUserID] });
+      this.bindUserEditEventHandler(null);
     } else {
       // delete ng
       this.commonUtilitiesService.showCommonDialog(
