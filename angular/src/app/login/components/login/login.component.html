@@ -20,6 +20,7 @@
           </div>
         </form>
         <div class="alert alert-danger login-error" *ngIf="isUserNotInDB">该用户尚未注册</div>
+        <div class="alert alert-danger login-error" *ngIf="isExpired">该用户已过期</div>
         <div class="alert alert-danger login-error" *ngIf="isUserRefused">该用户拒绝登陆</div>
       </div>
     </div>

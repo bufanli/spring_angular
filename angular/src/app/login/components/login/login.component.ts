@@ -19,11 +19,13 @@ export class LoginComponent implements OnInit {
   private loginURL = 'weChatCallbackForLogin?code=123456&state=20181224';  // URL to login(dummy)
   public isUserNotInDB = false;
   public isUserRefused = false;
+  public isExpired = false;
   constructor(private router: Router,
     private activatedRoute: ActivatedRoute,
     private currentUserContainerService: CurrentUserContainerService) {
     this.isUserNotInDB = false;
     this.isUserRefused = false;
+    this.isExpired = false;
   }
 
   ngOnInit() {
@@ -41,9 +43,15 @@ export class LoginComponent implements OnInit {
         if (reason === 'user_refused') {
           this.isUserRefused = true;
           this.isUserNotInDB = false;
+          this.isExpired = false;
+        } else if (reason === 'invalid') {
+          this.isUserRefused = false;
+          this.isUserNotInDB = false;
+          this.isExpired = true;
         } else {
           this.isUserRefused = false;
           this.isUserNotInDB = true;
+          this.isExpired = false;
         }
       } else {
         // nothing to do
