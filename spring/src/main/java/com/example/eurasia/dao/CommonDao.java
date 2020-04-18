@@ -197,6 +197,33 @@ SELECT information_schema.SCHEMATA.SCHEMA_NAME FROM information_schema.SCHEMATA 
         }
         return false;
     }
+/**
+     * 复制旧表数据到新表（俩表的字段名相同）
+     *  没有去重功能
+     * @param srcTable 旧表名字
+     * @param desTable 新表名字
+     * @return
+     * @throws
+     * @author bufanli
+     * @Time 2020-4-18 00:00:00
+     */
+    public int copyTableData(String srcTable,
+                             String desTable,
+                             String allColumns,
+                             String allColumnsForDeleteSameData) throws Exception {
+        StringBuffer sql = new StringBuffer();
+        sql.append("insert into ");
+        sql.append(desTable);
+        sql.append("(");
+        sql.append(allColumns);
+        sql.append(")");
+        sql.append(" select ");
+        sql.append(allColumns);
+        sql.append(" from ");
+        sql.append(srcTable);
+        int num = getJdbcTemplate().update(sql.toString());
+        return num;
+    }
 
     /**
      * 复制旧表数据到新表（俩表的字段名相同）
@@ -208,7 +235,7 @@ SELECT information_schema.SCHEMATA.SCHEMA_NAME FROM information_schema.SCHEMATA 
      * @author FuJia
      * @Time 2019-10-31 00:00:00
      */
-    public int copyTableData(String srcTable,
+    public int copyTableDataWithDeleteSameData(String srcTable,
                              String desTable,
                              String allColumns,
                              String allColumnsForDeleteSameData) throws Exception {
