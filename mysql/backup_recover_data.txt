@@ -1,0 +1,2 @@
+mysqldump -u root -p eurasia eurasiatable >back_eurasia_table.sql
+mysql -u root -p eurasia< back_eurasia_table.sql
