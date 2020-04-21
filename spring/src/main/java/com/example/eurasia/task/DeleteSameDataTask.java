@@ -18,7 +18,7 @@ public class DeleteSameDataTask{
     @Autowired
     private DeleteSameDataServiceImpl deleteSameDataService;
 
-    @Scheduled(cron = "0 45 21 * * ?")
+    @Scheduled(cron = "0 59 23 * * ?")
     public void deleteSameData() {
         Slf4jLogUtil.get().info("删除重复数据启动");
         try {
